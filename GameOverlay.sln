@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30114.128
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GameHelper", "GameHelper\GameHelper.csproj", "{F91E45A5-0DEE-4D4C-A89C-69B18F38134E}"
+	ProjectSection(ProjectDependencies) = postProject
+		{95B261DD-906E-4634-81D4-0A5A8C1D9398} = {95B261DD-906E-4634-81D4-0A5A8C1D9398}
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GameOffsets", "GameOffsets\GameOffsets.csproj", "{95B261DD-906E-4634-81D4-0A5A8C1D9398}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F91E45A5-0DEE-4D4C-A89C-69B18F38134E}.Debug|x64.ActiveCfg = Debug|x64
+		{F91E45A5-0DEE-4D4C-A89C-69B18F38134E}.Debug|x64.Build.0 = Debug|x64
+		{F91E45A5-0DEE-4D4C-A89C-69B18F38134E}.Release|x64.ActiveCfg = Release|x64
+		{F91E45A5-0DEE-4D4C-A89C-69B18F38134E}.Release|x64.Build.0 = Release|x64
+		{95B261DD-906E-4634-81D4-0A5A8C1D9398}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{95B261DD-906E-4634-81D4-0A5A8C1D9398}.Debug|x64.Build.0 = Debug|Any CPU
+		{95B261DD-906E-4634-81D4-0A5A8C1D9398}.Release|x64.ActiveCfg = Release|Any CPU
+		{95B261DD-906E-4634-81D4-0A5A8C1D9398}.Release|x64.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {6CB26318-014D-4959-8116-07FD055D941A}
+	EndGlobalSection
+EndGlobal
