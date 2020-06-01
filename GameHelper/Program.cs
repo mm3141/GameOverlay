@@ -1,10 +1,20 @@
-﻿namespace GameHelper
+﻿// <copyright file="Program.cs" company="None">
+// Copyright (c) None. All rights reserved.
+// </copyright>
+
+namespace GameHelper
 {
     using System;
 
-    class Program
+    /// <summary>
+    /// Class executed when the application starts.
+    /// </summary>
+    internal class Program
     {
-        static void Main()
+        /// <summary>
+        /// function executed when the application starts.
+        /// </summary>
+        private static void Main()
         {
             Console.WriteLine("Hello World!");
         }
