@@ -26,6 +26,7 @@ namespace GameHelper
                 Environment.Exit(1);
             };
 
+            Core.Initlize();
             var lastTime = DateTime.Now;
             var currTime = DateTime.Now;
             while (true)

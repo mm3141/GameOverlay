@@ -26,7 +26,7 @@
         public IntPtr Parent; // 0x08
         public IntPtr Right; // 0x10
         public byte Color; // 0x18
-        public bool IsValid; // 0x19
+        public bool IsNil; // 0x19
         public byte pad_1A;
         public byte pad_1B;
         public uint pad_1C;

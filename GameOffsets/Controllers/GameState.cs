@@ -1,4 +1,4 @@
-﻿namespace GameOffsets
+﻿namespace GameOffsets.Controllers
 {
     using System;
     using System.Runtime.InteropServices;

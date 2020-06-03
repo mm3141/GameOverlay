@@ -43,4 +43,8 @@
     <ProjectReference Include="..\GameOffsets\GameOffsets.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="RemoteMemoryObjects\" />
+  </ItemGroup>
+
 </Project>

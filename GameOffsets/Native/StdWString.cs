@@ -16,7 +16,7 @@ namespace GameOffsets.Native
         //// then the wstring is stored locally (without a pointer).
         //// Since the pointer takes 8 bytes and 8 Capacity wstring takes 16 bytes
         //// wstring reserves 8 bytes over here which is then used to store the string.
-        public IntPtr Reserved8Bytes;
+        public IntPtr ReservedBytes;
         public IntPtr Length;
         public IntPtr Capacity;
     }
