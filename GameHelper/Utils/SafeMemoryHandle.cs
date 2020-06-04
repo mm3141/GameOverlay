@@ -1,4 +1,5 @@
-﻿// <copyright file="SafeMemoryHandle.cs" company="None">
+﻿
+// <copyright file="SafeMemoryHandle.cs" company="None">
 // Copyright (c) None. All rights reserved.
 // </copyright>
 
@@ -109,15 +110,10 @@ namespace GameHelper.Utils
 
             try
             {
-                uint status = NtDll.NtReadVirtualMemory(
-                    this.handle,
-                    address,
-                    ref result,
-                    out IntPtr numBytesRead);
-                if (!NtDll.NtSuccess(status))
+                if (!NativeWrapper.ReadProcessMemory(this.handle, address, ref result))
                 {
                     throw new Exception($"Failed To Read the Memory" +
-                        $"due to Error Number: 0x{status:X}");
+                        $" due to Error Number: 0x{NativeWrapper.LastError:X}");
                 }
 
                 return result;

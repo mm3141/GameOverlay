@@ -2,10 +2,10 @@
 // Copyright (c) None. All rights reserved.
 // </copyright>
 
-using System;
-
 namespace GameHelper.Controllers
 {
+    using System;
+
     /// <summary>
     /// Reads and store the files loaded in the game memory.
     /// </summary>

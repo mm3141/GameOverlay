@@ -7,6 +7,7 @@ namespace GameHelper.Controllers
     using System;
     using System.Collections.Generic;
     using Coroutine;
+    using GameHelper.RemoteMemoryObjects.States;
     using GameOffsets.Controllers;
     using GameOffsets.Native;
 
@@ -26,12 +27,27 @@ namespace GameHelper.Controllers
 
         = new Dictionary<string, IntPtr>();
 
+        /// <summary>
+        /// Gets the AreaLoadingState object.
+        /// </summary>
+        public AreaLoadingState AreaLoadingState
+        {
+            get;
+            private set;
+        }
+
+        = new AreaLoadingState(IntPtr.Zero);
+
         /// <inheritdoc/>
         protected override void OnAddressUpdated(IntPtr newAddress)
         {
             if (newAddress != IntPtr.Zero)
             {
                 this.UpdateAllStates();
+            }
+            else
+            {
+                this.ClearKnownStateObjects();
             }
 
             CoroutineHandler.RaiseEvent(this.OnControllerReady);
@@ -49,6 +65,7 @@ namespace GameHelper.Controllers
             foreach (var state in states)
             {
                 string name = reader.ReadStdWString(state.Key);
+                this.UpdateKnownStatesObjects(name, state.Value);
                 if (this.States.ContainsKey(name))
                 {
                     this.States[name] = state.Value;
@@ -58,6 +75,28 @@ namespace GameHelper.Controllers
                     this.States.Add(name, state.Value);
                 }
             }
+        }
+
+        /// <summary>
+        /// Updates the known states RemoteMemoryObjects and silently skips the unknown ones.
+        /// </summary>
+        /// <param name="name">State name.</param>
+        /// <param name="address">State address.</param>
+        private void UpdateKnownStatesObjects(string name, IntPtr address)
+        {
+            switch (name)
+            {
+                case "AreaLoadingState":
+                    this.AreaLoadingState.Address = address;
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private void ClearKnownStateObjects()
+        {
+            this.AreaLoadingState.Address = IntPtr.Zero;
         }
     }
 }
