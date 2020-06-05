@@ -92,7 +92,7 @@ namespace GameHelper.Utils
                     return;
                 }
 
-                byte[] processData = handle.ReadMemory(baseAddress + currentOffset, actualReadSize);
+                byte[] processData = handle.ReadMemoryArray<byte>(baseAddress + currentOffset, actualReadSize);
                 int processDataLength = processData.Length;
                 Parallel.For(0, processDataLength, pOptions, (j, state2) =>
                 {

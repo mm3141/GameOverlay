@@ -1,5 +1,4 @@
-﻿
-// <copyright file="SafeMemoryHandle.cs" company="None">
+﻿// <copyright file="SafeMemoryHandle.cs" company="None">
 // Copyright (c) None. All rights reserved.
 // </copyright>
 
@@ -57,43 +56,6 @@ namespace GameHelper.Utils
         }
 
         /// <summary>
-        /// Reads the process memory from a specific address of a specific size.
-        /// </summary>
-        /// <param name="address">Address to read from.</param>
-        /// <param name="nsize">Size in bytes to read.</param>
-        /// <returns>process memory in byte[] format.</returns>
-        public byte[] ReadMemory(IntPtr address, int nsize)
-        {
-            if (this.IsInvalid || address.ToInt64() <= 0 || nsize <= 0)
-            {
-                return new byte[0];
-            }
-
-            var buffer = new byte[nsize];
-            try
-            {
-                if (!NativeWrapper.ReadProcessMemoryArray<byte>(
-                    this.handle, address, buffer, out IntPtr numBytesRead))
-                {
-                    throw new Exception($"Failed To Read the Memory" +
-                        $"due to Error Number: 0x{NativeWrapper.LastError:X}");
-                }
-
-                if (numBytesRead.ToInt32() < nsize)
-                {
-                    throw new Exception($"Number of bytes read is less than the passed nsize.");
-                }
-
-                return buffer;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine($"ERROR: {e.Message}");
-                return new byte[0];
-            }
-        }
-
-        /// <summary>
         /// Reads the process memory as type T.
         /// </summary>
         /// <typeparam name="T">type of data structure to read.</typeparam>
@@ -122,6 +84,80 @@ namespace GameHelper.Utils
             {
                 Console.WriteLine($"ERROR: {e.Message}");
                 return default;
+            }
+        }
+
+        /// <summary>
+        /// Reads the process memory as an array.
+        /// </summary>
+        /// <typeparam name="T">Array type to read.</typeparam>
+        /// <param name="address">memory address to read from.</param>
+        /// <param name="nsize">total array elements to read.</param>
+        /// <returns>
+        /// An array of type T and of size nsize. In case or any error it returns empty array.
+        /// </returns>
+        public T[] ReadMemoryArray<T>(IntPtr address, int nsize)
+            where T : unmanaged
+        {
+            if (this.IsInvalid || address.ToInt64() <= 0 || nsize <= 0)
+            {
+                return new T[0];
+            }
+
+            var buffer = new T[nsize];
+            try
+            {
+                if (!NativeWrapper.ReadProcessMemoryArray<T>(
+                    this.handle, address, buffer, out IntPtr numBytesRead))
+                {
+                    throw new Exception($"Failed To Read the Memory" +
+                        $"due to Error Number: 0x{NativeWrapper.LastError:X}");
+                }
+
+                if (numBytesRead.ToInt32() < nsize)
+                {
+                    throw new Exception($"Number of bytes read is less than the passed nsize.");
+                }
+
+                return buffer;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"ERROR: {e.Message}");
+                return new T[0];
+            }
+        }
+
+        /// <summary>
+        /// Reads the std::wstring. String read is in unicode format.
+        /// </summary>
+        /// <param name="nativecontainer">native object of std::wstring.</param>
+        /// <returns>string.</returns>
+        public string ReadStdWString(StdWString nativecontainer)
+        {
+            int length = nativecontainer.Length.ToInt32();
+            if (length <= 0 || length > 1000)
+            {
+                throw new Exception($"ERROR: Reading std::wstring, Length is invalid {length}");
+            }
+
+            int capacity = nativecontainer.Capacity.ToInt32();
+            if (capacity <= 0 || capacity > 1000)
+            {
+                throw new Exception($"ERROR: Reading std::wstring, Capacity is invalid {capacity}");
+            }
+
+            if (capacity <= 8)
+            {
+                byte[] buffer = BitConverter.GetBytes(nativecontainer.Buffer.ToInt64());
+                string ret = Encoding.Unicode.GetString(buffer);
+                buffer = BitConverter.GetBytes(nativecontainer.ReservedBytes.ToInt64());
+                return ret + Encoding.Unicode.GetString(buffer);
+            }
+            else
+            {
+                byte[] buffer = this.ReadMemoryArray<byte>(nativecontainer.Buffer, (int)length * 2);
+                return Encoding.Unicode.GetString(buffer);
             }
         }
 
@@ -178,39 +214,6 @@ namespace GameHelper.Utils
             }
 
             return collection;
-        }
-
-        /// <summary>
-        /// Reads the std::wstring. String read is in unicode format.
-        /// </summary>
-        /// <param name="nativecontainer">native object of std::wstring.</param>
-        /// <returns>string.</returns>
-        public string ReadStdWString(StdWString nativecontainer)
-        {
-            int length = nativecontainer.Length.ToInt32();
-            if (length <= 0 || length > 1000)
-            {
-                throw new Exception($"ERROR: Reading std::wstring, Length is invalid {length}");
-            }
-
-            int capacity = nativecontainer.Capacity.ToInt32();
-            if (capacity <= 0 || capacity > 1000)
-            {
-                throw new Exception($"ERROR: Reading std::wstring, Capacity is invalid {capacity}");
-            }
-
-            if (capacity <= 8)
-            {
-                byte[] buffer = BitConverter.GetBytes(nativecontainer.Buffer.ToInt64());
-                string ret = Encoding.Unicode.GetString(buffer);
-                buffer = BitConverter.GetBytes(nativecontainer.ReservedBytes.ToInt64());
-                return ret + Encoding.Unicode.GetString(buffer);
-            }
-            else
-            {
-                byte[] buffer = this.ReadMemory(nativecontainer.Buffer, (int)length * 2);
-                return Encoding.Unicode.GetString(buffer);
-            }
         }
 
         /// <summary>
