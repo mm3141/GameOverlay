@@ -10,9 +10,9 @@ namespace GameHelper.RemoteMemoryObjects.States
     using GameOffsets.RemoteMemoryObjects.States;
 
     /// <summary>
-    /// Reads AreaLoadingState Game Object. 0x23BA7C310C0.
+    /// Reads AreaLoadingState Game Object.
     /// </summary>
-    public class AreaLoadingState : RemoteMemoryObjectBase
+    public sealed class AreaLoadingState : RemoteMemoryObjectBase
     {
         private AreaLoadingStateOffset classData = default;
 
@@ -42,10 +42,11 @@ namespace GameHelper.RemoteMemoryObjects.States
         public bool IsLoading => this.classData.IsLoading == 0x01;
 
         /// <inheritdoc/>
-        public override IEnumerator<IWait> GatherData()
+        protected override IEnumerator<IWait> GatherData()
         {
             while (true)
             {
+                yield return new WaitSeconds(0.5);
                 if (this.Address != IntPtr.Zero)
                 {
                     var reader = Core.Process.Handle;
@@ -66,8 +67,6 @@ namespace GameHelper.RemoteMemoryObjects.States
                         CoroutineHandler.RaiseEvent(this.AreaChanged);
                     }
                 }
-
-                yield return new WaitSeconds(0.5);
             }
         }
     }

@@ -8,6 +8,7 @@ namespace GameHelper
     using System.Collections.Generic;
     using Coroutine;
     using GameHelper.Controllers;
+    using GameHelper.RemoteMemoryObjects;
 
     /// <summary>
     /// Main Class to init all the controllers.
@@ -20,9 +21,9 @@ namespace GameHelper
         public static GameProcess Process { get; private set; } = new GameProcess();
 
         /// <summary>
-        /// Gets the GameState instance. For details read class description.
+        /// Gets the GameStates instance. For details read class description.
         /// </summary>
-        public static GameState State { get; private set; } = new GameState();
+        public static GameStates States { get; private set; } = new GameStates();
 
         /// <summary>
         /// Gets the GameFiles instance. For details read class description.
@@ -30,25 +31,63 @@ namespace GameHelper
         public static GameFiles Files { get; private set; } = new GameFiles();
 
         /// <summary>
+        /// Gets the AreaChangeCounter instance. For details read class description.
+        /// </summary>
+        public static AreaChangeCounter AreaChangeCounter
+        {
+            get;
+            private set;
+        }
+
+        = new AreaChangeCounter(IntPtr.Zero);
+
+        /// <summary>
         /// Initializes the <see cref="Core"/> class.
         /// </summary>
-        public static void Initlize()
+        public static void Initialize()
         {
-            CoroutineHandler.Start(UpdateStateData());
+            CoroutineHandler.Start(UpdateStatesData());
             CoroutineHandler.Start(UpdateFilesData());
+            CoroutineHandler.Start(UpdateAreaChangeData());
             CoroutineHandler.Start(GameClosedActions());
         }
 
         /// <summary>
-        /// Co-routine to update the State address and related data.
+        /// Co-routine to update the address where the States are loaded in the game memory.
         /// </summary>
         /// <returns>co-routine IWait.</returns>
-        private static IEnumerator<IWait> UpdateStateData()
+        private static IEnumerator<IWait> UpdateStatesData()
         {
             while (true)
             {
                 yield return new WaitEvent(Process.OnControllerReady);
-                State.Address = Process.StaticAddresses["Game State"];
+                States.Address = Process.StaticAddresses["Game States"];
+            }
+        }
+
+        /// <summary>
+        /// Co-routine to update the address where the Files are loaded in the game memory.
+        /// </summary>
+        /// <returns>co-routine IWait.</returns>
+        private static IEnumerator<IWait> UpdateFilesData()
+        {
+            while (true)
+            {
+                yield return new WaitEvent(Process.OnControllerReady);
+                Files.Address = Process.StaticAddresses["File Root"];
+            }
+        }
+
+        /// <summary>
+        /// Co-routine to update the address where AreaChange object is loaded in the game memory.
+        /// </summary>
+        /// <returns>co-routine IWait.</returns>
+        private static IEnumerator<IWait> UpdateAreaChangeData()
+        {
+            while (true)
+            {
+                yield return new WaitEvent(Process.OnControllerReady);
+                AreaChangeCounter.Address = Process.StaticAddresses["AreaChangeCounter"];
             }
         }
 
@@ -62,21 +101,9 @@ namespace GameHelper
             while (true)
             {
                 yield return new WaitEvent(Process.OnClose);
-                State.Address = IntPtr.Zero;
+                States.Address = IntPtr.Zero;
                 Files.Address = IntPtr.Zero;
-            }
-        }
-
-        /// <summary>
-        /// Co-routine to update the Files loaded in game memory address and related data.
-        /// </summary>
-        /// <returns>co-routine IWait.</returns>
-        private static IEnumerator<IWait> UpdateFilesData()
-        {
-            while (true)
-            {
-                yield return new WaitEvent(Process.OnControllerReady);
-                Files.Address = Process.StaticAddresses["File Root"];
+                AreaChangeCounter.Address = IntPtr.Zero;
             }
         }
     }

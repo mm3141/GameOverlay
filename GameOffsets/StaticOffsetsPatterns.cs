@@ -45,7 +45,7 @@
             ///</HowToFindIt>
             new Pattern
             (
-                "Game State",
+                "Game States",
                 "48 83 EC ?? 48 C7 44 24 ?? ?? ?? ?? ?? 48 89 9C 24 ?? ?? ?? ?? 48 8B F9 33 ED ?? ?? ?? ^"
             ),
 
@@ -87,11 +87,33 @@
             /// PathOfExile_x64.exe+E170EE - 0F57 C0               - xorps xmm0, xmm0
             /// PathOfExile_x64.exe+E170F1 - F3 0F11 05 27894001   - movss[PathOfExile_x64.exe + 221FA20], xmm0
             ///</HowToFindIt>
-
             new Pattern
             (
                 "File Root",
                 "48 8d ?? ^ ?? ?? ?? ?? 8b 04 0e 39"
+            ),
+
+            /// <HowToFindIt>
+            /// This one is really simple/old school CE formula.
+            /// The only purpose of this Counter is to figure out the files-loaded-in-current-area.
+            /// 1: Open CheatEngine and Attach to POE Game
+            /// 2: Search for 4 bytes, Search type should be "UnknownInitialValue"
+            /// 3: Now Change the Area again and again and on every area change do a "Next Scan" with "Increased Value"
+            /// 4: U will find 2 green addresses at the end of that search list.
+            /// 5: Pick the smaller one and create pattern for it.
+            /// 5.1: Normally pattern are created by "What accesses this address/value"
+            /// 5.2: but in this case the pattern at "What writes to this address/value" is more unique.
+            /// 
+            /// NOTE: Reason you picked the smaller one in step-5 is because
+            ///       the bigger one is some other number which increments by 3
+            ///       every time you move from Charactor Select screen to In Game screen.
+            ///       Feel free to test this, just to be sure that the Address you are picking
+            ///       is the correct one.
+            /// </HowToFindIt>
+            new Pattern
+            (
+                "AreaChangeCounter",
+                "E8 ?? ?? ?? ?? E8 ?? ?? ?? ?? FF 05 ^"
             ),
         };
     }

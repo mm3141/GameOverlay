@@ -11,7 +11,7 @@ namespace GameHelper.RemoteMemoryObjects
     /// <summary>
     /// Points to a Memory location and reads/understands all the data from there.
     /// Data in remote memory location changes w.r.t time or event. Due to this,
-    /// each remote memory object exposes (and is base on (time/event based)) coroutines.
+    /// each remote memory object requires to implement a time/event based coroutine.
     /// </summary>
     public abstract class RemoteMemoryObjectBase
     {
@@ -51,6 +51,6 @@ namespace GameHelper.RemoteMemoryObjects
         /// Object.
         /// </summary>
         /// <returns>co-routine IWait.</returns>
-        public abstract IEnumerator<IWait> GatherData();
+        protected abstract IEnumerator<IWait> GatherData();
     }
 }

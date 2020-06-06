@@ -1,4 +1,4 @@
-﻿// <copyright file="GameState.cs" company="None">
+﻿// <copyright file="GameStates.cs" company="None">
 // Copyright (c) None. All rights reserved.
 // </copyright>
 
@@ -12,9 +12,9 @@ namespace GameHelper.Controllers
     using GameOffsets.Native;
 
     /// <summary>
-    /// Reads and stores the global state of the game.
+    /// Reads and stores the global states of the game.
     /// </summary>
-    public class GameState : ControllerBase
+    public class GameStates : ControllerBase
     {
         /// <summary>
         /// Gets a dictionary containing all the Game States addresses.
@@ -30,7 +30,7 @@ namespace GameHelper.Controllers
         /// <summary>
         /// Gets the AreaLoadingState object.
         /// </summary>
-        public AreaLoadingState AreaLoadingState
+        public AreaLoadingState AreaLoading
         {
             get;
             private set;
@@ -47,7 +47,7 @@ namespace GameHelper.Controllers
             }
             else
             {
-                this.ClearKnownStateObjects();
+                this.ClearKnownStatesObjects();
             }
 
             CoroutineHandler.RaiseEvent(this.OnControllerReady);
@@ -87,16 +87,16 @@ namespace GameHelper.Controllers
             switch (name)
             {
                 case "AreaLoadingState":
-                    this.AreaLoadingState.Address = address;
+                    this.AreaLoading.Address = address;
                     break;
                 default:
                     break;
             }
         }
 
-        private void ClearKnownStateObjects()
+        private void ClearKnownStatesObjects()
         {
-            this.AreaLoadingState.Address = IntPtr.Zero;
+            this.AreaLoading.Address = IntPtr.Zero;
         }
     }
 }

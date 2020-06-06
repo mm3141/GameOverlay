@@ -9,10 +9,13 @@ namespace GameHelper.Controllers
 
     /// <summary>
     /// An abstract class to create the controllers.
-    /// Controllers are basically static objects w.r.t
-    /// the game i.e. they never updates while the game
-    /// is up and running. They are only updated when the
-    /// game restarts.
+    /// Controllers are basically objects with static
+    /// data in them i.e. their data never changes
+    /// while the game is up and running. They are only
+    /// updated when the game restarts. If you are thinking
+    /// of creating a Controller whos data refreshes again and
+    /// again while the game is running, make it a RemoteMemoryObject
+    /// rather than a controller.
     ///
     /// NOTE: all controllers uses (time/event based) coroutines
     /// to process data or communicate/inform other controllers/classes
