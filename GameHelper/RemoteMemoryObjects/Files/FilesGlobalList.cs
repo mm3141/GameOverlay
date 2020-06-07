@@ -23,71 +23,79 @@ namespace GameHelper.RemoteMemoryObjects.Files
             : base(address)
         {
             CoroutineHandler.Start(this.GatherData());
-            CoroutineHandler.Start(this.ClearLoadedFiles());
         }
 
         /// <summary>
         /// Gets the list of (Metadata only) files loaded for the current Area.
         /// </summary>
-        public List<string> CurrentAreaFiles { get; private set; } = new List<string>(2000);
+        public HashSet<string> CurrentAreaFiles { get; private set; } = new HashSet<string>(2000);
 
         /// <inheritdoc/>
         protected override IEnumerator<IWait> GatherData()
         {
             while (true)
             {
-                yield return new WaitSeconds(10);
-                if (this.Address != IntPtr.Zero)
-                {
-                    var reader = Core.Process.Handle;
-                    var filelistNode = reader.ReadMemory<StdListNode<FileInfoPtr>>(this.Address);
-                    var lastFileNode = reader.ReadMemory<StdListNode<FileInfoPtr>>(filelistNode.Previous);
-                    if (lastFileNode.Data.NamePtr == IntPtr.Zero)
-                    {
-                        throw new Exception("Could not read LastFile Node." +
-                            $"Address: {Core.Files.Address.ToInt64():X}");
-                    }
-
-                    int currentFileNumber = 0;
-                    FileInfo information;
-                    string name;
-                    while (filelistNode.Data.NamePtr != lastFileNode.Data.NamePtr)
-                    {
-                        filelistNode = reader.ReadMemory<StdListNode<FileInfoPtr>>(filelistNode.Next);
-                        information = reader.ReadMemory<FileInfo>(filelistNode.Data.Information);
-                        if (information.AreaChangeCount > 2 && information.AreaChangeCount == Core.AreaChangeCounter.Value)
-                        {
-                            name = reader.ReadStdWString(information.Name);
-                            if (name.StartsWith("Metadata") && !this.CurrentAreaFiles.Contains(name))
-                            {
-                                this.CurrentAreaFiles.Add(name);
-                            }
-                        }
-
-                        currentFileNumber++;
-                        if (currentFileNumber % 1000 == 0)
-                        {
-                            yield return new WaitSeconds(0);
-                        }
-
-                        if (currentFileNumber > 80000)
-                        {
-                            throw new Exception("Number of files loaded in memory is larger than" +
-                                " 80,000. The FilesGlobalList remote memory object must be stuck" +
-                                " in an infinite loop. Files Controller " +
-                                $"Address: {Core.Files.Address.ToInt64():X}");
-                        }
-                    }
-                }
-            }
-        }
-
-        private IEnumerator<IWait> ClearLoadedFiles()
-        {
-            while (true)
-            {
                 yield return new WaitEvent(Core.States.AreaLoading.AreaChanged);
                 this.CurrentAreaFiles.Clear();
+                for (int i = 0; i < 5; i++)
+                {
+                    if (this.Address != IntPtr.Zero)
+                    {
+                        var reader = Core.Process.Handle;
+                        var filelistNode = reader.ReadMemory<StdListNode<FileInfoPtr>>(this.Address);
+                        var lastFileNode = reader.ReadMemory<StdListNode<FileInfoPtr>>(filelistNode.Previous);
+                        if (lastFileNode.Data.NamePtr == IntPtr.Zero)
+                        {
+                            throw new Exception("Could not read LastFile Node." +
+                                $"Address: {Core.Files.Address.ToInt64():X}");
+                        }
+
+                        int currentFileNumber = 0;
+                        FileInfo information;
+                        string name;
+                        byte firstChar;
+                        while (filelistNode.Data.NamePtr != lastFileNode.Data.NamePtr)
+                        {
+                            filelistNode = reader.ReadMemory<StdListNode<FileInfoPtr>>(filelistNode.Next);
+                            firstChar = reader.ReadMemory<byte>(filelistNode.Data.NamePtr);
+                            switch (firstChar)
+                            {
+                                case 0x53: // ShaderProgram
+                                case 0x54: // TextureResource
+                                case 0x46: // FONTFontin
+                                case 0x44: // Data
+                                    break;
+                                default:
+                                    information = reader.ReadMemory<FileInfo>(filelistNode.Data.Information);
+                                    if (information.AreaChangeCount > 2 &&
+                                        information.AreaChangeCount == Core.AreaChangeCounter.Value &&
+                                        information.FileType == 0x01)
+                                    {
+                                        name = reader.ReadStdWString(information.Name);
+                                        this.CurrentAreaFiles.Add(name);
+                                    }
+
+                                    break;
+                            }
+
+                            currentFileNumber++;
+                            if (currentFileNumber % 1000 == 0)
+                            {
+                                yield return new WaitSeconds(0);
+                            }
+
+                            if (currentFileNumber > 80000)
+                            {
+                                throw new Exception("Number of files loaded in memory is larger than" +
+                                    " 80,000. The FilesGlobalList remote memory object must be stuck" +
+                                    " in an infinite loop. Files Controller " +
+                                    $"Address: {Core.Files.Address.ToInt64():X}");
+                            }
+                        }
+                    }
+
+                    yield return new WaitSeconds(5);
+                }
             }
         }
     }

@@ -18,7 +18,7 @@ namespace GameOffsets.RemoteMemoryObjects.Files
     public struct FileInfo
     {
         [FieldOffset(0x08)] public StdWString Name;
-        [FieldOffset(0x28)] public IntPtr FileType; //0x01 = all files, 0x03 = TextureResource
+        [FieldOffset(0x28)] public int FileType; // Possible values 0x01, 0x03 (0x03 is useless)
         [FieldOffset(0x30)] public IntPtr UnknownPtr;
         [FieldOffset(0x38)] public int AreaChangeCount;
         [FieldOffset(0x3C)] public int CounterRelatedToAreaChange;

@@ -103,7 +103,7 @@
             /// 5: Pick the smaller one and create pattern for it.
             /// 5.1: Normally pattern are created by "What accesses this address/value"
             /// 5.2: but in this case the pattern at "What writes to this address/value" is more unique.
-            /// 
+            ///
             /// NOTE: Reason you picked the smaller one in step-5 is because
             ///       the bigger one is some other number which increments by 3
             ///       every time you move from Charactor Select screen to In Game screen.

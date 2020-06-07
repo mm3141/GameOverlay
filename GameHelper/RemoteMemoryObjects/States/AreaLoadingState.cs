@@ -41,6 +41,16 @@ namespace GameHelper.RemoteMemoryObjects.States
         /// </summary>
         public bool IsLoading => this.classData.IsLoading == 0x01;
 
+        /// <summary>
+        /// Throws the Area changed event on demand.
+        /// WARNING: This may cause infinite loop if thrown from a function
+        /// which is called on an Area change in the first place.
+        /// </summary>
+        public void ForceThrowAreaChangeEvent()
+        {
+            CoroutineHandler.RaiseEvent(this.AreaChanged);
+        }
+
         /// <inheritdoc/>
         protected override IEnumerator<IWait> GatherData()
         {
