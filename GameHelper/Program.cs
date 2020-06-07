@@ -14,6 +14,16 @@ namespace GameHelper
     /// </summary>
     internal class Program
     {
+        private static DateTime lastTime = DateTime.Now;
+
+        private static void MainThread()
+        {
+            DateTime currTime = DateTime.Now;
+            CoroutineHandler.Tick((currTime - lastTime).TotalSeconds);
+            lastTime = currTime;
+            Thread.Sleep(1);
+        }
+
         /// <summary>
         /// function executed when the application starts.
         /// </summary>
@@ -27,14 +37,9 @@ namespace GameHelper
             };
 
             Core.Initialize();
-            var lastTime = DateTime.Now;
-            var currTime = DateTime.Now;
             while (true)
             {
-                currTime = DateTime.Now;
-                CoroutineHandler.Tick((currTime - lastTime).TotalSeconds);
-                lastTime = currTime;
-                Thread.Sleep(1);
+                MainThread();
             }
         }
     }
