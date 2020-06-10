@@ -6,24 +6,16 @@ namespace GameHelper
 {
     using System;
     using System.IO;
-    using System.Threading;
-    using Coroutine;
+    using ClickableTransparentOverlay;
 
     /// <summary>
     /// Class executed when the application starts.
+    /// TODO: Make global config manager with profiles.
+    /// TODO: Make Menu UI.
+    /// TODO: Make Plugin Manager.
     /// </summary>
     internal class Program
     {
-        private static DateTime lastTime = DateTime.Now;
-
-        private static void MainThread()
-        {
-            DateTime currTime = DateTime.Now;
-            CoroutineHandler.Tick((currTime - lastTime).TotalSeconds);
-            lastTime = currTime;
-            Thread.Sleep(1);
-        }
-
         /// <summary>
         /// function executed when the application starts.
         /// </summary>
@@ -37,10 +29,7 @@ namespace GameHelper
             };
 
             Core.Initialize();
-            while (true)
-            {
-                MainThread();
-            }
+            Overlay.RunInfiniteLoop();
         }
     }
 }

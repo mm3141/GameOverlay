@@ -64,6 +64,7 @@ namespace GameHelper.RemoteMemoryObjects.Files
                                 case 0x54: // TextureResource
                                 case 0x46: // FONTFontin
                                 case 0x44: // Data
+                                case 0x61: // audio
                                     break;
                                 default:
                                     information = reader.ReadMemory<FileInfo>(filelistNode.Data.Information);
