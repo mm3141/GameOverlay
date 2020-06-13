@@ -53,6 +53,14 @@ namespace GameHelper
         }
 
         /// <summary>
+        /// Cleans up all the resources taken by the application core.
+        /// </summary>
+        public static void Dispose()
+        {
+            Process.Close(false);
+        }
+
+        /// <summary>
         /// Co-routine to update the address where the States are loaded in the game memory.
         /// </summary>
         /// <returns>co-routine IWait.</returns>

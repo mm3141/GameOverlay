@@ -7,6 +7,7 @@ namespace GameHelper
     using System;
     using System.IO;
     using ClickableTransparentOverlay;
+    using GameHelper.UI;
 
     /// <summary>
     /// Class executed when the application starts.
@@ -28,8 +29,10 @@ namespace GameHelper
                 Environment.Exit(1);
             };
 
+            MainMenu.InitializeCoroutine();
             Core.Initialize();
-            Overlay.RunInfiniteLoop();
+            Overlay.RunInfiniteLoop(); // Overlay disposes itself.
+            Core.Dispose();
         }
     }
 }

@@ -6,6 +6,8 @@
     <StartupObject>GameHelper.Program</StartupObject>
     <Platforms>x64</Platforms>
     <ApplicationManifest>app.manifest</ApplicationManifest>
+    <Authors>zaafar</Authors>
+    <Description>An overlay to help play the game.</Description>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">

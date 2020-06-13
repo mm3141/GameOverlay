@@ -87,6 +87,25 @@ namespace GameHelper.Controllers
         /// </summary>
         public bool Foreground { get; private set; } = false;
 
+        /// <summary>
+        /// Closes the handle for the game and releases all the resources.
+        /// </summary>
+        /// <param name="monitorForNewGame">
+        /// Set to true if caller wants to start monitoring for new game process after closing.
+        /// </param>
+        public void Close(bool monitorForNewGame = true)
+        {
+            CoroutineHandler.RaiseEvent(this.OnClose);
+            this.WindowArea = Rectangle.Empty;
+            this.Foreground = false;
+            this.Handle?.Dispose();
+            this.Information?.Close();
+            if (monitorForNewGame)
+            {
+                CoroutineHandler.Start(this.FindAndOpen());
+            }
+        }
+
         /// <inheritdoc/>
         protected override void OnAddressUpdated(IntPtr newAddress)
         {
@@ -197,19 +216,6 @@ namespace GameHelper.Controllers
             CoroutineHandler.Start(this.Monitor());
             CoroutineHandler.RaiseEvent(this.OnOpened);
             return true;
-        }
-
-        /// <summary>
-        /// Closes the handle for the game and releases all the resources.
-        /// </summary>
-        private void Close()
-        {
-            CoroutineHandler.RaiseEvent(this.OnClose);
-            this.WindowArea = Rectangle.Empty;
-            this.Foreground = false;
-            this.Handle.Dispose();
-            this.Information.Close();
-            CoroutineHandler.Start(this.FindAndOpen());
         }
 
         /// <summary>

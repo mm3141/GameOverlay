@@ -15,6 +15,8 @@ namespace GameHelper.RemoteMemoryObjects.Files
     /// </summary>
     public sealed class FilesGlobalList : RemoteMemoryObjectBase
     {
+        private static int waitBetweenMultipleRun = 5;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="FilesGlobalList"/> class.
         /// </summary>
@@ -37,7 +39,7 @@ namespace GameHelper.RemoteMemoryObjects.Files
             {
                 yield return new WaitEvent(Core.States.AreaLoading.AreaChanged);
                 this.CurrentAreaFiles.Clear();
-                for (int i = 0; i < 5; i++)
+                for (int i = 0; i < 25 / waitBetweenMultipleRun; i++)
                 {
                     if (this.Address != IntPtr.Zero)
                     {
@@ -95,7 +97,7 @@ namespace GameHelper.RemoteMemoryObjects.Files
                         }
                     }
 
-                    yield return new WaitSeconds(5);
+                    yield return new WaitSeconds(waitBetweenMultipleRun);
                 }
             }
         }
