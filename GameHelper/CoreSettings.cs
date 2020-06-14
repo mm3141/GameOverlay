@@ -8,6 +8,7 @@ namespace GameHelper
     using Newtonsoft.Json;
 
 #pragma warning disable SA1401 // Fields should be private
+
     /// <summary>
     /// Game Helper Core Settings.
     /// </summary>

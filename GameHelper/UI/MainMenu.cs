@@ -39,7 +39,7 @@ namespace GameHelper.UI
             while (true)
             {
                 yield return new Wait(Overlay.OnRender);
-                if (NativeMethods.isKeyPressed(coreSettings.MainMenuHotKey))
+                if (NativeMethods.IsKeyPressed(coreSettings.MainMenuHotKey))
                 {
                     isMainMenuVisible = !isMainMenuVisible;
                     if (!isMainMenuVisible)

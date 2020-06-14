@@ -39,7 +39,9 @@ namespace GameHelper.RemoteMemoryObjects.Files
             {
                 yield return new Wait(Core.States.AreaLoading.AreaChanged);
                 this.CurrentAreaFiles.Clear();
-                for (int i = 0; i < 25 / waitBetweenMultipleRun; i++)
+
+                // The purpose of this loop is to read till 15 seconds after area change.
+                for (int i = 0; i < 15; i += 5)
                 {
                     if (this.Address != IntPtr.Zero)
                     {
