@@ -29,7 +29,13 @@ namespace GameHelper
                 Environment.Exit(1);
             };
 
-            MainMenu.InitializeCoroutine();
+            var settings = CoreSettings.CreateOrLoadSettings();
+            if (settings.HideTerminal)
+            {
+                Overlay.TerminalWindow = false;
+            }
+
+            MainMenu.InitializeCoroutines(settings);
             Core.Initialize();
             Overlay.RunInfiniteLoop(); // Overlay disposes itself.
             Core.Dispose();

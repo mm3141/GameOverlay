@@ -51,6 +51,6 @@ namespace GameHelper.RemoteMemoryObjects
         /// Object.
         /// </summary>
         /// <returns>co-routine IWait.</returns>
-        protected abstract IEnumerator<IWait> GatherData();
+        protected abstract IEnumerator<Wait> GatherData();
     }
 }

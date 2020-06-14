@@ -64,11 +64,11 @@ namespace GameHelper
         /// Co-routine to update the address where the States are loaded in the game memory.
         /// </summary>
         /// <returns>co-routine IWait.</returns>
-        private static IEnumerator<IWait> UpdateStatesData()
+        private static IEnumerator<Wait> UpdateStatesData()
         {
             while (true)
             {
-                yield return new WaitEvent(Process.OnControllerReady);
+                yield return new Wait(Process.OnControllerReady);
                 States.Address = Process.StaticAddresses["Game States"];
             }
         }
@@ -77,11 +77,11 @@ namespace GameHelper
         /// Co-routine to update the address where the Files are loaded in the game memory.
         /// </summary>
         /// <returns>co-routine IWait.</returns>
-        private static IEnumerator<IWait> UpdateFilesData()
+        private static IEnumerator<Wait> UpdateFilesData()
         {
             while (true)
             {
-                yield return new WaitEvent(Process.OnControllerReady);
+                yield return new Wait(Process.OnControllerReady);
                 Files.Address = Process.StaticAddresses["File Root"];
             }
         }
@@ -90,11 +90,11 @@ namespace GameHelper
         /// Co-routine to update the address where AreaChange object is loaded in the game memory.
         /// </summary>
         /// <returns>co-routine IWait.</returns>
-        private static IEnumerator<IWait> UpdateAreaChangeData()
+        private static IEnumerator<Wait> UpdateAreaChangeData()
         {
             while (true)
             {
-                yield return new WaitEvent(Process.OnControllerReady);
+                yield return new Wait(Process.OnControllerReady);
                 AreaChangeCounter.Address = Process.StaticAddresses["AreaChangeCounter"];
             }
         }
@@ -104,11 +104,11 @@ namespace GameHelper
         /// once the game closes.
         /// </summary>
         /// <returns>co-routine IWait.</returns>
-        private static IEnumerator<IWait> GameClosedActions()
+        private static IEnumerator<Wait> GameClosedActions()
         {
             while (true)
             {
-                yield return new WaitEvent(Process.OnClose);
+                yield return new Wait(Process.OnClose);
                 States.Address = IntPtr.Zero;
                 Files.Address = IntPtr.Zero;
                 AreaChangeCounter.Address = IntPtr.Zero;

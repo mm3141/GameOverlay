@@ -33,11 +33,11 @@ namespace GameHelper.RemoteMemoryObjects.Files
         public HashSet<string> CurrentAreaFiles { get; private set; } = new HashSet<string>(2000);
 
         /// <inheritdoc/>
-        protected override IEnumerator<IWait> GatherData()
+        protected override IEnumerator<Wait> GatherData()
         {
             while (true)
             {
-                yield return new WaitEvent(Core.States.AreaLoading.AreaChanged);
+                yield return new Wait(Core.States.AreaLoading.AreaChanged);
                 this.CurrentAreaFiles.Clear();
                 for (int i = 0; i < 25 / waitBetweenMultipleRun; i++)
                 {
@@ -84,7 +84,7 @@ namespace GameHelper.RemoteMemoryObjects.Files
                             currentFileNumber++;
                             if (currentFileNumber % 1000 == 0)
                             {
-                                yield return new WaitSeconds(0);
+                                yield return new Wait(0);
                             }
 
                             if (currentFileNumber > 80000)
@@ -97,7 +97,7 @@ namespace GameHelper.RemoteMemoryObjects.Files
                         }
                     }
 
-                    yield return new WaitSeconds(waitBetweenMultipleRun);
+                    yield return new Wait(waitBetweenMultipleRun);
                 }
             }
         }

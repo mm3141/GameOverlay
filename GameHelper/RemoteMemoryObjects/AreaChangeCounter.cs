@@ -30,11 +30,11 @@ namespace GameHelper.RemoteMemoryObjects
         public int Value { get; private set; } = 0x00;
 
         /// <inheritdoc/>
-        protected override IEnumerator<IWait> GatherData()
+        protected override IEnumerator<Wait> GatherData()
         {
             while (true)
             {
-                yield return new WaitEvent(Core.States.AreaLoading.AreaChanged);
+                yield return new Wait(Core.States.AreaLoading.AreaChanged);
                 if (this.Address != IntPtr.Zero)
                 {
                     var reader = Core.Process.Handle;

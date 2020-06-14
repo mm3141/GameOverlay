@@ -119,12 +119,12 @@ namespace GameHelper.Controllers
         /// <returns>
         /// co-routine IWait.
         /// </returns>
-        private IEnumerator<IWait> FindAndOpen()
+        private IEnumerator<Wait> FindAndOpen()
         {
             var processesInfo = new List<Process>();
             while (true)
             {
-                yield return new WaitSeconds(1);
+                yield return new Wait(1);
                 processesInfo.Clear();
                 foreach (var process in Process.GetProcessesByName(GameProcessDetails.ProcessName))
                 {
@@ -149,7 +149,7 @@ namespace GameHelper.Controllers
         /// Monitors the game process for changes.
         /// </summary>
         /// <returns>co-routine IWait.</returns>
-        private IEnumerator<IWait> Monitor()
+        private IEnumerator<Wait> Monitor()
         {
             while (true)
             {
@@ -167,7 +167,7 @@ namespace GameHelper.Controllers
                     this.UpdateWindowRectangle();
                 }
 
-                yield return new WaitSeconds(1);
+                yield return new Wait(1);
             }
         }
 
@@ -176,11 +176,11 @@ namespace GameHelper.Controllers
         /// GameOffsets.StaticOffsetsPatterns file.
         /// </summary>
         /// <returns>co-routine IWait.</returns>
-        private IEnumerator<IWait> FindStaticAddresses()
+        private IEnumerator<Wait> FindStaticAddresses()
         {
             while (true)
             {
-                yield return new WaitEvent(this.OnOpened);
+                yield return new Wait(this.OnOpened);
                 var baseAddress = this.Information.MainModule.BaseAddress;
                 var procSize = this.Information.MainModule.ModuleMemorySize;
                 var patternsInfo = PatternFinder.Find(this.Handle, baseAddress, procSize);

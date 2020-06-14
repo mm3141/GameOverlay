@@ -16,10 +16,7 @@ namespace GameHelper.UI
     public static class MainMenu
     {
         private static bool isMainMenuVisible = true;
-        private static int mainMenuHotKey = 0x7B; // F12
-        private static bool foo1 = false;
-        private static bool foo2 = false;
-        private static int foo3 = 0;
+        private static CoreSettings coreSettings = null;
 
         /// <summary>
         /// Gets the event raised when rendering the Main Menu.
@@ -30,19 +27,25 @@ namespace GameHelper.UI
         /// <summary>
         /// Initializes the Main Menu.
         /// </summary>
-        public static void InitializeCoroutine()
+        /// <param name="settings">CoreSettings instance to associate with the MainMenu.</param>
+        public static void InitializeCoroutines(CoreSettings settings)
         {
-            CoroutineHandler.Start(RenderMainMenu());
+            coreSettings = settings;
+            CoroutineHandler.Start(DrawMainMenu());
         }
 
-        private static IEnumerator<IWait> RenderMainMenu()
+        private static IEnumerator<Wait> DrawMainMenu()
         {
             while (true)
             {
-                yield return new WaitEvent(Overlay.OnRender);
-                if (NativeMethods.isKeyPressed(mainMenuHotKey))
+                yield return new Wait(Overlay.OnRender);
+                if (NativeMethods.isKeyPressed(coreSettings.MainMenuHotKey))
                 {
                     isMainMenuVisible = !isMainMenuVisible;
+                    if (!isMainMenuVisible)
+                    {
+                        coreSettings.SafeToFile();
+                    }
                 }
 
                 if (!isMainMenuVisible)
@@ -63,20 +66,12 @@ namespace GameHelper.UI
                     continue;
                 }
 
-                ImGui.Checkbox("Hide terminal on startup", ref foo1);
-                ImGui.Checkbox("Close Game Helper When Game Closes", ref foo2);
-                if (ImGui.InputInt($"Re-Read game files for {foo3} seconds", ref foo3, 5, 10))
+                if (ImGui.Checkbox("Hide terminal on startup", ref coreSettings.HideTerminal))
                 {
-                    if (foo3 < 0)
-                    {
-                        foo3 = 0;
-                    }
-                    else if (foo3 > 30)
-                    {
-                        foo3 = 30;
-                    }
+                    Overlay.TerminalWindow = !coreSettings.HideTerminal;
                 }
 
+                ImGui.Checkbox("Close Game Helper When Game Closes", ref coreSettings.CloseOnGameExit);
                 ImGui.End();
             }
         }

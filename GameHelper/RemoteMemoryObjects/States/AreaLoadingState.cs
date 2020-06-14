@@ -52,11 +52,11 @@ namespace GameHelper.RemoteMemoryObjects.States
         }
 
         /// <inheritdoc/>
-        protected override IEnumerator<IWait> GatherData()
+        protected override IEnumerator<Wait> GatherData()
         {
             while (true)
             {
-                yield return new WaitSeconds(0.5);
+                yield return new Wait(0.5);
                 if (this.Address != IntPtr.Zero)
                 {
                     var reader = Core.Process.Handle;
