@@ -13,6 +13,8 @@ namespace GameHelper.Plugin
 
     /// <summary>
     /// Finds, loads and unloads the plugins.
+    /// TODO: Hot Reload plugins on on plugin hash changes.
+    /// TODO: Allow user to enable/disable this feature ^.
     /// </summary>
     public static class PluginManager
     {

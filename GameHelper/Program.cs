@@ -15,6 +15,7 @@ namespace GameHelper
     /// TODO: Make global config manager with profiles.
     /// TODO: Make Menu UI.
     /// TODO: Make Plugin Manager.
+    /// TODO: Update pattern finder to not crash the overlay if pattern not found.
     /// </summary>
     internal class Program
     {
