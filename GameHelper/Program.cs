@@ -7,6 +7,7 @@ namespace GameHelper
     using System;
     using System.IO;
     using ClickableTransparentOverlay;
+    using GameHelper.Plugin;
     using GameHelper.UI;
 
     /// <summary>
@@ -30,11 +31,12 @@ namespace GameHelper
             };
 
             var settings = CoreSettings.CreateOrLoadSettings();
-            if (settings.HideTerminal)
+            if (!settings.ShowTerminal)
             {
                 Overlay.TerminalWindow = false;
             }
 
+            PluginManager.Initialize();
             MainMenu.InitializeCoroutines(settings);
             Core.Initialize();
             Overlay.RunInfiniteLoop(); // Overlay disposes itself.

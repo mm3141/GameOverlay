@@ -9,7 +9,6 @@ namespace GameHelper.Controllers
     using System.Diagnostics;
     using System.Drawing;
     using System.Runtime.InteropServices;
-    using System.Threading.Tasks;
     using Coroutine;
     using GameHelper.Utils;
     using GameOffsets;

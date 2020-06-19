@@ -54,8 +54,9 @@
             /// 1: Open CheatEngine and Attach to POE Game
             /// 2: Search for String: "Mods.dat", type: UTF-16 (case sensitive is fine), Writable: false/unchecked.
             /// 3: "Find out what accesses this address"
-            /// Real-Mechanism: From here, use "Break and trace instruction" and reach the instruction
-            /// which loads the first address (havent tested it)
+            /// Real-Mechanism:
+            ///     From here, use "Break and trace instruction" and reach the instruction
+            ///     which loads the first address (havent tested it)
             /// 
             /// Short-cut-mechanism given below:
             /// 4: From here use 
@@ -67,30 +68,35 @@
             /// 9: That's your function to make the pattern of.
             /// 10: and your fileroot is valid address found in step-5 + 0x08.
             /// ==Function start==to==10 lines after== 
-            /// PathOfExile_x64.exe+E17090 - 40 57                 - push rdi
-            /// PathOfExile_x64.exe+E17092 - 48 83 EC 40           - sub rsp,40
-            /// PathOfExile_x64.exe+E17096 - 48 C7 44 24 30 FEFFFFFF - mov qword ptr [rsp+30],FFFFFFFFFFFFFFFE
-            /// PathOfExile_x64.exe+E1709F - 48 89 5C 24 58        - mov [rsp+58],rbx
-            /// PathOfExile_x64.exe+E170A4 - 48 89 74 24 60        - mov [rsp+60],rsi
-            /// PathOfExile_x64.exe+E170A9 - BE 40000000           - mov esi,00000040
-            /// PathOfExile_x64.exe+E170AE - 65 48 8B 04 25 58000000  - mov rax,gs:[00000058]
-            /// PathOfExile_x64.exe+E170B7 - 48 8B 08              - mov rcx,[rax]
-            /// PathOfExile_x64.exe+E170BA - 48 8D 3D 5F894001     - lea rdi,[PathOfExile_x64.exe + 221FA20]
-            /// PathOfExile_x64.exe+E170C1 - 8B 04 0E              - mov eax,[rsi + rcx]
-            /// PathOfExile_x64.exe+E170C4 - 39 05 4E894001        - cmp[PathOfExile_x64.exe + 221FA18],eax
-            /// PathOfExile_x64.exe+E170CA - 0F8E 9E010000         - jng PathOfExile_x64.exe+E1726E
-            /// PathOfExile_x64.exe+E170D0 - 48 8D 0D 41894001     - lea rcx, [PathOfExile_x64.exe+221FA18]
-            /// PathOfExile_x64.exe+E170D7 - E8 14A97000           - call PathOfExile_x64.exe+15219F0
-            /// PathOfExile_x64.exe+E170DC - 83 3D 35894001 FF     - cmp dword ptr[PathOfExile_x64.exe + 221FA18],-01
-            /// PathOfExile_x64.exe+E170E3 - 0F85 85010000         - jne PathOfExile_x64.exe+E1726E
-            /// PathOfExile_x64.exe+E170E9 - 48 89 7C 24 50        - mov[rsp + 50], rdi
-            /// PathOfExile_x64.exe+E170EE - 0F57 C0               - xorps xmm0, xmm0
-            /// PathOfExile_x64.exe+E170F1 - F3 0F11 05 27894001   - movss[PathOfExile_x64.exe + 221FA20], xmm0
+            /// PathOfExile_x64.exe+EFC040 - 48 8B C4              - mov rax,rsp
+            /// PathOfExile_x64.exe+EFC043 - 56                    - push rsi
+            /// PathOfExile_x64.exe+EFC044 - 57                    - push rdi
+            /// PathOfExile_x64.exe+EFC045 - 41 56                 - push r14
+            /// PathOfExile_x64.exe+EFC047 - 48 83 EC 60           - sub rsp,60
+            /// PathOfExile_x64.exe+EFC04B - 48 C7 40 B8 FEFFFFFF  - mov qword ptr [rax-48],FFFFFFFFFFFFFFFE
+            /// PathOfExile_x64.exe+EFC053 - 48 89 58 10           - mov [rax+10],rbx
+            /// PathOfExile_x64.exe+EFC057 - 48 89 68 18           - mov [rax+18],rbp
+            /// PathOfExile_x64.exe+EFC05B - 0F29 70 D8            - movaps [rax-28],xmm6
+            /// PathOfExile_x64.exe+EFC05F - 0F29 78 C8            - movaps [rax-38],xmm7
+            /// PathOfExile_x64.exe+EFC063 - 41 BE 40000000        - mov r14d,00000040
+            /// PathOfExile_x64.exe+EFC069 - 65 48 8B 04 25 58000000  - mov rax,gs:[00000058]
+            /// PathOfExile_x64.exe+EFC072 - 48 8B 08              - mov rcx,[rax]
+            /// PathOfExile_x64.exe+EFC075 - 48 8D 2D 542C7302     - lea rbp,[PathOfExile_x64.exe+362ECD0] <------ This static pointer leads to file root pointer.
+            /// PathOfExile_x64.exe+EFC07C - 41 8B 04 0E           - mov eax,[r14+rcx]
+            /// PathOfExile_x64.exe+EFC080 - 39 05 422C7302        - cmp [PathOfExile_x64.exe+362ECC8],eax
+            /// PathOfExile_x64.exe+EFC086 - 0F8E 84010000         - jng PathOfExile_x64.exe+EFC210
+            /// PathOfExile_x64.exe+EFC08C - 48 8D 0D 352C7302     - lea rcx,[PathOfExile_x64.exe+362ECC8]
+            /// PathOfExile_x64.exe+EFC093 - E8 A8107C00           - call PathOfExile_x64.exe+16BD140
+            /// PathOfExile_x64.exe+EFC098 - 83 3D 292C7302 FF     - cmp dword ptr [PathOfExile_x64.exe+362ECC8],-01
+            /// PathOfExile_x64.exe+EFC09F - 0F85 6B010000         - jne PathOfExile_x64.exe+EFC210
+            /// PathOfExile_x64.exe+EFC0A5 - 48 8D 05 64F0FFFF     - lea rax,[PathOfExile_x64.exe+EFB110]
+            /// PathOfExile_x64.exe+EFC0AC - 48 89 44 24 20        - mov [rsp+20],rax
+            /// PathOfExile_x64.exe+EFC0B1 - 4C 8D 0D 08050000     - lea r9,[PathOfExile_x64.exe+EFC5C0]
             ///</HowToFindIt>
             new Pattern
             (
                 "File Root",
-                "48 8d ?? ^ ?? ?? ?? ?? 8b 04 0e 39"
+                "48 8D 2D ^ ?? ?? ?? ?? 41 8B ?? ?? 39"
             ),
 
             /// <HowToFindIt>

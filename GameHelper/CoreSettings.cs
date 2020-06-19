@@ -26,9 +26,9 @@ namespace GameHelper
         public int MainMenuHotKey = 0x7B;
 
         /// <summary>
-        /// Gets or sets a value indicating whether to hides the terminal.
+        /// Gets or sets a value indicating whether to show the terminal.
         /// </summary>
-        public bool HideTerminal = true;
+        public bool ShowTerminal = true;
 
         /// <summary>
         /// Gets or sets a value indicating whether to close the Game Helper on game exit.

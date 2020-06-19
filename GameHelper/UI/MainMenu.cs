@@ -66,9 +66,9 @@ namespace GameHelper.UI
                     continue;
                 }
 
-                if (ImGui.Checkbox("Hide terminal on startup", ref coreSettings.HideTerminal))
+                if (ImGui.Checkbox("Show terminal on startup", ref coreSettings.ShowTerminal))
                 {
-                    Overlay.TerminalWindow = !coreSettings.HideTerminal;
+                    Overlay.TerminalWindow = coreSettings.ShowTerminal;
                 }
 
                 ImGui.Checkbox("Close Game Helper When Game Closes", ref coreSettings.CloseOnGameExit);
