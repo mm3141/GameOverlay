@@ -26,9 +26,15 @@ namespace GameHelper
         public static GameStates States { get; private set; } = new GameStates();
 
         /// <summary>
-        /// Gets the GameFiles instance. For details read class description.
+        /// Gets the metadata files loaded for the current area.
         /// </summary>
-        public static GameFiles Files { get; private set; } = new GameFiles();
+        public static LoadedFiles CurrentAreaLoadedMetadata
+        {
+            get;
+            private set;
+        }
+
+        = new LoadedFiles(IntPtr.Zero);
 
         /// <summary>
         /// Gets the AreaChangeCounter instance. For details read class description.
@@ -82,7 +88,7 @@ namespace GameHelper
             while (true)
             {
                 yield return new Wait(Process.OnControllerReady);
-                Files.Address = Process.StaticAddresses["File Root"];
+                CurrentAreaLoadedMetadata.Address = Process.StaticAddresses["File Root"];
             }
         }
 
@@ -110,7 +116,7 @@ namespace GameHelper
             {
                 yield return new Wait(Process.OnClose);
                 States.Address = IntPtr.Zero;
-                Files.Address = IntPtr.Zero;
+                CurrentAreaLoadedMetadata.Address = IntPtr.Zero;
                 AreaChangeCounter.Address = IntPtr.Zero;
             }
         }
