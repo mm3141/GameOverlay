@@ -5,6 +5,7 @@
 namespace GameHelper.Plugin
 {
     using System;
+    using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
@@ -19,7 +20,7 @@ namespace GameHelper.Plugin
     public static class PluginManager
     {
         private static readonly DirectoryInfo PluginsDirectory = new DirectoryInfo("Plugins");
-        private static List<Plugin> AllPlugins = new List<Plugin>(20);
+        private static readonly ConcurrentBag<Plugin> AllPlugins = new ConcurrentBag<Plugin>();
 
         /// <summary>
         /// Initlizes the plugin manager by loading all the plugins
@@ -33,8 +34,7 @@ namespace GameHelper.Plugin
             }
             else
             {
-                var parallelOptions = new ParallelOptions() { MaxDegreeOfParallelism = 16 };
-                Parallel.ForEach(GetPluginsDirectories(), parallelOptions, (pluginDirectory) =>
+                Parallel.ForEach(GetPluginsDirectories(), (pluginDirectory) =>
                 {
                     var assembly = ReadPluginFiles(pluginDirectory);
                     if (assembly != null)

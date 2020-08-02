@@ -4,6 +4,9 @@
 
 namespace GameHelper.Plugin
 {
+    /// <summary>
+    /// Interface for loading/saving plugin settings.
+    /// </summary>
     public interface ISettings
     {
     }
