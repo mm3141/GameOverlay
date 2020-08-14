@@ -17,12 +17,12 @@ namespace GameHelper.Utils
     /// <summary>
     /// Handle to a process.
     /// </summary>
-    public class SafeMemoryHandle : SafeHandleZeroOrMinusOneIsInvalid
+    internal class SafeMemoryHandle : SafeHandleZeroOrMinusOneIsInvalid
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="SafeMemoryHandle"/> class.
         /// </summary>
-        public SafeMemoryHandle()
+        internal SafeMemoryHandle()
             : base(true)
         {
             Console.WriteLine("Opening a new handle.");
@@ -38,7 +38,7 @@ namespace GameHelper.Utils
         /// Initializes a new instance of the <see cref="SafeMemoryHandle"/> class.
         /// </summary>
         /// <param name="processId">pid of the process.</param>
-        public SafeMemoryHandle(int processId)
+        internal SafeMemoryHandle(int processId)
             : base(true)
         {
             var handle = NativeWrapper.OpenProcess(ProcessAccessFlags.VirtualMemoryRead, processId);
@@ -61,7 +61,7 @@ namespace GameHelper.Utils
         /// <typeparam name="T">type of data structure to read.</typeparam>
         /// <param name="address">address to read the data from.</param>
         /// <returns>data from the process in T format.</returns>
-        public T ReadMemory<T>(IntPtr address)
+        internal T ReadMemory<T>(IntPtr address)
             where T : unmanaged
         {
             T result = default;
@@ -96,7 +96,7 @@ namespace GameHelper.Utils
         /// <returns>
         /// An array of type T and of size nsize. In case or any error it returns empty array.
         /// </returns>
-        public T[] ReadMemoryArray<T>(IntPtr address, int nsize)
+        internal T[] ReadMemoryArray<T>(IntPtr address, int nsize)
             where T : unmanaged
         {
             if (this.IsInvalid || address.ToInt64() <= 0 || nsize <= 0)
@@ -133,7 +133,7 @@ namespace GameHelper.Utils
         /// </summary>
         /// <param name="nativecontainer">native object of std::wstring.</param>
         /// <returns>string.</returns>
-        public string ReadStdWString(StdWString nativecontainer)
+        internal string ReadStdWString(StdWString nativecontainer)
         {
             int length = nativecontainer.Length.ToInt32();
             if (length <= 0 || length > 1000)
@@ -168,7 +168,7 @@ namespace GameHelper.Utils
         /// <typeparam name="TValue">value type of the stdmap.</typeparam>
         /// <param name="nativeContainer">native object of the std::map.</param>
         /// <returns>a dictonary containing the keys and the values of the stdmap.</returns>
-        public Dictionary<TKey, TValue> ReadStdMap<TKey, TValue>(StdMap nativeContainer)
+        internal Dictionary<TKey, TValue> ReadStdMap<TKey, TValue>(StdMap nativeContainer)
             where TKey : unmanaged
             where TValue : unmanaged
         {

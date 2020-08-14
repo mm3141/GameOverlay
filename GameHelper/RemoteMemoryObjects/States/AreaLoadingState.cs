@@ -12,7 +12,7 @@ namespace GameHelper.RemoteMemoryObjects.States
     /// <summary>
     /// Reads AreaLoadingState Game Object.
     /// </summary>
-    public sealed class AreaLoadingState : RemoteMemoryObjectBase
+    internal sealed class AreaLoadingState : RemoteMemoryObjectBase
     {
         private AreaLoadingStateOffset classData = default;
 
@@ -20,7 +20,7 @@ namespace GameHelper.RemoteMemoryObjects.States
         /// Initializes a new instance of the <see cref="AreaLoadingState"/> class.
         /// </summary>
         /// <param name="address">address of the remote memory object.</param>
-        public AreaLoadingState(IntPtr address)
+        internal AreaLoadingState(IntPtr address)
             : base(address)
         {
             CoroutineHandler.Start(this.GatherData());
@@ -29,24 +29,24 @@ namespace GameHelper.RemoteMemoryObjects.States
         /// <summary>
         /// Gets the Area Changed event.
         /// </summary>
-        public Event AreaChanged { get; private set; } = new Event();
+        internal Event AreaChanged { get; private set; } = new Event();
 
         /// <summary>
         /// Gets the game current Area Name.
         /// </summary>
-        public string CurrentAreaName { get; private set; } = string.Empty;
+        internal string CurrentAreaName { get; private set; } = string.Empty;
 
         /// <summary>
         /// Gets a value indicating whether the game is in loading screen or not.
         /// </summary>
-        public bool IsLoading => this.classData.IsLoading == 0x01;
+        internal bool IsLoading => this.classData.IsLoading == 0x01;
 
         /// <summary>
         /// Throws the Area changed event on demand.
         /// WARNING: This may cause infinite loop if thrown from a function
         /// which is called on an Area change in the first place.
         /// </summary>
-        public void ForceThrowAreaChangeEvent()
+        internal void ForceThrowAreaChangeEvent()
         {
             CoroutineHandler.RaiseEvent(this.AreaChanged);
         }

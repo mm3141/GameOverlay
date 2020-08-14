@@ -15,13 +15,13 @@ namespace GameHelper.RemoteMemoryObjects
     /// <summary>
     /// Gathers the files loaded in the game for the current area.
     /// </summary>
-    public class LoadedFiles : RemoteMemoryObjectBase
+    internal class LoadedFiles : RemoteMemoryObjectBase
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="LoadedFiles"/> class.
         /// </summary>
         /// <param name="address">address of the remote memory object.</param>
-        public LoadedFiles(IntPtr address)
+        internal LoadedFiles(IntPtr address)
             : base(address)
         {
             CoroutineHandler.Start(this.GatherData());
@@ -30,7 +30,7 @@ namespace GameHelper.RemoteMemoryObjects
         /// <summary>
         /// Gets the files.
         /// </summary>
-        public ConcurrentBag<string> Data { get; private set; } = new ConcurrentBag<string>();
+        internal ConcurrentBag<string> Data { get; private set; } = new ConcurrentBag<string>();
 
         /// <inheritdoc/>
         protected override IEnumerator<Wait> GatherData()

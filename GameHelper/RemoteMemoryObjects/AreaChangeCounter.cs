@@ -12,13 +12,13 @@ namespace GameHelper.RemoteMemoryObjects
     /// Points to the AreaChangeCounter object and read/cache it's value
     /// on every area change.
     /// </summary>
-    public class AreaChangeCounter : RemoteMemoryObjectBase
+    internal class AreaChangeCounter : RemoteMemoryObjectBase
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="AreaChangeCounter"/> class.
         /// </summary>
         /// <param name="address">address of the remote memory object.</param>
-        public AreaChangeCounter(IntPtr address)
+        internal AreaChangeCounter(IntPtr address)
             : base(address)
         {
             CoroutineHandler.Start(this.GatherData());
@@ -27,7 +27,7 @@ namespace GameHelper.RemoteMemoryObjects
         /// <summary>
         /// Gets the cached value of the AreaChangeCounter.
         /// </summary>
-        public int Value { get; private set; } = 0x00;
+        internal int Value { get; private set; } = 0x00;
 
         /// <inheritdoc/>
         protected override IEnumerator<Wait> GatherData()

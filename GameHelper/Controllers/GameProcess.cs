@@ -15,7 +15,7 @@ namespace GameHelper.Controllers
 
     /// <summary>
     /// Allows process manipulation. It uses the (time/event based) co-routines
-    /// to continuously monitor & open a process with the specific name. It exposes public
+    /// to continuously monitor & open a process with the specific name. It exposes
     /// variables/events for the caller to use.
     ///
     /// Base class OnControllerReady is only triggered when all static addresses are found.
@@ -23,68 +23,68 @@ namespace GameHelper.Controllers
     /// Limitation: This class will not open a game process if multiple processes match
     /// the name because it does not know which process to select.
     /// </summary>
-    public class GameProcess : ControllerBase
+    internal class GameProcess : ControllerBase
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GameProcess"/> class.
         /// </summary>
-        public GameProcess()
+        internal GameProcess()
         {
             CoroutineHandler.Start(this.FindAndOpen());
             CoroutineHandler.Start(this.FindStaticAddresses());
         }
 
         /// <summary>
+        /// Gets the Base Address of the game.
+        /// </summary>
+        internal new IntPtr Address => this.Information.MainModule.BaseAddress;
+
+        /// <summary>
         /// Gets the event raised when GameProcess has opened a new game.
         /// </summary>
-        public Event OnOpened { get; private set; } = new Event();
+        internal Event OnOpened { get; private set; } = new Event();
 
         /// <summary>
         /// Gets the event raised just before the GameProcess has closed the game.
         /// </summary>
-        public Event OnClose { get; private set; } = new Event();
+        internal Event OnClose { get; private set; } = new Event();
 
         /// <summary>
         /// Gets the event raised when the game has changed its size, position or both.
         /// </summary>
-        public Event OnMoved { get; private set; } = new Event();
+        internal Event OnMoved { get; private set; } = new Event();
 
         /// <summary>
         /// Gets the event raised when the game Foreground property has changed.
         /// </summary>
-        public Event OnForegroundChanged { get; private set; } = new Event();
-
-        /// <summary>
-        /// Gets the Base Address of the game.
-        /// </summary>
-        public new IntPtr Address => this.Information.MainModule.BaseAddress;
+        internal Event OnForegroundChanged { get; private set; } = new Event();
 
         /// <summary>
         /// Gets the static addresses (along with their names) found in the GameProcess
         /// based on the GameOffsets.StaticOffsets file.
         /// </summary>
-        public Dictionary<string, IntPtr> StaticAddresses { get; private set; } =
+        internal Dictionary<string, IntPtr> StaticAddresses { get; private set; } =
             new Dictionary<string, IntPtr>();
 
         /// <summary>
         /// Gets the game diagnostics information.
         /// </summary>
-        public Process Information { get; private set; } = null;
+        internal Process Information { get; private set; } = null;
 
         /// <summary>
         /// Gets the game handle.
         /// </summary>
-        public SafeMemoryHandle Handle { get; private set; } = null;
+        internal SafeMemoryHandle Handle { get; private set; } = null;
 
         /// <summary>
         /// Gets the game size & position with respect to the monitor screen.
         /// </summary>
-        public Rectangle WindowArea { get; private set; } = Rectangle.Empty;
+        internal Rectangle WindowArea { get; private set; } = Rectangle.Empty;
 
         /// <summary>
         /// Gets a value indicating whether the game is foreground or not.
         /// </summary>
-        public bool Foreground { get; private set; } = false;
+        internal bool Foreground { get; private set; } = false;
 
         /// <summary>
         /// Closes the handle for the game and releases all the resources.
@@ -92,7 +92,7 @@ namespace GameHelper.Controllers
         /// <param name="monitorForNewGame">
         /// Set to true if caller wants to start monitoring for new game process after closing.
         /// </param>
-        public void Close(bool monitorForNewGame = true)
+        internal void Close(bool monitorForNewGame = true)
         {
             CoroutineHandler.RaiseEvent(this.OnClose);
             this.WindowArea = Rectangle.Empty;
@@ -265,7 +265,7 @@ namespace GameHelper.Controllers
             private readonly int right;
             private readonly int bottom;
 
-            public Rectangle ToRectangle(Point point)
+            internal Rectangle ToRectangle(Point point)
             {
                 return new Rectangle(point.X, point.Y, this.right - this.left, this.bottom - this.top);
             }

@@ -13,22 +13,22 @@ namespace GameHelper
     /// <summary>
     /// Main Class to init all the controllers.
     /// </summary>
-    public static class Core
+    internal static class Core
     {
         /// <summary>
         /// Gets the GameProcess instance. For details read class description.
         /// </summary>
-        public static GameProcess Process { get; private set; } = new GameProcess();
+        internal static GameProcess Process { get; private set; } = new GameProcess();
 
         /// <summary>
         /// Gets the GameStates instance. For details read class description.
         /// </summary>
-        public static GameStates States { get; private set; } = new GameStates();
+        internal static GameStates States { get; private set; } = new GameStates();
 
         /// <summary>
         /// Gets the metadata files loaded for the current area.
         /// </summary>
-        public static LoadedFiles CurrentAreaLoadedMetadata
+        internal static LoadedFiles CurrentAreaLoadedMetadata
         {
             get;
             private set;
@@ -39,7 +39,7 @@ namespace GameHelper
         /// <summary>
         /// Gets the AreaChangeCounter instance. For details read class description.
         /// </summary>
-        public static AreaChangeCounter AreaChangeCounter
+        internal static AreaChangeCounter AreaChangeCounter
         {
             get;
             private set;
@@ -50,7 +50,7 @@ namespace GameHelper
         /// <summary>
         /// Initializes the <see cref="Core"/> class.
         /// </summary>
-        public static void Initialize()
+        internal static void Initialize()
         {
             CoroutineHandler.Start(UpdateStatesData());
             CoroutineHandler.Start(UpdateFilesData());
@@ -61,7 +61,7 @@ namespace GameHelper
         /// <summary>
         /// Cleans up all the resources taken by the application core.
         /// </summary>
-        public static void Dispose()
+        internal static void Dispose()
         {
             Process.Close(false);
         }

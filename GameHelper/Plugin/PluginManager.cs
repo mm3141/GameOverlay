@@ -11,22 +11,31 @@ namespace GameHelper.Plugin
     using System.Linq;
     using System.Reflection;
     using System.Threading.Tasks;
+    using ClickableTransparentOverlay;
+    using Coroutine;
 
     /// <summary>
     /// Finds, loads and unloads the plugins.
     /// TODO: Hot Reload plugins on on plugin hash changes.
     /// TODO: Allow user to enable/disable this feature ^.
     /// </summary>
-    public static class PluginManager
+    internal static class PluginManager
     {
         private static readonly DirectoryInfo PluginsDirectory = new DirectoryInfo("Plugins");
-        private static readonly ConcurrentBag<Plugin> AllPlugins = new ConcurrentBag<Plugin>();
+        private static ConcurrentBag<KeyValuePair<string, IPlugin>> plugins =
+            new ConcurrentBag<KeyValuePair<string, IPlugin>>();
+
+        /// <summary>
+        /// Gets the loaded plugins.
+        /// </summary>
+        internal static Dictionary<string, PluginContainer> AllPlugins { get; private set; } =
+            new Dictionary<string, PluginContainer>();
 
         /// <summary>
         /// Initlizes the plugin manager by loading all the plugins
         /// and keep a watch on updates and newly added plugins.
         /// </summary>
-        public static void Initialize()
+        internal static void Initialize()
         {
             if (!PluginsDirectory.Exists)
             {
@@ -43,6 +52,14 @@ namespace GameHelper.Plugin
                     }
                 });
             }
+
+            while (plugins.TryTake(out var tmp))
+            {
+                PluginContainer pC = new PluginContainer() { Enable = true, Plugin = tmp.Value };
+                AllPlugins.Add(tmp.Key, pC);
+            }
+
+            CoroutineHandler.Start(DrawPluginUi());
         }
 
         private static List<DirectoryInfo> GetPluginsDirectories()
@@ -99,30 +116,50 @@ namespace GameHelper.Plugin
                 if (iPluginClasses.Count != 1)
                 {
                     Console.WriteLine($"Plugin (in {pluginRootDirectory}) {assembly} contains" +
-                        $" {iPluginClasses.Count} sealed classes derived from IPlugin." +
+                        $" {iPluginClasses.Count} sealed classes derived from CoreBase<TSettings>." +
                         $" It should have one sealed class derived from IPlugin.");
                     return;
                 }
 
-                var iSettingClasses = types.Where(
-                    type => typeof(ISettings).IsAssignableFrom(type) &&
-                    type.IsSealed == true).ToList();
-                if (iSettingClasses.Count != 1)
-                {
-                    Console.WriteLine($"Plugin (in {pluginRootDirectory}) {assembly} contains" +
-                        $" {iSettingClasses.Count} sealed classes derived from ISettings." +
-                        $" It should have one sealed class derived from ISettings.");
-                    return;
-                }
-
-                IPlugin core = Activator.CreateInstance(iPluginClasses[0]) as IPlugin;
-                ISettings settings = Activator.CreateInstance(iSettingClasses[0]) as ISettings;
-                AllPlugins.Add(new Plugin(core, settings, pluginRootDirectory));
+                IPlugin pluginCore = Activator.CreateInstance(iPluginClasses[0]) as IPlugin;
+                string pluginName = assembly.GetName().Name;
+                plugins.Add(new KeyValuePair<string, IPlugin>(pluginName, pluginCore));
             }
             catch (Exception e)
             {
                 Console.WriteLine($"Error loading plugin {assembly.FullName} due to {e}");
             }
+        }
+
+        private static IEnumerator<Wait> DrawPluginUi()
+        {
+            while (true)
+            {
+                yield return new Wait(Overlay.OnRender);
+                foreach (var pluginKeyValue in AllPlugins)
+                {
+                    pluginKeyValue.Value.Plugin.DrawUI();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Container for storing plugin and its metadata.
+        /// </summary>
+        public struct PluginContainer
+        {
+            private bool enable;
+            private IPlugin plugin;
+
+            /// <summary>
+            /// Gets or sets a value indicating whether the plugin is enabled or not.
+            /// </summary>
+            public bool Enable { get => this.enable; set => this.enable = value; }
+
+            /// <summary>
+            /// Gets or sets the plugin.
+            /// </summary>
+            public IPlugin Plugin { get => this.plugin; set => this.plugin = value; }
         }
     }
 }

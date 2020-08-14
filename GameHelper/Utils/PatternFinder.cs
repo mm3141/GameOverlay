@@ -24,7 +24,7 @@ namespace GameHelper.Utils
     /// remain in the memory for a long time.
     /// https://docs.microsoft.com/en-us/dotnet/standard/garbage-collection/large-object-heap.
     /// </summary>
-    public static class PatternFinder
+    internal static class PatternFinder
     {
         /// <summary>
         /// This is 1000 less than the maximum number of bytes that can be created
@@ -50,7 +50,7 @@ namespace GameHelper.Utils
         /// <param name="baseAddress">BaseAddress of the process main module.</param>
         /// <param name="processSize">Total Size of the process main module.</param>
         /// <returns> Static offsets name and location in the processs.</returns>
-        public static Dictionary<string, int> Find(
+        internal static Dictionary<string, int> Find(
             SafeMemoryHandle handle,
             IntPtr baseAddress,
             int processSize)

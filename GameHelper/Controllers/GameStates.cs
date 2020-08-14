@@ -14,12 +14,12 @@ namespace GameHelper.Controllers
     /// <summary>
     /// Reads and stores the global states of the game.
     /// </summary>
-    public class GameStates : ControllerBase
+    internal class GameStates : ControllerBase
     {
         /// <summary>
         /// Gets a dictionary containing all the Game States addresses.
         /// </summary>
-        public Dictionary<string, IntPtr> States
+        internal Dictionary<string, IntPtr> States
         {
             get;
             private set;
@@ -30,7 +30,7 @@ namespace GameHelper.Controllers
         /// <summary>
         /// Gets the AreaLoadingState object.
         /// </summary>
-        public AreaLoadingState AreaLoading
+        internal AreaLoadingState AreaLoading
         {
             get;
             private set;

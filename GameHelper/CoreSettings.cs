@@ -12,7 +12,7 @@ namespace GameHelper
     /// <summary>
     /// Game Helper Core Settings.
     /// </summary>
-    public class CoreSettings
+    internal class CoreSettings
     {
         /// <summary>
         /// Core Setting File Information.

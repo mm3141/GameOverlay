@@ -13,14 +13,14 @@ namespace GameHelper.RemoteMemoryObjects
     /// Data in remote memory location changes w.r.t time or event. Due to this,
     /// each remote memory object requires to implement a time/event based coroutine.
     /// </summary>
-    public abstract class RemoteMemoryObjectBase
+    internal abstract class RemoteMemoryObjectBase
     {
         private IntPtr address;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RemoteMemoryObjectBase"/> class.
         /// </summary>
-        public RemoteMemoryObjectBase()
+        internal RemoteMemoryObjectBase()
         {
             throw new NotImplementedException();
         }
@@ -29,7 +29,7 @@ namespace GameHelper.RemoteMemoryObjects
         /// Initializes a new instance of the <see cref="RemoteMemoryObjectBase"/> class.
         /// </summary>
         /// <param name="address">address of the remote memory object.</param>
-        public RemoteMemoryObjectBase(IntPtr address)
+        internal RemoteMemoryObjectBase(IntPtr address)
         {
             this.Address = address;
         }
@@ -37,7 +37,7 @@ namespace GameHelper.RemoteMemoryObjects
         /// <summary>
         /// Gets or sets the address of the memory location.
         /// </summary>
-        public IntPtr Address
+        internal IntPtr Address
         {
             get => this.address;
             set

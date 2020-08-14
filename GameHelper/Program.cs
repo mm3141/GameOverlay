@@ -13,8 +13,10 @@ namespace GameHelper
     /// <summary>
     /// Class executed when the application starts.
     /// TODO: Make global config manager with profiles.
-    /// TODO: Make Menu UI.
+    /// TODO:   load the config from the file.
+    /// TODO:   save the config on the file.
     /// TODO: Make Plugin Manager.
+    /// TODO:   complete the DRAW PLUGIN UI function.
     /// TODO: Update pattern finder to not crash the overlay if pattern not found.
     /// </summary>
     internal class Program
@@ -38,9 +40,9 @@ namespace GameHelper
             }
 
             PluginManager.Initialize();
-            MainMenu.InitializeCoroutines(settings);
+            SettingsWindow.InitializeCoroutines(settings);
             Core.Initialize();
-            Overlay.RunInfiniteLoop(); // Overlay disposes itself.
+            Overlay.RunInfiniteLoop(); // Overlay disposes itself before exit.
             Core.Dispose();
         }
     }

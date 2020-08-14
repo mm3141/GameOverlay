@@ -21,7 +21,7 @@ namespace GameHelper.Controllers
     /// to process data or communicate/inform other controllers/classes
     /// when something has happened.
     /// </summary>
-    public abstract class ControllerBase
+    internal abstract class ControllerBase
     {
         private IntPtr address = IntPtr.Zero;
 
@@ -30,7 +30,7 @@ namespace GameHelper.Controllers
         /// Setting the value to IntPtr.Zero will disable the controller and
         /// all the subsequent classes coroutine from executing.
         /// </summary>
-        public IntPtr Address
+        internal IntPtr Address
         {
             get => this.address;
             set
@@ -49,7 +49,7 @@ namespace GameHelper.Controllers
         /// NOTE: Normally this is triggered once per game restart
         /// since controllers addresses/data never changes during the game.
         /// </summary>
-        public Event OnControllerReady { get; private set; } = new Event();
+        internal Event OnControllerReady { get; private set; } = new Event();
 
         /// <summary>
         /// Work to do when the Address is updated.
