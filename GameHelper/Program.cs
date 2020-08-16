@@ -39,7 +39,7 @@ namespace GameHelper
                 Overlay.TerminalWindow = false;
             }
 
-            PluginManager.Initialize();
+            PManager.Initialize();
             SettingsWindow.InitializeCoroutines(settings);
             Core.Initialize();
             Overlay.RunInfiniteLoop(); // Overlay disposes itself before exit.

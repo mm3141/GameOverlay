@@ -1,4 +1,4 @@
-﻿// <copyright file="IPlugin.cs" company="None">
+﻿// <copyright file="IPCore.cs" company="None">
 // Copyright (c) None. All rights reserved.
 // </copyright>
 
@@ -7,7 +7,7 @@ namespace GameHelper.Plugin
     /// <summary>
     /// Interface for creating plugins.
     /// </summary>
-    internal interface IPlugin
+    internal interface IPCore
     {
         /// <summary>
         /// Called when the plugin is loaded in the memory.

@@ -1,4 +1,4 @@
-﻿// <copyright file="PluginBase.cs" company="None">
+﻿// <copyright file="PCore.cs" company="None">
 // Copyright (c) None. All rights reserved.
 // </copyright>
 
@@ -9,8 +9,8 @@ namespace GameHelper.Plugin
     /// Interface for creating plugins.
     /// </summary>
     /// <typeparam name="TSettings">plugin's setting class name.</typeparam>
-    public abstract class PluginBase<TSettings> : IPlugin
-        where TSettings : ISettings, new()
+    public abstract class PCore<TSettings> : IPCore
+        where TSettings : IPSettings, new()
     {
         /// <summary>
         /// Gets or sets the plugin root directory folder.

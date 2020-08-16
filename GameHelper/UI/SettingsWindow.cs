@@ -49,14 +49,14 @@ namespace GameHelper.UI
                 currentlySelectedPlugin = "Core";
             }
 
-            foreach (var pKeyValue in PluginManager.AllPlugins.ToList())
+            foreach (var pKeyValue in PManager.AllPlugins.ToList())
             {
                 var pluginContainer = pKeyValue.Value;
                 tmp = pluginContainer.Enable;
                 if (ImGui.Checkbox($"##{pKeyValue.Key}EnableCheckbox", ref tmp))
                 {
                     pluginContainer.Enable = !pluginContainer.Enable;
-                    PluginManager.AllPlugins[pKeyValue.Key] = pluginContainer;
+                    PManager.AllPlugins[pKeyValue.Key] = pluginContainer;
                 }
 
                 ImGui.SameLine();
@@ -88,7 +88,7 @@ namespace GameHelper.UI
                     ImGui.EndGroup();
                     break;
                 default:
-                    if (PluginManager.AllPlugins.TryGetValue(currentlySelectedPlugin, out var pContainer))
+                    if (PManager.AllPlugins.TryGetValue(currentlySelectedPlugin, out var pContainer))
                     {
                         ImGui.BeginGroup();
                         pContainer.Plugin.DrawSettings();

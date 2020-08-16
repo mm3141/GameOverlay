@@ -1,4 +1,4 @@
-﻿// <copyright file="PluginManager.cs" company="None">
+﻿// <copyright file="PManager.cs" company="None">
 // Copyright (c) None. All rights reserved.
 // </copyright>
 
@@ -19,11 +19,11 @@ namespace GameHelper.Plugin
     /// TODO: Hot Reload plugins on on plugin hash changes.
     /// TODO: Allow user to enable/disable this feature ^.
     /// </summary>
-    internal static class PluginManager
+    internal static class PManager
     {
         private static readonly DirectoryInfo PluginsDirectory = new DirectoryInfo("Plugins");
-        private static ConcurrentBag<KeyValuePair<string, IPlugin>> plugins =
-            new ConcurrentBag<KeyValuePair<string, IPlugin>>();
+        private static ConcurrentBag<KeyValuePair<string, IPCore>> plugins =
+            new ConcurrentBag<KeyValuePair<string, IPCore>>();
 
         /// <summary>
         /// Gets the loaded plugins.
@@ -111,7 +111,7 @@ namespace GameHelper.Plugin
                 }
 
                 var iPluginClasses = types.Where(
-                    type => typeof(IPlugin).IsAssignableFrom(type) &&
+                    type => typeof(IPCore).IsAssignableFrom(type) &&
                     type.IsSealed == true).ToList();
                 if (iPluginClasses.Count != 1)
                 {
@@ -121,9 +121,9 @@ namespace GameHelper.Plugin
                     return;
                 }
 
-                IPlugin pluginCore = Activator.CreateInstance(iPluginClasses[0]) as IPlugin;
+                IPCore pluginCore = Activator.CreateInstance(iPluginClasses[0]) as IPCore;
                 string pluginName = assembly.GetName().Name;
-                plugins.Add(new KeyValuePair<string, IPlugin>(pluginName, pluginCore));
+                plugins.Add(new KeyValuePair<string, IPCore>(pluginName, pluginCore));
             }
             catch (Exception e)
             {
@@ -149,7 +149,7 @@ namespace GameHelper.Plugin
         public struct PluginContainer
         {
             private bool enable;
-            private IPlugin plugin;
+            private IPCore plugin;
 
             /// <summary>
             /// Gets or sets a value indicating whether the plugin is enabled or not.
@@ -159,7 +159,7 @@ namespace GameHelper.Plugin
             /// <summary>
             /// Gets or sets the plugin.
             /// </summary>
-            public IPlugin Plugin { get => this.plugin; set => this.plugin = value; }
+            public IPCore Plugin { get => this.plugin; set => this.plugin = value; }
         }
     }
 }
