@@ -2,7 +2,7 @@
 
 namespace PreloadAlert
 {
-    public sealed class PreloadSettings : ISettings
+    public sealed class PreloadSettings : IPSettings
     {
         public bool Enable = true;
         public string DummySettings = "";

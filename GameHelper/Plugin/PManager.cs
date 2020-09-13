@@ -13,6 +13,7 @@ namespace GameHelper.Plugin
     using System.Threading.Tasks;
     using ClickableTransparentOverlay;
     using Coroutine;
+    using GameHelper.Utils;
 
     /// <summary>
     /// Finds, loads and unloads the plugins.
@@ -27,8 +28,14 @@ namespace GameHelper.Plugin
         /// <summary>
         /// Gets the loaded plugins.
         /// </summary>
-        internal static Dictionary<string, PContainer> AllPlugins { get; private set; } =
-            new Dictionary<string, PContainer>();
+        internal static Dictionary<string, PContainer> AllPlugins
+        {
+            get;
+            private set;
+        }
+
+        = JsonHelper.CreateOrLoadJsonFile<Dictionary<string, PContainer>>(
+            Settings.PluginsMetadataFile);
 
         /// <summary>
         /// Initlizes the plugin manager by loading all the plugins & their Metadata.
@@ -53,8 +60,17 @@ namespace GameHelper.Plugin
 
             while (plugins.TryTake(out var tmp))
             {
-                var pC = new PContainer() { Enable = true, Plugin = tmp.Value };
-                AllPlugins.Add(tmp.Key, pC);
+                if (AllPlugins.ContainsKey(tmp.Key))
+                {
+                    var pC = AllPlugins[tmp.Key];
+                    pC.Plugin = tmp.Value;
+                    AllPlugins[tmp.Key] = pC;
+                }
+                else
+                {
+                    var pC = new PContainer() { Enable = true, Plugin = tmp.Value };
+                    AllPlugins.Add(tmp.Key, pC);
+                }
             }
 
             CoroutineHandler.Start(DrawPluginUi());

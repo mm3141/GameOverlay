@@ -4,7 +4,7 @@ using ImGuiNET;
 
 namespace PreloadAlert
 {
-    public sealed class PreloadAlert : PluginBase<PreloadSettings>
+    public sealed class PreloadAlert : PCore<PreloadSettings>
     {
         public override void OnDisable()
         {

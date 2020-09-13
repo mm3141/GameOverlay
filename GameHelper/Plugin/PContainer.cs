@@ -12,8 +12,6 @@ namespace GameHelper.Plugin
     internal struct PContainer
     {
         private bool enable;
-
-        [JsonIgnore]
         private IPCore plugin;
 
         /// <summary>
@@ -28,6 +26,7 @@ namespace GameHelper.Plugin
         /// <summary>
         /// Gets or sets the plugin.
         /// </summary>
+        [JsonIgnore]
         public IPCore Plugin
         {
             get => this.plugin;
