@@ -17,6 +17,7 @@ namespace GameHelper.Plugin
 
     /// <summary>
     /// Finds, loads and unloads the plugins.
+    /// TODO: Download/copy paste plugin from a folder.
     /// TODO: Hot Reload plugins on on plugin hash changes.
     /// TODO: Allow user to enable/disable this feature ^.
     /// </summary>
@@ -42,37 +43,17 @@ namespace GameHelper.Plugin
         /// </summary>
         internal static void InitializePlugins()
         {
-            if (!Settings.PluginsDirectory.Exists)
+            Settings.PluginsDirectory.Create(); // doesn't do anything if already exists.
+            Parallel.ForEach(GetPluginsDirectories(), (pluginDirectory) =>
             {
-                Settings.PluginsDirectory.Create();
-            }
-            else
-            {
-                Parallel.ForEach(GetPluginsDirectories(), (pluginDirectory) =>
+                var assembly = ReadPluginFiles(pluginDirectory);
+                if (assembly != null)
                 {
-                    var assembly = ReadPluginFiles(pluginDirectory);
-                    if (assembly != null)
-                    {
-                        LoadPlugin(assembly, pluginDirectory.FullName);
-                    }
-                });
-            }
-
-            while (plugins.TryTake(out var tmp))
-            {
-                if (AllPlugins.ContainsKey(tmp.Key))
-                {
-                    var pC = AllPlugins[tmp.Key];
-                    pC.Plugin = tmp.Value;
-                    AllPlugins[tmp.Key] = pC;
+                    LoadPlugin(assembly, pluginDirectory.FullName);
                 }
-                else
-                {
-                    var pC = new PContainer() { Enable = true, Plugin = tmp.Value };
-                    AllPlugins.Add(tmp.Key, pC);
-                }
-            }
+            });
 
+            SyncPluginAndMetadata();
             CoroutineHandler.Start(DrawPluginUi());
         }
 
@@ -145,6 +126,35 @@ namespace GameHelper.Plugin
             }
         }
 
+        private static void SyncPluginAndMetadata()
+        {
+            while (plugins.TryTake(out var tmp))
+            {
+                if (AllPlugins.ContainsKey(tmp.Key))
+                {
+                    var pC = AllPlugins[tmp.Key];
+                    pC.Plugin = tmp.Value;
+                    AllPlugins[tmp.Key] = pC;
+                }
+                else
+                {
+                    var pC = new PContainer() { Enable = true, Plugin = tmp.Value };
+                    AllPlugins.Add(tmp.Key, pC);
+                }
+            }
+
+            // Removing any plugins Metadata which are deleted by the users.
+            foreach (var item in AllPlugins.ToList())
+            {
+                if (item.Value.Plugin == null)
+                {
+                    AllPlugins.Remove(item.Key);
+                }
+            }
+
+            JsonHelper.SafeToFile(AllPlugins, Settings.PluginsMetadataFile);
+        }
+
         private static IEnumerator<Wait> DrawPluginUi()
         {
             while (true)
@@ -152,7 +162,10 @@ namespace GameHelper.Plugin
                 yield return new Wait(Overlay.OnRender);
                 foreach (var pluginKeyValue in AllPlugins)
                 {
-                    pluginKeyValue.Value.Plugin.DrawUI();
+                    if (pluginKeyValue.Value.Enable)
+                    {
+                        pluginKeyValue.Value.Plugin.DrawUI();
+                    }
                 }
             }
         }
