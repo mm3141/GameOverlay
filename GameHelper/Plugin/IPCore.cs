@@ -10,22 +10,25 @@ namespace GameHelper.Plugin
     internal interface IPCore
     {
         /// <summary>
-        /// Called when the plugin is loaded in the memory.
+        /// Called at plugin startup (i.e. when the plugin is loaded in the memory).
         /// </summary>
         public abstract void OnLoad();
 
         /// <summary>
-        /// Called when the plugin is Enabled.
+        /// Called when the plugin needs to be enabled
+        /// (e.g. game opened or user wants the plugin).
         /// </summary>
         public abstract void OnEnable();
 
         /// <summary>
-        /// Called when the plugin is disabled.
+        /// Called when the plugin needs to be disabled
+        /// (e.g. game closed or user don't want the plugin).
         /// </summary>
         public abstract void OnDisable();
 
         /// <summary>
-        /// Draws the settings on the ImGui Settings window.
+        /// Called to draw the plugin settings on the GameHelper Settings window.
+        /// Should use ImGui objects to draw the settings.
         /// </summary>
         public abstract void DrawSettings();
 

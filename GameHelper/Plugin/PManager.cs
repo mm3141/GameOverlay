@@ -21,25 +21,23 @@ namespace GameHelper.Plugin
     /// </summary>
     internal static class PManager
     {
-        private static readonly DirectoryInfo PluginsDirectory = new DirectoryInfo("Plugins");
         private static ConcurrentBag<KeyValuePair<string, IPCore>> plugins =
             new ConcurrentBag<KeyValuePair<string, IPCore>>();
 
         /// <summary>
         /// Gets the loaded plugins.
         /// </summary>
-        internal static Dictionary<string, PluginContainer> AllPlugins { get; private set; } =
-            new Dictionary<string, PluginContainer>();
+        internal static Dictionary<string, PContainer> AllPlugins { get; private set; } =
+            new Dictionary<string, PContainer>();
 
         /// <summary>
-        /// Initlizes the plugin manager by loading all the plugins
-        /// and keep a watch on updates and newly added plugins.
+        /// Initlizes the plugin manager by loading all the plugins & their Metadata.
         /// </summary>
-        internal static void Initialize()
+        internal static void InitializePlugins()
         {
-            if (!PluginsDirectory.Exists)
+            if (!Settings.PluginsDirectory.Exists)
             {
-                PluginsDirectory.Create();
+                Settings.PluginsDirectory.Create();
             }
             else
             {
@@ -55,7 +53,7 @@ namespace GameHelper.Plugin
 
             while (plugins.TryTake(out var tmp))
             {
-                PluginContainer pC = new PluginContainer() { Enable = true, Plugin = tmp.Value };
+                var pC = new PContainer() { Enable = true, Plugin = tmp.Value };
                 AllPlugins.Add(tmp.Key, pC);
             }
 
@@ -64,7 +62,7 @@ namespace GameHelper.Plugin
 
         private static List<DirectoryInfo> GetPluginsDirectories()
         {
-            return PluginsDirectory.GetDirectories().Where(
+            return Settings.PluginsDirectory.GetDirectories().Where(
                 x => (x.Attributes & FileAttributes.Hidden) == 0).ToList();
         }
 
@@ -141,25 +139,6 @@ namespace GameHelper.Plugin
                     pluginKeyValue.Value.Plugin.DrawUI();
                 }
             }
-        }
-
-        /// <summary>
-        /// Container for storing plugin and its metadata.
-        /// </summary>
-        public struct PluginContainer
-        {
-            private bool enable;
-            private IPCore plugin;
-
-            /// <summary>
-            /// Gets or sets a value indicating whether the plugin is enabled or not.
-            /// </summary>
-            public bool Enable { get => this.enable; set => this.enable = value; }
-
-            /// <summary>
-            /// Gets or sets the plugin.
-            /// </summary>
-            public IPCore Plugin { get => this.plugin; set => this.plugin = value; }
         }
     }
 }

@@ -33,15 +33,14 @@ namespace GameHelper
                 Environment.Exit(1);
             };
 
-            var settings = CoreSettings.CreateOrLoadSettings();
-            if (!settings.ShowTerminal)
+            if (!Core.GHSettings.ShowTerminal)
             {
                 Overlay.TerminalWindow = false;
             }
 
-            PManager.Initialize();
-            SettingsWindow.InitializeCoroutines(settings);
-            Core.Initialize();
+            PManager.InitializePlugins();
+            SettingsWindow.InitializeCoroutines();
+            Core.InitializeCororutines();
             Overlay.RunInfiniteLoop(); // Overlay disposes itself before exit.
             Core.Dispose();
         }

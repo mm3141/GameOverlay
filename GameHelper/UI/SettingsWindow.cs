@@ -4,13 +4,13 @@
 
 namespace GameHelper.UI
 {
-    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Numerics;
     using ClickableTransparentOverlay;
     using Coroutine;
     using GameHelper.Plugin;
+    using GameHelper.Utils;
     using ImGuiNET;
 
     /// <summary>
@@ -19,16 +19,22 @@ namespace GameHelper.UI
     internal static class SettingsWindow
     {
         private static bool isSettingsWindowVisible = true;
-        private static CoreSettings coreSettings = null;
         private static string currentlySelectedPlugin = "Core";
+        private static bool disableKeyPress = false;
+
+        /// <summary>
+        /// Gets the Game Helper closing event. The event is called whenever
+        /// all the settings have to be saved.
+        /// </summary>
+        internal static Event TimeToSaveAllSettings { get; } = new Event();
 
         /// <summary>
         /// Initializes the Main Menu.
         /// </summary>
         /// <param name="settings">CoreSettings instance to associate with the MainMenu.</param>
-        internal static void InitializeCoroutines(CoreSettings settings)
+        internal static void InitializeCoroutines()
         {
-            coreSettings = settings;
+            CoroutineHandler.Start(SaveGameHelperSettings());
             CoroutineHandler.Start(DrawSettingsWindow());
         }
 
@@ -79,12 +85,12 @@ namespace GameHelper.UI
             {
                 case "Core":
                     ImGui.BeginGroup();
-                    if (ImGui.Checkbox("Show terminal on startup", ref coreSettings.ShowTerminal))
+                    if (ImGui.Checkbox("Show terminal on startup", ref Core.GHSettings.ShowTerminal))
                     {
-                        Overlay.TerminalWindow = coreSettings.ShowTerminal;
+                        Overlay.TerminalWindow = Core.GHSettings.ShowTerminal;
                     }
 
-                    ImGui.Checkbox("Close Game Helper When Game Closes", ref coreSettings.CloseOnGameExit);
+                    ImGui.Checkbox("Close Game Helper When Game Closes", ref Core.GHSettings.CloseOnGameExit);
                     ImGui.EndGroup();
                     break;
                 default:
@@ -108,12 +114,14 @@ namespace GameHelper.UI
             while (true)
             {
                 yield return new Wait(Overlay.OnRender);
-                if (NativeMethods.IsKeyPressed(coreSettings.MainMenuHotKey))
+                if (!disableKeyPress && NativeMethods.IsKeyPressed(Core.GHSettings.MainMenuHotKey))
                 {
+                    disableKeyPress = true;
+                    CoroutineHandler.InvokeLater(new Wait(0.2), () => disableKeyPress = false);
                     isSettingsWindowVisible = !isSettingsWindowVisible;
                     if (!isSettingsWindowVisible)
                     {
-                        coreSettings.SafeToFile();
+                        CoroutineHandler.RaiseEvent(TimeToSaveAllSettings);
                     }
                 }
 
@@ -131,7 +139,7 @@ namespace GameHelper.UI
                 Overlay.Close = !isOverlayRunning;
                 if (!isOverlayRunning)
                 {
-                    coreSettings.SafeToFile();
+                    CoroutineHandler.RaiseEvent(TimeToSaveAllSettings);
                 }
 
                 if (!isMainMenuExpanded)
@@ -144,6 +152,19 @@ namespace GameHelper.UI
                 ImGui.SameLine();
                 DrawCurrentlySelectedSettings();
                 ImGui.End();
+            }
+        }
+
+        /// <summary>
+        /// Saves the GameHelper settings to disk.
+        /// </summary>
+        /// <returns>co-routine IWait.</returns>
+        private static IEnumerator<Wait> SaveGameHelperSettings()
+        {
+            while (true)
+            {
+                yield return new Wait(TimeToSaveAllSettings);
+                JsonHelper.SafeToFile(Core.GHSettings, Settings.CoreSettingFile);
             }
         }
     }

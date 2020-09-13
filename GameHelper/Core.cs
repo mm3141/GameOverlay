@@ -9,12 +9,25 @@ namespace GameHelper
     using Coroutine;
     using GameHelper.Controllers;
     using GameHelper.RemoteMemoryObjects;
+    using GameHelper.Utils;
 
     /// <summary>
     /// Main Class to init all the controllers.
+    /// NOTE: Upon application startup, this class automatically loads the settings
+    /// from the file (or create a new one if it doesn't exists).
     /// </summary>
     internal static class Core
     {
+        /// <summary>
+        /// Gets the GameHelper settings.
+        /// </summary>
+        internal static Settings GHSettings
+        {
+            get;
+        }
+
+        = JsonHelper.CreateOrLoadJsonFile<Settings>(Settings.CoreSettingFile);
+
         /// <summary>
         /// Gets the GameProcess instance. For details read class description.
         /// </summary>
@@ -48,9 +61,9 @@ namespace GameHelper
         = new AreaChangeCounter(IntPtr.Zero);
 
         /// <summary>
-        /// Initializes the <see cref="Core"/> class.
+        /// Initializes the <see cref="Core"/> class coroutines.
         /// </summary>
-        internal static void Initialize()
+        internal static void InitializeCororutines()
         {
             CoroutineHandler.Start(UpdateStatesData());
             CoroutineHandler.Start(UpdateFilesData());
