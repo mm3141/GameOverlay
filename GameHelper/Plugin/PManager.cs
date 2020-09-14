@@ -13,13 +13,16 @@ namespace GameHelper.Plugin
     using System.Threading.Tasks;
     using ClickableTransparentOverlay;
     using Coroutine;
+    using GameHelper.UI;
     using GameHelper.Utils;
 
     /// <summary>
     /// Finds, loads and unloads the plugins.
     /// TODO: Download/copy paste plugin from a folder.
     /// TODO: Hot Reload plugins on on plugin hash changes.
-    /// TODO: Allow user to enable/disable this feature ^.
+    /// TODO: Demostrate a plugin with multiple profiles.
+    /// TODO:   load the config from the file.
+    /// TODO:   save the config on the file.
     /// </summary>
     internal static class PManager
     {
@@ -44,16 +47,10 @@ namespace GameHelper.Plugin
         internal static void InitializePlugins()
         {
             Settings.PluginsDirectory.Create(); // doesn't do anything if already exists.
-            Parallel.ForEach(GetPluginsDirectories(), (pluginDirectory) =>
-            {
-                var assembly = ReadPluginFiles(pluginDirectory);
-                if (assembly != null)
-                {
-                    LoadPlugin(assembly, pluginDirectory.FullName);
-                }
-            });
-
-            SyncPluginAndMetadata();
+            Parallel.ForEach(GetPluginsDirectories(), LoadPlugin);
+            CombinePluginAndMetadata();
+            Parallel.ForEach(AllPlugins, EnablePluginIfRequired);
+            CoroutineHandler.Start(SavePluginMetadata());
             CoroutineHandler.Start(DrawPluginUi());
         }
 
@@ -93,6 +90,15 @@ namespace GameHelper.Plugin
             }
         }
 
+        private static void LoadPlugin(DirectoryInfo pluginDirectory)
+        {
+            var assembly = ReadPluginFiles(pluginDirectory);
+            if (assembly != null)
+            {
+                LoadPlugin(assembly, pluginDirectory.FullName);
+            }
+        }
+
         private static void LoadPlugin(Assembly assembly, string pluginRootDirectory)
         {
             try
@@ -126,7 +132,7 @@ namespace GameHelper.Plugin
             }
         }
 
-        private static void SyncPluginAndMetadata()
+        private static void CombinePluginAndMetadata()
         {
             while (plugins.TryTake(out var tmp))
             {
@@ -153,6 +159,23 @@ namespace GameHelper.Plugin
             }
 
             JsonHelper.SafeToFile(AllPlugins, Settings.PluginsMetadataFile);
+        }
+
+        private static void EnablePluginIfRequired(KeyValuePair<string, PContainer> kv)
+        {
+            if (kv.Value.Enable)
+            {
+                kv.Value.Plugin.OnEnable();
+            }
+        }
+
+        private static IEnumerator<Wait> SavePluginMetadata()
+        {
+            while (true)
+            {
+                yield return new Wait(SettingsWindow.TimeToSaveAllSettings);
+                JsonHelper.SafeToFile(AllPlugins, Settings.PluginsMetadataFile);
+            }
         }
 
         private static IEnumerator<Wait> DrawPluginUi()

@@ -6,6 +6,7 @@ namespace GameHelper
 {
     using System;
     using System.Collections.Generic;
+    using ClickableTransparentOverlay;
     using Coroutine;
     using GameHelper.Controllers;
     using GameHelper.RemoteMemoryObjects;
@@ -65,6 +66,7 @@ namespace GameHelper
         /// </summary>
         internal static void InitializeCororutines()
         {
+            CoroutineHandler.Start(UpdateOverlayBounds());
             CoroutineHandler.Start(UpdateStatesData());
             CoroutineHandler.Start(UpdateFilesData());
             CoroutineHandler.Start(UpdateAreaChangeData());
@@ -131,6 +133,17 @@ namespace GameHelper
                 States.Address = IntPtr.Zero;
                 CurrentAreaLoadedMetadata.Address = IntPtr.Zero;
                 AreaChangeCounter.Address = IntPtr.Zero;
+            }
+        }
+
+        private static IEnumerator<Wait> UpdateOverlayBounds()
+        {
+            while (true)
+            {
+                yield return new Wait(Process.OnMoved);
+                Overlay.Position = new Veldrid.Point(Process.WindowArea.Location.X, Process.WindowArea.Location.Y);
+                Overlay.Size = new Veldrid.Point(Process.WindowArea.Size.Width, Process.WindowArea.Size.Height);
+
             }
         }
     }

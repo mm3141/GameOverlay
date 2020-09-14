@@ -10,11 +10,6 @@ namespace GameHelper.Plugin
     internal interface IPCore
     {
         /// <summary>
-        /// Called at plugin startup (i.e. when the plugin is loaded in the memory).
-        /// </summary>
-        public abstract void OnLoad();
-
-        /// <summary>
         /// Called when the plugin needs to be enabled
         /// (e.g. game opened or user wants the plugin).
         /// </summary>

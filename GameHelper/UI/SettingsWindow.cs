@@ -62,6 +62,15 @@ namespace GameHelper.UI
                 if (ImGui.Checkbox($"##{pKeyValue.Key}EnableCheckbox", ref tmp))
                 {
                     pluginContainer.Enable = !pluginContainer.Enable;
+                    if (pluginContainer.Enable)
+                    {
+                        pluginContainer.Plugin.OnEnable();
+                    }
+                    else
+                    {
+                        pluginContainer.Plugin.OnDisable();
+                    }
+
                     PManager.AllPlugins[pKeyValue.Key] = pluginContainer;
                 }
 

@@ -12,12 +12,6 @@ namespace GameHelper
 
     /// <summary>
     /// Class executed when the application starts.
-    /// TODO: Make global config manager with profiles.
-    /// TODO:   load the config from the file.
-    /// TODO:   save the config on the file.
-    /// TODO: Make Plugin Manager.
-    /// TODO:   complete the DRAW PLUGIN UI function.
-    /// TODO: Update pattern finder to not crash the overlay if pattern not found.
     /// </summary>
     internal class Program
     {
