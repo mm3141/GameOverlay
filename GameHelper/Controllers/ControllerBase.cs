@@ -21,7 +21,7 @@ namespace GameHelper.Controllers
     /// to process data or communicate/inform other controllers/classes
     /// when something has happened.
     /// </summary>
-    internal abstract class ControllerBase
+    public abstract class ControllerBase
     {
         private IntPtr address = IntPtr.Zero;
 
@@ -30,7 +30,7 @@ namespace GameHelper.Controllers
         /// Setting the value to IntPtr.Zero will disable the controller and
         /// all the subsequent classes coroutine from executing.
         /// </summary>
-        internal IntPtr Address
+        public IntPtr Address
         {
             get => this.address;
             set

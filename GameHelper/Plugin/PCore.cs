@@ -29,13 +29,19 @@ namespace GameHelper.Plugin
         public abstract void OnEnable();
 
         /// <inheritdoc/>
-        public abstract void OnLoad();
-
-        /// <inheritdoc/>
         public abstract void DrawSettings();
 
         /// <inheritdoc/>
         public abstract void DrawUI();
+
+        /// <inheritdoc/>
+        public abstract void SaveSettings();
+
+        /// <inheritdoc/>
+        public void SetPluginDllLocation(string dllLocation)
+        {
+            this.DllDirectory = dllLocation;
+        }
     }
 #pragma warning restore SA1401 // Fields should be private
 }

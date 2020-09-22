@@ -12,6 +12,9 @@ namespace GameHelper
 
     /// <summary>
     /// Class executed when the application starts.
+    /// TODO: Disable when Game is minimized.
+    /// TODO: DRY out the STDList reader, once we find another object using STDList reader.
+    ///       Currently, only loadedfiles is using custom STDList reader.
     /// </summary>
     internal class Program
     {

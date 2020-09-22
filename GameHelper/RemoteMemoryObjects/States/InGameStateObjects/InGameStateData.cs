@@ -1,25 +1,25 @@
-﻿// <copyright file="AreaChangeCounter.cs" company="None">
+﻿// <copyright file="InGameStateData.cs" company="None">
 // Copyright (c) None. All rights reserved.
 // </copyright>
 
-namespace GameHelper.RemoteMemoryObjects
+namespace GameHelper.RemoteMemoryObjects.States.InGameStateObjects
 {
     using System;
     using System.Collections.Generic;
     using Coroutine;
     using GameHelper.RemoteEnums;
+    using GameOffsets.RemoteMemoryObjects.States.InGameStateObjects;
 
     /// <summary>
-    /// Points to the AreaChangeCounter object and read/cache it's value
-    /// on every area change.
+    /// Points to the InGameState -> LocalData Object.
     /// </summary>
-    public class AreaChangeCounter : RemoteMemoryObjectBase
+    public class InGameStateData : RemoteMemoryObjectBase
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="AreaChangeCounter"/> class.
+        /// Initializes a new instance of the <see cref="InGameStateData"/> class.
         /// </summary>
         /// <param name="address">address of the remote memory object.</param>
-        internal AreaChangeCounter(IntPtr address)
+        internal InGameStateData(IntPtr address)
             : base(address)
         {
             CoroutineHandler.Start(this.OnAreaChange());
@@ -27,21 +27,30 @@ namespace GameHelper.RemoteMemoryObjects
         }
 
         /// <summary>
-        /// Gets the cached value of the AreaChangeCounter.
+        /// Gets the Monster Level of current Area.
         /// </summary>
-        public int Value { get; private set; } = 0x00;
+        public int MonsterLevel { get; private set; } = 0x00;
+
+        /// <summary>
+        /// Gets the Hash of the current Area/Zone.
+        /// This value is sent to the client from the server.
+        /// </summary>
+        public string AreaHash { get; private set; } = string.Empty;
 
         /// <inheritdoc/>
         protected override void CleanUpData()
         {
-            this.Value = 0x00;
+            this.MonsterLevel = 0x00;
+            this.AreaHash = string.Empty;
         }
 
         /// <inheritdoc/>
         protected override void GatherData()
         {
             var reader = Core.Process.Handle;
-            this.Value = reader.ReadMemory<int>(this.Address);
+            var data = reader.ReadMemory<InGameStateDataOffsets>(this.Address);
+            this.MonsterLevel = data.MonsterLevel;
+            this.AreaHash = $"{data.CurrentAreaHash:X}";
         }
 
         private IEnumerator<Wait> OnAreaChange()

@@ -21,8 +21,12 @@ namespace GameHelper.Plugin
     /// TODO: Download/copy paste plugin from a folder.
     /// TODO: Hot Reload plugins on on plugin hash changes.
     /// TODO: Demostrate a plugin with multiple profiles.
-    /// TODO:   load the config from the file.
-    /// TODO:   save the config on the file.
+    /// TODO: write a guide for adding new plugin.
+    /// TODO:    also talk about debugging a plugin.
+    /// TODO:    talking about project fork/pull request etc.
+    /// TODO: pause/resume plugin when game close/minimize.
+    ///       Render function can be stopped from core but
+    ///       pause/resume would be for threads running inside plugins.
     /// </summary>
     internal static class PManager
     {
@@ -50,6 +54,7 @@ namespace GameHelper.Plugin
             Parallel.ForEach(GetPluginsDirectories(), LoadPlugin);
             CombinePluginAndMetadata();
             Parallel.ForEach(AllPlugins, EnablePluginIfRequired);
+            CoroutineHandler.Start(SavePluginSettings());
             CoroutineHandler.Start(SavePluginMetadata());
             CoroutineHandler.Start(DrawPluginUi());
         }
@@ -123,6 +128,7 @@ namespace GameHelper.Plugin
                 }
 
                 IPCore pluginCore = Activator.CreateInstance(iPluginClasses[0]) as IPCore;
+                pluginCore.SetPluginDllLocation(pluginRootDirectory);
                 string pluginName = assembly.GetName().Name;
                 plugins.Add(new KeyValuePair<string, IPCore>(pluginName, pluginCore));
             }
@@ -175,6 +181,18 @@ namespace GameHelper.Plugin
             {
                 yield return new Wait(SettingsWindow.TimeToSaveAllSettings);
                 JsonHelper.SafeToFile(AllPlugins, Settings.PluginsMetadataFile);
+            }
+        }
+
+        private static IEnumerator<Wait> SavePluginSettings()
+        {
+            while (true)
+            {
+                yield return new Wait(SettingsWindow.TimeToSaveAllSettings);
+                foreach (var keyvalue in AllPlugins)
+                {
+                    keyvalue.Value.Plugin.SaveSettings();
+                }
             }
         }
 

@@ -9,13 +9,15 @@ namespace GameHelper.RemoteMemoryObjects
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using Coroutine;
+    using GameHelper.RemoteEnums;
     using GameOffsets.Native;
     using GameOffsets.RemoteMemoryObjects;
 
     /// <summary>
     /// Gathers the files loaded in the game for the current area.
+    /// TODO: Make first 2 act not show configurable on the UI.
     /// </summary>
-    internal class LoadedFiles : RemoteMemoryObjectBase
+    public class LoadedFiles : RemoteMemoryObjectBase
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="LoadedFiles"/> class.
@@ -24,90 +26,144 @@ namespace GameHelper.RemoteMemoryObjects
         internal LoadedFiles(IntPtr address)
             : base(address)
         {
-            CoroutineHandler.Start(this.GatherData());
+            CoroutineHandler.Start(this.OnAreaChange());
+            CoroutineHandler.Start(this.OnGameStateChange());
         }
+
+        /// <summary>
+        /// Gets the wait (in seconds) between multiple preload memory scans.
+        /// As preloads are scanned multiple times (i.e. <see cref="MaximumPreloadScans"/>).
+        /// </summary>
+        public static int WaitBetweenScans { get; } = 3;
+
+        /// <summary>
+        /// Gets the maxiumum number of preload scans that can happen in a given area.
+        /// </summary>
+        public static int MaximumPreloadScans { get; } = 3;
+
+        /// <summary>
+        /// Gets the current iteration of preload scan. Minimum value can be 0, maxiumum value
+        /// can be <see cref="MaximumPreloadScans"/>.
+        /// </summary>
+        public int CurrentPreloadScan { get; private set; } = 0;
 
         /// <summary>
         /// Gets the files.
         /// </summary>
-        internal ConcurrentBag<string> Data { get; private set; } = new ConcurrentBag<string>();
+        public ConcurrentBag<string> Data { get; private set; } = new ConcurrentBag<string>();
 
         /// <inheritdoc/>
-        protected override IEnumerator<Wait> GatherData()
+        protected override void CleanUpData()
         {
+            if (this.Data.Count > 0)
+            {
+                this.Data.Clear();
+            }
+
+            this.CurrentPreloadScan = 0;
+        }
+
+        /// <inheritdoc/>
+        protected override void GatherData()
+        {
+            this.CurrentPreloadScan++;
+            var totalFiles = LoadedFilesRootObject.TotalCount;
+            var reader = Core.Process.Handle;
+            var filesRootObjs = reader.ReadMemoryArray<LoadedFilesRootObject>(this.Address, totalFiles);
+            if (filesRootObjs.Length > 0)
+            {
+                if (filesRootObjs[0].FilesList.Head == IntPtr.Zero ||
+                    filesRootObjs[0].FilesVectorUseless.First == IntPtr.Zero ||
+                    filesRootObjs[0].FilesVectorUseless.Last == IntPtr.Zero ||
+                    filesRootObjs[0].FilesVectorUseless.End == IntPtr.Zero ||
+                    filesRootObjs[0].IsValid != 1f)
+                {
+                    throw new Exception("Couldn't read LoadedFilesRootObject array " +
+                                        $"from FileRoot address: {this.Address.ToInt64():X}");
+                }
+
+                for (int k = 0; k < totalFiles; k++)
+                {
+                    switch (filesRootObjs[k].TemplateId2)
+                    {
+                        case 64:
+                        case 512:
+                        case 1024:
+                            break;
+                        default:
+                            throw new Exception($"New template found (in index {k}) " +
+                                $"(templateId {filesRootObjs[k].TemplateId1}," +
+                                $"{filesRootObjs[k].TemplateId2}) in " +
+                                $"LoadedFilesRootObject object at " +
+                                $"address: {this.Address.ToInt64():X}.");
+                    }
+                }
+
+                Parallel.For(0, totalFiles, (i) =>
+                {
+                    var filesListPtrAddress = filesRootObjs[i].FilesList.Head;
+
+                    // Currently working, otherwise 0 - 127 1 type (Name)
+                    // and 128 - 255 other type (Name2)
+                    var templateId2 = filesRootObjs[i].TemplateId2;
+                    var currNodeAddress = reader.ReadMemory<StdListNode>(filesListPtrAddress).Next;
+                    StdListNode<StdKeyValuePair> currNode;
+                    FileInfoValueStruct information;
+                    while (currNodeAddress != filesListPtrAddress)
+                    {
+                        currNode = reader.ReadMemory<StdListNode<StdKeyValuePair>>(currNodeAddress);
+                        if (currNodeAddress == IntPtr.Zero)
+                        {
+                            Console.WriteLine("Terminating Preloads finding because of" +
+                                "unexpected 0x00 found. This is normal if it happens " +
+                                "after closing the game, otherwise report it.");
+                            break;
+                        }
+
+                        information = reader.ReadMemory<FileInfoValueStruct>(currNode.Data.ValuePtr);
+                        if (information.AreaChangeCount >= 2 &&
+                            information.AreaChangeCount == Core.AreaChangeCounter.Value)
+                        {
+                            this.Data.Add(reader.ReadStdWString(
+                                templateId2 == 64 ? information.Name2 : information.Name));
+                        }
+
+                        currNodeAddress = currNode.Next;
+                    }
+                });
+            }
+        }
+
+        private IEnumerator<Wait> OnAreaChange()
+        {
+            yield return new Wait(0);
             while (true)
             {
                 yield return new Wait(Core.States.AreaLoading.AreaChanged);
-                if (this.Address == IntPtr.Zero)
+                if (this.Address != IntPtr.Zero)
                 {
-                    continue;
-                }
-
-                this.Data.Clear();
-                for (int i = 0; i < 2; i++)
-                {
-                    var totalFiles = LoadedFilesRootObjectOffset.TotalCount;
-                    var reader = Core.Process.Handle;
-                    var filesRootObjs = reader.ReadMemoryArray<LoadedFilesRootObjectOffset>(this.Address, totalFiles);
-                    if (filesRootObjs[0].FilesList.Head == IntPtr.Zero)
+                    this.CleanUpData();
+                    for (int i = 0; i < MaximumPreloadScans; i++)
                     {
-                        throw new Exception("Couldn't read LoadedFilesRootObjectOffset array " +
-                                            $"from FileRoot address: {this.Address.ToInt64():X}");
+                        this.Data.Clear();
+                        this.GatherData();
+                        yield return new Wait(WaitBetweenScans);
                     }
+                }
+            }
+        }
 
-                    Parallel.For(0, totalFiles, (i) =>
-                    {
-                        var files = filesRootObjs[i].FilesList;
-                        var currNode = reader.ReadMemory<StdListNode<FileInfoPtr>>(files.Head);
-                        var lastNode = reader.ReadMemory<StdListNode<FileInfoPtr>>(currNode.Previous);
-                        if (lastNode.Data.NamePtr == IntPtr.Zero)
-                        {
-                            throw new Exception($"Couldn't get lastNode of index {i} from FileRoot " +
-                                                $"address: {this.Address.ToInt64():X}");
-                        }
-
-                        byte firstChar = 0x00;
-                        int fileNumber = 0x00;
-                        FileInfo information;
-                        string name;
-                        while (currNode.Data.NamePtr != lastNode.Data.NamePtr)
-                        {
-                            currNode = reader.ReadMemory<StdListNode<FileInfoPtr>>(currNode.Next);
-                            fileNumber++;
-                            firstChar = reader.ReadMemory<byte>(currNode.Data.NamePtr);
-                            if (firstChar == 0x00)
-                            {
-                                throw new Exception("Couldn't read firstChar of the file name @ " +
-                                                    $"FileRootAddress: {this.Address.ToInt64():X} " +
-                                                    $"Index: {i} " +
-                                                    $"Depth: {fileNumber}");
-                            }
-
-                            switch (firstChar)
-                            {
-                                case (byte)'S': // ShaderProgram
-                                case (byte)'T': // TextureResource
-                                case (byte)'F': // FONTFontin
-                                case (byte)'D': // Data
-                                case (byte)'a': // audio
-                                case (byte)'A': // Art
-                                    break;
-                                default:
-                                    information = reader.ReadMemory<FileInfo>(currNode.Data.Information);
-                                    if (information.AreaChangeCount > 2 &&
-                                        information.AreaChangeCount == Core.AreaChangeCounter.Value &&
-                                        information.FileType == 0x01)
-                                    {
-                                        name = reader.ReadStdWString(information.Name);
-                                        this.Data.Add(name);
-                                    }
-
-                                    break;
-                            }
-                        }
-                    });
-
-                    yield return new Wait(5);
+        private IEnumerator<Wait> OnGameStateChange()
+        {
+            yield return new Wait(0);
+            while (true)
+            {
+                yield return new Wait(Core.States.CurrentStateInGame.StateChanged);
+                if (Core.States.CurrentStateInGame.Name != GameStateTypes.InGameState
+                    && Core.States.CurrentStateInGame.Name != GameStateTypes.EscapeState
+                    && Core.States.CurrentStateInGame.Name != GameStateTypes.AreaLoadingState)
+                {
+                    this.CleanUpData();
                 }
             }
         }

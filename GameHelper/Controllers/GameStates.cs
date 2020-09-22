@@ -7,6 +7,7 @@ namespace GameHelper.Controllers
     using System;
     using System.Collections.Generic;
     using Coroutine;
+    using GameHelper.RemoteMemoryObjects;
     using GameHelper.RemoteMemoryObjects.States;
     using GameOffsets.Controllers;
     using GameOffsets.Native;
@@ -14,12 +15,12 @@ namespace GameHelper.Controllers
     /// <summary>
     /// Reads and stores the global states of the game.
     /// </summary>
-    internal class GameStates : ControllerBase
+    public class GameStates : ControllerBase
     {
         /// <summary>
         /// Gets a dictionary containing all the Game States addresses.
         /// </summary>
-        internal Dictionary<string, IntPtr> States
+        public Dictionary<string, IntPtr> AllStates
         {
             get;
             private set;
@@ -30,13 +31,35 @@ namespace GameHelper.Controllers
         /// <summary>
         /// Gets the AreaLoadingState object.
         /// </summary>
-        internal AreaLoadingState AreaLoading
+        public AreaLoadingState AreaLoading
         {
             get;
             private set;
         }
 
         = new AreaLoadingState(IntPtr.Zero);
+
+        /// <summary>
+        /// Gets the InGameState Object.
+        /// </summary>
+        public InGameState InGameStateObject
+        {
+            get;
+            private set;
+        }
+
+        = new InGameState(IntPtr.Zero);
+
+        /// <summary>
+        /// Gets the current state the game is in.
+        /// </summary>
+        internal CurrentState CurrentStateInGame
+        {
+            get;
+            private set;
+        }
+
+        = new CurrentState(default);
 
         /// <inheritdoc/>
         protected override void OnAddressUpdated(IntPtr newAddress)
@@ -66,15 +89,17 @@ namespace GameHelper.Controllers
             {
                 string name = reader.ReadStdWString(state.Key);
                 this.UpdateKnownStatesObjects(name, state.Value);
-                if (this.States.ContainsKey(name))
+                if (this.AllStates.ContainsKey(name))
                 {
-                    this.States[name] = state.Value;
+                    this.AllStates[name] = state.Value;
                 }
                 else
                 {
-                    this.States.Add(name, state.Value);
+                    this.AllStates.Add(name, state.Value);
                 }
             }
+
+            this.CurrentStateInGame.Address = staticAddressData.GameState;
         }
 
         /// <summary>
@@ -89,6 +114,9 @@ namespace GameHelper.Controllers
                 case "AreaLoadingState":
                     this.AreaLoading.Address = address;
                     break;
+                case "InGameState":
+                    this.InGameStateObject.Address = address;
+                    break;
                 default:
                     break;
             }
@@ -97,6 +125,7 @@ namespace GameHelper.Controllers
         private void ClearKnownStatesObjects()
         {
             this.AreaLoading.Address = IntPtr.Zero;
+            this.CurrentStateInGame.Address = default;
         }
     }
 }

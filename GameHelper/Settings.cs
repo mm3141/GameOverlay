@@ -41,11 +41,6 @@ namespace GameHelper
         /// Gets or sets a value indicating whether to show the terminal.
         /// </summary>
         public bool ShowTerminal = true;
-
-        /// <summary>
-        /// Gets or sets a value indicating whether to close the Game Helper on game exit.
-        /// </summary>
-        public bool CloseOnGameExit = false;
     }
 
 #pragma warning restore SA1401 // Fields should be private

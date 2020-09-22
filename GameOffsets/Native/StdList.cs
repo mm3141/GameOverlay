@@ -25,4 +25,11 @@
         public IntPtr Previous;
         public TValue Data;
     }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct StdListNode
+    {
+        public IntPtr Next;
+        public IntPtr Previous;
+    }
 }

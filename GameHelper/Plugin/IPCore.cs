@@ -10,6 +10,13 @@ namespace GameHelper.Plugin
     internal interface IPCore
     {
         /// <summary>
+        /// Called at the init of the plugin to set
+        /// it's directory information.
+        /// </summary>
+        /// <param name="dllLocation">plugin dll directory.</param>
+        public abstract void SetPluginDllLocation(string dllLocation);
+
+        /// <summary>
         /// Called when the plugin needs to be enabled
         /// (e.g. game opened or user wants the plugin).
         /// </summary>
@@ -31,5 +38,15 @@ namespace GameHelper.Plugin
         /// Draws the plugin UI.
         /// </summary>
         public abstract void DrawUI();
+
+        /// <summary>
+        /// Called when it's time to save all the settings
+        /// related to the plugin on the file.
+        ///
+        /// NOTE: Load settings function isn't provided as
+        /// it's expected the plugin will load the settings
+        /// in OnEnable function.
+        /// </summary>
+        public abstract void SaveSettings();
     }
 }

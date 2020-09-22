@@ -13,6 +13,8 @@
     [StructLayout(LayoutKind.Explicit, Pack = 1)]
     public struct GameStateObject
     {
+        [FieldOffset(0x08)] public StdVector CurrentStateOffset1; // Used in RMO -> CurrentState
+        //[FieldOffset(0x20)] public StdVector CurrentStateOffset2; // same as CurrentStateOffset1.
         [FieldOffset(0x48)] public StdMap States;
     }
 }

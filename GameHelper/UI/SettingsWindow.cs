@@ -94,12 +94,18 @@ namespace GameHelper.UI
             {
                 case "Core":
                     ImGui.BeginGroup();
-                    if (ImGui.Checkbox("Show terminal on startup", ref Core.GHSettings.ShowTerminal))
+                    ImGui.TextWrapped("NOTE: (Plugins + Core) settings are saved automatically " +
+                        "when you close the overlay or hide it via F12 button.");
+                    ImGui.NewLine();
+                    ImGui.Text($"Current Game State: {Core.States.CurrentStateInGame.Name}");
+                    ImGui.Separator();
+                    if (ImGui.Checkbox(
+                        "Show terminal on startup (it should show anyway on close)",
+                        ref Core.GHSettings.ShowTerminal))
                     {
                         Overlay.TerminalWindow = Core.GHSettings.ShowTerminal;
                     }
 
-                    ImGui.Checkbox("Close Game Helper When Game Closes", ref Core.GHSettings.CloseOnGameExit);
                     ImGui.EndGroup();
                     break;
                 default:
@@ -142,7 +148,7 @@ namespace GameHelper.UI
                 bool isOverlayRunning = true;
                 ImGui.SetNextWindowSizeConstraints(new Vector2(800, 600), new Vector2(1024, 1024));
                 var isMainMenuExpanded = ImGui.Begin(
-                    "Game Overlay Menu",
+                    "Game Overlay Settings Menu",
                     ref isOverlayRunning,
                     ImGuiWindowFlags.NoSavedSettings);
                 Overlay.Close = !isOverlayRunning;

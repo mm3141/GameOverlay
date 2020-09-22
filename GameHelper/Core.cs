@@ -17,32 +17,23 @@ namespace GameHelper
     /// NOTE: Upon application startup, this class automatically loads the settings
     /// from the file (or create a new one if it doesn't exists).
     /// </summary>
-    internal static class Core
+    public static class Core
     {
-        /// <summary>
-        /// Gets the GameHelper settings.
-        /// </summary>
-        internal static Settings GHSettings
-        {
-            get;
-        }
-
-        = JsonHelper.CreateOrLoadJsonFile<Settings>(Settings.CoreSettingFile);
-
-        /// <summary>
-        /// Gets the GameProcess instance. For details read class description.
-        /// </summary>
-        internal static GameProcess Process { get; private set; } = new GameProcess();
-
         /// <summary>
         /// Gets the GameStates instance. For details read class description.
         /// </summary>
-        internal static GameStates States { get; private set; } = new GameStates();
+        public static GameStates States
+        {
+            get;
+            private set;
+        }
+
+        = new GameStates();
 
         /// <summary>
-        /// Gets the metadata files loaded for the current area.
+        /// Gets the files loaded for the current area.
         /// </summary>
-        internal static LoadedFiles CurrentAreaLoadedMetadata
+        public static LoadedFiles CurrentAreaLoadedFiles
         {
             get;
             private set;
@@ -53,13 +44,28 @@ namespace GameHelper
         /// <summary>
         /// Gets the AreaChangeCounter instance. For details read class description.
         /// </summary>
-        internal static AreaChangeCounter AreaChangeCounter
+        public static AreaChangeCounter AreaChangeCounter
         {
             get;
             private set;
         }
 
         = new AreaChangeCounter(IntPtr.Zero);
+
+        /// <summary>
+        /// Gets the GameProcess instance. For details read class description.
+        /// </summary>
+        internal static GameProcess Process { get; private set; } = new GameProcess();
+
+        /// <summary>
+        /// Gets the GameHelper settings.
+        /// </summary>
+        internal static Settings GHSettings
+        {
+            get;
+        }
+
+        = JsonHelper.CreateOrLoadJsonFile<Settings>(Settings.CoreSettingFile);
 
         /// <summary>
         /// Initializes the <see cref="Core"/> class coroutines.
@@ -82,7 +88,7 @@ namespace GameHelper
         }
 
         /// <summary>
-        /// Co-routine to update the address where the States are loaded in the game memory.
+        /// Co-routine to update the address where the Game States are loaded in the game memory.
         /// </summary>
         /// <returns>co-routine IWait.</returns>
         private static IEnumerator<Wait> UpdateStatesData()
@@ -103,7 +109,7 @@ namespace GameHelper
             while (true)
             {
                 yield return new Wait(Process.OnControllerReady);
-                CurrentAreaLoadedMetadata.Address = Process.StaticAddresses["File Root"];
+                CurrentAreaLoadedFiles.Address = Process.StaticAddresses["File Root"];
             }
         }
 
@@ -131,7 +137,7 @@ namespace GameHelper
             {
                 yield return new Wait(Process.OnClose);
                 States.Address = IntPtr.Zero;
-                CurrentAreaLoadedMetadata.Address = IntPtr.Zero;
+                CurrentAreaLoadedFiles.Address = IntPtr.Zero;
                 AreaChangeCounter.Address = IntPtr.Zero;
             }
         }
@@ -143,7 +149,6 @@ namespace GameHelper
                 yield return new Wait(Process.OnMoved);
                 Overlay.Position = new Veldrid.Point(Process.WindowArea.Location.X, Process.WindowArea.Location.Y);
                 Overlay.Size = new Veldrid.Point(Process.WindowArea.Size.Width, Process.WindowArea.Size.Height);
-
             }
         }
     }

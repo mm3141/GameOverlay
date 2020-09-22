@@ -13,7 +13,7 @@ namespace GameHelper.RemoteMemoryObjects
     /// Data in remote memory location changes w.r.t time or event. Due to this,
     /// each remote memory object requires to implement a time/event based coroutine.
     /// </summary>
-    internal abstract class RemoteMemoryObjectBase
+    public abstract class RemoteMemoryObjectBase
     {
         private IntPtr address;
 
@@ -37,7 +37,7 @@ namespace GameHelper.RemoteMemoryObjects
         /// <summary>
         /// Gets or sets the address of the memory location.
         /// </summary>
-        internal IntPtr Address
+        public IntPtr Address
         {
             get => this.address;
             set
@@ -47,10 +47,13 @@ namespace GameHelper.RemoteMemoryObjects
         }
 
         /// <summary>
-        /// Reads the memory and gather all the data known by this
-        /// Object.
+        /// Reads the memory and gather all the data known by this Object.
         /// </summary>
-        /// <returns>co-routine IWait.</returns>
-        protected abstract IEnumerator<Wait> GatherData();
+        protected abstract void GatherData();
+
+        /// <summary>
+        /// Knows how to clean up the object.
+        /// </summary>
+        protected abstract void CleanUpData();
     }
 }
