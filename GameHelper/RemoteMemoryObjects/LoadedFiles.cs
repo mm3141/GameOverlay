@@ -15,7 +15,6 @@ namespace GameHelper.RemoteMemoryObjects
 
     /// <summary>
     /// Gathers the files loaded in the game for the current area.
-    /// TODO: Make first 2 act not show configurable on the UI.
     /// </summary>
     public class LoadedFiles : RemoteMemoryObjectBase
     {

@@ -125,7 +125,7 @@ namespace GameHelper.Controllers
         private void ClearKnownStatesObjects()
         {
             this.AreaLoading.Address = IntPtr.Zero;
-            this.CurrentStateInGame.Address = default;
+            this.CurrentStateInGame.Address = IntPtr.Zero;
         }
     }
 }
