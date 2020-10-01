@@ -38,7 +38,7 @@ namespace GameHelper.RemoteMemoryObjects
         /// <summary>
         /// Gets the maxiumum number of preload scans that can happen in a given area.
         /// </summary>
-        public static int MaximumPreloadScans { get; } = 3;
+        public static int MaximumPreloadScans { get; } = 2;
 
         /// <summary>
         /// Gets the current iteration of preload scan. Minimum value can be 0, maxiumum value
@@ -65,7 +65,6 @@ namespace GameHelper.RemoteMemoryObjects
         /// <inheritdoc/>
         protected override void GatherData()
         {
-            this.CurrentPreloadScan++;
             var totalFiles = LoadedFilesRootObject.TotalCount;
             var reader = Core.Process.Handle;
             var filesRootObjs = reader.ReadMemoryArray<LoadedFilesRootObject>(this.Address, totalFiles);
@@ -130,6 +129,8 @@ namespace GameHelper.RemoteMemoryObjects
                         currNodeAddress = currNode.Next;
                     }
                 });
+
+                this.CurrentPreloadScan++;
             }
         }
 
@@ -146,7 +147,10 @@ namespace GameHelper.RemoteMemoryObjects
                     {
                         this.Data.Clear();
                         this.GatherData();
-                        yield return new Wait(WaitBetweenScans);
+                        if (i < MaximumPreloadScans - 1)
+                        {
+                            yield return new Wait(WaitBetweenScans);
+                        }
                     }
                 }
             }
