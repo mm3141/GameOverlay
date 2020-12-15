@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Globalization;
     using System.IO;
+    using System.Linq;
     using System.Numerics;
     using Coroutine;
     using GameHelper;
@@ -40,6 +41,13 @@
         private Dictionary<string, PreloadInfo> preloadsFromFile
             = new Dictionary<string, PreloadInfo>();
 
+        private HashSet<string> allPreloadsOfArea = new HashSet<string>();
+        private string DebugDirectory;
+        private string DebugFileName;
+
+        private bool isLastScan =>
+            Core.CurrentAreaLoadedFiles.CurrentPreloadScan == LoadedFiles.MaximumPreloadScans;
+
         public PreloadAlert()
         {
             CoroutineHandler.Start(OnAreaChanged());
@@ -52,6 +60,8 @@
 
         public override void OnEnable()
         {
+            this.DebugDirectory = Path.Join(DllDirectory, "Debug");
+            Directory.CreateDirectory(this.DebugDirectory);
             this.LoadSettings();
             this.LoadImportantPreloadsFromFile();
         }
@@ -86,7 +96,8 @@
             if (this.Settings.DebugMode)
             {
                 ImGui.TextWrapped($"Please wait for all {LoadedFiles.MaximumPreloadScans} " +
-                    $"scans to happen before moving.");
+                    $"scans to happen before moving. Please use diary to record all important " +
+                    $"things in the Area/Zone.");
             }
         }
 
@@ -102,6 +113,13 @@
             }
             ImGui.TextWrapped($"Status: Scanned {Core.CurrentAreaLoadedFiles.CurrentPreloadScan}" +
                 $" times out of {LoadedFiles.MaximumPreloadScans}.");
+            if (this.Settings.DebugMode)
+            {
+                ImGui.TextWrapped($"Please wait for all {LoadedFiles.MaximumPreloadScans} " +
+                    $"iterations before moving.");
+                ImGui.TextWrapped($"File Name: {this.DebugFileName}");
+            }
+
             ImGui.Separator();
             foreach (var keyValuePair in importantPreloadsInArea)
             {
@@ -135,20 +153,68 @@
             ImGui.PopStyleColor();
         }
 
+        private void writeToFile()
+        {
+            if (this.isLastScan)
+            {
+                if (!File.Exists(this.DebugFileName))
+                {
+                    var dataToWrite = this.allPreloadsOfArea.ToList();
+                    dataToWrite.Sort();
+                    File.WriteAllLines(this.DebugFileName, dataToWrite);
+                }
+            }
+        }
+
+        private void CacheForFileWriting(string preload)
+        {
+            if (this.isLastScan)
+            {
+                this.allPreloadsOfArea.Add(preload);
+            }
+        }
+
         private void CacheGameData()
         {
             var files = Core.CurrentAreaLoadedFiles.Data;
-            while (!files.IsEmpty)
+            if (!files.IsEmpty)
             {
-                files.TryTake(out string file);
-                if (importantPreloadsInArea.ContainsKey(file))
+                if (this.Settings.DebugMode)
                 {
-                    continue;
+
                 }
 
-                if (preloadsFromFile.TryGetValue(file, out var ValueTuple))
+                while (!files.IsEmpty)
                 {
-                    importantPreloadsInArea.Add(file, ValueTuple);
+                    files.TryTake(out string file);
+
+                    if (this.Settings.DebugMode)
+                    {
+                        this.CacheForFileWriting(file);
+                    }
+
+                    if (importantPreloadsInArea.ContainsKey(file))
+                    {
+                        continue;
+                    }
+
+                    foreach (var item in preloadsFromFile)
+                    {
+                        if (file.StartsWith(item.Key))
+                        {
+                            importantPreloadsInArea.Add(file, item.Value);
+                            break;
+                        }
+                    }
+                }
+
+                if (this.Settings.DebugMode)
+                {
+                    this.DebugFileName = Path.Join(
+                        this.DebugDirectory,
+                        $"{Core.States.AreaLoading.CurrentAreaName.Trim()}_" +
+                        $"{Core.States.InGameStateObject.Data.AreaHash}.txt");
+                    this.writeToFile();
                 }
             }
         }
@@ -191,7 +257,7 @@
                     var color = Vector4.One;
                     if (data.Length == 3)
                     {
-                        color = this.ConvertToVector4FromStringColor(data[2].Trim());
+                        color = this.ConvertToVector4FromStringColor(data[2].Trim().ToLower());
                     }
 
                     if (String.IsNullOrWhiteSpace(key) ||
@@ -216,20 +282,20 @@
         private Vector4 ConvertToVector4FromStringColor(string argb)
         {
             Vector4 color = Vector4.One;
-            color.W = uint.Parse($"{argb[0]}{argb[1]}", NumberStyles.HexNumber);
-            color.X = uint.Parse($"{argb[2]}{argb[3]}", NumberStyles.HexNumber);
-            color.Y = uint.Parse($"{argb[4]}{argb[5]}", NumberStyles.HexNumber);
-            color.Z = uint.Parse($"{argb[6]}{argb[7]}", NumberStyles.HexNumber);
+            color.W = uint.Parse($"{argb[0]}{argb[1]}", NumberStyles.HexNumber) / 255f;
+            color.X = uint.Parse($"{argb[2]}{argb[3]}", NumberStyles.HexNumber) / 255f;
+            color.Y = uint.Parse($"{argb[4]}{argb[5]}", NumberStyles.HexNumber) / 255f;
+            color.Z = uint.Parse($"{argb[6]}{argb[7]}", NumberStyles.HexNumber) / 255f;
             return color;
         }
 
         private void Cleanup(bool clearPreloadsFromFile)
         {
-
-            importantPreloadsInArea.Clear();
+            this.allPreloadsOfArea.Clear();
+            this.importantPreloadsInArea.Clear();
             if (clearPreloadsFromFile)
             {
-                preloadsFromFile.Clear();
+                this.preloadsFromFile.Clear();
             }
 
         }
