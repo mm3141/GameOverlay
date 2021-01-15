@@ -6,9 +6,7 @@ namespace GameHelper
 {
     using System;
     using System.IO;
-    using ClickableTransparentOverlay;
-    using GameHelper.Plugin;
-    using GameHelper.UI;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// Class executed when the application starts.
@@ -21,7 +19,7 @@ namespace GameHelper
         /// <summary>
         /// function executed when the application starts.
         /// </summary>
-        private static void Main()
+        private static async Task Main()
         {
             AppDomain.CurrentDomain.UnhandledException += (sender, exceptionArgs) =>
             {
@@ -30,16 +28,8 @@ namespace GameHelper
                 Environment.Exit(1);
             };
 
-            if (!Core.GHSettings.ShowTerminal)
-            {
-                Overlay.TerminalWindow = false;
-            }
-
-            PManager.InitializePlugins();
-            SettingsWindow.InitializeCoroutines();
-            Core.InitializeCororutines();
-            Overlay.RunInfiniteLoop(); // Overlay disposes itself before exit.
-            Core.Dispose();
+            using var overlay = new GameOverlay();
+            await overlay.Run();
         }
     }
 }

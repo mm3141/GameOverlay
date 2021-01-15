@@ -11,9 +11,8 @@ namespace GameHelper.Plugin
     using System.Linq;
     using System.Reflection;
     using System.Threading.Tasks;
-    using ClickableTransparentOverlay;
     using Coroutine;
-    using GameHelper.UI;
+    using GameHelper.Settings;
     using GameHelper.Utils;
 
     /// <summary>
@@ -43,14 +42,14 @@ namespace GameHelper.Plugin
         }
 
         = JsonHelper.CreateOrLoadJsonFile<Dictionary<string, PContainer>>(
-            Settings.PluginsMetadataFile);
+            State.PluginsMetadataFile);
 
         /// <summary>
         /// Initlizes the plugin manager by loading all the plugins & their Metadata.
         /// </summary>
         internal static void InitializePlugins()
         {
-            Settings.PluginsDirectory.Create(); // doesn't do anything if already exists.
+            State.PluginsDirectory.Create(); // doesn't do anything if already exists.
             Parallel.ForEach(GetPluginsDirectories(), LoadPlugin);
             CombinePluginAndMetadata();
             Parallel.ForEach(AllPlugins, EnablePluginIfRequired);
@@ -61,7 +60,7 @@ namespace GameHelper.Plugin
 
         private static List<DirectoryInfo> GetPluginsDirectories()
         {
-            return Settings.PluginsDirectory.GetDirectories().Where(
+            return State.PluginsDirectory.GetDirectories().Where(
                 x => (x.Attributes & FileAttributes.Hidden) == 0).ToList();
         }
 
@@ -164,7 +163,7 @@ namespace GameHelper.Plugin
                 }
             }
 
-            JsonHelper.SafeToFile(AllPlugins, Settings.PluginsMetadataFile);
+            JsonHelper.SafeToFile(AllPlugins, State.PluginsMetadataFile);
         }
 
         private static void EnablePluginIfRequired(KeyValuePair<string, PContainer> kv)
@@ -180,7 +179,7 @@ namespace GameHelper.Plugin
             while (true)
             {
                 yield return new Wait(SettingsWindow.TimeToSaveAllSettings);
-                JsonHelper.SafeToFile(AllPlugins, Settings.PluginsMetadataFile);
+                JsonHelper.SafeToFile(AllPlugins, State.PluginsMetadataFile);
             }
         }
 
@@ -200,7 +199,7 @@ namespace GameHelper.Plugin
         {
             while (true)
             {
-                yield return new Wait(Overlay.OnRender);
+                yield return new Wait(GameOverlay.OnRender);
                 foreach (var pluginKeyValue in AllPlugins)
                 {
                     if (pluginKeyValue.Value.Enable)

@@ -2,7 +2,7 @@
 // Copyright (c) None. All rights reserved.
 // </copyright>
 
-namespace GameHelper.UI
+namespace GameHelper.Settings
 {
     using System.Collections.Generic;
     using System.Linq;
@@ -20,7 +20,6 @@ namespace GameHelper.UI
     {
         private static bool isSettingsWindowVisible = true;
         private static string currentlySelectedPlugin = "Core";
-        private static bool disableKeyPress = false;
 
         /// <summary>
         /// Gets the Game Helper closing event. The event is called whenever
@@ -94,18 +93,10 @@ namespace GameHelper.UI
             {
                 case "Core":
                     ImGui.BeginGroup();
-                    ImGui.TextWrapped("NOTE: (Plugins + Core) settings are saved automatically " +
+                    ImGui.TextWrapped("NOTE: (Plugins/Core) Settings are saved automatically " +
                         "when you close the overlay or hide it via F12 button.");
                     ImGui.NewLine();
                     ImGui.Text($"Current Game State: {Core.States.CurrentStateInGame.Name}");
-                    ImGui.Separator();
-                    if (ImGui.Checkbox(
-                        "Show terminal on startup (it should show anyway on close)",
-                        ref Core.GHSettings.ShowTerminal))
-                    {
-                        Overlay.TerminalWindow = Core.GHSettings.ShowTerminal;
-                    }
-
                     ImGui.EndGroup();
                     break;
                 default:
@@ -128,11 +119,9 @@ namespace GameHelper.UI
         {
             while (true)
             {
-                yield return new Wait(Overlay.OnRender);
-                if (!disableKeyPress && NativeMethods.IsKeyPressed(Core.GHSettings.MainMenuHotKey))
+                yield return new Wait(GameOverlay.OnRender);
+                if (NativeMethods.IsKeyPressedAndNotTimeout(Core.GHSettings.MainMenuHotKey))
                 {
-                    disableKeyPress = true;
-                    CoroutineHandler.InvokeLater(new Wait(0.2), () => disableKeyPress = false);
                     isSettingsWindowVisible = !isSettingsWindowVisible;
                     if (!isSettingsWindowVisible)
                     {
@@ -145,14 +134,12 @@ namespace GameHelper.UI
                     continue;
                 }
 
-                bool isOverlayRunning = true;
                 ImGui.SetNextWindowSizeConstraints(new Vector2(800, 600), new Vector2(1024, 1024));
                 var isMainMenuExpanded = ImGui.Begin(
                     "Game Overlay Settings Menu",
-                    ref isOverlayRunning,
+                    ref Core.GHSettings.IsOverlayRunning,
                     ImGuiWindowFlags.NoSavedSettings);
-                Overlay.Close = !isOverlayRunning;
-                if (!isOverlayRunning)
+                if (!Core.GHSettings.IsOverlayRunning)
                 {
                     CoroutineHandler.RaiseEvent(TimeToSaveAllSettings);
                 }
@@ -179,7 +166,7 @@ namespace GameHelper.UI
             while (true)
             {
                 yield return new Wait(TimeToSaveAllSettings);
-                JsonHelper.SafeToFile(Core.GHSettings, Settings.CoreSettingFile);
+                JsonHelper.SafeToFile(Core.GHSettings, State.CoreSettingFile);
             }
         }
     }

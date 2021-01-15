@@ -2,7 +2,7 @@
 // Copyright (c) None. All rights reserved.
 // </copyright>
 
-namespace GameHelper
+namespace GameHelper.Settings
 {
     using System.IO;
     using Newtonsoft.Json;
@@ -12,7 +12,7 @@ namespace GameHelper
     /// <summary>
     /// Game Helper Core Settings.
     /// </summary>
-    internal class Settings
+    internal class State
     {
         /// <summary>
         /// Core Setting File Information.
@@ -33,14 +33,15 @@ namespace GameHelper
         public static readonly DirectoryInfo PluginsDirectory = new DirectoryInfo("Plugins");
 
         /// <summary>
+        /// Gets or sets a value indicating whether the overlay is running or not.
+        /// </summary>
+        [JsonIgnore]
+        public bool IsOverlayRunning = true;
+
+        /// <summary>
         /// Gets or sets hotKey to show/hide the main menu.
         /// </summary>
         public int MainMenuHotKey = 0x7B;
-
-        /// <summary>
-        /// Gets or sets a value indicating whether to show the terminal.
-        /// </summary>
-        public bool ShowTerminal = true;
     }
 
 #pragma warning restore SA1401 // Fields should be private
