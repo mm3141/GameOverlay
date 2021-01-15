@@ -1,15 +1,15 @@
-﻿// <copyright file="ControllerBase.cs" company="None">
+﻿// <copyright file="RemoteControllerBase.cs" company="None">
 // Copyright (c) None. All rights reserved.
 // </copyright>
 
-namespace GameHelper.Controllers
+namespace GameHelper.RemoteControllers
 {
     using System;
     using Coroutine;
 
     /// <summary>
-    /// An abstract class to create the controllers.
-    /// Controllers are basically objects with static
+    /// An abstract class to create the RemoteControllers.
+    /// RemoteControllers are basically objects with static
     /// data in them i.e. their data never changes
     /// while the game is up and running. They are only
     /// updated when the game restarts. If you are thinking
@@ -21,7 +21,7 @@ namespace GameHelper.Controllers
     /// to process data or communicate/inform other controllers/classes
     /// when something has happened.
     /// </summary>
-    public abstract class ControllerBase
+    public abstract class RemoteControllerBase
     {
         private IntPtr address = IntPtr.Zero;
 

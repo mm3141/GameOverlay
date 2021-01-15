@@ -2,7 +2,7 @@
 // Copyright (c) None. All rights reserved.
 // </copyright>
 
-namespace GameHelper.Controllers
+namespace GameHelper.RemoteControllers
 {
     using System;
     using System.Collections.Generic;
@@ -23,7 +23,7 @@ namespace GameHelper.Controllers
     /// Limitation: This class will not open a game process if multiple processes match
     /// the name because it does not know which process to select.
     /// </summary>
-    internal class GameProcess : ControllerBase
+    internal class GameProcess : RemoteControllerBase
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GameProcess"/> class.

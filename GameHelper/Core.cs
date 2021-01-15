@@ -7,7 +7,7 @@ namespace GameHelper
     using System;
     using System.Collections.Generic;
     using Coroutine;
-    using GameHelper.Controllers;
+    using GameHelper.RemoteControllers;
     using GameHelper.RemoteMemoryObjects;
     using GameHelper.Settings;
     using GameHelper.Utils;

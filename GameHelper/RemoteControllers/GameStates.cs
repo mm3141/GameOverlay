@@ -2,7 +2,7 @@
 // Copyright (c) None. All rights reserved.
 // </copyright>
 
-namespace GameHelper.Controllers
+namespace GameHelper.RemoteControllers
 {
     using System;
     using System.Collections.Generic;
@@ -15,7 +15,7 @@ namespace GameHelper.Controllers
     /// <summary>
     /// Reads and stores the global states of the game.
     /// </summary>
-    public class GameStates : ControllerBase
+    public class GameStates : RemoteControllerBase
     {
         /// <summary>
         /// Gets a dictionary containing all the Game States addresses.
