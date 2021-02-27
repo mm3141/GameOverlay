@@ -2,19 +2,19 @@
 // Copyright (c) None. All rights reserved.
 // </copyright>
 
-namespace GameHelper.RemoteMemoryObjects.States
+namespace GameHelper.RemoteObjects.States
 {
     using System;
     using System.Collections.Generic;
     using Coroutine;
     using GameHelper.RemoteEnums;
-    using GameHelper.RemoteMemoryObjects.States.InGameStateObjects;
-    using GameOffsets.RemoteMemoryObjects.States;
+    using GameHelper.RemoteObjects.States.InGameStateObjects;
+    using GameOffsets.Objects.States;
 
     /// <summary>
     /// Reads InGameState Game Object.
     /// </summary>
-    public class InGameState : RemoteMemoryObjectBase
+    public class InGameState : RemoteObjectBase
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="InGameState"/> class.
@@ -23,19 +23,19 @@ namespace GameHelper.RemoteMemoryObjects.States
         internal InGameState(IntPtr address)
             : base(address)
         {
-            CoroutineHandler.Start(this.OnTick());
+            CoroutineHandler.Start(this.OnPerFrame());
         }
 
         /// <summary>
-        /// Gets the InGameStateData.
+        /// Gets the data related to the current area.
         /// </summary>
-        public InGameStateData Data
+        public CurrentAreaData Data
         {
             get;
             private set;
         }
 
-        = new InGameStateData(IntPtr.Zero);
+        = new CurrentAreaData(IntPtr.Zero);
 
         /// <inheritdoc/>
         protected override void CleanUpData()
@@ -44,22 +44,23 @@ namespace GameHelper.RemoteMemoryObjects.States
         }
 
         /// <inheritdoc/>
-        protected override void GatherData()
+        protected override void UpdateData()
         {
             var reader = Core.Process.Handle;
             var data = reader.ReadMemory<InGameStateOffset>(this.Address);
             this.Data.Address = data.LocalData;
         }
 
-        private IEnumerator<Wait> OnTick()
+        private IEnumerator<Wait> OnPerFrame()
         {
+            yield return new Wait(0);
             while (true)
             {
-                yield return new Wait(0.5);
+                yield return new Wait(GameOverlay.PerFrameDataUpdate);
                 if (this.Address != IntPtr.Zero
                     && Core.States.CurrentStateInGame.Name == GameStateTypes.InGameState)
                 {
-                    this.GatherData();
+                    this.UpdateData();
                 }
                 else
                 {

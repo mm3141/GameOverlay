@@ -45,7 +45,7 @@ namespace GameHelper.Plugin
             State.PluginsMetadataFile);
 
         /// <summary>
-        /// Initlizes the plugin manager by loading all the plugins & their Metadata.
+        /// Initlizes the plugin manager by loading all the plugins and their Metadata.
         /// </summary>
         internal static void InitializePlugins()
         {

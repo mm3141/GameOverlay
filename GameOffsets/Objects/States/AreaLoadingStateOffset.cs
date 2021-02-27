@@ -1,4 +1,4 @@
-﻿namespace GameOffsets.RemoteMemoryObjects.States
+﻿namespace GameOffsets.Objects.States
 {
     using System;
     using System.Runtime.InteropServices;

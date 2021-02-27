@@ -1,4 +1,4 @@
-﻿namespace GameOffsets.RemoteMemoryObjects
+﻿namespace GameOffsets.Objects
 {
     using System;
     using System.Runtime.InteropServices;
@@ -13,7 +13,7 @@
         [FieldOffset(0x18)] public StdVector FilesVectorUseless;
         [FieldOffset(0x30)] public long TemplateId1;
         [FieldOffset(0x38)] public long TemplateId2; // Not sure but works!
-        public static int TotalCount = 256;
+        public static int TotalCount = 128;
     }
 
     [StructLayout(LayoutKind.Explicit, Pack = 1)]

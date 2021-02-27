@@ -9,7 +9,7 @@
     using Coroutine;
     using GameHelper;
     using GameHelper.Plugin;
-    using GameHelper.RemoteMemoryObjects;
+    using GameHelper.RemoteObjects;
     using ImGuiNET;
     using Newtonsoft.Json;
 
@@ -103,28 +103,28 @@
 
         public override void DrawUI()
         {
-            CacheGameData();
+            //CacheGameData();
             BeginImGuiWindow();
-            if (!String.IsNullOrEmpty(ERRORMSG))
-            {
-                ImGui.TextColored(new Vector4(1f, 0f, 0f, 1f), ERRORMSG);
-                EndImGuiWindow();
-                return;
-            }
-            ImGui.TextWrapped($"Status: Scanned {Core.CurrentAreaLoadedFiles.CurrentPreloadScan}" +
-                $" times out of {LoadedFiles.MaximumPreloadScans}.");
-            if (this.Settings.DebugMode)
-            {
-                ImGui.TextWrapped($"Please wait for all {LoadedFiles.MaximumPreloadScans} " +
-                    $"iterations before moving.");
-                ImGui.TextWrapped($"File Name: {this.DebugFileName}");
-            }
+            //if (!String.IsNullOrEmpty(ERRORMSG))
+            //{
+            //    ImGui.TextColored(new Vector4(1f, 0f, 0f, 1f), ERRORMSG);
+            //    EndImGuiWindow();
+            //    return;
+            //}
+            //ImGui.TextWrapped($"Status: Scanned {Core.CurrentAreaLoadedFiles.CurrentPreloadScan}" +
+            //    $" times out of {LoadedFiles.MaximumPreloadScans}.");
+            //if (this.Settings.DebugMode)
+            //{
+            //    ImGui.TextWrapped($"Please wait for all {LoadedFiles.MaximumPreloadScans} " +
+            //        $"iterations before moving.");
+            //    ImGui.TextWrapped($"File Name: {this.DebugFileName}");
+            //}
 
-            ImGui.Separator();
-            foreach (var keyValuePair in importantPreloadsInArea)
-            {
-                ImGui.TextColored(keyValuePair.Value.Color, keyValuePair.Value.DisplayName);
-            }
+            //ImGui.Separator();
+            //foreach (var keyValuePair in importantPreloadsInArea)
+            //{
+            //    ImGui.TextColored(keyValuePair.Value.Color, keyValuePair.Value.DisplayName);
+            //}
 
             EndImGuiWindow();
         }

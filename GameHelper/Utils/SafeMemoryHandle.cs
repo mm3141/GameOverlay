@@ -6,7 +6,9 @@ namespace GameHelper.Utils
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Runtime.ConstrainedExecution;
+    using System.Runtime.InteropServices;
     using System.Security.Permissions;
     using System.Text;
     using GameOffsets.Native;
@@ -19,6 +21,9 @@ namespace GameHelper.Utils
     /// </summary>
     internal class SafeMemoryHandle : SafeHandleZeroOrMinusOneIsInvalid
     {
+        private const int MaxInfiniteCounter = 3;
+        private int readStdMapInfiniteCounter = 0;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="SafeMemoryHandle"/> class.
         /// </summary>
@@ -33,11 +38,6 @@ namespace GameHelper.Utils
         /// </summary>
         /// <param name="processId">processId you want to access.</param>
         [SecurityPermission(SecurityAction.LinkDemand, UnmanagedCode = true)]
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SafeMemoryHandle"/> class.
-        /// </summary>
-        /// <param name="processId">pid of the process.</param>
         internal SafeMemoryHandle(int processId)
             : base(true)
         {
@@ -88,6 +88,30 @@ namespace GameHelper.Utils
         }
 
         /// <summary>
+        /// Reads the std::vector into an array.
+        /// </summary>
+        /// <typeparam name="T">Object type to read.</typeparam>
+        /// <param name="nativeContainer">StdVector address to read from.</param>
+        /// <returns>An array of elements of type T.</returns>
+        internal T[] ReadStdVector<T>(StdVector nativeContainer)
+            where T : unmanaged
+        {
+            var typeSize = Marshal.SizeOf<T>();
+            var length = nativeContainer.Last.ToInt64() - nativeContainer.First.ToInt64();
+            if (length == 0)
+            {
+                return new T[0];
+            }
+
+            if (length % typeSize != 0)
+            {
+                throw new ArgumentException($"The buffer is not aligned for '{typeof(T).Name}'");
+            }
+
+            return this.ReadMemoryArray<T>(nativeContainer.First, (int)length / typeSize);
+        }
+
+        /// <summary>
         /// Reads the process memory as an array.
         /// </summary>
         /// <typeparam name="T">Array type to read.</typeparam>
@@ -111,7 +135,7 @@ namespace GameHelper.Utils
                     this.handle, address, buffer, out IntPtr numBytesRead))
                 {
                     throw new Exception($"Failed To Read the Memory" +
-                        $"due to Error Number: 0x{NativeWrapper.LastError:X}");
+                        $" due to Error Number: 0x{NativeWrapper.LastError:X}");
                 }
 
                 if (numBytesRead.ToInt32() < nsize)
@@ -136,15 +160,21 @@ namespace GameHelper.Utils
         internal string ReadStdWString(StdWString nativecontainer)
         {
             int length = nativecontainer.Length.ToInt32();
-            if (length <= 0 || length > 1000)
+            const int MaxAllowed = 1000;
+            if (length < 0 || length > MaxAllowed)
             {
                 throw new Exception($"ERROR: Reading std::wstring, Length is invalid {length}");
             }
 
             int capacity = nativecontainer.Capacity.ToInt32();
-            if (capacity <= 0 || capacity > 1000)
+            if (capacity < 0 || capacity > MaxAllowed)
             {
                 throw new Exception($"ERROR: Reading std::wstring, Capacity is invalid {capacity}");
+            }
+
+            if (length == 0 || capacity == 0)
+            {
+                return string.Empty;
             }
 
             if (capacity <= 8)
@@ -152,7 +182,8 @@ namespace GameHelper.Utils
                 byte[] buffer = BitConverter.GetBytes(nativecontainer.Buffer.ToInt64());
                 string ret = Encoding.Unicode.GetString(buffer);
                 buffer = BitConverter.GetBytes(nativecontainer.ReservedBytes.ToInt64());
-                return ret + Encoding.Unicode.GetString(buffer);
+                ret += Encoding.Unicode.GetString(buffer);
+                return ret[0..length];
             }
             else
             {
@@ -162,21 +193,47 @@ namespace GameHelper.Utils
         }
 
         /// <summary>
+        /// Reads the string.
+        /// </summary>
+        /// <param name="address">pointer to the string.</param>
+        /// <returns>string read.</returns>
+        internal string ReadString(IntPtr address)
+        {
+            var buffer = this.ReadMemoryArray<byte>(address, 128);
+            int count = Array.IndexOf<byte>(buffer, 0x00, 0);
+            return Encoding.ASCII.GetString(buffer, 0, count);
+        }
+
+        /// <summary>
         /// Reads the std::map into a dictionary.
         /// </summary>
         /// <typeparam name="TKey">key type of the stdmap.</typeparam>
         /// <typeparam name="TValue">value type of the stdmap.</typeparam>
         /// <param name="nativeContainer">native object of the std::map.</param>
+        /// <param name="validate_size">Validate the total while loop iteration with given map size.</param>
+        /// <param name="keyfilter">Filter the keys based on the function return value.</param>
         /// <returns>a dictonary containing the keys and the values of the stdmap.</returns>
-        internal Dictionary<TKey, TValue> ReadStdMap<TKey, TValue>(StdMap nativeContainer)
+        internal Dictionary<TKey, TValue> ReadStdMap<TKey, TValue>(
+            StdMap nativeContainer,
+            bool validate_size,
+            Func<TKey, bool> keyfilter = null)
             where TKey : unmanaged
             where TValue : unmanaged
         {
+            const int MaxAllowed = 10000;
             var size = nativeContainer.Size;
             var collection = new Dictionary<TKey, TValue>();
-            if (size <= 0 || size > 1000)
+            if (size == 0)
             {
-                throw new Exception($"ERROR: Reading HashMap failed, Size is invalid {size}.");
+                return collection;
+            }
+            else if (size < 0 || size > MaxAllowed)
+            {
+#if DEBUG
+                Console.WriteLine($"[DEBUG][{DateTime.Now}][SafeMemoryHandle:187]" +
+                    " Reading HashMap failed, Size is invalid {size}. Max allowed: {MaxAllowed}.");
+#endif
+                return collection;
             }
 
             var childrens = new Stack<StdMapNode<TKey, TValue>>();
@@ -188,16 +245,49 @@ namespace GameHelper.Utils
             {
                 var cur = childrens.Pop();
                 counter++;
-                if (counter > size)
+                if (validate_size)
                 {
-                    throw new Exception("ERROR: Reading HashMap failed" +
-                        $" current counter {counter} is greater than" +
-                        $" HashMap size ({size}).");
+                    if (counter > size)
+                    {
+                        throw new Exception("ERROR: Reading HashMap failed" +
+                            $" current loop counter {counter} is greater than" +
+                            $" the HashMap size ({size}).");
+                    }
+                }
+                else
+                {
+                    if (counter > MaxAllowed)
+                    {
+                        this.readStdMapInfiniteCounter++;
+#if DEBUG
+                        Console.WriteLine($"ERROR ({this.readStdMapInfiniteCounter}):" +
+                            $" Reading HashMap failed current counter {counter} is greater than" +
+                            $" Maximum allowed HashMap size ({MaxAllowed}).");
+#endif
+                        if (this.readStdMapInfiniteCounter > MaxInfiniteCounter)
+                        {
+                            throw new Exception("ERROR: Reading HashMap failed" +
+                                $" current counter {counter} is greater than" +
+                                $" Maximum allowed HashMap size ({MaxAllowed}).");
+                        }
+
+                        break;
+                    }
                 }
 
-                if (!cur.IsNil)
+                if (!cur.IsNil && (keyfilter == null || keyfilter(cur.Data.Key)))
                 {
-                    collection.Add(cur.Data.Key, cur.Data.Value);
+#if DEBUG
+                    if (!collection.TryAdd(cur.Data.Key, cur.Data.Value))
+                    {
+                        if (!collection[cur.Data.Key].Equals(cur.Data.Value))
+                        {
+                            Console.WriteLine($"ERROR: Entity {cur.Data.Key} already exists, old: {collection[cur.Data.Key]} new: {cur.Data.Value}.");
+                        }
+                    }
+#elif RELEASE
+                    collection.TryAdd(cur.Data.Key, cur.Data.Value);
+#endif
                 }
 
                 var left = this.ReadMemory<StdMapNode<TKey, TValue>>(cur.Left);
@@ -214,6 +304,121 @@ namespace GameHelper.Utils
             }
 
             return collection;
+        }
+
+        /// <summary>
+        /// Reads the std::map into a List.
+        /// </summary>
+        /// <typeparam name="TKey">key type of the stdmap.</typeparam>
+        /// <typeparam name="TValue">value type of the stdmap.</typeparam>
+        /// <param name="nativeContainer">native object of the std::map.</param>
+        /// <param name="validate_size">Validate the total while loop iteration with given map size.</param>
+        /// <param name="keyfilter">Filter the keys based on the function return value.</param>
+        /// <returns>a list containing the keys and the values of the stdmap as named tuple.</returns>
+        internal List<(TKey Key, TValue Value)> ReadStdMapAsList<TKey, TValue>(
+            StdMap nativeContainer,
+            bool validate_size,
+            Func<TKey, bool> keyfilter = null)
+            where TKey : unmanaged
+            where TValue : unmanaged
+        {
+            const int MaxAllowed = 10000;
+            var size = nativeContainer.Size;
+            var collection = new List<(TKey Key, TValue Value)>();
+            if (size <= 0 || size > MaxAllowed)
+            {
+                return collection;
+            }
+
+            var childrens = new Stack<StdMapNode<TKey, TValue>>();
+            var head = this.ReadMemory<StdMapNode<TKey, TValue>>(nativeContainer.Head);
+            var parent = this.ReadMemory<StdMapNode<TKey, TValue>>(head.Parent);
+            childrens.Push(parent);
+            ulong counter = 0;
+            while (childrens.Count != 0)
+            {
+                var cur = childrens.Pop();
+                counter++;
+                if (validate_size)
+                {
+                    // Validating for read size vs actual size.
+                    if (counter > size)
+                    {
+                        throw new Exception("ERROR: Reading HashMap failed" +
+                            $" current loop counter {counter} is greater than" +
+                            $" the HashMap size ({size}).");
+                    }
+                }
+                else
+                {
+                    // Validating for infinite loop.
+                    if (counter > MaxAllowed)
+                    {
+                        this.readStdMapInfiniteCounter++;
+#if DEBUG
+                        Console.WriteLine($"ERROR ({this.readStdMapInfiniteCounter}):" +
+                            $" Reading HashMap failed current counter {counter} is greater than" +
+                            $" Maximum allowed HashMap size ({MaxAllowed}).");
+#endif
+                        if (this.readStdMapInfiniteCounter > MaxInfiniteCounter)
+                        {
+                            throw new Exception("ERROR: Reading HashMap failed" +
+                                $" current counter {counter} is greater than" +
+                                $" Maximum allowed HashMap size ({MaxAllowed}).");
+                        }
+
+                        break;
+                    }
+                }
+
+                if (!cur.IsNil && (keyfilter == null || keyfilter(cur.Data.Key)))
+                {
+                    collection.Add((cur.Data.Key, cur.Data.Value));
+                }
+
+                var left = this.ReadMemory<StdMapNode<TKey, TValue>>(cur.Left);
+                if (!left.IsNil)
+                {
+                    childrens.Push(left);
+                }
+
+                var right = this.ReadMemory<StdMapNode<TKey, TValue>>(cur.Right);
+                if (!right.IsNil)
+                {
+                    childrens.Push(right);
+                }
+            }
+
+            return collection;
+        }
+
+        /// <summary>
+        /// Reads the StdList into a List.
+        /// </summary>
+        /// <typeparam name="TValue">StdList element structure.</typeparam>
+        /// <param name="nativeContainer">native object of the std::list.</param>
+        /// <returns>List containing TValue elements.</returns>
+        internal List<TValue> ReadStdList<TValue>(StdList nativeContainer)
+            where TValue : unmanaged
+        {
+            var retList = new List<TValue>();
+            var currNodeAddress = this.ReadMemory<StdListNode>(nativeContainer.Head).Next;
+            while (currNodeAddress != nativeContainer.Head)
+            {
+                var currNode = this.ReadMemory<StdListNode<TValue>>(currNodeAddress);
+                if (currNodeAddress == IntPtr.Zero)
+                {
+                    Console.WriteLine("Terminating Preloads finding because of" +
+                        "unexpected 0x00 found. This is normal if it happens " +
+                        "after closing the game, otherwise report it.");
+                    break;
+                }
+
+                retList.Add(currNode.Data);
+                currNodeAddress = currNode.Next;
+            }
+
+            return retList;
         }
 
         /// <summary>

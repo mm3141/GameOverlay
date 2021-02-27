@@ -7,11 +7,10 @@ namespace GameHelper.RemoteEnums
     /// <summary>
     /// Gets all known states of the game.
     /// NOTE: GameNotLoaded means game isn't up and running.
-    /// NOTE: In case of new enum, do update <see cref="CurrentState"/> class.
     /// </summary>
     public enum GameStateTypes
     {
-#pragma warning disable SA1602 // Enumeration items should be documented
+#pragma warning disable CS1591, SA1602
         GameNotLoaded,
         InGameState,
         PreGameState,
@@ -25,6 +24,6 @@ namespace GameHelper.RemoteEnums
         CreditsState,
         AreaLoadingState,
         ChangePasswordState,
-#pragma warning restore SA1602 // Enumeration items should be documented
+#pragma warning restore CS1591, SA1602
     }
 }

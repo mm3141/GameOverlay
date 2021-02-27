@@ -15,7 +15,7 @@ namespace GameHelper.RemoteControllers
 
     /// <summary>
     /// Allows process manipulation. It uses the (time/event based) co-routines
-    /// to continuously monitor & open a process with the specific name. It exposes
+    /// to continuously monitor and open a process with the specific name. It exposes
     /// variables/events for the caller to use.
     ///
     /// Base class OnControllerReady is only triggered when all static addresses are found.
@@ -77,7 +77,7 @@ namespace GameHelper.RemoteControllers
         internal SafeMemoryHandle Handle { get; private set; } = null;
 
         /// <summary>
-        /// Gets the game size & position with respect to the monitor screen.
+        /// Gets the game size and position with respect to the monitor screen.
         /// </summary>
         internal Rectangle WindowArea { get; private set; } = Rectangle.Empty;
 

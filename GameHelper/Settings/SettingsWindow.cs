@@ -10,6 +10,7 @@ namespace GameHelper.Settings
     using ClickableTransparentOverlay;
     using Coroutine;
     using GameHelper.Plugin;
+    using GameHelper.RemoteObjects.States.InGameStateObjects;
     using GameHelper.Utils;
     using ImGuiNET;
 
@@ -30,7 +31,6 @@ namespace GameHelper.Settings
         /// <summary>
         /// Initializes the Main Menu.
         /// </summary>
-        /// <param name="settings">CoreSettings instance to associate with the MainMenu.</param>
         internal static void InitializeCoroutines()
         {
             CoroutineHandler.Start(SaveGameHelperSettings());
@@ -97,6 +97,8 @@ namespace GameHelper.Settings
                         "when you close the overlay or hide it via F12 button.");
                     ImGui.NewLine();
                     ImGui.Text($"Current Game State: {Core.States.CurrentStateInGame.Name}");
+                    var _ = Core.States.InGameStateObject.Data.InGameStateDataCoroutine;
+                    ImGui.Text($"InGameStateDataTime: {_.AverageMoveNextTime.TotalMilliseconds}");
                     ImGui.EndGroup();
                     break;
                 default:

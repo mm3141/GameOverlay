@@ -8,18 +8,13 @@ namespace GameHelper.RemoteControllers
     using Coroutine;
 
     /// <summary>
-    /// An abstract class to create the RemoteControllers.
+    /// An abstract class to create the <see cref="RemoteControllers"/>.
     /// RemoteControllers are basically objects with static
     /// data in them i.e. their data never changes
     /// while the game is up and running. They are only
     /// updated when the game restarts. If you are thinking
     /// of creating a Controller whos data refreshes again and
-    /// again while the game is running, make it a RemoteMemoryObject
-    /// rather than a controller.
-    ///
-    /// NOTE: all controllers uses (time/event based) coroutines
-    /// to process data or communicate/inform other controllers/classes
-    /// when something has happened.
+    /// again while the game is running, make it a <see cref="RemoteObjects"/>.
     /// </summary>
     public abstract class RemoteControllerBase
     {
@@ -41,13 +36,8 @@ namespace GameHelper.RemoteControllers
         }
 
         /// <summary>
-        /// Gets the Controller Ready to use event. The purpose
-        /// of this event is to let the other classes/controllers
-        /// know when this controller has properly initilized and is
-        /// ready to use.
-        ///
-        /// NOTE: Normally this is triggered once per game restart
-        /// since controllers addresses/data never changes during the game.
+        /// Gets the event indicating if the Controller is Ready or not.
+        /// Ideally, this should only be triggered once per game.
         /// </summary>
         internal Event OnControllerReady { get; private set; } = new Event();
 

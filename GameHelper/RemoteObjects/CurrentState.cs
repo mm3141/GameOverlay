@@ -2,21 +2,21 @@
 // Copyright (c) None. All rights reserved.
 // </copyright>
 
-namespace GameHelper.RemoteMemoryObjects
+namespace GameHelper.RemoteObjects
 {
     using System;
     using System.Collections.Generic;
     using Coroutine;
     using GameHelper.RemoteEnums;
     using GameHelper.Utils;
-    using GameOffsets.Controllers;
+    using GameOffsets.Controller;
     using GameOffsets.Native;
 
     /// <summary>
     /// Points to the current state information object in
     /// the game and cache it's value.
     /// </summary>
-    internal class CurrentState : RemoteMemoryObjectBase
+    internal class CurrentState : RemoteObjectBase
     {
         private IntPtr currentStateAddress = IntPtr.Zero;
         private GameStateTypes name = GameStateTypes.GameNotLoaded;
@@ -28,7 +28,7 @@ namespace GameHelper.RemoteMemoryObjects
         internal CurrentState(IntPtr address)
             : base(address)
         {
-            CoroutineHandler.Start(this.OnTick());
+            CoroutineHandler.Start(this.OnPerFrame());
         }
 
         /// <summary>
@@ -60,10 +60,10 @@ namespace GameHelper.RemoteMemoryObjects
         }
 
         /// <inheritdoc/>
-        protected override void GatherData()
+        protected override void UpdateData()
         {
             var reader = Core.Process.Handle;
-            var data = reader.ReadMemory<GameStateObject>(this.Address);
+            var data = reader.ReadMemory<GameStateOffset>(this.Address);
             IntPtr stateAddress = this.GetSecondLastPtr(reader, data.CurrentStateOffset1);
             if (stateAddress != IntPtr.Zero && stateAddress != this.currentStateAddress)
             {
@@ -79,14 +79,15 @@ namespace GameHelper.RemoteMemoryObjects
             }
         }
 
-        private IEnumerator<Wait> OnTick()
+        private IEnumerator<Wait> OnPerFrame()
         {
+            yield return new Wait(0);
             while (true)
             {
-                yield return new Wait(0.5);
+                yield return new Wait(GameOverlay.PerFrameDataUpdate);
                 if (this.Address != IntPtr.Zero)
                 {
-                    this.GatherData();
+                    this.UpdateData();
                 }
                 else
                 {
@@ -97,23 +98,14 @@ namespace GameHelper.RemoteMemoryObjects
 
         private GameStateTypes ConvertStringToEnum(string data)
         {
-            return data switch
+            if (Enum.TryParse<GameStateTypes>(data, out var result))
             {
-                nameof(GameStateTypes.GameNotLoaded) => GameStateTypes.GameNotLoaded,
-                nameof(GameStateTypes.InGameState) => GameStateTypes.InGameState,
-                nameof(GameStateTypes.PreGameState) => GameStateTypes.PreGameState,
-                nameof(GameStateTypes.WaitingState) => GameStateTypes.WaitingState,
-                nameof(GameStateTypes.SelectCharacterState) => GameStateTypes.SelectCharacterState,
-                nameof(GameStateTypes.LoadingState) => GameStateTypes.LoadingState,
-                nameof(GameStateTypes.LoginState) => GameStateTypes.LoadingState,
-                nameof(GameStateTypes.CreateCharacterState) => GameStateTypes.CreateCharacterState,
-                nameof(GameStateTypes.DeleteCharacterState) => GameStateTypes.DeleteCharacterState,
-                nameof(GameStateTypes.EscapeState) => GameStateTypes.EscapeState,
-                nameof(GameStateTypes.CreditsState) => GameStateTypes.CreditsState,
-                nameof(GameStateTypes.AreaLoadingState) => GameStateTypes.AreaLoadingState,
-                nameof(GameStateTypes.ChangePasswordState) => GameStateTypes.ChangePasswordState,
-                _ => throw new Exception($"New GameStateTypes discovered: {data}"),
-            };
+                return result;
+            }
+            else
+            {
+                throw new Exception($"New GameStateTypes discovered: {data}");
+            }
         }
 
         private IntPtr GetSecondLastPtr(SafeMemoryHandle reader, StdVector vector)

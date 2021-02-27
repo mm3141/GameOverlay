@@ -7,9 +7,9 @@ namespace GameHelper.RemoteControllers
     using System;
     using System.Collections.Generic;
     using Coroutine;
-    using GameHelper.RemoteMemoryObjects;
-    using GameHelper.RemoteMemoryObjects.States;
-    using GameOffsets.Controllers;
+    using GameHelper.RemoteObjects;
+    using GameHelper.RemoteObjects.States;
+    using GameOffsets.Controller;
     using GameOffsets.Native;
 
     /// <summary>
@@ -82,11 +82,12 @@ namespace GameHelper.RemoteControllers
         private void UpdateAllStates()
         {
             var reader = Core.Process.Handle;
-            var staticAddressData = reader.ReadMemory<GameStateStaticObject>(this.Address);
-            var gameStateData = reader.ReadMemory<GameStateObject>(staticAddressData.GameState);
-            var states = reader.ReadStdMap<StdWString, IntPtr>(gameStateData.States);
-            foreach (var state in states)
+            var staticAddressData = reader.ReadMemory<GameStateStaticOffset>(this.Address);
+            var gameStateData = reader.ReadMemory<GameStateOffset>(staticAddressData.GameState);
+            var states = reader.ReadStdMapAsList<StdWString, IntPtr>(gameStateData.States, true);
+            for (int i = 0; i < states.Count; i++)
             {
+                var state = states[i];
                 string name = reader.ReadStdWString(state.Key);
                 this.UpdateKnownStatesObjects(name, state.Value);
                 if (this.AllStates.ContainsKey(name))
@@ -103,7 +104,7 @@ namespace GameHelper.RemoteControllers
         }
 
         /// <summary>
-        /// Updates the known states RemoteMemoryObjects and silently skips the unknown ones.
+        /// Updates the known states Objects and silently skips the unknown ones.
         /// </summary>
         /// <param name="name">State name.</param>
         /// <param name="address">State address.</param>

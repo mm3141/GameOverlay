@@ -16,6 +16,11 @@ namespace GameHelper
     internal class GameOverlay : Overlay
     {
         /// <summary>
+        /// To Update data every frame before rendering.
+        /// </summary>
+        internal static readonly Event PerFrameDataUpdate = new Event();
+
+        /// <summary>
         /// To submit ImGui code for generating the UI.
         /// </summary>
         internal static readonly Event OnRender = new Event();
@@ -42,6 +47,7 @@ namespace GameHelper
         protected override Task Render()
         {
             CoroutineHandler.Tick(ImGui.GetIO().DeltaTime);
+            CoroutineHandler.RaiseEvent(PerFrameDataUpdate);
             CoroutineHandler.RaiseEvent(OnRender);
             if (!Core.GHSettings.IsOverlayRunning)
             {

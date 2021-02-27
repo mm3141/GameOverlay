@@ -2,18 +2,18 @@
 // Copyright (c) None. All rights reserved.
 // </copyright>
 
-namespace GameHelper.RemoteMemoryObjects.States
+namespace GameHelper.RemoteObjects.States
 {
     using System;
     using System.Collections.Generic;
     using Coroutine;
     using GameHelper.RemoteEnums;
-    using GameOffsets.RemoteMemoryObjects.States;
+    using GameOffsets.Objects.States;
 
     /// <summary>
     /// Reads AreaLoadingState Game Object.
     /// </summary>
-    public sealed class AreaLoadingState : RemoteMemoryObjectBase
+    public sealed class AreaLoadingState : RemoteObjectBase
     {
         private AreaLoadingStateOffset classData = default;
 
@@ -24,7 +24,7 @@ namespace GameHelper.RemoteMemoryObjects.States
         internal AreaLoadingState(IntPtr address)
             : base(address)
         {
-            CoroutineHandler.Start(this.OnTick());
+            CoroutineHandler.Start(this.OnPerFrame());
             CoroutineHandler.Start(this.OnGameStateChange());
         }
 
@@ -51,7 +51,8 @@ namespace GameHelper.RemoteMemoryObjects.States
         /// doesn't guarantees a certian order in execution of functions. In the future,
         /// if inter-dependicies gets out of control we might have to ditch co-routines
         /// for AreaChange scenario. So, use this event if your class can independently
-        /// GatherData, otherwise use AreaChanged.
+        /// UpdateData, otherwise use AreaChanged. This class data is already loaded when
+        /// this event is called.
         /// </summary>
         internal Event AreaChangeDetected { get; private set; } = new Event();
 
@@ -69,7 +70,7 @@ namespace GameHelper.RemoteMemoryObjects.States
         }
 
         /// <inheritdoc/>
-        protected override void GatherData()
+        protected override void UpdateData()
         {
             var reader = Core.Process.Handle;
             var data = reader.ReadMemory<AreaLoadingStateOffset>(this.Address);
@@ -91,14 +92,15 @@ namespace GameHelper.RemoteMemoryObjects.States
             }
         }
 
-        private IEnumerator<Wait> OnTick()
+        private IEnumerator<Wait> OnPerFrame()
         {
+            yield return new Wait(0);
             while (true)
             {
-                yield return new Wait(0.5);
+                yield return new Wait(GameOverlay.PerFrameDataUpdate);
                 if (this.Address != IntPtr.Zero)
                 {
-                    this.GatherData();
+                    this.UpdateData();
                 }
             }
         }

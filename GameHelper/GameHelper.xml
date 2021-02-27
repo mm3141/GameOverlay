@@ -1,0 +1,997 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>GameHelper</name>
+    </assembly>
+    <members>
+        <member name="T:GameHelper.Core">
+            <summary>
+            Main Class to init all the controllers.
+            NOTE: Upon application startup, this class automatically loads the settings
+            from the file (or create a new one if it doesn't exists).
+            </summary>
+        </member>
+        <member name="P:GameHelper.Core.States">
+            <summary>
+            Gets the GameStates instance. For details read class description.
+            </summary>
+        </member>
+        <member name="P:GameHelper.Core.CurrentAreaLoadedFiles">
+            <summary>
+            Gets the files loaded for the current area.
+            </summary>
+        </member>
+        <member name="P:GameHelper.Core.AreaChangeCounter">
+            <summary>
+            Gets the AreaChangeCounter instance. For details read class description.
+            </summary>
+        </member>
+        <member name="P:GameHelper.Core.Process">
+            <summary>
+            Gets the GameProcess instance. For details read class description.
+            </summary>
+        </member>
+        <member name="P:GameHelper.Core.GHSettings">
+            <summary>
+            Gets the GameHelper settings.
+            </summary>
+        </member>
+        <member name="M:GameHelper.Core.InitializeCororutines">
+            <summary>
+            Initializes the <see cref="T:GameHelper.Core"/> class coroutines.
+            </summary>
+        </member>
+        <member name="M:GameHelper.Core.Dispose">
+            <summary>
+            Cleans up all the resources taken by the application core.
+            </summary>
+        </member>
+        <member name="M:GameHelper.Core.UpdateStatesData">
+            <summary>
+            Co-routine to update the address where the Game States are loaded in the game memory.
+            </summary>
+            <returns>co-routine IWait.</returns>
+        </member>
+        <member name="M:GameHelper.Core.UpdateFilesData">
+            <summary>
+            Co-routine to update the address where the Files are loaded in the game memory.
+            </summary>
+            <returns>co-routine IWait.</returns>
+        </member>
+        <member name="M:GameHelper.Core.UpdateAreaChangeData">
+            <summary>
+            Co-routine to update the address where AreaChange object is loaded in the game memory.
+            </summary>
+            <returns>co-routine IWait.</returns>
+        </member>
+        <member name="M:GameHelper.Core.GameClosedActions">
+            <summary>
+            Co-routine to set All controllers addresses to Zero,
+            once the game closes.
+            </summary>
+            <returns>co-routine IWait.</returns>
+        </member>
+        <member name="T:GameHelper.GameOverlay">
+            <inheritdoc/>
+        </member>
+        <member name="F:GameHelper.GameOverlay.PerFrameDataUpdate">
+            <summary>
+            To Update data every frame before rendering.
+            </summary>
+        </member>
+        <member name="F:GameHelper.GameOverlay.OnRender">
+            <summary>
+            To submit ImGui code for generating the UI.
+            </summary>
+        </member>
+        <member name="M:GameHelper.GameOverlay.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:GameHelper.GameOverlay"/> class.
+            </summary>
+        </member>
+        <member name="M:GameHelper.GameOverlay.Dispose">
+            <inheritdoc/>
+        </member>
+        <member name="M:GameHelper.GameOverlay.Render">
+            <inheritdoc/>
+        </member>
+        <member name="T:GameHelper.Plugin.IPCore">
+            <summary>
+            Interface for creating plugins.
+            </summary>
+        </member>
+        <member name="M:GameHelper.Plugin.IPCore.SetPluginDllLocation(System.String)">
+            <summary>
+            Called at the init of the plugin to set
+            it's directory information.
+            </summary>
+            <param name="dllLocation">plugin dll directory.</param>
+        </member>
+        <member name="M:GameHelper.Plugin.IPCore.OnEnable">
+            <summary>
+            Called when the plugin needs to be enabled
+            (e.g. game opened or user wants the plugin).
+            </summary>
+        </member>
+        <member name="M:GameHelper.Plugin.IPCore.OnDisable">
+            <summary>
+            Called when the plugin needs to be disabled
+            (e.g. game closed or user don't want the plugin).
+            </summary>
+        </member>
+        <member name="M:GameHelper.Plugin.IPCore.DrawSettings">
+            <summary>
+            Called to draw the plugin settings on the GameHelper Settings window.
+            Should use ImGui objects to draw the settings.
+            </summary>
+        </member>
+        <member name="M:GameHelper.Plugin.IPCore.DrawUI">
+            <summary>
+            Draws the plugin UI.
+            </summary>
+        </member>
+        <member name="M:GameHelper.Plugin.IPCore.SaveSettings">
+             <summary>
+             Called when it's time to save all the settings
+             related to the plugin on the file.
+            
+             NOTE: Load settings function isn't provided as
+             it's expected the plugin will load the settings
+             in OnEnable function.
+             </summary>
+        </member>
+        <member name="T:GameHelper.Plugin.IPSettings">
+            <summary>
+            Interface for loading/saving plugin settings.
+            </summary>
+        </member>
+        <member name="T:GameHelper.Plugin.PContainer">
+            <summary>
+            Container for storing plugin and its metadata.
+            </summary>
+        </member>
+        <member name="P:GameHelper.Plugin.PContainer.Enable">
+            <summary>
+            Gets or sets a value indicating whether the plugin is enabled or not.
+            </summary>
+        </member>
+        <member name="P:GameHelper.Plugin.PContainer.Plugin">
+            <summary>
+            Gets or sets the plugin.
+            </summary>
+        </member>
+        <member name="T:GameHelper.Plugin.PCore`1">
+            <summary>
+            Interface for creating plugins.
+            </summary>
+            <typeparam name="TSettings">plugin's setting class name.</typeparam>
+        </member>
+        <member name="F:GameHelper.Plugin.PCore`1.DllDirectory">
+            <summary>
+            Gets or sets the plugin root directory folder.
+            </summary>
+        </member>
+        <member name="F:GameHelper.Plugin.PCore`1.Settings">
+            <summary>
+            Gets or sets the plugin settings.
+            </summary>
+        </member>
+        <member name="M:GameHelper.Plugin.PCore`1.OnDisable">
+            <inheritdoc/>
+        </member>
+        <member name="M:GameHelper.Plugin.PCore`1.OnEnable">
+            <inheritdoc/>
+        </member>
+        <member name="M:GameHelper.Plugin.PCore`1.DrawSettings">
+            <inheritdoc/>
+        </member>
+        <member name="M:GameHelper.Plugin.PCore`1.DrawUI">
+            <inheritdoc/>
+        </member>
+        <member name="M:GameHelper.Plugin.PCore`1.SaveSettings">
+            <inheritdoc/>
+        </member>
+        <member name="M:GameHelper.Plugin.PCore`1.SetPluginDllLocation(System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="T:GameHelper.Plugin.PManager">
+            <summary>
+            Finds, loads and unloads the plugins.
+            TODO: Download/copy paste plugin from a folder.
+            TODO: Hot Reload plugins on on plugin hash changes.
+            TODO: Demostrate a plugin with multiple profiles.
+            TODO: write a guide for adding new plugin.
+            TODO:    also talk about debugging a plugin.
+            TODO:    talking about project fork/pull request etc.
+            TODO: pause/resume plugin when game close/minimize.
+                  Render function can be stopped from core but
+                  pause/resume would be for threads running inside plugins.
+            </summary>
+        </member>
+        <member name="P:GameHelper.Plugin.PManager.AllPlugins">
+            <summary>
+            Gets the loaded plugins.
+            </summary>
+        </member>
+        <member name="M:GameHelper.Plugin.PManager.InitializePlugins">
+            <summary>
+            Initlizes the plugin manager by loading all the plugins and their Metadata.
+            </summary>
+        </member>
+        <member name="T:GameHelper.Program">
+            <summary>
+            Class executed when the application starts.
+            TODO: Disable when Game is minimized.
+            TODO: DRY out the STDList reader, once we find another object using STDList reader.
+                  Currently, only loadedfiles is using custom STDList reader.
+            </summary>
+        </member>
+        <member name="M:GameHelper.Program.Main">
+            <summary>
+            function executed when the application starts.
+            </summary>
+        </member>
+        <member name="T:GameHelper.RemoteControllers.GameProcess">
+             <summary>
+             Allows process manipulation. It uses the (time/event based) co-routines
+             to continuously monitor and open a process with the specific name. It exposes
+             variables/events for the caller to use.
+            
+             Base class OnControllerReady is only triggered when all static addresses are found.
+            
+             Limitation: This class will not open a game process if multiple processes match
+             the name because it does not know which process to select.
+             </summary>
+        </member>
+        <member name="M:GameHelper.RemoteControllers.GameProcess.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:GameHelper.RemoteControllers.GameProcess"/> class.
+            </summary>
+        </member>
+        <member name="P:GameHelper.RemoteControllers.GameProcess.Address">
+            <summary>
+            Gets the Base Address of the game.
+            </summary>
+        </member>
+        <member name="P:GameHelper.RemoteControllers.GameProcess.OnOpened">
+            <summary>
+            Gets the event raised when GameProcess has opened a new game.
+            </summary>
+        </member>
+        <member name="P:GameHelper.RemoteControllers.GameProcess.OnClose">
+            <summary>
+            Gets the event raised just before the GameProcess has closed the game.
+            </summary>
+        </member>
+        <member name="P:GameHelper.RemoteControllers.GameProcess.OnMoved">
+            <summary>
+            Gets the event raised when the game has changed its size, position or both.
+            </summary>
+        </member>
+        <member name="P:GameHelper.RemoteControllers.GameProcess.OnForegroundChanged">
+            <summary>
+            Gets the event raised when the game Foreground property has changed.
+            </summary>
+        </member>
+        <member name="P:GameHelper.RemoteControllers.GameProcess.StaticAddresses">
+            <summary>
+            Gets the static addresses (along with their names) found in the GameProcess
+            based on the GameOffsets.StaticOffsets file.
+            </summary>
+        </member>
+        <member name="P:GameHelper.RemoteControllers.GameProcess.Information">
+            <summary>
+            Gets the game diagnostics information.
+            </summary>
+        </member>
+        <member name="P:GameHelper.RemoteControllers.GameProcess.Handle">
+            <summary>
+            Gets the game handle.
+            </summary>
+        </member>
+        <member name="P:GameHelper.RemoteControllers.GameProcess.WindowArea">
+            <summary>
+            Gets the game size and position with respect to the monitor screen.
+            </summary>
+        </member>
+        <member name="P:GameHelper.RemoteControllers.GameProcess.Foreground">
+            <summary>
+            Gets a value indicating whether the game is foreground or not.
+            </summary>
+        </member>
+        <member name="M:GameHelper.RemoteControllers.GameProcess.Close(System.Boolean)">
+            <summary>
+            Closes the handle for the game and releases all the resources.
+            </summary>
+            <param name="monitorForNewGame">
+            Set to true if caller wants to start monitoring for new game process after closing.
+            </param>
+        </member>
+        <member name="M:GameHelper.RemoteControllers.GameProcess.OnAddressUpdated(System.IntPtr)">
+            <inheritdoc/>
+        </member>
+        <member name="M:GameHelper.RemoteControllers.GameProcess.FindAndOpen">
+            <summary>
+            Finds the list of processes from the list of processes running on the system
+            based on the GameOffsets.GameProcessName class.
+            </summary>
+            <returns>
+            co-routine IWait.
+            </returns>
+        </member>
+        <member name="M:GameHelper.RemoteControllers.GameProcess.Monitor">
+            <summary>
+            Monitors the game process for changes.
+            </summary>
+            <returns>co-routine IWait.</returns>
+        </member>
+        <member name="M:GameHelper.RemoteControllers.GameProcess.FindStaticAddresses">
+            <summary>
+            Finds the static addresses in the GameProcess based on the
+            GameOffsets.StaticOffsetsPatterns file.
+            </summary>
+            <returns>co-routine IWait.</returns>
+        </member>
+        <member name="M:GameHelper.RemoteControllers.GameProcess.Open">
+            <summary>
+            Opens the handle for the game process.
+            </summary>
+        </member>
+        <member name="M:GameHelper.RemoteControllers.GameProcess.UpdateIsForeground">
+            <summary>
+            Updates the Foreground Property of the GameProcess class.
+            </summary>
+        </member>
+        <member name="M:GameHelper.RemoteControllers.GameProcess.UpdateWindowRectangle">
+            <summary>
+            Gets the game process window area with reference to the monitor screen.
+            </summary>
+        </member>
+        <member name="T:GameHelper.RemoteControllers.GameStates">
+            <summary>
+            Reads and stores the global states of the game.
+            </summary>
+        </member>
+        <member name="P:GameHelper.RemoteControllers.GameStates.AllStates">
+            <summary>
+            Gets a dictionary containing all the Game States addresses.
+            </summary>
+        </member>
+        <member name="P:GameHelper.RemoteControllers.GameStates.AreaLoading">
+            <summary>
+            Gets the AreaLoadingState object.
+            </summary>
+        </member>
+        <member name="P:GameHelper.RemoteControllers.GameStates.InGameStateObject">
+            <summary>
+            Gets the InGameState Object.
+            </summary>
+        </member>
+        <member name="P:GameHelper.RemoteControllers.GameStates.CurrentStateInGame">
+            <summary>
+            Gets the current state the game is in.
+            </summary>
+        </member>
+        <member name="M:GameHelper.RemoteControllers.GameStates.OnAddressUpdated(System.IntPtr)">
+            <inheritdoc/>
+        </member>
+        <member name="M:GameHelper.RemoteControllers.GameStates.UpdateAllStates">
+            <summary>
+            This function Updates the states addresses.
+            </summary>
+        </member>
+        <member name="M:GameHelper.RemoteControllers.GameStates.UpdateKnownStatesObjects(System.String,System.IntPtr)">
+            <summary>
+            Updates the known states Objects and silently skips the unknown ones.
+            </summary>
+            <param name="name">State name.</param>
+            <param name="address">State address.</param>
+        </member>
+        <member name="T:GameHelper.RemoteControllers.RemoteControllerBase">
+            <summary>
+            An abstract class to create the <see cref="N:GameHelper.RemoteControllers"/>.
+            RemoteControllers are basically objects with static
+            data in them i.e. their data never changes
+            while the game is up and running. They are only
+            updated when the game restarts. If you are thinking
+            of creating a Controller whos data refreshes again and
+            again while the game is running, make it a <see cref="N:GameHelper.RemoteObjects"/>.
+            </summary>
+        </member>
+        <member name="P:GameHelper.RemoteControllers.RemoteControllerBase.Address">
+            <summary>
+            Gets or sets this controller address.
+            Setting the value to IntPtr.Zero will disable the controller and
+            all the subsequent classes coroutine from executing.
+            </summary>
+        </member>
+        <member name="P:GameHelper.RemoteControllers.RemoteControllerBase.OnControllerReady">
+            <summary>
+            Gets the event indicating if the Controller is Ready or not.
+            Ideally, this should only be triggered once per game.
+            </summary>
+        </member>
+        <member name="M:GameHelper.RemoteControllers.RemoteControllerBase.OnAddressUpdated(System.IntPtr)">
+            <summary>
+            Work to do when the Address is updated.
+            </summary>
+            <param name="newAddress">New address value.</param>
+        </member>
+        <member name="T:GameHelper.RemoteEnums.GameStateTypes">
+            <summary>
+            Gets all known states of the game.
+            NOTE: GameNotLoaded means game isn't up and running.
+            </summary>
+        </member>
+        <member name="T:GameHelper.RemoteObjects.AreaChangeCounter">
+            <summary>
+            Points to the AreaChangeCounter object and read/cache it's value
+            on every area change.
+            </summary>
+        </member>
+        <member name="M:GameHelper.RemoteObjects.AreaChangeCounter.#ctor(System.IntPtr)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GameHelper.RemoteObjects.AreaChangeCounter"/> class.
+            </summary>
+            <param name="address">address of the remote memory object.</param>
+        </member>
+        <member name="P:GameHelper.RemoteObjects.AreaChangeCounter.Value">
+            <summary>
+            Gets the cached value of the AreaChangeCounter.
+            </summary>
+        </member>
+        <member name="M:GameHelper.RemoteObjects.AreaChangeCounter.CleanUpData">
+            <inheritdoc/>
+        </member>
+        <member name="M:GameHelper.RemoteObjects.AreaChangeCounter.UpdateData">
+            <inheritdoc/>
+        </member>
+        <member name="T:GameHelper.RemoteObjects.Components.ComponentBase">
+            <summary>
+            Component associated with the Entity.
+            </summary>
+        </member>
+        <member name="M:GameHelper.RemoteObjects.Components.ComponentBase.CleanUpData">
+            <inheritdoc/>
+        </member>
+        <member name="M:GameHelper.RemoteObjects.Components.ComponentBase.UpdateData">
+            <inheritdoc/>
+        </member>
+        <member name="T:GameHelper.RemoteObjects.CurrentState">
+            <summary>
+            Points to the current state information object in
+            the game and cache it's value.
+            </summary>
+        </member>
+        <member name="M:GameHelper.RemoteObjects.CurrentState.#ctor(System.IntPtr)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GameHelper.RemoteObjects.CurrentState"/> class.
+            </summary>
+            <param name="address">address of the remote memory object.</param>
+        </member>
+        <member name="P:GameHelper.RemoteObjects.CurrentState.StateChanged">
+            <summary>
+            Gets the Current State Changed event.
+            </summary>
+        </member>
+        <member name="P:GameHelper.RemoteObjects.CurrentState.Name">
+            <summary>
+            Gets the current state name.
+            </summary>
+        </member>
+        <member name="M:GameHelper.RemoteObjects.CurrentState.CleanUpData">
+            <inheritdoc/>
+        </member>
+        <member name="M:GameHelper.RemoteObjects.CurrentState.UpdateData">
+            <inheritdoc/>
+        </member>
+        <member name="T:GameHelper.RemoteObjects.LoadedFiles">
+            <summary>
+            Gathers the files loaded in the game for the current area.
+            </summary>
+        </member>
+        <member name="M:GameHelper.RemoteObjects.LoadedFiles.#ctor(System.IntPtr)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GameHelper.RemoteObjects.LoadedFiles"/> class.
+            </summary>
+            <param name="address">address of the remote memory object.</param>
+        </member>
+        <member name="P:GameHelper.RemoteObjects.LoadedFiles.WaitBetweenScans">
+            <summary>
+            Gets the wait (in seconds) between multiple preload memory scans.
+            As preloads are scanned multiple times (i.e. <see cref="P:GameHelper.RemoteObjects.LoadedFiles.MaximumPreloadScans"/>).
+            </summary>
+        </member>
+        <member name="P:GameHelper.RemoteObjects.LoadedFiles.MaximumPreloadScans">
+            <summary>
+            Gets the maxiumum number of preload scans that can happen in a given area.
+            </summary>
+        </member>
+        <member name="P:GameHelper.RemoteObjects.LoadedFiles.CurrentPreloadScan">
+            <summary>
+            Gets the current iteration of preload scan. Minimum value can be 0, maxiumum value
+            can be <see cref="P:GameHelper.RemoteObjects.LoadedFiles.MaximumPreloadScans"/>.
+            </summary>
+        </member>
+        <member name="P:GameHelper.RemoteObjects.LoadedFiles.Data">
+            <summary>
+            Gets the files.
+            </summary>
+        </member>
+        <member name="M:GameHelper.RemoteObjects.LoadedFiles.CleanUpData">
+            <inheritdoc/>
+        </member>
+        <member name="M:GameHelper.RemoteObjects.LoadedFiles.UpdateData">
+            <inheritdoc/>
+        </member>
+        <member name="T:GameHelper.RemoteObjects.RemoteObjectBase">
+            <summary>
+            Points to a Memory location and reads/understands all the data from there.
+            Data in remote memory location changes w.r.t time or event. Due to this,
+            each remote memory object requires to implement a time/event based coroutine.
+            </summary>
+        </member>
+        <member name="M:GameHelper.RemoteObjects.RemoteObjectBase.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:GameHelper.RemoteObjects.RemoteObjectBase"/> class.
+            </summary>
+        </member>
+        <member name="M:GameHelper.RemoteObjects.RemoteObjectBase.#ctor(System.IntPtr)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GameHelper.RemoteObjects.RemoteObjectBase"/> class.
+            </summary>
+            <param name="address">address of the remote memory object.</param>
+        </member>
+        <member name="P:GameHelper.RemoteObjects.RemoteObjectBase.Address">
+            <summary>
+            Gets or sets the address of the memory location.
+            </summary>
+        </member>
+        <member name="M:GameHelper.RemoteObjects.RemoteObjectBase.UpdateData">
+            <summary>
+            Reads the memory and update all the data known by this Object.
+            </summary>
+        </member>
+        <member name="M:GameHelper.RemoteObjects.RemoteObjectBase.CleanUpData">
+            <summary>
+            Knows how to clean up the object.
+            </summary>
+        </member>
+        <member name="T:GameHelper.RemoteObjects.States.AreaLoadingState">
+            <summary>
+            Reads AreaLoadingState Game Object.
+            </summary>
+        </member>
+        <member name="M:GameHelper.RemoteObjects.States.AreaLoadingState.#ctor(System.IntPtr)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GameHelper.RemoteObjects.States.AreaLoadingState"/> class.
+            </summary>
+            <param name="address">address of the remote memory object.</param>
+        </member>
+        <member name="P:GameHelper.RemoteObjects.States.AreaLoadingState.AreaChanged">
+             <summary>
+             Gets the Area Changed event. Area change is detected by
+             checking if the time spend on the loading screen is greater
+             than the last recorded time.
+            
+             NOTE:Game provides the value of time spend on the loading screen.
+             </summary>
+        </member>
+        <member name="P:GameHelper.RemoteObjects.States.AreaLoadingState.CurrentAreaName">
+            <summary>
+            Gets the game current Area Name.
+            </summary>
+        </member>
+        <member name="P:GameHelper.RemoteObjects.States.AreaLoadingState.AreaChangeDetected">
+            <summary>
+            Gets the Area Change Detection event. When Area Change happens many
+            classes want to gather new data from the new Area. Unfortunately, Some of
+            the those classes have inter-dependicies with each other.
+            This event is called before AreaChanged event, so this event can
+            be used to resolve some inter-dependicies. This is required since co-routine
+            doesn't guarantees a certian order in execution of functions. In the future,
+            if inter-dependicies gets out of control we might have to ditch co-routines
+            for AreaChange scenario. So, use this event if your class can independently
+            UpdateData, otherwise use AreaChanged. This class data is already loaded when
+            this event is called.
+            </summary>
+        </member>
+        <member name="P:GameHelper.RemoteObjects.States.AreaLoadingState.IsLoading">
+            <summary>
+            Gets a value indicating whether the game is in loading screen or not.
+            </summary>
+        </member>
+        <member name="M:GameHelper.RemoteObjects.States.AreaLoadingState.CleanUpData">
+            <inheritdoc/>
+        </member>
+        <member name="M:GameHelper.RemoteObjects.States.AreaLoadingState.UpdateData">
+            <inheritdoc/>
+        </member>
+        <member name="T:GameHelper.RemoteObjects.States.InGameState">
+            <summary>
+            Reads InGameState Game Object.
+            </summary>
+        </member>
+        <member name="M:GameHelper.RemoteObjects.States.InGameState.#ctor(System.IntPtr)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GameHelper.RemoteObjects.States.InGameState"/> class.
+            </summary>
+            <param name="address">address of the remote memory object.</param>
+        </member>
+        <member name="P:GameHelper.RemoteObjects.States.InGameState.Data">
+            <summary>
+            Gets the data related to the current area.
+            </summary>
+        </member>
+        <member name="M:GameHelper.RemoteObjects.States.InGameState.CleanUpData">
+            <inheritdoc/>
+        </member>
+        <member name="M:GameHelper.RemoteObjects.States.InGameState.UpdateData">
+            <inheritdoc/>
+        </member>
+        <member name="T:GameHelper.RemoteObjects.States.InGameStateObjects.CurrentAreaData">
+            <summary>
+            Points to the InGameState -> LocalData Object.
+            </summary>
+        </member>
+        <member name="M:GameHelper.RemoteObjects.States.InGameStateObjects.CurrentAreaData.#ctor(System.IntPtr)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GameHelper.RemoteObjects.States.InGameStateObjects.CurrentAreaData"/> class.
+            </summary>
+            <param name="address">address of the remote memory object.</param>
+        </member>
+        <member name="P:GameHelper.RemoteObjects.States.InGameStateObjects.CurrentAreaData.MonsterLevel">
+            <summary>
+            Gets the Monster Level of current Area.
+            </summary>
+        </member>
+        <member name="P:GameHelper.RemoteObjects.States.InGameStateObjects.CurrentAreaData.AreaHash">
+            <summary>
+            Gets the Hash of the current Area/Zone.
+            This value is sent to the client from the server.
+            </summary>
+        </member>
+        <member name="P:GameHelper.RemoteObjects.States.InGameStateObjects.CurrentAreaData.Player">
+            <summary>
+            Gets the player Entity.
+            </summary>
+        </member>
+        <member name="P:GameHelper.RemoteObjects.States.InGameStateObjects.CurrentAreaData.AwakeEntities">
+             <summary>
+             Gets the Awake Entities of the current Area/Zone.
+            
+             Awake Entities are the ones which player can interact with
+             e.g. Monsters, Players, NPC, Chests and etc. Sleeping entities
+             are opposite of awake entities e.g. Decorations, Effects, particles and etc.
+             </summary>
+        </member>
+        <member name="P:GameHelper.RemoteObjects.States.InGameStateObjects.CurrentAreaData.InGameStateDataCoroutine">
+            <summary>
+            Gets the InGameStateData per-frame coroutine.
+            </summary>
+        </member>
+        <member name="M:GameHelper.RemoteObjects.States.InGameStateObjects.CurrentAreaData.CleanUpData">
+            <inheritdoc/>
+        </member>
+        <member name="M:GameHelper.RemoteObjects.States.InGameStateObjects.CurrentAreaData.UpdateData">
+            <inheritdoc/>
+        </member>
+        <member name="T:GameHelper.RemoteObjects.States.InGameStateObjects.Entity">
+            <summary>
+            Points to an Entity/Object in the game.
+            </summary>
+        </member>
+        <member name="F:GameHelper.RemoteObjects.States.InGameStateObjects.Entity.components">
+            <summary>
+            Store the component name and addresses.
+            </summary>
+        </member>
+        <member name="M:GameHelper.RemoteObjects.States.InGameStateObjects.Entity.#ctor(System.IntPtr)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GameHelper.RemoteObjects.States.InGameStateObjects.Entity"/> class.
+            </summary>
+            <param name="address">address of the Entity.</param>
+        </member>
+        <member name="M:GameHelper.RemoteObjects.States.InGameStateObjects.Entity.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:GameHelper.RemoteObjects.States.InGameStateObjects.Entity"/> class.
+            NOTE: Without providing an address, only invalid and empty entity is created.
+            </summary>
+        </member>
+        <member name="P:GameHelper.RemoteObjects.States.InGameStateObjects.Entity.Path">
+            <summary>
+            Gets the Path (e.g. Metadata/Character/int/int) assocaited to the entity.
+            </summary>
+        </member>
+        <member name="P:GameHelper.RemoteObjects.States.InGameStateObjects.Entity.Id">
+            <summary>
+            Gets the Id associated to the entity. This is unique per map/Area.
+            </summary>
+        </member>
+        <member name="P:GameHelper.RemoteObjects.States.InGameStateObjects.Entity.IsValid">
+            <summary>
+            Gets or Sets a value indicating whether the entity
+            exists in the game or not.
+            </summary>
+        </member>
+        <member name="M:GameHelper.RemoteObjects.States.InGameStateObjects.Entity.DistanceFrom(GameHelper.RemoteObjects.States.InGameStateObjects.Entity)">
+            <summary>
+            Calculate the distance from the other entity.
+            </summary>
+            <param name="other">Other entity object.</param>
+            <returns>the distance from the other entity.</returns>
+        </member>
+        <member name="M:GameHelper.RemoteObjects.States.InGameStateObjects.Entity.GetComponent``1">
+            <summary>
+            Gets the Component data associated with the template.
+            </summary>
+            <typeparam name="T">Component data type.</typeparam>
+            <returns>Component data.</returns>
+        </member>
+        <member name="M:GameHelper.RemoteObjects.States.InGameStateObjects.Entity.HasComponent``1">
+            <summary>
+            Gets a value indicating whether the component exists or not.
+            </summary>
+            <typeparam name="T">Component data type.</typeparam>
+            <returns>true if the component exists otherwise false.</returns>
+        </member>
+        <member name="M:GameHelper.RemoteObjects.States.InGameStateObjects.Entity.Update(System.IntPtr)">
+            <summary>
+            Reads and updates only the data that is suppose to change.
+            </summary>
+            <param name="address">Is the entity in current entity list.</param>
+        </member>
+        <member name="M:GameHelper.RemoteObjects.States.InGameStateObjects.Entity.CleanUpData">
+            <inheritdoc/>
+        </member>
+        <member name="M:GameHelper.RemoteObjects.States.InGameStateObjects.Entity.UpdateData">
+            <summary>
+            Reads and updates only the data that is suppose to change in an entity.
+            </summary>
+        </member>
+        <member name="M:GameHelper.RemoteObjects.States.InGameStateObjects.Entity.UpdateAll">
+            <summary>
+            Reads and updates all the data related to the Entity.
+            </summary>
+        </member>
+        <member name="T:GameHelper.Settings.SettingsWindow">
+            <summary>
+            Creates the MainMenu on the UI.
+            </summary>
+        </member>
+        <member name="P:GameHelper.Settings.SettingsWindow.TimeToSaveAllSettings">
+            <summary>
+            Gets the Game Helper closing event. The event is called whenever
+            all the settings have to be saved.
+            </summary>
+        </member>
+        <member name="M:GameHelper.Settings.SettingsWindow.InitializeCoroutines">
+            <summary>
+            Initializes the Main Menu.
+            </summary>
+        </member>
+        <member name="M:GameHelper.Settings.SettingsWindow.DrawNames">
+            <summary>
+            Draws the (core/plugins) names as ImGui buttons in a single group.
+            </summary>
+        </member>
+        <member name="M:GameHelper.Settings.SettingsWindow.DrawCurrentlySelectedSettings">
+            <summary>
+            Draws the currently selected settings on ImGui.
+            </summary>
+        </member>
+        <member name="M:GameHelper.Settings.SettingsWindow.DrawSettingsWindow">
+            <summary>
+            Draws the Settings Window.
+            </summary>
+            <returns>co-routine IWait.</returns>
+        </member>
+        <member name="M:GameHelper.Settings.SettingsWindow.SaveGameHelperSettings">
+            <summary>
+            Saves the GameHelper settings to disk.
+            </summary>
+            <returns>co-routine IWait.</returns>
+        </member>
+        <member name="T:GameHelper.Settings.State">
+            <summary>
+            Game Helper Core Settings.
+            </summary>
+        </member>
+        <member name="F:GameHelper.Settings.State.CoreSettingFile">
+            <summary>
+            Core Setting File Information.
+            </summary>
+        </member>
+        <member name="F:GameHelper.Settings.State.PluginsMetadataFile">
+            <summary>
+            Plugins metadata File information.
+            </summary>
+        </member>
+        <member name="F:GameHelper.Settings.State.PluginsDirectory">
+            <summary>
+            Folder containing all the plugins.
+            </summary>
+        </member>
+        <member name="F:GameHelper.Settings.State.IsOverlayRunning">
+            <summary>
+            Gets or sets a value indicating whether the overlay is running or not.
+            </summary>
+        </member>
+        <member name="F:GameHelper.Settings.State.MainMenuHotKey">
+            <summary>
+            Gets or sets hotKey to show/hide the main menu.
+            </summary>
+        </member>
+        <member name="T:GameHelper.Utils.JsonHelper">
+            <summary>
+            Utility functions to help read/write to Json files.
+            </summary>
+        </member>
+        <member name="M:GameHelper.Utils.JsonHelper.CreateOrLoadJsonFile``1(System.IO.FileInfo)">
+            <summary>
+            Creates new instance or load from the file if file exists.
+            </summary>
+            <typeparam name="T">Class name to (De)serialize.</typeparam>
+            <param name="file">file to load from.</param>
+            <returns>class objecting containing the data (if data exits).</returns>
+        </member>
+        <member name="M:GameHelper.Utils.JsonHelper.SafeToFile(System.Object,System.IO.FileInfo)">
+            <summary>
+            Save the class object into the file.
+            </summary>
+            <param name="classObject">class object to save in the file.</param>
+            <param name="file">file to save in.</param>
+        </member>
+        <member name="T:GameHelper.Utils.PatternFinder">
+             <summary>
+             This class contains helper functions to find the
+             patterns (array of bytes in HEX) in the process memory.
+            
+             To improve the perforamnce and memory footprint, it parallelizes
+             the search and ensures that the whole executable is not loaded in
+             the memory at once.
+            
+             NOTE: According to microsoft docs (linked below) anything bigger
+             than 85,000 bytes will go into the large-object-heap and will
+             remain in the memory for a long time.
+             https://docs.microsoft.com/en-us/dotnet/standard/garbage-collection/large-object-heap.
+             </summary>
+        </member>
+        <member name="F:GameHelper.Utils.PatternFinder.MaxBytesObject">
+             <summary>
+             This is 1000 less than the maximum number of bytes that can be created
+             with non-large-object-heap. Benefit of doing that is to ensure
+             that GC cleans up the memory ASAP.
+            
+             NOTE: 1000 less than the maximum number allows us to read a bit more than
+             this number when require.
+             </summary>
+        </member>
+        <member name="P:GameHelper.Utils.PatternFinder.Patterns">
+            <summary>
+            Gets the HEX (byte array) patterns for finding static offsets in the Process.
+            All patterns are read from the GameOffsets library so that users just have to update
+            GameOffsets lib once there is a new patch.
+            </summary>
+        </member>
+        <member name="M:GameHelper.Utils.PatternFinder.Find(GameHelper.Utils.SafeMemoryHandle,System.IntPtr,System.Int32)">
+            <summary>
+            Tries to find all the patterns given in the GameOffsets StaticOffsetsPatterns class.
+            </summary>
+            <param name="handle">Handle to the process.</param>
+            <param name="baseAddress">BaseAddress of the process main module.</param>
+            <param name="processSize">Total Size of the process main module.</param>
+            <returns> Static offsets name and location in the processs.</returns>
+        </member>
+        <member name="M:GameHelper.Utils.PatternFinder.BiggestPatternLength">
+            <summary>
+            Gets the length of the biggest pattern.
+            </summary>
+            <returns>length of the biggest pattern.</returns>
+        </member>
+        <member name="M:GameHelper.Utils.PatternFinder.CalculateTotalReadOperations(System.Int32)">
+            <summary>
+            Calculates the total number of read operations required for a given
+            process size based on the MaxBytesObject constant.
+            </summary>
+            <param name="processSize">Size of the process main module.</param>
+            <returns>total number of read operations requried.</returns>
+        </member>
+        <member name="T:GameHelper.Utils.SafeMemoryHandle">
+            <summary>
+            Handle to a process.
+            </summary>
+        </member>
+        <member name="M:GameHelper.Utils.SafeMemoryHandle.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:GameHelper.Utils.SafeMemoryHandle"/> class.
+            </summary>
+        </member>
+        <member name="M:GameHelper.Utils.SafeMemoryHandle.#ctor(System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GameHelper.Utils.SafeMemoryHandle"/> class.
+            </summary>
+            <param name="processId">processId you want to access.</param>
+        </member>
+        <member name="M:GameHelper.Utils.SafeMemoryHandle.ReadMemory``1(System.IntPtr)">
+            <summary>
+            Reads the process memory as type T.
+            </summary>
+            <typeparam name="T">type of data structure to read.</typeparam>
+            <param name="address">address to read the data from.</param>
+            <returns>data from the process in T format.</returns>
+        </member>
+        <member name="M:GameHelper.Utils.SafeMemoryHandle.ReadStdVector``1(GameOffsets.Native.StdVector)">
+            <summary>
+            Reads the std::vector into an array.
+            </summary>
+            <typeparam name="T">Object type to read.</typeparam>
+            <param name="nativeContainer">StdVector address to read from.</param>
+            <returns>An array of elements of type T.</returns>
+        </member>
+        <member name="M:GameHelper.Utils.SafeMemoryHandle.ReadMemoryArray``1(System.IntPtr,System.Int32)">
+            <summary>
+            Reads the process memory as an array.
+            </summary>
+            <typeparam name="T">Array type to read.</typeparam>
+            <param name="address">memory address to read from.</param>
+            <param name="nsize">total array elements to read.</param>
+            <returns>
+            An array of type T and of size nsize. In case or any error it returns empty array.
+            </returns>
+        </member>
+        <member name="M:GameHelper.Utils.SafeMemoryHandle.ReadStdWString(GameOffsets.Native.StdWString)">
+            <summary>
+            Reads the std::wstring. String read is in unicode format.
+            </summary>
+            <param name="nativecontainer">native object of std::wstring.</param>
+            <returns>string.</returns>
+        </member>
+        <member name="M:GameHelper.Utils.SafeMemoryHandle.ReadString(System.IntPtr)">
+            <summary>
+            Reads the string.
+            </summary>
+            <param name="address">pointer to the string.</param>
+            <returns>string read.</returns>
+        </member>
+        <member name="M:GameHelper.Utils.SafeMemoryHandle.ReadStdMap``2(GameOffsets.Native.StdMap,System.Boolean,System.Func{``0,System.Boolean})">
+            <summary>
+            Reads the std::map into a dictionary.
+            </summary>
+            <typeparam name="TKey">key type of the stdmap.</typeparam>
+            <typeparam name="TValue">value type of the stdmap.</typeparam>
+            <param name="nativeContainer">native object of the std::map.</param>
+            <param name="validate_size">Validate the total while loop iteration with given map size.</param>
+            <param name="keyfilter">Filter the keys based on the function return value.</param>
+            <returns>a dictonary containing the keys and the values of the stdmap.</returns>
+        </member>
+        <member name="M:GameHelper.Utils.SafeMemoryHandle.ReadStdMapAsList``2(GameOffsets.Native.StdMap,System.Boolean,System.Func{``0,System.Boolean})">
+            <summary>
+            Reads the std::map into a List.
+            </summary>
+            <typeparam name="TKey">key type of the stdmap.</typeparam>
+            <typeparam name="TValue">value type of the stdmap.</typeparam>
+            <param name="nativeContainer">native object of the std::map.</param>
+            <param name="validate_size">Validate the total while loop iteration with given map size.</param>
+            <param name="keyfilter">Filter the keys based on the function return value.</param>
+            <returns>a list containing the keys and the values of the stdmap as named tuple.</returns>
+        </member>
+        <member name="M:GameHelper.Utils.SafeMemoryHandle.ReadStdList``1(GameOffsets.Native.StdList)">
+            <summary>
+            Reads the StdList into a List.
+            </summary>
+            <typeparam name="TValue">StdList element structure.</typeparam>
+            <param name="nativeContainer">native object of the std::list.</param>
+            <returns>List containing TValue elements.</returns>
+        </member>
+        <member name="M:GameHelper.Utils.SafeMemoryHandle.ReleaseHandle">
+            <summary>
+            When overridden in a derived class, executes the code required to free the handle.
+            </summary>
+            <returns>
+            true if the handle is released successfully; otherwise, in the event of a catastrophic failure, false.
+            In this case, it generates a releaseHandleFailed MDA Managed Debugging Assistant.
+            </returns>
+        </member>
+    </members>
+</doc>

@@ -2,7 +2,7 @@
 // Copyright (c) None. All rights reserved.
 // </copyright>
 
-namespace GameHelper.RemoteMemoryObjects
+namespace GameHelper.RemoteObjects
 {
     using System;
     using System.Collections.Concurrent;
@@ -11,12 +11,12 @@ namespace GameHelper.RemoteMemoryObjects
     using Coroutine;
     using GameHelper.RemoteEnums;
     using GameOffsets.Native;
-    using GameOffsets.RemoteMemoryObjects;
+    using GameOffsets.Objects;
 
     /// <summary>
     /// Gathers the files loaded in the game for the current area.
     /// </summary>
-    public class LoadedFiles : RemoteMemoryObjectBase
+    public class LoadedFiles : RemoteObjectBase
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="LoadedFiles"/> class.
@@ -63,7 +63,7 @@ namespace GameHelper.RemoteMemoryObjects
         }
 
         /// <inheritdoc/>
-        protected override void GatherData()
+        protected override void UpdateData()
         {
             var totalFiles = LoadedFilesRootObject.TotalCount;
             var reader = Core.Process.Handle;
@@ -84,7 +84,6 @@ namespace GameHelper.RemoteMemoryObjects
                 {
                     switch (filesRootObjs[k].TemplateId2)
                     {
-                        case 64:
                         case 512:
                         case 1024:
                             break;
@@ -146,7 +145,7 @@ namespace GameHelper.RemoteMemoryObjects
                     for (int i = 0; i < MaximumPreloadScans; i++)
                     {
                         this.Data.Clear();
-                        this.GatherData();
+                        this.UpdateData();
                         if (i < MaximumPreloadScans - 1)
                         {
                             yield return new Wait(WaitBetweenScans);

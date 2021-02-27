@@ -1,4 +1,4 @@
-﻿// <copyright file="Settings.cs" company="None">
+﻿// <copyright file="State.cs" company="None">
 // Copyright (c) None. All rights reserved.
 // </copyright>
 

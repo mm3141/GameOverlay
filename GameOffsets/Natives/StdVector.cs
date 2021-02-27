@@ -9,5 +9,10 @@
         public IntPtr First;
         public IntPtr Last;
         public IntPtr End;
+
+        public long TotalElements(int elementSize)
+        {
+            return (Last.ToInt64() - First.ToInt64()) / elementSize;
+        }
     }
 }
