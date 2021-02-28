@@ -26,7 +26,7 @@
             [FieldOffset(0x0018)] public NativePtrArray OtherRelatedComponentsPtr;
             [FieldOffset(0x0058)] public byte Reaction; // Used for isHostile by &ing it with 0x7F.
             // Game is using an algorithm to move to player from point A to point B.
-            // Let's say the algorithm calculated 3 stops from point A to point B.
+            // Let's say the algorithm calculated 3 stops between point A to point B.
             // i.e. A->X->Y->Z->B. Lets say player is somewhere between X, Y.
             // GridLastStop = X;
             // GridNextStop = Y;
