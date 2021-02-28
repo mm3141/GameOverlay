@@ -12,7 +12,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutputType>Exe</OutputType>
     <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
-    <DocumentationFile></DocumentationFile>
+    <DocumentationFile>C:\Users\zaafar\source\repos\GameOverlay\GameHelper\GameHelper.xml</DocumentationFile>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <WarningsAsErrors>NU1605</WarningsAsErrors>
     <NoWarn>1701;1702; 1591</NoWarn>

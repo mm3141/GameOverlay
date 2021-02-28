@@ -4,21 +4,39 @@
 
 namespace GameHelper.RemoteObjects.Components
 {
+    using System;
+
     /// <summary>
     /// Component associated with the Entity.
     /// </summary>
-    public class ComponentBase : RemoteObjectBase
+    public abstract class ComponentBase
     {
-        /// <inheritdoc/>
-        protected override void CleanUpData()
+        private IntPtr address;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ComponentBase"/> class.
+        /// </summary>
+        /// <param name="address">address of the component.</param>
+        public ComponentBase(IntPtr address)
         {
-            throw new System.NotImplementedException();
+            this.Address = address;
         }
 
-        /// <inheritdoc/>
-        protected override void UpdateData()
+        /// <summary>
+        /// Gets or sets the address of the memory location.
+        /// </summary>
+        public IntPtr Address
         {
-            throw new System.NotImplementedException();
+            get => this.address;
+            set
+            {
+                this.address = value;
+            }
         }
+
+        /// <summary>
+        /// Reads the memory and update all the data known by this Object.
+        /// </summary>
+        public abstract void UpdateData();
     }
 }

@@ -27,20 +27,20 @@ namespace GameHelper.RemoteObjects.States
         }
 
         /// <summary>
-        /// Gets the data related to the current area.
+        /// Gets the data related to the current area instance.
         /// </summary>
-        public CurrentAreaData Data
+        public AreaInstance CurrentAreaInstance
         {
             get;
             private set;
         }
 
-        = new CurrentAreaData(IntPtr.Zero);
+        = new AreaInstance(IntPtr.Zero);
 
         /// <inheritdoc/>
         protected override void CleanUpData()
         {
-            this.Data.Address = IntPtr.Zero;
+            this.CurrentAreaInstance.Address = IntPtr.Zero;
         }
 
         /// <inheritdoc/>
@@ -48,7 +48,7 @@ namespace GameHelper.RemoteObjects.States
         {
             var reader = Core.Process.Handle;
             var data = reader.ReadMemory<InGameStateOffset>(this.Address);
-            this.Data.Address = data.LocalData;
+            this.CurrentAreaInstance.Address = data.LocalData;
         }
 
         private IEnumerator<Wait> OnPerFrame()

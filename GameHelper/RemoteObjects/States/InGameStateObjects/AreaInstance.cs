@@ -1,4 +1,4 @@
-﻿// <copyright file="CurrentAreaData.cs" company="None">
+﻿// <copyright file="AreaInstance.cs" company="None">
 // Copyright (c) None. All rights reserved.
 // </copyright>
 
@@ -15,13 +15,13 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
     /// <summary>
     /// Points to the InGameState -> LocalData Object.
     /// </summary>
-    public class CurrentAreaData : RemoteObjectBase
+    public class AreaInstance : RemoteObjectBase
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="CurrentAreaData"/> class.
+        /// Initializes a new instance of the <see cref="AreaInstance"/> class.
         /// </summary>
         /// <param name="address">address of the remote memory object.</param>
-        internal CurrentAreaData(IntPtr address)
+        internal AreaInstance(IntPtr address)
             : base(address)
         {
             CoroutineHandler.Start(this.OnAreaChange());
@@ -76,8 +76,6 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             // TODO: Create patterns for stuff, for easy finding.
             // TODO: Move all co-routines events to RemoteEvents folder.
             // TODO: Save all co-routines registerer return value to centralized area for showing co-routines stats.
-            // TODO: fix DistanceFrom function and NETWORK_BUBBLE_RADIUS value
-            // TODO: Add Component data.
             // TODO: ComponentLookUp & LoadedFiles->UpdateData is reading a list, DRY the reading of lists
             //       use lamda functions for filtering.
             var reader = Core.Process.Handle;
@@ -90,6 +88,10 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             foreach (var kv in this.AwakeEntities)
             {
                 if (!kv.Value.IsValid &&
+
+                    // This isn't perfect in case entity is deleted before
+                    // we can cache the location of that entity. This is fine
+                    // as long as it doesn't crash the GameHelper.
                     this.Player.DistanceFrom(kv.Value) <
                     InGameStateDataConstants.NETWORK_BUBBLE_RADIUS)
                 {
@@ -109,7 +111,11 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
                 }
                 else
                 {
-                    this.AwakeEntities[key] = new Entity(value.Entity);
+                    var entity = new Entity(value.Entity);
+                    if (!string.IsNullOrEmpty(entity.Path))
+                    {
+                        this.AwakeEntities[key] = entity;
+                    }
                 }
             });
         }

@@ -8,7 +8,7 @@ namespace GameHelper.RemoteObjects
 
     /// <summary>
     /// Points to a Memory location and reads/understands all the data from there.
-    /// Data in remote memory location changes w.r.t time or event. Due to this,
+    /// CurrentAreaInstance in remote memory location changes w.r.t time or event. Due to this,
     /// each remote memory object requires to implement a time/event based coroutine.
     /// </summary>
     public abstract class RemoteObjectBase

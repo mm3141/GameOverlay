@@ -213,7 +213,7 @@
                     this.DebugFileName = Path.Join(
                         this.DebugDirectory,
                         $"{Core.States.AreaLoading.CurrentAreaName.Trim()}_" +
-                        $"{Core.States.InGameStateObject.Data.AreaHash}.txt");
+                        $"{Core.States.InGameStateObject.CurrentAreaInstance.AreaHash}.txt");
                     this.writeToFile();
                 }
             }

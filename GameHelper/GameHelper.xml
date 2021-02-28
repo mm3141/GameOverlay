@@ -451,10 +451,55 @@
             Component associated with the Entity.
             </summary>
         </member>
-        <member name="M:GameHelper.RemoteObjects.Components.ComponentBase.CleanUpData">
-            <inheritdoc/>
+        <member name="M:GameHelper.RemoteObjects.Components.ComponentBase.#ctor(System.IntPtr)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GameHelper.RemoteObjects.Components.ComponentBase"/> class.
+            </summary>
+            <param name="address">address of the component.</param>
+        </member>
+        <member name="P:GameHelper.RemoteObjects.Components.ComponentBase.Address">
+            <summary>
+            Gets or sets the address of the memory location.
+            </summary>
         </member>
         <member name="M:GameHelper.RemoteObjects.Components.ComponentBase.UpdateData">
+            <summary>
+            Reads the memory and update all the data known by this Object.
+            </summary>
+        </member>
+        <member name="T:GameHelper.RemoteObjects.Components.Positioned">
+            <summary>
+            Data associated with the <see cref="T:GameHelper.RemoteObjects.Components.Positioned"/> component in the entity.
+            </summary>
+        </member>
+        <member name="M:GameHelper.RemoteObjects.Components.Positioned.#ctor(System.IntPtr)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GameHelper.RemoteObjects.Components.Positioned"/> class.
+            </summary>
+            <param name="address">address of the <see cref="T:GameHelper.RemoteObjects.Components.Positioned"/> component.</param>
+        </member>
+        <member name="P:GameHelper.RemoteObjects.Components.Positioned.Reaction">
+            <summary>
+            Gets the flag to figure out if the entity is hostile or not.
+            NOTE: For isHostile flag do bitwise-and with 0x7F.
+            </summary>
+        </member>
+        <member name="P:GameHelper.RemoteObjects.Components.Positioned.GridPosition">
+            <summary>
+            Gets the grid position of the entity.
+            </summary>
+        </member>
+        <member name="P:GameHelper.RemoteObjects.Components.Positioned.Rotation">
+            <summary>
+            Gets the rotation of the entity.
+            </summary>
+        </member>
+        <member name="P:GameHelper.RemoteObjects.Components.Positioned.WorldPosition">
+            <summary>
+            Gets the world position of the entity.
+            </summary>
+        </member>
+        <member name="M:GameHelper.RemoteObjects.Components.Positioned.UpdateData">
             <inheritdoc/>
         </member>
         <member name="T:GameHelper.RemoteObjects.CurrentState">
@@ -527,7 +572,7 @@
         <member name="T:GameHelper.RemoteObjects.RemoteObjectBase">
             <summary>
             Points to a Memory location and reads/understands all the data from there.
-            Data in remote memory location changes w.r.t time or event. Due to this,
+            CurrentAreaInstance in remote memory location changes w.r.t time or event. Due to this,
             each remote memory object requires to implement a time/event based coroutine.
             </summary>
         </member>
@@ -618,9 +663,9 @@
             </summary>
             <param name="address">address of the remote memory object.</param>
         </member>
-        <member name="P:GameHelper.RemoteObjects.States.InGameState.Data">
+        <member name="P:GameHelper.RemoteObjects.States.InGameState.CurrentAreaInstance">
             <summary>
-            Gets the data related to the current area.
+            Gets the data related to the current area instance.
             </summary>
         </member>
         <member name="M:GameHelper.RemoteObjects.States.InGameState.CleanUpData">
@@ -629,34 +674,34 @@
         <member name="M:GameHelper.RemoteObjects.States.InGameState.UpdateData">
             <inheritdoc/>
         </member>
-        <member name="T:GameHelper.RemoteObjects.States.InGameStateObjects.CurrentAreaData">
+        <member name="T:GameHelper.RemoteObjects.States.InGameStateObjects.AreaInstance">
             <summary>
             Points to the InGameState -> LocalData Object.
             </summary>
         </member>
-        <member name="M:GameHelper.RemoteObjects.States.InGameStateObjects.CurrentAreaData.#ctor(System.IntPtr)">
+        <member name="M:GameHelper.RemoteObjects.States.InGameStateObjects.AreaInstance.#ctor(System.IntPtr)">
             <summary>
-            Initializes a new instance of the <see cref="T:GameHelper.RemoteObjects.States.InGameStateObjects.CurrentAreaData"/> class.
+            Initializes a new instance of the <see cref="T:GameHelper.RemoteObjects.States.InGameStateObjects.AreaInstance"/> class.
             </summary>
             <param name="address">address of the remote memory object.</param>
         </member>
-        <member name="P:GameHelper.RemoteObjects.States.InGameStateObjects.CurrentAreaData.MonsterLevel">
+        <member name="P:GameHelper.RemoteObjects.States.InGameStateObjects.AreaInstance.MonsterLevel">
             <summary>
             Gets the Monster Level of current Area.
             </summary>
         </member>
-        <member name="P:GameHelper.RemoteObjects.States.InGameStateObjects.CurrentAreaData.AreaHash">
+        <member name="P:GameHelper.RemoteObjects.States.InGameStateObjects.AreaInstance.AreaHash">
             <summary>
             Gets the Hash of the current Area/Zone.
             This value is sent to the client from the server.
             </summary>
         </member>
-        <member name="P:GameHelper.RemoteObjects.States.InGameStateObjects.CurrentAreaData.Player">
+        <member name="P:GameHelper.RemoteObjects.States.InGameStateObjects.AreaInstance.Player">
             <summary>
             Gets the player Entity.
             </summary>
         </member>
-        <member name="P:GameHelper.RemoteObjects.States.InGameStateObjects.CurrentAreaData.AwakeEntities">
+        <member name="P:GameHelper.RemoteObjects.States.InGameStateObjects.AreaInstance.AwakeEntities">
              <summary>
              Gets the Awake Entities of the current Area/Zone.
             
@@ -665,25 +710,20 @@
              are opposite of awake entities e.g. Decorations, Effects, particles and etc.
              </summary>
         </member>
-        <member name="P:GameHelper.RemoteObjects.States.InGameStateObjects.CurrentAreaData.InGameStateDataCoroutine">
+        <member name="P:GameHelper.RemoteObjects.States.InGameStateObjects.AreaInstance.InGameStateDataCoroutine">
             <summary>
             Gets the InGameStateData per-frame coroutine.
             </summary>
         </member>
-        <member name="M:GameHelper.RemoteObjects.States.InGameStateObjects.CurrentAreaData.CleanUpData">
+        <member name="M:GameHelper.RemoteObjects.States.InGameStateObjects.AreaInstance.CleanUpData">
             <inheritdoc/>
         </member>
-        <member name="M:GameHelper.RemoteObjects.States.InGameStateObjects.CurrentAreaData.UpdateData">
+        <member name="M:GameHelper.RemoteObjects.States.InGameStateObjects.AreaInstance.UpdateData">
             <inheritdoc/>
         </member>
         <member name="T:GameHelper.RemoteObjects.States.InGameStateObjects.Entity">
             <summary>
             Points to an Entity/Object in the game.
-            </summary>
-        </member>
-        <member name="F:GameHelper.RemoteObjects.States.InGameStateObjects.Entity.components">
-            <summary>
-            Store the component name and addresses.
             </summary>
         </member>
         <member name="M:GameHelper.RemoteObjects.States.InGameStateObjects.Entity.#ctor(System.IntPtr)">
@@ -721,19 +761,13 @@
             <param name="other">Other entity object.</param>
             <returns>the distance from the other entity.</returns>
         </member>
-        <member name="M:GameHelper.RemoteObjects.States.InGameStateObjects.Entity.GetComponent``1">
+        <member name="M:GameHelper.RemoteObjects.States.InGameStateObjects.Entity.TryGetComponent``1(``0@)">
             <summary>
-            Gets the Component data associated with the template.
+            Gets the Component data associated with the entity.
             </summary>
-            <typeparam name="T">Component data type.</typeparam>
-            <returns>Component data.</returns>
-        </member>
-        <member name="M:GameHelper.RemoteObjects.States.InGameStateObjects.Entity.HasComponent``1">
-            <summary>
-            Gets a value indicating whether the component exists or not.
-            </summary>
-            <typeparam name="T">Component data type.</typeparam>
-            <returns>true if the component exists otherwise false.</returns>
+            <typeparam name="T">Component type to get.</typeparam>
+            <param name="component">component data.</param>
+            <returns>true if the entity contains the component; otherwise, false.</returns>
         </member>
         <member name="M:GameHelper.RemoteObjects.States.InGameStateObjects.Entity.Update(System.IntPtr)">
             <summary>
@@ -953,17 +987,6 @@
             </summary>
             <param name="address">pointer to the string.</param>
             <returns>string read.</returns>
-        </member>
-        <member name="M:GameHelper.Utils.SafeMemoryHandle.ReadStdMap``2(GameOffsets.Native.StdMap,System.Boolean,System.Func{``0,System.Boolean})">
-            <summary>
-            Reads the std::map into a dictionary.
-            </summary>
-            <typeparam name="TKey">key type of the stdmap.</typeparam>
-            <typeparam name="TValue">value type of the stdmap.</typeparam>
-            <param name="nativeContainer">native object of the std::map.</param>
-            <param name="validate_size">Validate the total while loop iteration with given map size.</param>
-            <param name="keyfilter">Filter the keys based on the function return value.</param>
-            <returns>a dictonary containing the keys and the values of the stdmap.</returns>
         </member>
         <member name="M:GameHelper.Utils.SafeMemoryHandle.ReadStdMapAsList``2(GameOffsets.Native.StdMap,System.Boolean,System.Func{``0,System.Boolean})">
             <summary>

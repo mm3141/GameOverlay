@@ -97,8 +97,6 @@ namespace GameHelper.Settings
                         "when you close the overlay or hide it via F12 button.");
                     ImGui.NewLine();
                     ImGui.Text($"Current Game State: {Core.States.CurrentStateInGame.Name}");
-                    var _ = Core.States.InGameStateObject.Data.InGameStateDataCoroutine;
-                    ImGui.Text($"InGameStateDataTime: {_.AverageMoveNextTime.TotalMilliseconds}");
                     ImGui.EndGroup();
                     break;
                 default:

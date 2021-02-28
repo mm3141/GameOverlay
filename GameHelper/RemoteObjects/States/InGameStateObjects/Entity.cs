@@ -14,10 +14,8 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
     /// </summary>
     public class Entity : RemoteObjectBase
     {
-        /// <summary>
-        /// Store the component name and addresses.
-        /// </summary>
-        private Dictionary<string, IntPtr> components;
+        private Dictionary<string, IntPtr> componentAddresses;
+        private Dictionary<string, ComponentBase> componentCache;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Entity"/> class.
@@ -39,7 +37,8 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             this.Id = 0x00;
             this.IsValid = false;
             this.Path = string.Empty;
-            this.components = new Dictionary<string, IntPtr>();
+            this.componentAddresses = new Dictionary<string, IntPtr>();
+            this.componentCache = new Dictionary<string, ComponentBase>();
         }
 
         /// <summary>
@@ -65,29 +64,44 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
         /// <returns>the distance from the other entity.</returns>
         public int DistanceFrom(Entity other)
         {
-            return 0;
+            if (this.TryGetComponent<Positioned>(out var myPosComp) &&
+                other.TryGetComponent<Positioned>(out var otherPosComp))
+            {
+                var dx = myPosComp.WorldPosition.X - otherPosComp.WorldPosition.X;
+                var dy = myPosComp.WorldPosition.Y - otherPosComp.WorldPosition.Y;
+                return (int)Math.Sqrt((dx * dx) + (dy * dy));
+            }
+            else
+            {
+                throw new Exception($"Position Component missing in {this.Path} or {other.Path}");
+            }
         }
 
         /// <summary>
-        /// Gets the Component data associated with the template.
+        /// Gets the Component data associated with the entity.
         /// </summary>
-        /// <typeparam name="T">Component data type.</typeparam>
-        /// <returns>Component data.</returns>
-        public T GetComponent<T>()
+        /// <typeparam name="T">Component type to get.</typeparam>
+        /// <param name="component">component data.</param>
+        /// <returns>true if the entity contains the component; otherwise, false.</returns>
+        public bool TryGetComponent<T>(out T component)
             where T : ComponentBase
         {
-            return default(T);
-        }
+            var componenName = typeof(T).Name;
+            if (this.componentCache.TryGetValue(componenName, out var comp))
+            {
+                component = (T)comp;
+                return true;
+            }
 
-        /// <summary>
-        /// Gets a value indicating whether the component exists or not.
-        /// </summary>
-        /// <typeparam name="T">Component data type.</typeparam>
-        /// <returns>true if the component exists otherwise false.</returns>
-        public bool HasComponent<T>()
-            where T : ComponentBase
-        {
-            return this.components.ContainsKey(typeof(T).Name);
+            if (this.componentAddresses.TryGetValue(componenName, out IntPtr compAddr))
+            {
+                component = (T)Activator.CreateInstance(typeof(T), compAddr);
+                this.componentCache[componenName] = component;
+                return true;
+            }
+
+            component = null;
+            return false;
         }
 
         /// <summary>
@@ -122,6 +136,10 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             var reader = Core.Process.Handle;
             EntityOffsets entityData = reader.ReadMemory<EntityOffsets>(this.Address);
             this.IsValid = entityData.IsValid == EntityOffsets.Valid;
+            foreach (var kv in this.componentCache)
+            {
+                kv.Value.UpdateData();
+            }
         }
 
         /// <summary>
@@ -129,7 +147,8 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
         /// </summary>
         private void UpdateAll()
         {
-            this.components = new Dictionary<string, IntPtr>(20);
+            this.componentAddresses = new Dictionary<string, IntPtr>(20);
+            this.componentCache = new Dictionary<string, ComponentBase>();
             var reader = Core.Process.Handle;
             EntityOffsets entityData = reader.ReadMemory<EntityOffsets>(this.Address);
             this.IsValid = entityData.IsValid == EntityOffsets.Valid;
@@ -149,7 +168,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             {
                 var data = nameAndIndex[i];
                 string name = reader.ReadString(data.NamePtr);
-                this.components.Add(name, entityComponentArray[data.Index]);
+                this.componentAddresses.Add(name, entityComponentArray[data.Index]);
             }
         }
     }

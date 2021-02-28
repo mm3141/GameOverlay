@@ -8,6 +8,7 @@ namespace GameHelper.RemoteObjects
     using System.Collections.Generic;
     using Coroutine;
     using GameHelper.RemoteEnums;
+    using GameOffsets.Objects;
 
     /// <summary>
     /// Points to the AreaChangeCounter object and read/cache it's value
@@ -41,7 +42,7 @@ namespace GameHelper.RemoteObjects
         protected override void UpdateData()
         {
             var reader = Core.Process.Handle;
-            this.Value = reader.ReadMemory<int>(this.Address);
+            this.Value = reader.ReadMemory<AreaChangeOffset>(this.Address).counter;
         }
 
         private IEnumerator<Wait> OnAreaChange()
