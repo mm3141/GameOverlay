@@ -12,6 +12,7 @@ namespace GameHelper.Plugin
     using System.Reflection;
     using System.Threading.Tasks;
     using Coroutine;
+    using GameHelper.CoroutineEvents;
     using GameHelper.Settings;
     using GameHelper.Utils;
 
@@ -178,7 +179,7 @@ namespace GameHelper.Plugin
         {
             while (true)
             {
-                yield return new Wait(SettingsWindow.TimeToSaveAllSettings);
+                yield return new Wait(GameHelperEvents.TimeToSaveAllSettings);
                 JsonHelper.SafeToFile(AllPlugins, State.PluginsMetadataFile);
             }
         }
@@ -187,7 +188,7 @@ namespace GameHelper.Plugin
         {
             while (true)
             {
-                yield return new Wait(SettingsWindow.TimeToSaveAllSettings);
+                yield return new Wait(GameHelperEvents.TimeToSaveAllSettings);
                 foreach (var keyvalue in AllPlugins)
                 {
                     keyvalue.Value.Plugin.SaveSettings();
@@ -199,7 +200,7 @@ namespace GameHelper.Plugin
         {
             while (true)
             {
-                yield return new Wait(GameOverlay.OnRender);
+                yield return new Wait(GameHelperEvents.OnRender);
                 foreach (var pluginKeyValue in AllPlugins)
                 {
                     if (pluginKeyValue.Value.Enable)

@@ -7,6 +7,7 @@ namespace GameHelper.RemoteObjects.States
     using System;
     using System.Collections.Generic;
     using Coroutine;
+    using GameHelper.CoroutineEvents;
     using GameHelper.RemoteEnums;
     using GameHelper.RemoteObjects.States.InGameStateObjects;
     using GameOffsets.Objects.States;
@@ -53,10 +54,9 @@ namespace GameHelper.RemoteObjects.States
 
         private IEnumerator<Wait> OnPerFrame()
         {
-            yield return new Wait(0);
             while (true)
             {
-                yield return new Wait(GameOverlay.PerFrameDataUpdate);
+                yield return new Wait(GameHelperEvents.PerFrameDataUpdate);
                 if (this.Address != IntPtr.Zero
                     && Core.States.CurrentStateInGame.Name == GameStateTypes.InGameState)
                 {

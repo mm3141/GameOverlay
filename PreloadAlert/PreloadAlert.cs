@@ -8,6 +8,7 @@
     using System.Numerics;
     using Coroutine;
     using GameHelper;
+    using GameHelper.CoroutineEvents;
     using GameHelper.Plugin;
     using GameHelper.RemoteObjects;
     using ImGuiNET;
@@ -283,7 +284,7 @@
             {
                 // TODO: fix this with when game exit.
                 // TODO: doesn't work when game is moved to character select or login screen.
-                yield return new Wait(Core.States.AreaLoading.AreaChanged);
+                yield return new Wait(RemoteEvents.AreaChanged);
                 this.Cleanup(false);
             }
         }

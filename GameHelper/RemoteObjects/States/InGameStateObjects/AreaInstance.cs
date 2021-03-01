@@ -9,6 +9,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using Coroutine;
+    using GameHelper.CoroutineEvents;
     using GameHelper.RemoteEnums;
     using GameOffsets.Objects.States.InGameState;
 
@@ -75,7 +76,6 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             // TODO: Create ToRender & DevTree type plugin for base classes
             // TODO: Create patterns for stuff, for easy finding.
             // TODO: Save all co-routines registerer return value to centralized area for showing co-routines stats.
-            // TODO: Move all co-routines events to RemoteEvents folder.
             var reader = Core.Process.Handle;
             var data = reader.ReadMemory<CurrentAreaDataOffsets>(this.Address);
             this.MonsterLevel = data.MonsterLevel;
@@ -120,10 +120,9 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
 
         private IEnumerator<Wait> OnAreaChange()
         {
-            yield return new Wait(0);
             while (true)
             {
-                yield return new Wait(Core.States.AreaLoading.AreaChangeDetected);
+                yield return new Wait(RemoteEvents.AreaChangeDetected);
                 if (this.Address != IntPtr.Zero)
                 {
                     this.CleanUpData();
@@ -136,7 +135,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
         {
             while (true)
             {
-                yield return new Wait(GameOverlay.PerFrameDataUpdate);
+                yield return new Wait(GameHelperEvents.PerFrameDataUpdate);
                 if (this.Address != IntPtr.Zero)
                 {
                     this.UpdateData();
@@ -146,10 +145,9 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
 
         private IEnumerator<Wait> OnGameStateChange()
         {
-            yield return new Wait(0);
             while (true)
             {
-                yield return new Wait(Core.States.CurrentStateInGame.StateChanged);
+                yield return new Wait(RemoteEvents.StateChanged);
                 if (Core.States.CurrentStateInGame.Name !=
                     GameStateTypes.InGameState
                     && Core.States.CurrentStateInGame.Name !=

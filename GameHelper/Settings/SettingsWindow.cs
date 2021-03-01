@@ -9,6 +9,7 @@ namespace GameHelper.Settings
     using System.Numerics;
     using ClickableTransparentOverlay;
     using Coroutine;
+    using GameHelper.CoroutineEvents;
     using GameHelper.Plugin;
     using GameHelper.Utils;
     using ImGuiNET;
@@ -20,12 +21,6 @@ namespace GameHelper.Settings
     {
         private static bool isSettingsWindowVisible = true;
         private static string currentlySelectedPlugin = "Core";
-
-        /// <summary>
-        /// Gets the Game Helper closing event. The event is called whenever
-        /// all the settings have to be saved.
-        /// </summary>
-        internal static Event TimeToSaveAllSettings { get; } = new Event();
 
         /// <summary>
         /// Initializes the Main Menu.
@@ -118,13 +113,13 @@ namespace GameHelper.Settings
         {
             while (true)
             {
-                yield return new Wait(GameOverlay.OnRender);
+                yield return new Wait(GameHelperEvents.OnRender);
                 if (NativeMethods.IsKeyPressedAndNotTimeout(Core.GHSettings.MainMenuHotKey))
                 {
                     isSettingsWindowVisible = !isSettingsWindowVisible;
                     if (!isSettingsWindowVisible)
                     {
-                        CoroutineHandler.RaiseEvent(TimeToSaveAllSettings);
+                        CoroutineHandler.RaiseEvent(GameHelperEvents.TimeToSaveAllSettings);
                     }
                 }
 
@@ -140,7 +135,7 @@ namespace GameHelper.Settings
                     ImGuiWindowFlags.NoSavedSettings);
                 if (!Core.GHSettings.IsOverlayRunning)
                 {
-                    CoroutineHandler.RaiseEvent(TimeToSaveAllSettings);
+                    CoroutineHandler.RaiseEvent(GameHelperEvents.TimeToSaveAllSettings);
                 }
 
                 if (!isMainMenuExpanded)
@@ -164,7 +159,7 @@ namespace GameHelper.Settings
         {
             while (true)
             {
-                yield return new Wait(TimeToSaveAllSettings);
+                yield return new Wait(GameHelperEvents.TimeToSaveAllSettings);
                 JsonHelper.SafeToFile(Core.GHSettings, State.CoreSettingFile);
             }
         }

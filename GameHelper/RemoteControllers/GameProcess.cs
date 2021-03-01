@@ -10,6 +10,7 @@ namespace GameHelper.RemoteControllers
     using System.Drawing;
     using System.Runtime.InteropServices;
     using Coroutine;
+    using GameHelper.CoroutineEvents;
     using GameHelper.Utils;
     using GameOffsets;
 
@@ -38,26 +39,6 @@ namespace GameHelper.RemoteControllers
         /// Gets the Base Address of the game.
         /// </summary>
         internal new IntPtr Address => this.Information.MainModule.BaseAddress;
-
-        /// <summary>
-        /// Gets the event raised when GameProcess has opened a new game.
-        /// </summary>
-        internal Event OnOpened { get; private set; } = new Event();
-
-        /// <summary>
-        /// Gets the event raised just before the GameProcess has closed the game.
-        /// </summary>
-        internal Event OnClose { get; private set; } = new Event();
-
-        /// <summary>
-        /// Gets the event raised when the game has changed its size, position or both.
-        /// </summary>
-        internal Event OnMoved { get; private set; } = new Event();
-
-        /// <summary>
-        /// Gets the event raised when the game Foreground property has changed.
-        /// </summary>
-        internal Event OnForegroundChanged { get; private set; } = new Event();
 
         /// <summary>
         /// Gets the static addresses (along with their names) found in the GameProcess
@@ -94,7 +75,7 @@ namespace GameHelper.RemoteControllers
         /// </param>
         internal void Close(bool monitorForNewGame = true)
         {
-            CoroutineHandler.RaiseEvent(this.OnClose);
+            CoroutineHandler.RaiseEvent(GameHelperEvents.OnClose);
             this.WindowArea = Rectangle.Empty;
             this.Foreground = false;
             this.Handle?.Dispose();
@@ -179,7 +160,7 @@ namespace GameHelper.RemoteControllers
         {
             while (true)
             {
-                yield return new Wait(this.OnOpened);
+                yield return new Wait(GameHelperEvents.OnOpened);
                 var baseAddress = this.Information.MainModule.BaseAddress;
                 var procSize = this.Information.MainModule.ModuleMemorySize;
                 var patternsInfo = PatternFinder.Find(this.Handle, baseAddress, procSize);
@@ -213,7 +194,7 @@ namespace GameHelper.RemoteControllers
             }
 
             CoroutineHandler.Start(this.Monitor());
-            CoroutineHandler.RaiseEvent(this.OnOpened);
+            CoroutineHandler.RaiseEvent(GameHelperEvents.OnOpened);
             return true;
         }
 
@@ -226,7 +207,7 @@ namespace GameHelper.RemoteControllers
             if (foreground != this.Foreground)
             {
                 this.Foreground = foreground;
-                CoroutineHandler.RaiseEvent(this.OnForegroundChanged);
+                CoroutineHandler.RaiseEvent(GameHelperEvents.OnForegroundChanged);
             }
         }
 
@@ -241,7 +222,7 @@ namespace GameHelper.RemoteControllers
             if (sizePos != this.WindowArea && sizePos.Size != Size.Empty)
             {
                 this.WindowArea = sizePos;
-                CoroutineHandler.RaiseEvent(this.OnMoved);
+                CoroutineHandler.RaiseEvent(GameHelperEvents.OnMoved);
             }
         }
 

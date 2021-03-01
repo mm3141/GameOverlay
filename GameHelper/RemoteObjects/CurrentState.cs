@@ -7,6 +7,7 @@ namespace GameHelper.RemoteObjects
     using System;
     using System.Collections.Generic;
     using Coroutine;
+    using GameHelper.CoroutineEvents;
     using GameHelper.RemoteEnums;
     using GameHelper.Utils;
     using GameOffsets.Controller;
@@ -32,11 +33,6 @@ namespace GameHelper.RemoteObjects
         }
 
         /// <summary>
-        /// Gets the Current State Changed event.
-        /// </summary>
-        internal Event StateChanged { get; private set; } = new Event();
-
-        /// <summary>
         /// Gets the current state name.
         /// </summary>
         internal GameStateTypes Name
@@ -47,7 +43,7 @@ namespace GameHelper.RemoteObjects
                 if (this.name != value)
                 {
                     this.name = value;
-                    CoroutineHandler.RaiseEvent(this.StateChanged);
+                    CoroutineHandler.RaiseEvent(RemoteEvents.StateChanged);
                 }
             }
         }
@@ -81,10 +77,9 @@ namespace GameHelper.RemoteObjects
 
         private IEnumerator<Wait> OnPerFrame()
         {
-            yield return new Wait(0);
             while (true)
             {
-                yield return new Wait(GameOverlay.PerFrameDataUpdate);
+                yield return new Wait(GameHelperEvents.PerFrameDataUpdate);
                 if (this.Address != IntPtr.Zero)
                 {
                     this.UpdateData();

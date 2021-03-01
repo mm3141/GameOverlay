@@ -7,6 +7,7 @@ namespace GameHelper
     using System;
     using System.Collections.Generic;
     using Coroutine;
+    using GameHelper.CoroutineEvents;
     using GameHelper.RemoteControllers;
     using GameHelper.RemoteObjects;
     using GameHelper.Settings;
@@ -134,7 +135,7 @@ namespace GameHelper
         {
             while (true)
             {
-                yield return new Wait(Process.OnClose);
+                yield return new Wait(GameHelperEvents.OnClose);
                 States.Address = IntPtr.Zero;
                 CurrentAreaLoadedFiles.Address = IntPtr.Zero;
                 AreaChangeCounter.Address = IntPtr.Zero;

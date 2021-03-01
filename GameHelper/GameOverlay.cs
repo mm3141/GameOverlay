@@ -8,6 +8,7 @@ namespace GameHelper
     using System.Threading.Tasks;
     using ClickableTransparentOverlay;
     using Coroutine;
+    using GameHelper.CoroutineEvents;
     using GameHelper.Plugin;
     using GameHelper.Settings;
     using ImGuiNET;
@@ -15,16 +16,6 @@ namespace GameHelper
     /// <inheritdoc/>
     internal class GameOverlay : Overlay
     {
-        /// <summary>
-        /// To Update data every frame before rendering.
-        /// </summary>
-        internal static readonly Event PerFrameDataUpdate = new Event();
-
-        /// <summary>
-        /// To submit ImGui code for generating the UI.
-        /// </summary>
-        internal static readonly Event OnRender = new Event();
-
         /// <summary>
         /// Initializes a new instance of the <see cref="GameOverlay"/> class.
         /// </summary>
@@ -47,8 +38,8 @@ namespace GameHelper
         protected override Task Render()
         {
             CoroutineHandler.Tick(ImGui.GetIO().DeltaTime);
-            CoroutineHandler.RaiseEvent(PerFrameDataUpdate);
-            CoroutineHandler.RaiseEvent(OnRender);
+            CoroutineHandler.RaiseEvent(GameHelperEvents.PerFrameDataUpdate);
+            CoroutineHandler.RaiseEvent(GameHelperEvents.OnRender);
             if (!Core.GHSettings.IsOverlayRunning)
             {
                 this.Close();
@@ -61,7 +52,7 @@ namespace GameHelper
         {
             while (true)
             {
-                yield return new Wait(Core.Process.OnMoved);
+                yield return new Wait(GameHelperEvents.OnMoved);
                 this.Position = new Veldrid.Point(Core.Process.WindowArea.Location.X, Core.Process.WindowArea.Location.Y);
                 this.Size = new Veldrid.Point(Core.Process.WindowArea.Size.Width, Core.Process.WindowArea.Size.Height);
             }

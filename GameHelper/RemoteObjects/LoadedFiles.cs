@@ -9,6 +9,7 @@ namespace GameHelper.RemoteObjects
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using Coroutine;
+    using GameHelper.CoroutineEvents;
     using GameHelper.RemoteEnums;
     using GameOffsets.Objects;
 
@@ -90,10 +91,9 @@ namespace GameHelper.RemoteObjects
 
         private IEnumerator<Wait> OnAreaChange()
         {
-            yield return new Wait(0);
             while (true)
             {
-                yield return new Wait(Core.States.AreaLoading.AreaChanged);
+                yield return new Wait(RemoteEvents.AreaChanged);
                 if (this.Address != IntPtr.Zero)
                 {
                     this.CleanUpData();
@@ -104,10 +104,9 @@ namespace GameHelper.RemoteObjects
 
         private IEnumerator<Wait> OnGameStateChange()
         {
-            yield return new Wait(0);
             while (true)
             {
-                yield return new Wait(Core.States.CurrentStateInGame.StateChanged);
+                yield return new Wait(RemoteEvents.StateChanged);
                 if (Core.States.CurrentStateInGame.Name != GameStateTypes.InGameState
                     && Core.States.CurrentStateInGame.Name != GameStateTypes.EscapeState
                     && Core.States.CurrentStateInGame.Name != GameStateTypes.AreaLoadingState)
