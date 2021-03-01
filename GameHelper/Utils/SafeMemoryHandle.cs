@@ -6,7 +6,6 @@ namespace GameHelper.Utils
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
     using System.Runtime.ConstrainedExecution;
     using System.Runtime.InteropServices;
     using System.Security.Permissions;
@@ -201,7 +200,14 @@ namespace GameHelper.Utils
         {
             var buffer = this.ReadMemoryArray<byte>(address, 128);
             int count = Array.IndexOf<byte>(buffer, 0x00, 0);
-            return Encoding.ASCII.GetString(buffer, 0, count);
+            if (count > 0)
+            {
+                return Encoding.ASCII.GetString(buffer, 0, count);
+            }
+            else
+            {
+                return string.Empty;
+            }
         }
 
         /// <summary>
@@ -306,7 +312,7 @@ namespace GameHelper.Utils
                 var currNode = this.ReadMemory<StdListNode<TValue>>(currNodeAddress);
                 if (currNodeAddress == IntPtr.Zero)
                 {
-                    Console.WriteLine("Terminating Preloads finding because of" +
+                    Console.WriteLine("Terminating reading of list next nodes because of" +
                         "unexpected 0x00 found. This is normal if it happens " +
                         "after closing the game, otherwise report it.");
                     break;

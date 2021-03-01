@@ -45,9 +45,6 @@
         private string DebugDirectory;
         private string DebugFileName;
 
-        private bool isLastScan =>
-            Core.CurrentAreaLoadedFiles.CurrentPreloadScan == LoadedFiles.MaximumPreloadScans;
-
         public PreloadAlert()
         {
             CoroutineHandler.Start(OnAreaChanged());
@@ -80,25 +77,10 @@
                 ImGui.TextColored(new Vector4(1f, 0f, 0f, 1f), ERRORMSG);
             }
 
-            int totalTime = ((LoadedFiles.MaximumPreloadScans - 1) * LoadedFiles.WaitBetweenScans);
-            ImGui.TextWrapped("Disabling/Enabling the plugin " +
-                "(via the checkbox beside the plugin name) will reload the important " +
-                "preloads from the text file. It will not re-scan the game memory, for " +
-                "that you need to change Area/Zone.");
-            ImGui.NewLine();
-            ImGui.TextWrapped($"Preloads are re-scanned/updated for {totalTime} seconds after " +
-                "you change the Area/Zone. Any preloads found during that time will be " +
-                "displayed on the UI.");
             ImGui.NewLine();
             ImGui.Checkbox("Lock Preload Window Position/Size", ref this.Settings.Locked);
             ImGui.ColorEdit4("Background", ref this.Settings.BackgroundColor);
             ImGui.Checkbox("Find new preload mode", ref this.Settings.DebugMode);
-            if (this.Settings.DebugMode)
-            {
-                ImGui.TextWrapped($"Please wait for all {LoadedFiles.MaximumPreloadScans} " +
-                    $"scans to happen before moving. Please use diary to record all important " +
-                    $"things in the Area/Zone.");
-            }
         }
 
         public override void DrawUI()
@@ -155,28 +137,23 @@
 
         private void writeToFile()
         {
-            if (this.isLastScan)
+
+            if (!File.Exists(this.DebugFileName))
             {
-                if (!File.Exists(this.DebugFileName))
-                {
-                    var dataToWrite = this.allPreloadsOfArea.ToList();
-                    dataToWrite.Sort();
-                    File.WriteAllLines(this.DebugFileName, dataToWrite);
-                }
+                var dataToWrite = this.allPreloadsOfArea.ToList();
+                dataToWrite.Sort();
+                File.WriteAllLines(this.DebugFileName, dataToWrite);
             }
         }
 
         private void CacheForFileWriting(string preload)
         {
-            if (this.isLastScan)
-            {
-                this.allPreloadsOfArea.Add(preload);
-            }
+            this.allPreloadsOfArea.Add(preload);
         }
 
         private void CacheGameData()
         {
-            var files = Core.CurrentAreaLoadedFiles.Data;
+            var files = Core.CurrentAreaLoadedFiles.PathNames;
             if (!files.IsEmpty)
             {
                 if (this.Settings.DebugMode)
@@ -184,7 +161,7 @@
 
                 }
 
-                while (!files.IsEmpty)
+                /*while (!files.IsEmpty)
                 {
                     files.TryTake(out string file);
 
@@ -206,7 +183,7 @@
                             break;
                         }
                     }
-                }
+                }*/
 
                 if (this.Settings.DebugMode)
                 {

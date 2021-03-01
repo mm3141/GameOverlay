@@ -15,7 +15,7 @@ namespace GameHelper.RemoteObjects.States
     /// </summary>
     public sealed class AreaLoadingState : RemoteObjectBase
     {
-        private AreaLoadingStateOffset classData = default;
+        private AreaLoadingStateOffset lastCache = default;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AreaLoadingState"/> class.
@@ -59,13 +59,12 @@ namespace GameHelper.RemoteObjects.States
         /// <summary>
         /// Gets a value indicating whether the game is in loading screen or not.
         /// </summary>
-        internal bool IsLoading =>
-            this.classData.IsLoading == 0x01;
+        internal bool IsLoading { get; private set; }
 
         /// <inheritdoc/>
         protected override void CleanUpData()
         {
-            this.classData = default;
+            this.lastCache = default;
             this.CurrentAreaName = string.Empty;
         }
 
@@ -74,17 +73,18 @@ namespace GameHelper.RemoteObjects.States
         {
             var reader = Core.Process.Handle;
             var data = reader.ReadMemory<AreaLoadingStateOffset>(this.Address);
+            this.IsLoading = data.IsLoading == 0x01;
             bool hasAreaChanged = false;
             if (data.CurrentAreaName.Buffer != IntPtr.Zero &&
-                data.IsLoading != 0x01 &&
-                data.TotalLoadingScreenTimeMs > this.classData.TotalLoadingScreenTimeMs)
+                !this.IsLoading &&
+                data.TotalLoadingScreenTimeMs > this.lastCache.TotalLoadingScreenTimeMs)
             {
                 string areaName = reader.ReadStdWString(data.CurrentAreaName);
                 this.CurrentAreaName = areaName;
+                this.lastCache = data;
                 hasAreaChanged = true;
             }
 
-            this.classData = data;
             if (hasAreaChanged)
             {
                 CoroutineHandler.RaiseEvent(this.AreaChangeDetected);

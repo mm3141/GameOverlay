@@ -17,7 +17,7 @@
     }
 
     [StructLayout(LayoutKind.Explicit, Pack = 1)]
-    public struct StdKeyValuePair
+    public struct FilesKeyValueStruct
     {
         [FieldOffset(0x00)] public IntPtr KeyPtr;
         [FieldOffset(0x08)] public IntPtr ValuePtr; //FileInfoValueStruct

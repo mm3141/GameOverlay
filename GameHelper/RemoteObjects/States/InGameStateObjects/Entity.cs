@@ -61,7 +61,10 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
         /// Calculate the distance from the other entity.
         /// </summary>
         /// <param name="other">Other entity object.</param>
-        /// <returns>the distance from the other entity.</returns>
+        /// <returns>
+        /// the distance from the other entity
+        /// if it can calculate; otherwise, return 0.
+        /// </returns>
         public int DistanceFrom(Entity other)
         {
             if (this.TryGetComponent<Positioned>(out var myPosComp) &&
@@ -73,7 +76,8 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             }
             else
             {
-                throw new Exception($"Position Component missing in {this.Path} or {other.Path}");
+                Console.WriteLine($"Position Component missing in {this.Path} or {other.Path}");
+                return 0;
             }
         }
 
@@ -154,6 +158,8 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             this.IsValid = entityData.IsValid == EntityOffsets.Valid;
             this.Id = entityData.Id;
 
+            var entityComponentArray = reader.ReadStdVector<IntPtr>(
+                entityData.ComponentListPtr);
             EntityDetails entityDetails = reader.ReadMemory<EntityDetails>(entityData.EntityDetailsPtr);
             this.Path = reader.ReadStdWString(entityDetails.name);
 
@@ -161,8 +167,6 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
                 entityDetails.ComponentLookUpPtr);
             var nameAndIndex = reader.ReadStdList<ComponentNameAndIndexStruct>(
                 lookupPtr.ComponentNameAndIndexPtr);
-            var entityComponentArray = reader.ReadStdVector<IntPtr>(
-                entityData.ComponentListPtr);
 
             for (int i = 0; i < nameAndIndex.Count; i++)
             {

@@ -9,7 +9,7 @@ namespace GameHelper.RemoteObjects.Components
     using GameOffsets.Objects.Components;
 
     /// <summary>
-    /// Data associated with the <see cref="Positioned"/> component in the entity.
+    /// PathNames associated with the <see cref="Positioned"/> component in the entity.
     /// </summary>
     public class Positioned : ComponentBase
     {
@@ -35,11 +35,6 @@ namespace GameHelper.RemoteObjects.Components
         public StdTuple2D<int> GridPosition { get; private set; }
 
         /// <summary>
-        /// Gets the rotation of the entity.
-        /// </summary>
-        public float Rotation { get; private set; }
-
-        /// <summary>
         /// Gets the world position of the entity.
         /// </summary>
         public StdTuple2D<float> WorldPosition { get; private set; }
@@ -51,7 +46,6 @@ namespace GameHelper.RemoteObjects.Components
             var data = reader.ReadMemory<PositionedOffset>(this.Address);
             this.Reaction = data.Reaction;
             this.GridPosition = data.GridPosition;
-            this.Rotation = data.Rotation;
             this.WorldPosition = data.WorldPosition;
         }
     }

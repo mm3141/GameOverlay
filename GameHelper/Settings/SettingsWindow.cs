@@ -10,7 +10,6 @@ namespace GameHelper.Settings
     using ClickableTransparentOverlay;
     using Coroutine;
     using GameHelper.Plugin;
-    using GameHelper.RemoteObjects.States.InGameStateObjects;
     using GameHelper.Utils;
     using ImGuiNET;
 

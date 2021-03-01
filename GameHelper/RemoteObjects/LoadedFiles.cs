@@ -10,7 +10,6 @@ namespace GameHelper.RemoteObjects
     using System.Threading.Tasks;
     using Coroutine;
     using GameHelper.RemoteEnums;
-    using GameOffsets.Native;
     using GameOffsets.Objects;
 
     /// <summary>
@@ -30,36 +29,20 @@ namespace GameHelper.RemoteObjects
         }
 
         /// <summary>
-        /// Gets the wait (in seconds) between multiple preload memory scans.
-        /// As preloads are scanned multiple times (i.e. <see cref="MaximumPreloadScans"/>).
+        /// Gets the pathname of the files.
         /// </summary>
-        public static int WaitBetweenScans { get; } = 3;
+        public ConcurrentDictionary<string, byte> PathNames
+        {
+            get;
+            private set;
+        }
 
-        /// <summary>
-        /// Gets the maxiumum number of preload scans that can happen in a given area.
-        /// </summary>
-        public static int MaximumPreloadScans { get; } = 2;
-
-        /// <summary>
-        /// Gets the current iteration of preload scan. Minimum value can be 0, maxiumum value
-        /// can be <see cref="MaximumPreloadScans"/>.
-        /// </summary>
-        public int CurrentPreloadScan { get; private set; } = 0;
-
-        /// <summary>
-        /// Gets the files.
-        /// </summary>
-        public ConcurrentBag<string> Data { get; private set; } = new ConcurrentBag<string>();
+        = new ConcurrentDictionary<string, byte>();
 
         /// <inheritdoc/>
         protected override void CleanUpData()
         {
-            if (this.Data.Count > 0)
-            {
-                this.Data.Clear();
-            }
-
-            this.CurrentPreloadScan = 0;
+            this.PathNames.Clear();
         }
 
         /// <inheritdoc/>
@@ -68,69 +51,41 @@ namespace GameHelper.RemoteObjects
             var totalFiles = LoadedFilesRootObject.TotalCount;
             var reader = Core.Process.Handle;
             var filesRootObjs = reader.ReadMemoryArray<LoadedFilesRootObject>(this.Address, totalFiles);
-            if (filesRootObjs.Length > 0)
+            Parallel.For(0, filesRootObjs.Length, (i) =>
             {
-                if (filesRootObjs[0].FilesList.Head == IntPtr.Zero ||
-                    filesRootObjs[0].FilesVectorUseless.First == IntPtr.Zero ||
-                    filesRootObjs[0].FilesVectorUseless.Last == IntPtr.Zero ||
-                    filesRootObjs[0].FilesVectorUseless.End == IntPtr.Zero ||
-                    filesRootObjs[0].IsValid != 1f)
+                var filesRootObj = filesRootObjs[i];
+                if (filesRootObj.FilesList.Head == IntPtr.Zero || filesRootObj.IsValid != 1f)
                 {
                     throw new Exception("Couldn't read LoadedFilesRootObject array " +
-                                        $"from FileRoot address: {this.Address.ToInt64():X}");
+                        $"from FileRoot address: {this.Address.ToInt64():X}");
                 }
 
-                for (int k = 0; k < totalFiles; k++)
+                switch (filesRootObj.TemplateId2)
                 {
-                    switch (filesRootObjs[k].TemplateId2)
-                    {
-                        case 512:
-                        case 1024:
-                            break;
-                        default:
-                            throw new Exception($"New template found (in index {k}) " +
-                                $"(templateId {filesRootObjs[k].TemplateId1}," +
-                                $"{filesRootObjs[k].TemplateId2}) in " +
-                                $"LoadedFilesRootObject object at " +
-                                $"address: {this.Address.ToInt64():X}.");
-                    }
+                    case 512:
+                    case 1024:
+                        break;
+                    default:
+                        throw new Exception($"New template found (in index {i}) " +
+                            $"(templateId {filesRootObj.TemplateId1}," +
+                            $"{filesRootObj.TemplateId2}) in " +
+                            $"LoadedFilesRootObject object at " +
+                            $"address: {this.Address.ToInt64():X}.");
                 }
 
-                Parallel.For(0, totalFiles, (i) =>
+                var filesPtr = reader.ReadStdList<FilesKeyValueStruct>(filesRootObj.FilesList);
+                for (int j = 0; j < filesPtr.Count; j++)
                 {
-                    var filesListPtrAddress = filesRootObjs[i].FilesList.Head;
-
-                    // Currently working, otherwise 0 - 127 1 type (Name)
-                    // and 128 - 255 other type (Name2)
-                    var templateId2 = filesRootObjs[i].TemplateId2;
-                    var currNodeAddress = reader.ReadMemory<StdListNode>(filesListPtrAddress).Next;
-                    StdListNode<StdKeyValuePair> currNode;
-                    FileInfoValueStruct information;
-                    while (currNodeAddress != filesListPtrAddress)
+                    var fileNode = filesPtr[j];
+                    var information = reader.ReadMemory<FileInfoValueStruct>(fileNode.ValuePtr);
+                    if (information.AreaChangeCount >= 2 &&
+                    information.AreaChangeCount == Core.AreaChangeCounter.Value)
                     {
-                        currNode = reader.ReadMemory<StdListNode<StdKeyValuePair>>(currNodeAddress);
-                        if (currNodeAddress == IntPtr.Zero)
-                        {
-                            Console.WriteLine("Terminating Preloads finding because of" +
-                                "unexpected 0x00 found. This is normal if it happens " +
-                                "after closing the game, otherwise report it.");
-                            break;
-                        }
-
-                        information = reader.ReadMemory<FileInfoValueStruct>(currNode.Data.ValuePtr);
-                        if (information.AreaChangeCount >= 2 &&
-                            information.AreaChangeCount == Core.AreaChangeCounter.Value)
-                        {
-                            this.Data.Add(reader.ReadStdWString(
-                                templateId2 == 64 ? information.Name2 : information.Name));
-                        }
-
-                        currNodeAddress = currNode.Next;
+                        var name = reader.ReadStdWString(information.Name);
+                        this.PathNames[name] = 0x00;
                     }
-                });
-
-                this.CurrentPreloadScan++;
-            }
+                }
+            });
         }
 
         private IEnumerator<Wait> OnAreaChange()
@@ -142,15 +97,7 @@ namespace GameHelper.RemoteObjects
                 if (this.Address != IntPtr.Zero)
                 {
                     this.CleanUpData();
-                    for (int i = 0; i < MaximumPreloadScans; i++)
-                    {
-                        this.Data.Clear();
-                        this.UpdateData();
-                        if (i < MaximumPreloadScans - 1)
-                        {
-                            yield return new Wait(WaitBetweenScans);
-                        }
-                    }
+                    this.UpdateData();
                 }
             }
         }

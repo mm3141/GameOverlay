@@ -74,10 +74,8 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             // TODO: Find new stuff
             // TODO: Create ToRender & DevTree type plugin for base classes
             // TODO: Create patterns for stuff, for easy finding.
-            // TODO: Move all co-routines events to RemoteEvents folder.
             // TODO: Save all co-routines registerer return value to centralized area for showing co-routines stats.
-            // TODO: ComponentLookUp & LoadedFiles->UpdateData is reading a list, DRY the reading of lists
-            //       use lamda functions for filtering.
+            // TODO: Move all co-routines events to RemoteEvents folder.
             var reader = Core.Process.Handle;
             var data = reader.ReadMemory<CurrentAreaDataOffsets>(this.Address);
             this.MonsterLevel = data.MonsterLevel;
