@@ -193,7 +193,8 @@ namespace GameHelper.RemoteControllers
                 return false;
             }
 
-            CoroutineHandler.Start(this.Monitor());
+            Core.CoroutinesRegistrar.Add(CoroutineHandler.Start(
+                this.Monitor(), "[GameProcess] Monitoring Game Process"));
             CoroutineHandler.RaiseEvent(GameHelperEvents.OnOpened);
             return true;
         }

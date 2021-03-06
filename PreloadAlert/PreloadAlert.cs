@@ -88,6 +88,7 @@
         {
             //CacheGameData();
             BeginImGuiWindow();
+            ImGui.Text($"Pos: {this.Settings.Pos}");
             //if (!String.IsNullOrEmpty(ERRORMSG))
             //{
             //    ImGui.TextColored(new Vector4(1f, 0f, 0f, 1f), ERRORMSG);

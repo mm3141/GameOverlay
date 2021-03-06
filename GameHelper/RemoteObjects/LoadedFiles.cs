@@ -25,7 +25,8 @@ namespace GameHelper.RemoteObjects
         internal LoadedFiles(IntPtr address)
             : base(address)
         {
-            CoroutineHandler.Start(this.OnAreaChange());
+            Core.CoroutinesRegistrar.Add(CoroutineHandler.Start(
+                this.OnAreaChange(), "[LoadedFiles] Gather Preload Data"));
             CoroutineHandler.Start(this.OnGameStateChange());
         }
 

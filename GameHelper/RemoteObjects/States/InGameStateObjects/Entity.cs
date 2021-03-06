@@ -111,7 +111,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
         /// <summary>
         /// Reads and updates only the data that is suppose to change.
         /// </summary>
-        /// <param name="address">Is the entity in current entity list.</param>
+        /// <param name="address">address of this entity.</param>
         internal void Update(IntPtr address)
         {
             if (this.Address == address)

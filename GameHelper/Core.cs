@@ -21,6 +21,17 @@ namespace GameHelper
     public static class Core
     {
         /// <summary>
+        /// Gets the list of active coroutines.
+        /// </summary>
+        internal static List<ActiveCoroutine> CoroutinesRegistrar
+        {
+            get;
+            private set;
+        }
+
+        = new List<ActiveCoroutine>();
+
+        /// <summary>
         /// Gets the GameStates instance. For details read class description.
         /// </summary>
         public static GameStates States

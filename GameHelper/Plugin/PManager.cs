@@ -56,7 +56,8 @@ namespace GameHelper.Plugin
             Parallel.ForEach(AllPlugins, EnablePluginIfRequired);
             CoroutineHandler.Start(SavePluginSettings());
             CoroutineHandler.Start(SavePluginMetadata());
-            CoroutineHandler.Start(DrawPluginUi());
+            Core.CoroutinesRegistrar.Add(CoroutineHandler.Start(
+                DrawPluginUi(), "[PManager] Draw Plugins UI"));
         }
 
         private static List<DirectoryInfo> GetPluginsDirectories()

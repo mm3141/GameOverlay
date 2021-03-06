@@ -11,7 +11,7 @@ namespace GameHelper.RemoteObjects
     using GameHelper.RemoteEnums;
     using GameHelper.Utils;
     using GameOffsets.Controller;
-    using GameOffsets.Native;
+    using GameOffsets.Natives;
 
     /// <summary>
     /// Points to the current state information object in

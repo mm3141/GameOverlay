@@ -2,7 +2,7 @@
 {
     using System;
     using System.Runtime.InteropServices;
-    using GameOffsets.Native;
+    using GameOffsets.Natives;
 
     [StructLayout(LayoutKind.Explicit, Pack = 1)]
     public struct CurrentAreaDataOffsets
@@ -77,12 +77,12 @@
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct EntityNodeValue
     {
-        public IntPtr Entity;
+        public IntPtr EntityPtr;
         // public int pad_0x30;
 
         public override string ToString()
         {
-            return $"EntityPtr: {Entity.ToInt64():X}";
+            return $"EntityPtr: {EntityPtr.ToInt64():X}";
         }
     }
 }

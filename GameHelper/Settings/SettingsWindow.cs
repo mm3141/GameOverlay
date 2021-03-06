@@ -91,6 +91,20 @@ namespace GameHelper.Settings
                         "when you close the overlay or hide it via F12 button.");
                     ImGui.NewLine();
                     ImGui.Text($"Current Game State: {Core.States.CurrentStateInGame.Name}");
+                    ImGui.NewLine();
+                    ImGui.Text($"Performance Related Stats");
+                    for (int i = 0; i < Core.CoroutinesRegistrar.Count; i++)
+                    {
+                        var coroutine = Core.CoroutinesRegistrar[i];
+                        if (coroutine.IsFinished)
+                        {
+                            Core.CoroutinesRegistrar.Remove(coroutine);
+                        }
+
+                        ImGui.Text($"{coroutine.Name}: " +
+                            $"{coroutine.AverageMoveNextTime.Milliseconds}(ms)");
+                    }
+
                     ImGui.EndGroup();
                     break;
                 default:

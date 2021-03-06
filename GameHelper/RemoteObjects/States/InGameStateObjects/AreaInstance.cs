@@ -27,7 +27,8 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
         {
             CoroutineHandler.Start(this.OnAreaChange());
             CoroutineHandler.Start(this.OnGameStateChange());
-            this.InGameStateDataCoroutine = CoroutineHandler.Start(this.OnPerFrame());
+            Core.CoroutinesRegistrar.Add(CoroutineHandler.Start(
+                this.OnPerFrame(), "[AreaInstance] Update Area Data"));
         }
 
         /// <summary>
@@ -56,11 +57,6 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
         public ConcurrentDictionary<EntityNodeKey, Entity> AwakeEntities { get; private set; } =
             new ConcurrentDictionary<EntityNodeKey, Entity>();
 
-        /// <summary>
-        /// Gets the InGameStateData per-frame coroutine.
-        /// </summary>
-        internal ActiveCoroutine InGameStateDataCoroutine { get; private set; }
-
         /// <inheritdoc/>
         protected override void CleanUpData()
         {
@@ -75,14 +71,13 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             // TODO: Find new stuff
             // TODO: Create ToRender & DevTree type plugin for base classes
             // TODO: Create patterns for stuff, for easy finding.
-            // TODO: Save all co-routines registerer return value to centralized area for showing co-routines stats.
             var reader = Core.Process.Handle;
             var data = reader.ReadMemory<CurrentAreaDataOffsets>(this.Address);
             this.MonsterLevel = data.MonsterLevel;
             this.AreaHash = $"{data.CurrentAreaHash:X}";
             var entitiesInNetworkBubble = reader.ReadStdMapAsList<EntityNodeKey, EntityNodeValue>(
                 data.AwakeEntities, false, EntityFilter.IgnoreSleepingEntities);
-            this.Player = new Entity(data.LocalPlayerPtr);
+            this.Player.Update(data.LocalPlayerPtr);
             foreach (var kv in this.AwakeEntities)
             {
                 if (!kv.Value.IsValid &&
@@ -105,11 +100,11 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
                 var (key, value) = entitiesInNetworkBubble[index];
                 if (this.AwakeEntities.ContainsKey(key))
                 {
-                    this.AwakeEntities[key].Update(value.Entity);
+                    this.AwakeEntities[key].Update(value.EntityPtr);
                 }
                 else
                 {
-                    var entity = new Entity(value.Entity);
+                    var entity = new Entity(value.EntityPtr);
                     if (!string.IsNullOrEmpty(entity.Path))
                     {
                         this.AwakeEntities[key] = entity;

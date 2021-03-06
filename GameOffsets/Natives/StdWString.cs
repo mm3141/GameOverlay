@@ -2,7 +2,7 @@
 // Copyright (c) None. All rights reserved.
 // </copyright>
 
-namespace GameOffsets.Native
+namespace GameOffsets.Natives
 {
     using System;
     using System.Runtime.InteropServices;

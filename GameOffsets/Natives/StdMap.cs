@@ -1,4 +1,4 @@
-﻿namespace GameOffsets.Native
+﻿namespace GameOffsets.Natives
 {
     using System;
     using System.Runtime.InteropServices;
@@ -30,7 +30,7 @@
         public byte pad_1A;
         public byte pad_1B;
         public uint pad_1C;
-        public StdMapNodeData<TKey, TValue> Data;
+        public StdMapNodeData<TKey, TValue> Data; // 0x20
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]

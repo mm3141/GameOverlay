@@ -10,7 +10,7 @@ namespace GameHelper.Utils
     using System.Runtime.InteropServices;
     using System.Security.Permissions;
     using System.Text;
-    using GameOffsets.Native;
+    using GameOffsets.Natives;
     using Microsoft.Win32.SafeHandles;
     using ProcessMemoryUtilities.Managed;
     using ProcessMemoryUtilities.Native;

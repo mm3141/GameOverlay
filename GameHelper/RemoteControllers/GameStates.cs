@@ -10,7 +10,7 @@ namespace GameHelper.RemoteControllers
     using GameHelper.RemoteObjects;
     using GameHelper.RemoteObjects.States;
     using GameOffsets.Controller;
-    using GameOffsets.Native;
+    using GameOffsets.Natives;
 
     /// <summary>
     /// Reads and stores the global states of the game.

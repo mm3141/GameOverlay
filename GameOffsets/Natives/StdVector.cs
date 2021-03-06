@@ -1,4 +1,4 @@
-﻿namespace GameOffsets.Native
+﻿namespace GameOffsets.Natives
 {
     using System;
     using System.Runtime.InteropServices;
