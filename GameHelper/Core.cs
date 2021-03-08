@@ -55,7 +55,7 @@ namespace GameHelper
         /// <summary>
         /// Gets the AreaChangeCounter instance. For details read class description.
         /// </summary>
-        public static AreaChangeCounter AreaChangeCounter
+        internal static AreaChangeCounter AreaChangeCounter
         {
             get;
             private set;
@@ -66,7 +66,7 @@ namespace GameHelper
         /// <summary>
         /// Gets the values associated with the Game Window Scale.
         /// </summary>
-        public static GameWindowScale GameWScale
+        internal static GameWindowScale GameScale
         {
             get;
             private set;
@@ -124,7 +124,7 @@ namespace GameHelper
             while (true)
             {
                 yield return new Wait(Process.OnStaticAddressFound);
-                GameWScale.Address = Process.StaticAddresses["GameWindowScaleValues"];
+                GameScale.Address = Process.StaticAddresses["GameWindowScaleValues"];
             }
         }
 
@@ -180,7 +180,7 @@ namespace GameHelper
                 States.Address = IntPtr.Zero;
                 CurrentAreaLoadedFiles.Address = IntPtr.Zero;
                 AreaChangeCounter.Address = IntPtr.Zero;
-                GameWScale.Address = IntPtr.Zero;
+                GameScale.Address = IntPtr.Zero;
             }
         }
     }

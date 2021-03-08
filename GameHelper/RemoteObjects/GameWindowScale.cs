@@ -88,6 +88,9 @@ namespace GameHelper.RemoteObjects
             while (true)
             {
                 yield return new Wait(GameHelperEvents.OnMoved);
+
+                // No need to check for IntPtr.zero
+                // because game will only move when it exists. :D
                 this.UpdateData(false);
             }
         }
@@ -97,6 +100,9 @@ namespace GameHelper.RemoteObjects
             while (true)
             {
                 yield return new Wait(GameHelperEvents.OnForegroundChanged);
+
+                // No need to check for IntPtr.zero
+                // because game will only move when it exists. :D
                 this.UpdateData(false);
             }
         }

@@ -91,9 +91,9 @@ namespace GameHelper.Settings
                         "when you close the overlay or hide it via F12 button.");
                     ImGui.NewLine();
                     ImGui.Text($"Current Game State: {Core.States.GameCurrentState}");
-                    for (int i = 0; i < Core.GameWScale.Values.Length - 1; i += 2)
+                    for (int i = 0; i < Core.GameScale.Values.Length - 1; i += 2)
                     {
-                        ImGui.Text($"Game Scale Value {i}: {Core.GameWScale.Values[i]}, {Core.GameWScale.Values[i + 1]}");
+                        ImGui.Text($"Game Scale Value {i}: {Core.GameScale.Values[i]}, {Core.GameScale.Values[i + 1]}");
                     }
 
                     ImGui.NewLine();

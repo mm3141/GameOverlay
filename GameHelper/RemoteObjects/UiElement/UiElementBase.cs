@@ -60,7 +60,7 @@ namespace GameHelper.RemoteObjects.UiElement
         {
             get
             {
-                var myScale = Core.GameWScale.GetScaleValue(
+                var myScale = Core.GameScale.GetScaleValue(
                     this.scaleIndex, this.localScaleMultiplier);
                 var pos = this.GetUnScaledPosition();
                 pos.X *= myScale.WidthScale;
@@ -80,7 +80,7 @@ namespace GameHelper.RemoteObjects.UiElement
         {
             get
             {
-                var scale = Core.GameWScale.GetScaleValue(
+                var scale = Core.GameScale.GetScaleValue(
                     this.scaleIndex, this.localScaleMultiplier);
                 var size = this.unScaledSize;
                 size.X *= scale.WidthScale;
@@ -152,7 +152,7 @@ namespace GameHelper.RemoteObjects.UiElement
         {
             var reader = Core.Process.Handle;
             var data = reader.ReadMemory<UiElementBaseOffset>(this.Address);
-            if (data.Self != this.Address)
+            if (data.Self != IntPtr.Zero && data.Self != this.Address)
             {
                 throw new Exception($"This (address: {this.Address.ToInt64():X})" +
                     $"is not a Ui Element. Self Address = {data.Self.ToInt64():X}");
@@ -210,9 +210,9 @@ namespace GameHelper.RemoteObjects.UiElement
             }
             else
             {
-                var parentScale = Core.GameWScale.GetScaleValue(
+                var parentScale = Core.GameScale.GetScaleValue(
                     this.Parent.scaleIndex, this.Parent.localScaleMultiplier);
-                var myScale = Core.GameWScale.GetScaleValue(
+                var myScale = Core.GameScale.GetScaleValue(
                     this.scaleIndex, this.localScaleMultiplier);
                 Vector2 myPos;
                 myPos.X = (parentPos.X * parentScale.WidthScale / myScale.WidthScale)

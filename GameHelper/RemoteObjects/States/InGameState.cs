@@ -25,7 +25,8 @@ namespace GameHelper.RemoteObjects.States
         internal InGameState(IntPtr address)
             : base(address)
         {
-            CoroutineHandler.Start(this.OnPerFrame());
+            Core.CoroutinesRegistrar.Add(CoroutineHandler.Start(
+                this.OnPerFrame(), "[InGameState] Update Game State"));
         }
 
         /// <summary>
@@ -40,15 +41,17 @@ namespace GameHelper.RemoteObjects.States
         = new AreaInstance(IntPtr.Zero);
 
         /// <summary>
-        /// Gets the data related to the root ui element.
+        /// Gets the important Ui Elements required by the plugins
+        /// to work properly. This is just a shortcut so plugins
+        /// don't have to triverse the Ui Elements from the UiRoot.
         /// </summary>
-        public UiElementBase UiRoot
+        public ImportantUiElements UiImportantElements
         {
             get;
             private set;
         }
 
-        = new UiElementBase(IntPtr.Zero);
+        = new ImportantUiElements(IntPtr.Zero);
 
         /// <summary>
         /// Gets the Window to Screen Matrix.
@@ -60,6 +63,17 @@ namespace GameHelper.RemoteObjects.States
         }
 
         = Matrix4x4.Identity;
+
+        /// <summary>
+        /// Gets the data related to the root ui element.
+        /// </summary>
+        internal UiElementBase UiRoot
+        {
+            get;
+            private set;
+        }
+
+        = new UiElementBase(IntPtr.Zero);
 
         /// <inheritdoc/>
         protected override void CleanUpData()
