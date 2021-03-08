@@ -13,6 +13,7 @@ namespace GameHelper.RemoteObjects.UiElement
     /// </summary>
     public class UiElementBase : RemoteObjectBase
     {
+        private IntPtr[] childrenAddresses = new IntPtr[0];
         private Vector2 positionModifier = Vector2.Zero;
         private string id = string.Empty;
         private byte scaleIndex = 0x00;
@@ -118,26 +119,16 @@ namespace GameHelper.RemoteObjects.UiElement
         /// <summary>
         /// Gets the total number of childrens this Ui Element has.
         /// </summary>
-        public int TotalChildrens => this.ChildrenAddresses.Length;
+        public int TotalChildrens => this.childrenAddresses.Length;
 
         /// <summary>
-        /// Gets the parent of the UiElement.
+        /// Gets the parent of the UiElement. Will be null in case of no parent.
         /// </summary>
-        internal UiElementBase Parent { get; private set; } = null;
-
-        /// <summary>
-        /// Gets the childrens pointers of the UiElements.
-        /// </summary>
-        internal IntPtr[] ChildrenAddresses
-        {
-            get;
-            private set;
-        }
-
-        = new IntPtr[0];
+        public UiElementBase Parent { get; private set; } = null;
 
         /// <summary>
         /// Gets the child Ui Element at specified index.
+        /// Raises exception in case of invalid index.
         /// </summary>
         /// <param name="i">index of the child Ui Element.</param>
         /// <returns>the child Ui Element.</returns>
@@ -145,7 +136,7 @@ namespace GameHelper.RemoteObjects.UiElement
         {
             get
             {
-                return new UiElementBase(this.ChildrenAddresses[i]);
+                return new UiElementBase(this.childrenAddresses[i]);
             }
         }
 
@@ -153,7 +144,7 @@ namespace GameHelper.RemoteObjects.UiElement
         protected override void CleanUpData()
         {
             this.Parent = null;
-            this.ChildrenAddresses = new IntPtr[0];
+            this.childrenAddresses = new IntPtr[0];
         }
 
         /// <inheritdoc/>
@@ -179,7 +170,7 @@ namespace GameHelper.RemoteObjects.UiElement
                 }
             }
 
-            this.ChildrenAddresses = reader.ReadStdVector<IntPtr>(data.ChildrensPtr);
+            this.childrenAddresses = reader.ReadStdVector<IntPtr>(data.ChildrensPtr);
             if (hasAddressChanged)
             {
                 this.id = reader.ReadStdWString(data.Id);

@@ -67,8 +67,8 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
         protected override void UpdateData(bool hasAddressChanged)
         {
             // TODO: Find new stuff
-            // TODO: Create ToRender & DevTree type plugin for base classes
             // TODO: Create patterns for stuff, for easy finding.
+            // TODO: Create ToRender & DevTree type plugin for base classes
             var reader = Core.Process.Handle;
             var data = reader.ReadMemory<CurrentAreaDataOffsets>(this.Address);
             this.MonsterLevel = data.MonsterLevel;
