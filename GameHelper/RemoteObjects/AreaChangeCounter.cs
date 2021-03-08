@@ -31,16 +31,16 @@ namespace GameHelper.RemoteObjects
         /// <summary>
         /// Gets the cached value of the AreaChangeCounter.
         /// </summary>
-        public int Value { get; private set; } = 0x00;
+        public int Value { get; private set; } = int.MaxValue;
 
         /// <inheritdoc/>
         protected override void CleanUpData()
         {
-            this.Value = 0x00;
+            this.Value = int.MaxValue;
         }
 
         /// <inheritdoc/>
-        protected override void UpdateData()
+        protected override void UpdateData(bool hasAddressChanged)
         {
             var reader = Core.Process.Handle;
             this.Value = reader.ReadMemory<AreaChangeOffset>(this.Address).counter;
@@ -53,7 +53,7 @@ namespace GameHelper.RemoteObjects
                 yield return new Wait(RemoteEvents.AreaChangeDetected);
                 if (this.Address != IntPtr.Zero)
                 {
-                    this.UpdateData();
+                    this.UpdateData(false);
                 }
             }
         }
@@ -63,9 +63,9 @@ namespace GameHelper.RemoteObjects
             while (true)
             {
                 yield return new Wait(RemoteEvents.StateChanged);
-                if (Core.States.CurrentStateInGame.Name != GameStateTypes.InGameState
-                    && Core.States.CurrentStateInGame.Name != GameStateTypes.EscapeState
-                    && Core.States.CurrentStateInGame.Name != GameStateTypes.AreaLoadingState)
+                if (Core.States.GameCurrentState != GameStateTypes.InGameState
+                    && Core.States.GameCurrentState != GameStateTypes.EscapeState
+                    && Core.States.GameCurrentState != GameStateTypes.AreaLoadingState)
                 {
                     this.CleanUpData();
                 }

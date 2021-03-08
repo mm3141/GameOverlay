@@ -14,6 +14,7 @@ namespace GameHelper.RemoteObjects
     public abstract class RemoteObjectBase
     {
         private IntPtr address;
+        private bool forceUpdate;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RemoteObjectBase"/> class.
@@ -27,8 +28,12 @@ namespace GameHelper.RemoteObjects
         /// Initializes a new instance of the <see cref="RemoteObjectBase"/> class.
         /// </summary>
         /// <param name="address">address of the remote memory object.</param>
-        internal RemoteObjectBase(IntPtr address)
+        /// <param name="forceUpdate">
+        /// True in case the object should be updated even if address hasn't changed.
+        /// </param>
+        internal RemoteObjectBase(IntPtr address, bool forceUpdate = false)
         {
+            this.forceUpdate = forceUpdate;
             this.Address = address;
         }
 
@@ -40,14 +45,27 @@ namespace GameHelper.RemoteObjects
             get => this.address;
             set
             {
-                this.address = value;
+                bool hasAddressChanged = this.address != value;
+                if (hasAddressChanged || this.forceUpdate)
+                {
+                    this.address = value;
+                    if (value == IntPtr.Zero)
+                    {
+                        this.CleanUpData();
+                    }
+                    else
+                    {
+                        this.UpdateData(hasAddressChanged);
+                    }
+                }
             }
         }
 
         /// <summary>
         /// Reads the memory and update all the data known by this Object.
         /// </summary>
-        protected abstract void UpdateData();
+        /// <param name="hasAddressChanged">true in case the address has changed; otherwise false.</param>
+        protected abstract void UpdateData(bool hasAddressChanged);
 
         /// <summary>
         /// Knows how to clean up the object.

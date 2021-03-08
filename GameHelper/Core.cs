@@ -8,22 +8,21 @@ namespace GameHelper
     using System.Collections.Generic;
     using Coroutine;
     using GameHelper.CoroutineEvents;
-    using GameHelper.RemoteControllers;
     using GameHelper.RemoteObjects;
     using GameHelper.Settings;
     using GameHelper.Utils;
 
     /// <summary>
-    /// Main Class to init all the controllers.
-    /// NOTE: Upon application startup, this class automatically loads the settings
-    /// from the file (or create a new one if it doesn't exists).
+    /// Main Class that depends on the GameProcess Events
+    /// and updates the RemoteObjects. It also manages the
+    /// GameHelper settings.
     /// </summary>
     public static class Core
     {
         /// <summary>
         /// Gets the list of active coroutines.
         /// </summary>
-        internal static List<ActiveCoroutine> CoroutinesRegistrar
+        public static List<ActiveCoroutine> CoroutinesRegistrar
         {
             get;
             private set;
@@ -40,7 +39,7 @@ namespace GameHelper
             private set;
         }
 
-        = new GameStates();
+        = new GameStates(IntPtr.Zero);
 
         /// <summary>
         /// Gets the files loaded for the current area.
@@ -65,9 +64,25 @@ namespace GameHelper
         = new AreaChangeCounter(IntPtr.Zero);
 
         /// <summary>
+        /// Gets the values associated with the Game Window Scale.
+        /// </summary>
+        public static GameWindowScale GameWScale
+        {
+            get;
+            private set;
+        }
+
+        = new GameWindowScale(IntPtr.Zero);
+
+        /// <summary>
         /// Gets the GameProcess instance. For details read class description.
         /// </summary>
-        internal static GameProcess Process { get; private set; } = new GameProcess();
+        internal static GameProcess Process
+        {
+            get; private set;
+        }
+
+        = new GameProcess();
 
         /// <summary>
         /// Gets the GameHelper settings.
@@ -84,9 +99,10 @@ namespace GameHelper
         /// </summary>
         internal static void InitializeCororutines()
         {
-            CoroutineHandler.Start(UpdateStatesData());
-            CoroutineHandler.Start(UpdateFilesData());
+            CoroutineHandler.Start(UpdateScaleData());
             CoroutineHandler.Start(UpdateAreaChangeData());
+            CoroutineHandler.Start(UpdateFilesData());
+            CoroutineHandler.Start(UpdateStatesData());
             CoroutineHandler.Start(GameClosedActions());
         }
 
@@ -99,28 +115,16 @@ namespace GameHelper
         }
 
         /// <summary>
-        /// Co-routine to update the address where the Game States are loaded in the game memory.
+        /// Co-routine to update the address where the
+        /// Game Window Values are loaded in the game memory.
         /// </summary>
         /// <returns>co-routine IWait.</returns>
-        private static IEnumerator<Wait> UpdateStatesData()
+        private static IEnumerator<Wait> UpdateScaleData()
         {
             while (true)
             {
-                yield return new Wait(Process.OnControllerReady);
-                States.Address = Process.StaticAddresses["Game States"];
-            }
-        }
-
-        /// <summary>
-        /// Co-routine to update the address where the Files are loaded in the game memory.
-        /// </summary>
-        /// <returns>co-routine IWait.</returns>
-        private static IEnumerator<Wait> UpdateFilesData()
-        {
-            while (true)
-            {
-                yield return new Wait(Process.OnControllerReady);
-                CurrentAreaLoadedFiles.Address = Process.StaticAddresses["File Root"];
+                yield return new Wait(Process.OnStaticAddressFound);
+                GameWScale.Address = Process.StaticAddresses["GameWindowScaleValues"];
             }
         }
 
@@ -132,8 +136,34 @@ namespace GameHelper
         {
             while (true)
             {
-                yield return new Wait(Process.OnControllerReady);
+                yield return new Wait(Process.OnStaticAddressFound);
                 AreaChangeCounter.Address = Process.StaticAddresses["AreaChangeCounter"];
+            }
+        }
+
+        /// <summary>
+        /// Co-routine to update the address where the Files are loaded in the game memory.
+        /// </summary>
+        /// <returns>co-routine IWait.</returns>
+        private static IEnumerator<Wait> UpdateFilesData()
+        {
+            while (true)
+            {
+                yield return new Wait(Process.OnStaticAddressFound);
+                CurrentAreaLoadedFiles.Address = Process.StaticAddresses["File Root"];
+            }
+        }
+
+        /// <summary>
+        /// Co-routine to update the address where the Game States are loaded in the game memory.
+        /// </summary>
+        /// <returns>co-routine IWait.</returns>
+        private static IEnumerator<Wait> UpdateStatesData()
+        {
+            while (true)
+            {
+                yield return new Wait(Process.OnStaticAddressFound);
+                States.Address = Process.StaticAddresses["Game States"];
             }
         }
 
@@ -150,6 +180,7 @@ namespace GameHelper
                 States.Address = IntPtr.Zero;
                 CurrentAreaLoadedFiles.Address = IntPtr.Zero;
                 AreaChangeCounter.Address = IntPtr.Zero;
+                GameWScale.Address = IntPtr.Zero;
             }
         }
     }

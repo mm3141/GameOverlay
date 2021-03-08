@@ -48,7 +48,7 @@ namespace GameHelper.RemoteObjects
         }
 
         /// <inheritdoc/>
-        protected override void UpdateData()
+        protected override void UpdateData(bool hasAddressChanged)
         {
             var totalFiles = LoadedFilesRootObject.TotalCount;
             var reader = Core.Process.Handle;
@@ -98,7 +98,7 @@ namespace GameHelper.RemoteObjects
                 if (this.Address != IntPtr.Zero)
                 {
                     this.CleanUpData();
-                    this.UpdateData();
+                    this.UpdateData(false);
                 }
             }
         }
@@ -108,9 +108,9 @@ namespace GameHelper.RemoteObjects
             while (true)
             {
                 yield return new Wait(RemoteEvents.StateChanged);
-                if (Core.States.CurrentStateInGame.Name != GameStateTypes.InGameState
-                    && Core.States.CurrentStateInGame.Name != GameStateTypes.EscapeState
-                    && Core.States.CurrentStateInGame.Name != GameStateTypes.AreaLoadingState)
+                if (Core.States.GameCurrentState != GameStateTypes.InGameState
+                    && Core.States.GameCurrentState != GameStateTypes.EscapeState
+                    && Core.States.GameCurrentState != GameStateTypes.AreaLoadingState)
                 {
                     this.CleanUpData();
                 }

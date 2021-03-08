@@ -10,7 +10,6 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
     using System.Threading.Tasks;
     using Coroutine;
     using GameHelper.CoroutineEvents;
-    using GameHelper.RemoteEnums;
     using GameOffsets.Objects.States.InGameState;
 
     /// <summary>
@@ -26,7 +25,6 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             : base(address)
         {
             CoroutineHandler.Start(this.OnAreaChange());
-            CoroutineHandler.Start(this.OnGameStateChange());
             Core.CoroutinesRegistrar.Add(CoroutineHandler.Start(
                 this.OnPerFrame(), "[AreaInstance] Update Area Data"));
         }
@@ -66,7 +64,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
         }
 
         /// <inheritdoc/>
-        protected override void UpdateData()
+        protected override void UpdateData(bool hasAddressChanged)
         {
             // TODO: Find new stuff
             // TODO: Create ToRender & DevTree type plugin for base classes
@@ -77,7 +75,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             this.AreaHash = $"{data.CurrentAreaHash:X}";
             var entitiesInNetworkBubble = reader.ReadStdMapAsList<EntityNodeKey, EntityNodeValue>(
                 data.AwakeEntities, false, EntityFilter.IgnoreSleepingEntities);
-            this.Player.Update(data.LocalPlayerPtr);
+            this.Player.Address = data.LocalPlayerPtr;
             foreach (var kv in this.AwakeEntities)
             {
                 if (!kv.Value.IsValid &&
@@ -100,7 +98,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
                 var (key, value) = entitiesInNetworkBubble[index];
                 if (this.AwakeEntities.ContainsKey(key))
                 {
-                    this.AwakeEntities[key].Update(value.EntityPtr);
+                    this.AwakeEntities[key].Address = value.EntityPtr;
                 }
                 else
                 {
@@ -121,7 +119,6 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
                 if (this.Address != IntPtr.Zero)
                 {
                     this.CleanUpData();
-                    this.UpdateData();
                 }
             }
         }
@@ -133,26 +130,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
                 yield return new Wait(GameHelperEvents.PerFrameDataUpdate);
                 if (this.Address != IntPtr.Zero)
                 {
-                    this.UpdateData();
-                }
-            }
-        }
-
-        private IEnumerator<Wait> OnGameStateChange()
-        {
-            while (true)
-            {
-                yield return new Wait(RemoteEvents.StateChanged);
-                if (Core.States.CurrentStateInGame.Name !=
-                    GameStateTypes.InGameState
-                    && Core.States.CurrentStateInGame.Name !=
-                    GameStateTypes.EscapeState
-                    && Core.States.CurrentStateInGame.Name !=
-                    GameStateTypes.AreaLoadingState)
-                {
-                    // Ignoring in AreaLoadingState because AreaChangeDetected
-                    // event gives more information on the new Area.
-                    this.CleanUpData();
+                    this.UpdateData(false);
                 }
             }
         }

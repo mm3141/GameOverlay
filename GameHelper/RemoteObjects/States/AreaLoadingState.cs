@@ -47,7 +47,7 @@ namespace GameHelper.RemoteObjects.States
         }
 
         /// <inheritdoc/>
-        protected override void UpdateData()
+        protected override void UpdateData(bool hasAddressChanged)
         {
             var reader = Core.Process.Handle;
             var data = reader.ReadMemory<AreaLoadingStateOffset>(this.Address);
@@ -77,7 +77,7 @@ namespace GameHelper.RemoteObjects.States
                 yield return new Wait(GameHelperEvents.PerFrameDataUpdate);
                 if (this.Address != IntPtr.Zero)
                 {
-                    this.UpdateData();
+                    this.UpdateData(false);
                 }
             }
         }
@@ -87,8 +87,7 @@ namespace GameHelper.RemoteObjects.States
             while (true)
             {
                 yield return new Wait(RemoteEvents.StateChanged);
-                if (Core.States.CurrentStateInGame.Name == GameStateTypes.PreGameState
-                    || Core.States.CurrentStateInGame.Name == GameStateTypes.GameNotLoaded)
+                if (Core.States.GameCurrentState == GameStateTypes.PreGameState)
                 {
                     this.CleanUpData();
                 }

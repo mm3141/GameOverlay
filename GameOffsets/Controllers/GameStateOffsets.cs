@@ -13,8 +13,8 @@
     [StructLayout(LayoutKind.Explicit, Pack = 1)]
     public struct GameStateOffset
     {
-        [FieldOffset(0x08)] public StdVector CurrentStateOffset1; // Used in RemoteObject -> CurrentState
-        //[FieldOffset(0x20)] public StdVector CurrentStateOffset2; // same as CurrentStateOffset1.
+        [FieldOffset(0x08)] public StdVector CurrentStatePtr; // Used in RemoteObject -> CurrentState
+        //[FieldOffset(0x20)] public StdVector CurrentStatePtr; // same as CurrentStatePtr.
         [FieldOffset(0x48)] public StdMap States;
     }
 }

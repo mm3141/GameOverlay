@@ -124,6 +124,24 @@
                 "AreaChangeCounter",
                 "E8 ?? ?? ?? ?? E8 ?? ?? ?? ?? FF 05 ^"
             ),
+
+            /// <HowToFindIt>
+            /// Find UiRoot Element
+            /// Find UiRoot Element Width/Height
+            /// Do "Who access this Width/Height value"
+            /// Trace & Break on that instruction with 1000 in Maximum trace count
+            /// go into all "Call POE.exe +XYZASDAS" functions
+            /// in one of them, it will be reading floats from static address.
+            /// ///// Alternative Approach
+            /// Change game window Height and Width (when in the login screen)
+            /// Look for float which increases when Width increases and decreases when width decreases max = 1.0 min = 0.3
+            /// Now look for who access this address
+            /// </HowToFindIt>
+            new Pattern
+            (
+                "GameWindowScaleValues",
+                "C7 ?? 00 00 80 3F C7 ?? 04 00 00 80 3F C3 ?? ?? ?? ?? ^"
+            )
         };
     }
 }

@@ -90,7 +90,12 @@ namespace GameHelper.Settings
                     ImGui.TextWrapped("NOTE: (Plugins/Core) Settings are saved automatically " +
                         "when you close the overlay or hide it via F12 button.");
                     ImGui.NewLine();
-                    ImGui.Text($"Current Game State: {Core.States.CurrentStateInGame.Name}");
+                    ImGui.Text($"Current Game State: {Core.States.GameCurrentState}");
+                    for (int i = 0; i < Core.GameWScale.Values.Length - 1; i += 2)
+                    {
+                        ImGui.Text($"Game Scale Value {i}: {Core.GameWScale.Values[i]}, {Core.GameWScale.Values[i + 1]}");
+                    }
+
                     ImGui.NewLine();
                     ImGui.Text($"Performance Related Stats");
                     for (int i = 0; i < Core.CoroutinesRegistrar.Count; i++)

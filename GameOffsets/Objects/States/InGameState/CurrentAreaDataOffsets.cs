@@ -24,8 +24,6 @@
     }
     public static class EntityFilter
     {
-        private static Func<byte, int, bool> isBitSet = (x, pos) => (x & (1 << pos)) != 0;
-
         public static Func<EntityNodeKey, bool> IgnoreSleepingEntities =
             new Func<EntityNodeKey, bool>((param) =>
             {
@@ -35,7 +33,7 @@
                     Console.WriteLine($"[DEBUG] New Entity Type found: 0x{param.type:X}");
                 }
 #endif
-                return !isBitSet(param.type, 7);
+                return !Util.isBitSetByte(param.type, 7);
             });
 
         public static Func<EntityNodeKey, bool> IgnoreNothing =

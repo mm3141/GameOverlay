@@ -6,24 +6,73 @@ namespace GameHelper.RemoteEnums
 {
     /// <summary>
     /// Gets all known states of the game.
-    /// NOTE: GameNotLoaded means game isn't up and running.
     /// </summary>
     public enum GameStateTypes
     {
-#pragma warning disable CS1591, SA1602
+        /// <summary>
+        /// This is a special State, it will not trigger State Change Event.
+        /// This is just for displaying purposes. It means Game isn't stared.
+        /// </summary>
         GameNotLoaded,
+
+        /// <summary>
+        /// When User is in Town/Hideout/Area/Zone etc.
+        /// </summary>
         InGameState,
+
+        /// <summary>
+        /// When user is in Login Screen.
+        /// </summary>
         PreGameState,
+
+        /// <summary>
+        /// Game State.
+        /// </summary>
         WaitingState,
+
+        /// <summary>
+        /// Game state.
+        /// </summary>
         SelectCharacterState,
+
+        /// <summary>
+        /// Game State.
+        /// </summary>
         LoadingState,
+
+        /// <summary>
+        /// Game State.
+        /// </summary>
         LoginState,
+
+        /// <summary>
+        /// Game State.
+        /// </summary>
         CreateCharacterState,
+
+        /// <summary>
+        /// Game State.
+        /// </summary>
         DeleteCharacterState,
+
+        /// <summary>
+        /// Game State.
+        /// </summary>
         EscapeState,
+
+        /// <summary>
+        /// Game State.
+        /// </summary>
         CreditsState,
+
+        /// <summary>
+        /// When user is in Area Loading Screen.
+        /// </summary>
         AreaLoadingState,
+
+        /// <summary>
+        /// Game State.
+        /// </summary>
         ChangePasswordState,
-#pragma warning restore CS1591, SA1602
     }
 }

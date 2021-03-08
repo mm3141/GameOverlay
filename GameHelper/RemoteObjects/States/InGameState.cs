@@ -6,10 +6,11 @@ namespace GameHelper.RemoteObjects.States
 {
     using System;
     using System.Collections.Generic;
+    using System.Numerics;
     using Coroutine;
     using GameHelper.CoroutineEvents;
-    using GameHelper.RemoteEnums;
     using GameHelper.RemoteObjects.States.InGameStateObjects;
+    using GameHelper.RemoteObjects.UiElement;
     using GameOffsets.Objects.States;
 
     /// <summary>
@@ -38,18 +39,47 @@ namespace GameHelper.RemoteObjects.States
 
         = new AreaInstance(IntPtr.Zero);
 
+        /// <summary>
+        /// Gets the data related to the root ui element.
+        /// </summary>
+        public UiElementBase UiRoot
+        {
+            get;
+            private set;
+        }
+
+        = new UiElementBase(IntPtr.Zero);
+
+        /// <summary>
+        /// Gets the Window to Screen Matrix.
+        /// </summary>
+        public Matrix4x4 WindowToScreenMatrix
+        {
+            get;
+            private set;
+        }
+
+        = Matrix4x4.Identity;
+
         /// <inheritdoc/>
         protected override void CleanUpData()
         {
             this.CurrentAreaInstance.Address = IntPtr.Zero;
+            this.UiRoot.Address = IntPtr.Zero;
+            this.WindowToScreenMatrix = Matrix4x4.Identity;
         }
 
         /// <inheritdoc/>
-        protected override void UpdateData()
+        protected override void UpdateData(bool hasAddressChanged)
         {
             var reader = Core.Process.Handle;
             var data = reader.ReadMemory<InGameStateOffset>(this.Address);
             this.CurrentAreaInstance.Address = data.LocalData;
+            this.UiRoot.Address = data.UiRootPtr;
+            if (this.WindowToScreenMatrix != data.WindowToScreenMatrix)
+            {
+                this.WindowToScreenMatrix = data.WindowToScreenMatrix;
+            }
         }
 
         private IEnumerator<Wait> OnPerFrame()
@@ -57,14 +87,9 @@ namespace GameHelper.RemoteObjects.States
             while (true)
             {
                 yield return new Wait(GameHelperEvents.PerFrameDataUpdate);
-                if (this.Address != IntPtr.Zero
-                    && Core.States.CurrentStateInGame.Name == GameStateTypes.InGameState)
+                if (this.Address != IntPtr.Zero)
                 {
-                    this.UpdateData();
-                }
-                else
-                {
-                    this.CleanUpData();
+                    this.UpdateData(false);
                 }
             }
         }

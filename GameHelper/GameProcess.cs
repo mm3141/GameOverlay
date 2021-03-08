@@ -2,7 +2,7 @@
 // Copyright (c) None. All rights reserved.
 // </copyright>
 
-namespace GameHelper.RemoteControllers
+namespace GameHelper
 {
     using System;
     using System.Collections.Generic;
@@ -24,7 +24,7 @@ namespace GameHelper.RemoteControllers
     /// Limitation: This class will not open a game process if multiple processes match
     /// the name because it does not know which process to select.
     /// </summary>
-    internal class GameProcess : RemoteControllerBase
+    internal class GameProcess
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GameProcess"/> class.
@@ -38,7 +38,13 @@ namespace GameHelper.RemoteControllers
         /// <summary>
         /// Gets the Base Address of the game.
         /// </summary>
-        internal new IntPtr Address => this.Information.MainModule.BaseAddress;
+        public IntPtr Address => this.Information.MainModule.BaseAddress;
+
+        /// <summary>
+        /// Gets the event which is triggered when GameProcess
+        /// has found all the static offset patterns.
+        /// </summary>
+        public Event OnStaticAddressFound { get; private set; } = new Event();
 
         /// <summary>
         /// Gets the static addresses (along with their names) found in the GameProcess
@@ -84,12 +90,6 @@ namespace GameHelper.RemoteControllers
             {
                 CoroutineHandler.Start(this.FindAndOpen());
             }
-        }
-
-        /// <inheritdoc/>
-        protected override void OnAddressUpdated(IntPtr newAddress)
-        {
-            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -168,17 +168,10 @@ namespace GameHelper.RemoteControllers
                 {
                     int offsetDataValue = this.Handle.ReadMemory<int>(baseAddress + patternInfo.Value);
                     IntPtr address = baseAddress + patternInfo.Value + offsetDataValue + 0x04;
-                    if (this.StaticAddresses.ContainsKey(patternInfo.Key))
-                    {
-                        this.StaticAddresses[patternInfo.Key] = address;
-                    }
-                    else
-                    {
-                        this.StaticAddresses.Add(patternInfo.Key, address);
-                    }
+                    this.StaticAddresses[patternInfo.Key] = address;
                 }
 
-                CoroutineHandler.RaiseEvent(this.OnControllerReady);
+                CoroutineHandler.RaiseEvent(this.OnStaticAddressFound);
             }
         }
 

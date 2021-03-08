@@ -14,17 +14,19 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
     /// </summary>
     public class Entity : RemoteObjectBase
     {
-        private Dictionary<string, IntPtr> componentAddresses;
-        private Dictionary<string, ComponentBase> componentCache;
+        private Dictionary<string, IntPtr> componentAddresses =
+            new Dictionary<string, IntPtr>();
+
+        private Dictionary<string, RemoteObjectBase> componentCache =
+            new Dictionary<string, RemoteObjectBase>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Entity"/> class.
         /// </summary>
         /// <param name="address">address of the Entity.</param>
         internal Entity(IntPtr address)
-            : base(address)
+            : base(address, true)
         {
-            this.UpdateAll();
         }
 
         /// <summary>
@@ -32,30 +34,25 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
         /// NOTE: Without providing an address, only invalid and empty entity is created.
         /// </summary>
         internal Entity()
-            : base(IntPtr.Zero)
+            : base(IntPtr.Zero, true)
         {
-            this.Id = 0x00;
-            this.IsValid = false;
-            this.Path = string.Empty;
-            this.componentAddresses = new Dictionary<string, IntPtr>();
-            this.componentCache = new Dictionary<string, ComponentBase>();
         }
 
         /// <summary>
         /// Gets the Path (e.g. Metadata/Character/int/int) assocaited to the entity.
         /// </summary>
-        public string Path { get; private set; }
+        public string Path { get; private set; } = string.Empty;
 
         /// <summary>
         /// Gets the Id associated to the entity. This is unique per map/Area.
         /// </summary>
-        public uint Id { get; private set; }
+        public uint Id { get; private set; } = 0x00;
 
         /// <summary>
         /// Gets or Sets a value indicating whether the entity
         /// exists in the game or not.
         /// </summary>
-        internal bool IsValid { get; set; }
+        internal bool IsValid { get; set; } = false;
 
         /// <summary>
         /// Calculate the distance from the other entity.
@@ -88,7 +85,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
         /// <param name="component">component data.</param>
         /// <returns>true if the entity contains the component; otherwise, false.</returns>
         public bool TryGetComponent<T>(out T component)
-            where T : ComponentBase
+            where T : RemoteObjectBase
         {
             var componenName = typeof(T).Name;
             if (this.componentCache.TryGetValue(componenName, out var comp))
@@ -108,71 +105,42 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             return false;
         }
 
-        /// <summary>
-        /// Reads and updates only the data that is suppose to change.
-        /// </summary>
-        /// <param name="address">address of this entity.</param>
-        internal void Update(IntPtr address)
-        {
-            if (this.Address == address)
-            {
-                this.UpdateData();
-            }
-            else
-            {
-                this.Address = address;
-                this.UpdateAll();
-            }
-        }
-
         /// <inheritdoc/>
         protected override void CleanUpData()
         {
-            string message = "Entity can't be cleaned, they can only be updated/deleted.";
-            throw new NotImplementedException(message);
         }
 
-        /// <summary>
-        /// Reads and updates only the data that is suppose to change in an entity.
-        /// </summary>
-        protected override void UpdateData()
+        /// <inheritdoc/>
+        protected override void UpdateData(bool hasAddressChanged)
         {
-            var reader = Core.Process.Handle;
-            EntityOffsets entityData = reader.ReadMemory<EntityOffsets>(this.Address);
-            this.IsValid = entityData.IsValid == EntityOffsets.Valid;
-            foreach (var kv in this.componentCache)
-            {
-                kv.Value.UpdateData();
-            }
-        }
-
-        /// <summary>
-        /// Reads and updates all the data related to the Entity.
-        /// </summary>
-        private void UpdateAll()
-        {
-            this.componentAddresses = new Dictionary<string, IntPtr>(20);
-            this.componentCache = new Dictionary<string, ComponentBase>();
             var reader = Core.Process.Handle;
             EntityOffsets entityData = reader.ReadMemory<EntityOffsets>(this.Address);
             this.IsValid = entityData.IsValid == EntityOffsets.Valid;
             this.Id = entityData.Id;
-
-            var entityComponentArray = reader.ReadStdVector<IntPtr>(
-                entityData.ComponentListPtr);
-            EntityDetails entityDetails = reader.ReadMemory<EntityDetails>(entityData.EntityDetailsPtr);
-            this.Path = reader.ReadStdWString(entityDetails.name);
-
-            var lookupPtr = reader.ReadMemory<ComponentLookUpStruct>(
-                entityDetails.ComponentLookUpPtr);
-            var nameAndIndex = reader.ReadStdList<ComponentNameAndIndexStruct>(
-                lookupPtr.ComponentNameAndIndexPtr);
-
-            for (int i = 0; i < nameAndIndex.Count; i++)
+            if (hasAddressChanged)
             {
-                var data = nameAndIndex[i];
-                string name = reader.ReadString(data.NamePtr);
-                this.componentAddresses.Add(name, entityComponentArray[data.Index]);
+                this.componentAddresses.Clear();
+                this.componentCache.Clear();
+                var entityComponent = reader.ReadStdVector<IntPtr>(entityData.ComponentListPtr);
+                var entityDetails = reader.ReadMemory<EntityDetails>(entityData.EntityDetailsPtr);
+                this.Path = reader.ReadStdWString(entityDetails.name);
+                var lookupPtr = reader.ReadMemory<ComponentLookUpStruct>(
+                    entityDetails.ComponentLookUpPtr);
+                var nameAndIndex = reader.ReadStdList<ComponentNameAndIndexStruct>(
+                    lookupPtr.ComponentNameAndIndexPtr);
+                for (int i = 0; i < nameAndIndex.Count; i++)
+                {
+                    var data = nameAndIndex[i];
+                    string name = reader.ReadString(data.NamePtr);
+                    this.componentAddresses.Add(name, entityComponent[data.Index]);
+                }
+            }
+            else
+            {
+                foreach (var kv in this.componentCache)
+                {
+                    kv.Value.Address = kv.Value.Address;
+                }
             }
         }
     }
