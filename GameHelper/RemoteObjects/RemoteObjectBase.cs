@@ -5,6 +5,9 @@
 namespace GameHelper.RemoteObjects
 {
     using System;
+    using System.Reflection;
+    using GameHelper.Utils;
+    using ImGuiNET;
 
     /// <summary>
     /// Points to a Memory location and reads/understands all the data from there.
@@ -62,9 +65,37 @@ namespace GameHelper.RemoteObjects
         }
 
         /// <summary>
+        /// Converts the <see cref="RemoteObjectBase"/> to ImGui Widget via reflection.
+        /// By default, only knows how to convert <see cref="address"/> field
+        /// and <see cref="RemoteObjectBase"/> properties of the calling class.
+        /// For details on which specific properties are not ignored
+        /// read <see cref="UiHelper.GetToImGuiMethods"/> method description.
+        /// Any other properties or fields of the derived <see cref="RemoteObjectBase"/>
+        /// class should be handled by that class.
+        /// </summary>
+        internal virtual void ToImGui()
+        {
+            UiHelper.IntPtrToImGui("Address", this.address);
+            var propFlags = BindingFlags.NonPublic |
+                BindingFlags.Public |
+                BindingFlags.Instance;
+            foreach (var property in UiHelper.GetToImGuiMethods(this.GetType(), propFlags, this))
+            {
+                if (ImGui.TreeNode(property.Name))
+                {
+                    property.ToImGui.Invoke(property.Value, null);
+
+                    ImGui.TreePop();
+                }
+            }
+        }
+
+        /// <summary>
         /// Reads the memory and update all the data known by this Object.
         /// </summary>
-        /// <param name="hasAddressChanged">true in case the address has changed; otherwise false.</param>
+        /// <param name="hasAddressChanged">
+        /// true in case the address has changed; otherwise false.
+        /// </param>
         protected abstract void UpdateData(bool hasAddressChanged);
 
         /// <summary>

@@ -91,25 +91,10 @@ namespace GameHelper.Settings
                         "when you close the overlay or hide it via F12 button.");
                     ImGui.NewLine();
                     ImGui.Text($"Current Game State: {Core.States.GameCurrentState}");
-                    for (int i = 0; i < Core.GameScale.Values.Length - 1; i += 2)
-                    {
-                        ImGui.Text($"Game Scale Value {i}: {Core.GameScale.Values[i]}, {Core.GameScale.Values[i + 1]}");
-                    }
-
                     ImGui.NewLine();
-                    ImGui.Text($"Performance Related Stats");
-                    for (int i = 0; i < Core.CoroutinesRegistrar.Count; i++)
-                    {
-                        var coroutine = Core.CoroutinesRegistrar[i];
-                        if (coroutine.IsFinished)
-                        {
-                            Core.CoroutinesRegistrar.Remove(coroutine);
-                        }
-
-                        ImGui.Text($"{coroutine.Name}: " +
-                            $"{coroutine.AverageMoveNextTime.Milliseconds}(ms)");
-                    }
-
+                    ImGui.Checkbox("Enable Perf Stats window", ref Core.GHSettings.ShowPerfStats);
+                    ImGui.NewLine();
+                    ImGui.Checkbox("Enable Dev Tree window", ref Core.GHSettings.ShowDevTree);
                     ImGui.EndGroup();
                     break;
                 default:

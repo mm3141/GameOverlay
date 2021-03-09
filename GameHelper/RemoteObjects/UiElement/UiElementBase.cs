@@ -128,7 +128,7 @@ namespace GameHelper.RemoteObjects.UiElement
 
         /// <summary>
         /// Gets the child Ui Element at specified index.
-        /// Raises exception in case of invalid index.
+        /// returns null in case of invalid index.
         /// </summary>
         /// <param name="i">index of the child Ui Element.</param>
         /// <returns>the child Ui Element.</returns>
@@ -136,6 +136,11 @@ namespace GameHelper.RemoteObjects.UiElement
         {
             get
             {
+                if (this.childrenAddresses.Length >= i)
+                {
+                    return null;
+                }
+
                 return new UiElementBase(this.childrenAddresses[i]);
             }
         }

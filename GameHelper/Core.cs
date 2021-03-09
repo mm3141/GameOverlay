@@ -6,11 +6,13 @@ namespace GameHelper
 {
     using System;
     using System.Collections.Generic;
+    using System.Reflection;
     using Coroutine;
     using GameHelper.CoroutineEvents;
     using GameHelper.RemoteObjects;
     using GameHelper.Settings;
     using GameHelper.Utils;
+    using ImGuiNET;
 
     /// <summary>
     /// Main Class that depends on the GameProcess Events
@@ -112,6 +114,21 @@ namespace GameHelper
         internal static void Dispose()
         {
             Process.Close(false);
+        }
+
+        /// <summary>
+        /// Converts the RemoteObjects to ImGui Widgets.
+        /// </summary>
+        internal static void RemoteObjectsToImGuiCollapsingHeader()
+        {
+            var propertyFlags = BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static;
+            foreach (var property in UiHelper.GetToImGuiMethods(typeof(Core), propertyFlags, null))
+            {
+                if (ImGui.CollapsingHeader(property.Name))
+                {
+                    property.ToImGui.Invoke(property.Value, null);
+                }
+            }
         }
 
         /// <summary>

@@ -38,13 +38,30 @@ namespace GameHelper
         /// <summary>
         /// Gets the Base Address of the game.
         /// </summary>
-        public IntPtr Address => this.Information.MainModule.BaseAddress;
+        public IntPtr Address
+        {
+            get
+            {
+                try
+                {
+                    return this.Information.MainModule.BaseAddress;
+                }
+                catch (Exception)
+                {
+                    return IntPtr.Zero;
+                }
+            }
+
+            private set
+            {
+            }
+        }
 
         /// <summary>
         /// Gets the event which is triggered when GameProcess
         /// has found all the static offset patterns.
         /// </summary>
-        public Event OnStaticAddressFound { get; private set; } = new Event();
+        internal Event OnStaticAddressFound { get; private set; } = new Event();
 
         /// <summary>
         /// Gets the static addresses (along with their names) found in the GameProcess

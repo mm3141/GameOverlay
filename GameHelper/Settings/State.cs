@@ -42,6 +42,18 @@ namespace GameHelper.Settings
         /// Gets or sets hotKey to show/hide the main menu.
         /// </summary>
         public int MainMenuHotKey = 0x7B;
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to show
+        /// the performance stats or not.
+        /// </summary>
+        public bool ShowPerfStats = false;
+
+        /// <summary>
+        /// Gets or sets a value indicating whether
+        /// to the show Dev Tree or not.
+        /// </summary>
+        public bool ShowDevTree = false;
     }
 
 #pragma warning restore SA1401 // Fields should be private

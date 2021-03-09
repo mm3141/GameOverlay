@@ -11,6 +11,7 @@ namespace GameHelper
     using GameHelper.CoroutineEvents;
     using GameHelper.Plugin;
     using GameHelper.Settings;
+    using GameHelper.Ui;
     using ImGuiNET;
 
     /// <inheritdoc/>
@@ -23,6 +24,7 @@ namespace GameHelper
         {
             CoroutineHandler.Start(this.UpdateOverlayBounds());
             SettingsWindow.InitializeCoroutines();
+            CoreUi.InitializeCoroutines();
             PManager.InitializePlugins();
             Core.InitializeCororutines();
         }

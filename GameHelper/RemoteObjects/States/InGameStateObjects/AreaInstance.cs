@@ -69,6 +69,9 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             // TODO: Find new stuff
             // TODO: Create patterns for stuff, for easy finding.
             // TODO: Create ToRender & DevTree type plugin for base classes
+            // TODO: moveable Ui Element ptr. so person can triverse all UiElements via this dev tree and UiRoot.
+            // TODO: HoverUi debugger. Should popup (beside mouse) "You are hovering over a UIElement, press J to debug it in DevTree.".
+            // TODO: Change preload to checklist manager.
             var reader = Core.Process.Handle;
             var data = reader.ReadMemory<CurrentAreaDataOffsets>(this.Address);
             this.MonsterLevel = data.MonsterLevel;

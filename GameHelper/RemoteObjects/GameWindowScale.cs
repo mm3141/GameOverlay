@@ -8,6 +8,7 @@ namespace GameHelper.RemoteObjects
     using System.Collections.Generic;
     using Coroutine;
     using GameHelper.CoroutineEvents;
+    using ImGuiNET;
 
     /// <summary>
     /// Reads the Game Window Scale values from the game.

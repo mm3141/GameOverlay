@@ -40,6 +40,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
         /// <inheritdoc/>
         protected override void CleanUpData()
         {
+            this.Map.Address = IntPtr.Zero;
         }
 
         /// <inheritdoc/>

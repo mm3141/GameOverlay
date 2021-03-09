@@ -103,7 +103,12 @@ namespace GameHelper.RemoteObjects.States
                 yield return new Wait(GameHelperEvents.PerFrameDataUpdate);
                 if (this.Address != IntPtr.Zero)
                 {
-                    this.UpdateData(false);
+#if RELEASE
+                    if (Core.States.GameCurrentState == RemoteEnums.GameStateTypes.InGameState)
+#endif
+                    {
+                        this.UpdateData(false);
+                    }
                 }
             }
         }
