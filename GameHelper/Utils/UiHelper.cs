@@ -18,6 +18,15 @@ namespace GameHelper.Utils
     public static class UiHelper
     {
         /// <summary>
+        /// Flags associated with transparent ImGui window.
+        /// </summary>
+        public const ImGuiWindowFlags TransparentWindowFlags = ImGuiWindowFlags.NoInputs |
+            ImGuiWindowFlags.NoBringToFrontOnFocus | ImGuiWindowFlags.NoCollapse |
+            ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoScrollbar |
+            ImGuiWindowFlags.NoSavedSettings | ImGuiWindowFlags.AlwaysAutoResize |
+            ImGuiWindowFlags.NoTitleBar;
+
+        /// <summary>
         /// Helps convert address to ImGui Widget.
         /// </summary>
         /// <param name="name">name of the object whos address it is.</param>

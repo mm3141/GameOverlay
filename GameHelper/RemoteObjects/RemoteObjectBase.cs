@@ -68,8 +68,8 @@ namespace GameHelper.RemoteObjects
         /// Converts the <see cref="RemoteObjectBase"/> to ImGui Widget via reflection.
         /// By default, only knows how to convert <see cref="address"/> field
         /// and <see cref="RemoteObjectBase"/> properties of the calling class.
-        /// For details on which specific properties are not ignored
-        /// read <see cref="UiHelper.GetToImGuiMethods"/> method description.
+        /// For details on which specific properties are ignored read
+        /// <see cref="UiHelper.GetToImGuiMethods"/> method description.
         /// Any other properties or fields of the derived <see cref="RemoteObjectBase"/>
         /// class should be handled by that class.
         /// </summary>

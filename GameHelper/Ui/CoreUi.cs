@@ -19,15 +19,6 @@ namespace GameHelper.Ui
     /// </summary>
     public static class CoreUi
     {
-        /// <summary>
-        /// Flags associated with transparent ImGui window.
-        /// </summary>
-        public const ImGuiWindowFlags TransparentWindowFlags = ImGuiWindowFlags.NoInputs |
-            ImGuiWindowFlags.NoBringToFrontOnFocus | ImGuiWindowFlags.NoCollapse |
-            ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoScrollbar |
-            ImGuiWindowFlags.NoSavedSettings | ImGuiWindowFlags.AlwaysAutoResize |
-            ImGuiWindowFlags.NoTitleBar;
-
         private static Vector2 devTreeWindowMin = new Vector2(800, 600);
         private static Vector2 devTreeWindowMax = new Vector2(2560, 1440);
 
@@ -47,7 +38,7 @@ namespace GameHelper.Ui
             if (Core.GHSettings.ShowPerfStats)
             {
                 ImGui.SetNextWindowPos(Vector2.Zero);
-                ImGui.Begin("Perf Stats Window", TransparentWindowFlags);
+                ImGui.Begin("Perf Stats Window", UiHelper.TransparentWindowFlags);
                 ImGui.Text($"Performance Related Stats");
                 for (int i = 0; i < Core.CoroutinesRegistrar.Count; i++)
                 {
