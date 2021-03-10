@@ -41,6 +41,14 @@ namespace GameHelper.RemoteObjects
 
         = new ConcurrentDictionary<string, byte>();
 
+        /// <summary>
+        /// Converts the <see cref="LoadedFiles"/> class data to ImGui.
+        /// </summary>
+        internal override void ToImGui()
+        {
+            base.ToImGui();
+        }
+
         /// <inheritdoc/>
         protected override void CleanUpData()
         {
