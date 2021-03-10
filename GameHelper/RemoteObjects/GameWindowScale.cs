@@ -8,6 +8,7 @@ namespace GameHelper.RemoteObjects
     using System.Collections.Generic;
     using Coroutine;
     using GameHelper.CoroutineEvents;
+    using ImGuiNET;
 
     /// <summary>
     /// Reads the Game Window Scale values from the game.
@@ -61,6 +62,17 @@ namespace GameHelper.RemoteObjects
             }
 
             return (widthScale, heightScale);
+        }
+
+        /// <summary>
+        /// Converts the <see cref="GameWindowScale"/> class data to ImGui.
+        /// </summary>
+        internal override void ToImGui()
+        {
+            base.ToImGui();
+            ImGui.Text($"Index 1: width, height {this.GetScaleValue(1, 1)} ratio");
+            ImGui.Text($"Index 2: width, height {this.GetScaleValue(2, 1)} ratio");
+            ImGui.Text($"Index 3: width, height {this.GetScaleValue(3, 1)} ratio");
         }
 
         /// <inheritdoc/>
