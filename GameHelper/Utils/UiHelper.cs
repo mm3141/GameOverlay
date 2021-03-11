@@ -60,6 +60,20 @@ namespace GameHelper.Utils
         }
 
         /// <summary>
+        /// Draws the disabled button on the ImGui.
+        /// </summary>
+        /// <param name="buttonLabel">text to write on the button.</param>
+        public static void DrawDisabledButton(string buttonLabel)
+        {
+            uint col = UiHelper.Color(204, 204, 204, 128);
+            ImGui.PushStyleColor(ImGuiCol.Button, col);
+            ImGui.PushStyleColor(ImGuiCol.ButtonActive, col);
+            ImGui.PushStyleColor(ImGuiCol.ButtonHovered, col);
+            ImGui.Button(buttonLabel);
+            ImGui.PopStyleColor(3);
+        }
+
+        /// <summary>
         /// Helps convert address to ImGui Widget.
         /// </summary>
         /// <param name="name">name of the object whos address it is.</param>
@@ -69,7 +83,7 @@ namespace GameHelper.Utils
             var addr = address.ToInt64().ToString("X");
             ImGui.Text(name);
             ImGui.SameLine();
-            ImGui.PushStyleColor(ImGuiCol.Button, new Vector4(0, 0, 0, 0));
+            ImGui.PushStyleColor(ImGuiCol.Button, Color(0, 0, 0, 0));
             if (ImGui.SmallButton(addr))
             {
                 ImGui.SetClipboardText(addr);
