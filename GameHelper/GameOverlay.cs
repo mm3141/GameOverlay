@@ -24,7 +24,9 @@ namespace GameHelper
         {
             CoroutineHandler.Start(this.UpdateOverlayBounds());
             SettingsWindow.InitializeCoroutines();
-            CoreUi.InitializeCoroutines();
+            PerformanceStats.InitializeCoroutines();
+            DataVisualization.InitializeCoroutines();
+            GameUiExplorer.InitializeCoroutines();
             PManager.InitializePlugins();
             Core.InitializeCororutines();
         }

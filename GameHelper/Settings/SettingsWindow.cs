@@ -92,9 +92,9 @@ namespace GameHelper.Settings
                     ImGui.NewLine();
                     ImGui.Text($"Current Game State: {Core.States.GameCurrentState}");
                     ImGui.NewLine();
-                    ImGui.Checkbox("Enable Perf Stats window", ref Core.GHSettings.ShowPerfStats);
-                    ImGui.NewLine();
-                    ImGui.Checkbox("Enable Dev Tree window", ref Core.GHSettings.ShowDevTree);
+                    ImGui.Checkbox("Performance Stats", ref Core.GHSettings.ShowPerfStats);
+                    ImGui.Checkbox("Game UiExplorer", ref Core.GHSettings.ShowGameUiExplorer);
+                    ImGui.Checkbox("Data Visualization", ref Core.GHSettings.ShowDataVisualization);
                     ImGui.EndGroup();
                     break;
                 default:
@@ -132,11 +132,9 @@ namespace GameHelper.Settings
                     continue;
                 }
 
-                ImGui.SetNextWindowSizeConstraints(new Vector2(800, 600), new Vector2(1024, 1024));
                 var isMainMenuExpanded = ImGui.Begin(
                     "Game Overlay Settings Menu",
-                    ref Core.GHSettings.IsOverlayRunning,
-                    ImGuiWindowFlags.NoSavedSettings);
+                    ref Core.GHSettings.IsOverlayRunning);
                 if (!Core.GHSettings.IsOverlayRunning)
                 {
                     CoroutineHandler.RaiseEvent(GameHelperEvents.TimeToSaveAllSettings);

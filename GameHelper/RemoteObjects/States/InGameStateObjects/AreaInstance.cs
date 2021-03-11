@@ -72,6 +72,9 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             // TODO: moveable Ui Element ptr. so person can triverse all UiElements via this dev tree and UiRoot.
             // TODO: HoverUi debugger. Should popup (beside mouse) "You are hovering over a UIElement, press J to debug it in DevTree.".
             // TODO: Change preload to checklist manager.
+            // TODO: save preload to disk for comparison & custom filename option.
+            // TODO: UiElement explorer that also handle InGameUi array (try/catch).
+            // TODO: Maybe also handle UiHover.
             var reader = Core.Process.Handle;
             var data = reader.ReadMemory<CurrentAreaDataOffsets>(this.Address);
             this.MonsterLevel = data.MonsterLevel;

@@ -7,17 +7,22 @@ namespace GameHelper.RemoteObjects
     using System;
     using System.Collections.Concurrent;
     using System.Collections.Generic;
+    using System.Numerics;
     using System.Threading.Tasks;
     using Coroutine;
     using GameHelper.CoroutineEvents;
     using GameHelper.RemoteEnums;
     using GameOffsets.Objects;
+    using ImGuiNET;
 
     /// <summary>
     /// Gathers the files loaded in the game for the current area.
     /// </summary>
     public class LoadedFiles : RemoteObjectBase
     {
+        private static Vector2 searchboxSize = new Vector2(600f, 200f);
+        private string searchText = string.Empty;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="LoadedFiles"/> class.
         /// </summary>
@@ -33,13 +38,13 @@ namespace GameHelper.RemoteObjects
         /// <summary>
         /// Gets the pathname of the files.
         /// </summary>
-        public ConcurrentDictionary<string, byte> PathNames
+        public ConcurrentDictionary<string, int> PathNames
         {
             get;
             private set;
         }
 
-        = new ConcurrentDictionary<string, byte>();
+        = new ConcurrentDictionary<string, int>();
 
         /// <summary>
         /// Converts the <see cref="LoadedFiles"/> class data to ImGui.
@@ -47,6 +52,30 @@ namespace GameHelper.RemoteObjects
         internal override void ToImGui()
         {
             base.ToImGui();
+            ImGui.SetNextItemWidth(searchboxSize.X);
+            if (ImGui.InputText("Search Loaded Files", ref this.searchText, 50))
+            {
+                this.searchText = this.searchText.ToLower();
+            }
+
+            if (!string.IsNullOrEmpty(this.searchText))
+            {
+                ImGui.BeginChild("Result##loadedfiles", searchboxSize, true);
+                ImGui.PushStyleColor(ImGuiCol.Button, new Vector4(0, 0, 0, 0));
+                foreach (var pathname in this.PathNames.Keys)
+                {
+                    if (pathname.ToLower().Contains(this.searchText))
+                    {
+                        if (ImGui.SmallButton(pathname))
+                        {
+                            ImGui.SetClipboardText(pathname);
+                        }
+                    }
+                }
+
+                ImGui.PopStyleColor();
+                ImGui.EndChild();
+            }
         }
 
         /// <inheritdoc/>
@@ -92,7 +121,7 @@ namespace GameHelper.RemoteObjects
                     information.AreaChangeCount == Core.AreaChangeCounter.Value)
                     {
                         var name = reader.ReadStdWString(information.Name);
-                        this.PathNames[name] = 0x00;
+                        this.PathNames[name] = information.AreaChangeCount;
                     }
                 }
             });

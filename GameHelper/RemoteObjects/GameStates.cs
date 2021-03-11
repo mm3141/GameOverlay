@@ -10,8 +10,10 @@ namespace GameHelper.RemoteObjects
     using GameHelper.CoroutineEvents;
     using GameHelper.RemoteEnums;
     using GameHelper.RemoteObjects.States;
+    using GameHelper.Utils;
     using GameOffsets.Natives;
     using GameOffsets.Objects;
+    using ImGuiNET;
 
     /// <summary>
     /// Reads and stores the global states of the game.
@@ -82,6 +84,25 @@ namespace GameHelper.RemoteObjects
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// Converts the <see cref="GameStates"/> class data to ImGui.
+        /// </summary>
+        internal override void ToImGui()
+        {
+            base.ToImGui();
+            if (ImGui.TreeNode("All States Info"))
+            {
+                foreach (var state in this.AllStates)
+                {
+                    UiHelper.IntPtrToImGui(state.Key, state.Value);
+                }
+
+                ImGui.TreePop();
+            }
+
+            ImGui.Text($"Current State: {this.GameCurrentState}");
         }
 
         /// <inheritdoc/>

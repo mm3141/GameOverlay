@@ -51,9 +51,15 @@ namespace GameHelper.Settings
 
         /// <summary>
         /// Gets or sets a value indicating whether
-        /// to the show Dev Tree or not.
+        /// to show DataVisualization window or not.
         /// </summary>
-        public bool ShowDevTree = false;
+        public bool ShowDataVisualization = false;
+
+        /// <summary>
+        /// Gets or sets a value indicating whether
+        /// to show Game Ui Explorer or not.
+        /// </summary>
+        public bool ShowGameUiExplorer = false;
     }
 
 #pragma warning restore SA1401 // Fields should be private

@@ -27,6 +27,39 @@ namespace GameHelper.Utils
             ImGuiWindowFlags.NoTitleBar;
 
         /// <summary>
+        /// Stores rgba in uint32.
+        /// </summary>
+        /// <param name="r">red color number between 0 - 255.</param>
+        /// <param name="g">green color number between 0 - 255.</param>
+        /// <param name="b">blue color number between 0 - 255.</param>
+        /// <param name="a">alpha number between 0 - 255.</param>
+        /// <returns>color in uint32 format.</returns>
+        public static uint Color(byte r, byte g, byte b, byte a)
+        {
+            uint ret = a;
+            ret <<= 8;
+            ret += b;
+            ret <<= 8;
+            ret += g;
+            ret <<= 8;
+            ret += r;
+            return ret;
+        }
+
+        /// <summary>
+        /// Draws the Rectangle on the screen.
+        /// </summary>
+        /// <param name="pos">Postion of the rectange.</param>
+        /// <param name="size">Size of the rectange.</param>
+        /// <param name="r">color selector red 0 - 255.</param>
+        /// <param name="g">color selector green 0 - 255.</param>
+        /// <param name="b">color selector blue 0 - 255.</param>
+        public static void DrawRect(Vector2 pos, Vector2 size, byte r, byte g, byte b)
+        {
+            ImGui.GetForegroundDrawList().AddRect(pos, pos + size, UiHelper.Color(r, g, b, 255));
+        }
+
+        /// <summary>
         /// Helps convert address to ImGui Widget.
         /// </summary>
         /// <param name="name">name of the object whos address it is.</param>

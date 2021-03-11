@@ -5,6 +5,7 @@
 namespace GameHelper.RemoteObjects
 {
     using System;
+    using System.Numerics;
     using System.Reflection;
     using GameHelper.Utils;
     using ImGuiNET;
@@ -75,11 +76,10 @@ namespace GameHelper.RemoteObjects
         /// </summary>
         internal virtual void ToImGui()
         {
+            var propFlags = BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance;
+            var properties = UiHelper.GetToImGuiMethods(this.GetType(), propFlags, this);
             UiHelper.IntPtrToImGui("Address", this.address);
-            var propFlags = BindingFlags.NonPublic |
-                BindingFlags.Public |
-                BindingFlags.Instance;
-            foreach (var property in UiHelper.GetToImGuiMethods(this.GetType(), propFlags, this))
+            foreach (var property in properties)
             {
                 if (ImGui.TreeNode(property.Name))
                 {

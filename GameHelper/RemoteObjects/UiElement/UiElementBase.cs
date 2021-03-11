@@ -6,13 +6,18 @@ namespace GameHelper.RemoteObjects.UiElement
 {
     using System;
     using System.Numerics;
+    using GameHelper.Ui;
+    using GameHelper.Utils;
     using GameOffsets.Objects.UiElement;
+    using ImGuiNET;
 
     /// <summary>
     /// Points to the Ui Element of the game and reads its data.
     /// </summary>
     public class UiElementBase : RemoteObjectBase
     {
+        private bool show = false;
+
         private IntPtr[] childrenAddresses = new IntPtr[0];
         private Vector2 positionModifier = Vector2.Zero;
         private string id = string.Empty;
@@ -136,12 +141,30 @@ namespace GameHelper.RemoteObjects.UiElement
         {
             get
             {
-                if (this.childrenAddresses.Length >= i)
+                if (this.childrenAddresses.Length <= i)
                 {
                     return null;
                 }
 
                 return new UiElementBase(this.childrenAddresses[i]);
+            }
+        }
+
+        /// <summary>
+        /// Converts the <see cref="UiElementBase"/> class data to ImGui.
+        /// </summary>
+        internal override void ToImGui()
+        {
+            base.ToImGui();
+            ImGui.Checkbox("Show", ref this.show);
+            if (this.show)
+            {
+                UiHelper.DrawRect(this.Postion, this.Size, 255, 255, 0);
+            }
+
+            if (ImGui.Button("Explore"))
+            {
+                GameUiExplorer.AddUiElement(this);
             }
         }
 
