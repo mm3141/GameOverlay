@@ -20,7 +20,6 @@ namespace GameHelper.RemoteObjects
     /// </summary>
     public class LoadedFiles : RemoteObjectBase
     {
-        private static Vector2 searchboxSize = new Vector2(600f, 200f);
         private string searchText = string.Empty;
 
         /// <summary>
@@ -51,8 +50,12 @@ namespace GameHelper.RemoteObjects
         /// </summary>
         internal override void ToImGui()
         {
+            var searchBoxSize = ImGui.GetContentRegionAvail();
+            searchBoxSize.Y = 200f;
             base.ToImGui();
-            ImGui.SetNextItemWidth(searchboxSize.X);
+            ImGui.Text($"Total Loaded Files in current area: {this.PathNames.Count}");
+
+            ImGui.SetNextItemWidth(searchBoxSize.X);
             if (ImGui.InputText("Search Loaded Files", ref this.searchText, 50))
             {
                 this.searchText = this.searchText.ToLower();
@@ -60,7 +63,7 @@ namespace GameHelper.RemoteObjects
 
             if (!string.IsNullOrEmpty(this.searchText))
             {
-                ImGui.BeginChild("Result##loadedfiles", searchboxSize, true);
+                ImGui.BeginChild("Result##loadedfiles", searchBoxSize, true);
                 ImGui.PushStyleColor(ImGuiCol.Button, new Vector4(0, 0, 0, 0));
                 foreach (var pathname in this.PathNames.Keys)
                 {
@@ -117,7 +120,7 @@ namespace GameHelper.RemoteObjects
                 {
                     var fileNode = filesPtr[j];
                     var information = reader.ReadMemory<FileInfoValueStruct>(fileNode.ValuePtr);
-                    if (information.AreaChangeCount >= 2 &&
+                    if (information.AreaChangeCount > FileInfoValueStruct.IGNORE_FIRST_X_AREAS &&
                     information.AreaChangeCount == Core.AreaChangeCounter.Value)
                     {
                         var name = reader.ReadStdWString(information.Name);

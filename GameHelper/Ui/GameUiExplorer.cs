@@ -76,6 +76,18 @@ namespace GameHelper.Ui
 
                 if (ImGui.Begin("Game UiExplorer", ref Core.GHSettings.ShowGameUiExplorer))
                 {
+                    ImGui.Text("NOTES");
+                    ImGui.TextWrapped("(0) To add element in this window go to UiElement" +
+                        "in Data Visualization window and click Explore button.");
+                    ImGui.TextWrapped("(1) To check currently loaded element bounds, " +
+                        "hover over the element header in blue.");
+                    ImGui.TextWrapped("(2) To check bounds of all the children hover " +
+                        "over the Children box.");
+                    ImGui.TextWrapped("(3) Feel free to add same element more than once.");
+                    ImGui.TextWrapped("(4) When children combo box is opened feel free " +
+                        "to use the up/down arrow key.");
+                    ImGui.TextWrapped("(5) Children bounds are drawn with RED color.");
+                    ImGui.TextWrapped("(6) Current element bounds are drawn with Yellow Color.");
                     if (ImGui.Button("Clear all Ui Elements (Mischief managed)"))
                     {
                         for (int i = elements.Count - 1; i >= 0; i--)
@@ -84,6 +96,7 @@ namespace GameHelper.Ui
                         }
                     }
 
+                    ImGui.Separator();
                     for (int i = 0; i < elements.Count; i++)
                     {
                         var current = elements[i];

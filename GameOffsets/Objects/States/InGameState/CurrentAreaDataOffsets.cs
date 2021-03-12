@@ -27,12 +27,6 @@
         public static Func<EntityNodeKey, bool> IgnoreSleepingEntities =
             new Func<EntityNodeKey, bool>((param) =>
             {
-#if DEBUG
-                if (param.type != 0xC0 && param.type != 0x88 && param.type != 0x00)
-                {
-                    Console.WriteLine($"[DEBUG] New Entity Type found: 0x{param.type:X}");
-                }
-#endif
                 return !Util.isBitSetByte(param.type, 7);
             });
 

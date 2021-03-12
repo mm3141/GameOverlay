@@ -39,5 +39,8 @@
         //[FieldOffset(0x3C)] public int CounterRelatedToAreaChange;
         //[FieldOffset(0x40)] public int CounterWhichStopsWhenGameIsMinimized;
 
+        // This saves a hell lot of memory but for debugging purposes
+        // Feel free to set it to 0.
+        public static readonly int IGNORE_FIRST_X_AREAS = 2;
     }
 }

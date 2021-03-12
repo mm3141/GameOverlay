@@ -130,6 +130,7 @@ namespace GameHelper.RemoteObjects.States
             var data = reader.ReadMemory<InGameStateOffset>(this.Address);
             this.CurrentAreaInstance.Address = data.LocalData;
             this.UiRoot.Address = data.UiRootPtr;
+            this.UiImportantElements.Address = data.IngameUi;
             if (this.WorldToScreenMatrix != data.WorldToScreenMatrix)
             {
                 this.WorldToScreenMatrix = data.WorldToScreenMatrix;

@@ -68,7 +68,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             ImGui.Text($"Area Hash: {this.AreaHash}");
             ImGui.Text($"Monster Level: {this.MonsterLevel}");
 
-            if (ImGui.TreeNode("Awake Entities"))
+            if (ImGui.TreeNode($"Awake Entities (total: {this.AwakeEntities.Count})"))
             {
                 foreach (var awakeEntity in this.AwakeEntities)
                 {
@@ -81,7 +81,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
                     if (awakeEntity.Value.IsValid &&
                         awakeEntity.Value.TryGetComponent<Render>(out var eRender))
                     {
-                        var text = $"{awakeEntity.Key.id}";
+                        var text = $"ID: {awakeEntity.Key.id} - Type: {awakeEntity.Key.type:X}";
                         var colBg = UiHelper.Color(0, 0, 0, 255);
                         var colFg = UiHelper.Color(255, 255, 255, 255);
                         var textSizeHalf = ImGui.CalcTextSize(text) / 2;
@@ -111,26 +111,31 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
         {
             // TODO: Find new stuff
             // TODO: Create patterns for stuff, for easy finding.
-            // TODO: Create ToRender & DevTree type plugin for base classes
-            // TODO: moveable Ui Element ptr. so person can triverse all UiElements via this dev tree and UiRoot.
             // TODO: HoverUi debugger. Should popup (beside mouse) "You are hovering over a UIElement, press J to debug it in DevTree.".
-            // TODO: Change preload to checklist manager.
-            // TODO: save preload to disk for comparison & custom filename option.
             // TODO: UiElement explorer that also handle InGameUi array (try/catch).
-            // TODO: Maybe also handle UiHover.
+            // TODO: *Change preload to checklist manager.
+            // TODO: *save preload to disk for comparison & custom filename option.
+            // TODO: *Update checklist manager to work with the new system.
+            // TODO: *plugins stop rendering once game stop/minimized.
             var reader = Core.Process.Handle;
             var data = reader.ReadMemory<CurrentAreaDataOffsets>(this.Address);
             this.MonsterLevel = data.MonsterLevel;
             this.AreaHash = $"{data.CurrentAreaHash:X}";
+#if DEBUG
+            var entitiesInNetworkBubble = reader.ReadStdMapAsList<EntityNodeKey, EntityNodeValue>(
+                data.AwakeEntities, false, EntityFilter.IgnoreNothing);
+#else
             var entitiesInNetworkBubble = reader.ReadStdMapAsList<EntityNodeKey, EntityNodeValue>(
                 data.AwakeEntities, false, EntityFilter.IgnoreSleepingEntities);
+#endif
             this.Player.Address = data.LocalPlayerPtr;
             foreach (var kv in this.AwakeEntities)
             {
                 if (!kv.Value.IsValid &&
 
                     // This isn't perfect in case entity is deleted before
-                    // we can cache the location of that entity. This is fine
+                    // we can cache the location of that entity. In that case
+                    // we will just delete that entity anyway. This is fine
                     // as long as it doesn't crash the GameHelper.
                     this.Player.DistanceFrom(kv.Value) <
                     InGameStateDataConstants.NETWORK_BUBBLE_RADIUS)
