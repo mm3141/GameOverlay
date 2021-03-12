@@ -12,11 +12,10 @@ namespace GameHelper.CoroutineEvents
     public static class RemoteEvents
     {
         /// <summary>
-        /// Gets the Area Changed event. Area change is detected by
-        /// checking if the time spend on the loading screen is greater
-        /// than the last recorded time.
-        ///
-        /// NOTE:Game provides the value of time spend on the loading screen.
+        /// Gets the event that is triggered 20ms after the area change detection.
+        /// Area change is detected by checking if the time spend on the
+        /// loading screen (given to us by the game) is greater than the
+        /// last recorded time.
         /// </summary>
         public static readonly Event AreaChanged = new Event();
 

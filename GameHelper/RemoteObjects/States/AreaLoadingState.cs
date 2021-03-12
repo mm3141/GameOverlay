@@ -78,7 +78,10 @@ namespace GameHelper.RemoteObjects.States
             if (hasAreaChanged)
             {
                 CoroutineHandler.RaiseEvent(RemoteEvents.AreaChangeDetected);
-                CoroutineHandler.RaiseEvent(RemoteEvents.AreaChanged);
+                CoroutineHandler.InvokeLater(new Wait(0.02), () =>
+                {
+                    CoroutineHandler.RaiseEvent(RemoteEvents.AreaChanged);
+                });
             }
         }
 

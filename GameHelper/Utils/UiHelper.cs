@@ -10,6 +10,7 @@ namespace GameHelper.Utils
     using System.Numerics;
     using System.Reflection;
     using GameHelper.RemoteObjects;
+    using GameOffsets.Natives;
     using ImGuiNET;
 
     /// <summary>
@@ -57,6 +58,23 @@ namespace GameHelper.Utils
         public static void DrawRect(Vector2 pos, Vector2 size, byte r, byte g, byte b)
         {
             ImGui.GetForegroundDrawList().AddRect(pos, pos + size, UiHelper.Color(r, g, b, 255));
+        }
+
+        /// <summary>
+        /// Draws the text on the screen.
+        /// </summary>
+        /// <param name="pos">world location to draw the text.</param>
+        /// <param name="text">text to draw.</param>
+        public static void DrawText(StdTuple3D<float> pos, string text)
+        {
+            var colBg = Color(0, 0, 0, 255);
+            var colFg = Color(255, 255, 255, 255);
+            var textSizeHalf = ImGui.CalcTextSize(text) / 2;
+            var location = Core.States.InGameStateObject.WorldToScreen(pos);
+            var max = location + textSizeHalf;
+            location = location - textSizeHalf;
+            ImGui.GetBackgroundDrawList().AddRectFilled(location, max, colBg);
+            ImGui.GetForegroundDrawList().AddText(location, colFg, text);
         }
 
         /// <summary>
