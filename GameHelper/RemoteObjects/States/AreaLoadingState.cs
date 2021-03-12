@@ -10,6 +10,7 @@ namespace GameHelper.RemoteObjects.States
     using GameHelper.CoroutineEvents;
     using GameHelper.RemoteEnums;
     using GameOffsets.Objects.States;
+    using ImGuiNET;
 
     /// <summary>
     /// Reads AreaLoadingState Game Object.
@@ -38,6 +39,17 @@ namespace GameHelper.RemoteObjects.States
         /// Gets a value indicating whether the game is in loading screen or not.
         /// </summary>
         internal bool IsLoading { get; private set; }
+
+        /// <summary>
+        /// Converts the <see cref="AreaLoadingState"/> class data to ImGui.
+        /// </summary>
+        internal override void ToImGui()
+        {
+            base.ToImGui();
+            ImGui.Text($"Current Area Name: {this.CurrentAreaName}");
+            ImGui.Text($"Is Loading Screen: {this.IsLoading}");
+            ImGui.Text($"Total Loading Time(ms): {this.lastCache.TotalLoadingScreenTimeMs}");
+        }
 
         /// <inheritdoc/>
         protected override void CleanUpData()

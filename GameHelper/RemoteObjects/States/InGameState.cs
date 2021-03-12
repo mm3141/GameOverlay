@@ -85,10 +85,10 @@ namespace GameHelper.RemoteObjects.States
             if (ImGui.TreeNode("WindowToScreenMatrix"))
             {
                 var d = this.WindowToScreenMatrix;
-                ImGui.Text($"{d.M11} {d.M12} {d.M13} {d.M14}");
-                ImGui.Text($"{d.M21} {d.M22} {d.M23} {d.M24}");
-                ImGui.Text($"{d.M31} {d.M32} {d.M33} {d.M34}");
-                ImGui.Text($"{d.M41} {d.M42} {d.M43} {d.M44}");
+                ImGui.Text($"{d.M11:0.00}\t{d.M12:0.00}\t{d.M13:0.00}\t{d.M14:0.00}");
+                ImGui.Text($"{d.M21:0.00}\t{d.M22:0.00}\t{d.M23:0.00}\t{d.M24:0.00}");
+                ImGui.Text($"{d.M31:0.00}\t{d.M32:0.00}\t{d.M33:0.00}\t{d.M34:0.00}");
+                ImGui.Text($"{d.M41:0.00}\t{d.M42:0.00}\t{d.M43:0.00}\t{d.M44:0.00}");
                 ImGui.TreePop();
             }
         }

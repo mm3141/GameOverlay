@@ -155,18 +155,30 @@ namespace GameHelper.RemoteObjects.UiElement
         /// </summary>
         internal override void ToImGui()
         {
-            base.ToImGui();
             ImGui.Checkbox("Show", ref this.show);
+            ImGui.SameLine();
+            if (ImGui.Button("Explore"))
+            {
+                GameUiExplorer.AddUiElement(this);
+            }
+
+            base.ToImGui();
             if (this.show)
             {
                 UiHelper.DrawRect(this.Postion, this.Size, 255, 255, 0);
             }
 
-            if (ImGui.Button("Explore"))
-            {
-                GameUiExplorer.AddUiElement(this);
-            }
-        }
+            ImGui.Text($"Id {this.Id}");
+            ImGui.Text($"Position  {this.Postion}");
+            ImGui.Text($"Size  {this.Size}");
+            ImGui.Text($"IsVisible  {this.IsVisible}");
+            ImGui.Text($"Total Childrens  {this.TotalChildrens}");
+            ImGui.Text($"Parent  {this.Parent}");
+            ImGui.Text($"Position Modifier {this.positionModifier}");
+            ImGui.Text($"Scale Indenx {this.scaleIndex}");
+            ImGui.Text($"Local Scale Multiplier {this.localScaleMultiplier}");
+            ImGui.Text($"Flags: {this.flags:X}");
+    }
 
         /// <inheritdoc/>
         protected override void CleanUpData()

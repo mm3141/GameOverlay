@@ -11,6 +11,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
     using Coroutine;
     using GameHelper.CoroutineEvents;
     using GameOffsets.Objects.States.InGameState;
+    using ImGuiNET;
 
     /// <summary>
     /// Points to the InGameState -> LocalData Object.
@@ -54,6 +55,25 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
         /// </summary>
         public ConcurrentDictionary<EntityNodeKey, Entity> AwakeEntities { get; private set; } =
             new ConcurrentDictionary<EntityNodeKey, Entity>();
+
+        /// <summary>
+        /// Converts the <see cref="AreaInstance"/> class data to ImGui.
+        /// </summary>
+        internal override void ToImGui()
+        {
+            base.ToImGui();
+            ImGui.Text($"Area Hash: {this.AreaHash}");
+            ImGui.Text($"Monster Level: {this.MonsterLevel}");
+            if (ImGui.TreeNode("Awake Entities"))
+            {
+                foreach (var awakeEntity in this.AwakeEntities)
+                {
+                    awakeEntity.Value.ToImGui();
+                }
+
+                ImGui.TreePop();
+            }
+        }
 
         /// <inheritdoc/>
         protected override void CleanUpData()
