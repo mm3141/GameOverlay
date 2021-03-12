@@ -120,6 +120,7 @@ namespace GameHelper.RemoteObjects.States
         {
             this.CurrentAreaInstance.Address = IntPtr.Zero;
             this.UiRoot.Address = IntPtr.Zero;
+            this.UiImportantElements.Address = IntPtr.Zero;
             this.WorldToScreenMatrix = Matrix4x4.Identity;
         }
 

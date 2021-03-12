@@ -54,8 +54,6 @@ namespace GameHelper.RemoteObjects
         /// </summary>
         internal override void ToImGui()
         {
-            var searchBoxSize = ImGui.GetContentRegionAvail();
-            searchBoxSize.Y = 200f;
             base.ToImGui();
             ImGui.Text($"Total Loaded Files in current area: {this.PathNames.Count}");
             ImGui.Text("File Name: ");
@@ -79,15 +77,16 @@ namespace GameHelper.RemoteObjects
                 UiHelper.DrawDisabledButton("Save");
             }
 
-            ImGui.SetNextItemWidth(searchBoxSize.X);
-            if (ImGui.InputText("Search Loaded Files", ref this.searchText, 50))
+            ImGui.Text("Search:    ");
+            ImGui.SameLine();
+            if (ImGui.InputText("##LoadedFiles", ref this.searchText, 50))
             {
                 this.searchText = this.searchText.ToLower();
             }
 
             if (!string.IsNullOrEmpty(this.searchText))
             {
-                ImGui.BeginChild("Result##loadedfiles", searchBoxSize, true);
+                ImGui.BeginChild("Result##loadedfiles", Vector2.Zero, true);
                 ImGui.PushStyleColor(ImGuiCol.Button, new Vector4(0, 0, 0, 0));
                 foreach (var pathname in this.PathNames.Keys)
                 {

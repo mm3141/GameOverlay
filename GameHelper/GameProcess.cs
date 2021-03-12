@@ -121,7 +121,7 @@ namespace GameHelper
             var processesInfo = new List<Process>();
             while (true)
             {
-                yield return new Wait(1);
+                yield return new Wait(1d);
                 processesInfo.Clear();
                 foreach (var process in Process.GetProcessesByName(GameProcessDetails.ProcessName))
                 {
@@ -164,7 +164,7 @@ namespace GameHelper
                     this.UpdateWindowRectangle();
                 }
 
-                yield return new Wait(1);
+                yield return new Wait(1d);
             }
         }
 
