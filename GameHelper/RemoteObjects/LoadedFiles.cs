@@ -7,11 +7,13 @@ namespace GameHelper.RemoteObjects
     using System;
     using System.Collections.Concurrent;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Numerics;
     using System.Threading.Tasks;
     using Coroutine;
     using GameHelper.CoroutineEvents;
     using GameHelper.RemoteEnums;
+    using GameHelper.Utils;
     using GameOffsets.Objects;
     using ImGuiNET;
 
@@ -20,6 +22,8 @@ namespace GameHelper.RemoteObjects
     /// </summary>
     public class LoadedFiles : RemoteObjectBase
     {
+        private bool areaAlreadyDone = false;
+        private string filename = string.Empty;
         private string searchText = string.Empty;
 
         /// <summary>
@@ -54,6 +58,26 @@ namespace GameHelper.RemoteObjects
             searchBoxSize.Y = 200f;
             base.ToImGui();
             ImGui.Text($"Total Loaded Files in current area: {this.PathNames.Count}");
+            ImGui.Text("File Name: ");
+            ImGui.SameLine();
+            ImGui.InputText("##filename", ref this.filename, 100);
+            ImGui.SameLine();
+            if (!this.areaAlreadyDone)
+            {
+                if (ImGui.Button("Save"))
+                {
+                    var dataToWrite = this.PathNames.Keys.ToList();
+                    dataToWrite.Sort();
+                    System.IO.File.WriteAllText(
+                        this.filename,
+                        string.Join("\n", dataToWrite));
+                    this.areaAlreadyDone = true;
+                }
+            }
+            else
+            {
+                UiHelper.DrawDisabledButton("Save");
+            }
 
             ImGui.SetNextItemWidth(searchBoxSize.X);
             if (ImGui.InputText("Search Loaded Files", ref this.searchText, 50))
@@ -138,6 +162,10 @@ namespace GameHelper.RemoteObjects
                 yield return new Wait(RemoteEvents.AreaChanged);
                 if (this.Address != IntPtr.Zero)
                 {
+                    var areaName = Core.States.AreaLoading.CurrentAreaName;
+                    var areaHash = Core.States.InGameStateObject.CurrentAreaInstance.AreaHash;
+                    this.filename = $"{areaName}_{areaHash}.txt";
+                    this.areaAlreadyDone = false;
                     this.CleanUpData();
                     this.UpdateData(false);
                 }

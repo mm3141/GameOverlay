@@ -114,7 +114,6 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             // TODO: HoverUi debugger. Should popup (beside mouse) "You are hovering over a UIElement, press J to debug it in DevTree.".
             // TODO: UiElement explorer that also handle InGameUi array (try/catch).
             // TODO: *Change preload to checklist manager.
-            // TODO: *save preload to disk for comparison & custom filename option.
             // TODO: *Update checklist manager to work with the new system.
             // TODO: *plugins stop rendering once game stop/minimized.
             var reader = Core.Process.Handle;
@@ -173,6 +172,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
                 if (this.Address != IntPtr.Zero)
                 {
                     this.CleanUpData();
+                    this.UpdateData(false);
                 }
             }
         }
