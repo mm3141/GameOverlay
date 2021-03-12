@@ -93,6 +93,7 @@ namespace GameHelper.RemoteObjects
             var totalFiles = LoadedFilesRootObject.TotalCount;
             var reader = Core.Process.Handle;
             var filesRootObjs = reader.ReadMemoryArray<LoadedFilesRootObject>(this.Address, totalFiles);
+            var totalIgnoreAreas = FileInfoValueStruct.IGNORE_FIRST_X_AREAS;
             Parallel.For(0, filesRootObjs.Length, (i) =>
             {
                 var filesRootObj = filesRootObjs[i];
@@ -120,7 +121,7 @@ namespace GameHelper.RemoteObjects
                 {
                     var fileNode = filesPtr[j];
                     var information = reader.ReadMemory<FileInfoValueStruct>(fileNode.ValuePtr);
-                    if (information.AreaChangeCount > FileInfoValueStruct.IGNORE_FIRST_X_AREAS &&
+                    if (information.AreaChangeCount > totalIgnoreAreas &&
                     information.AreaChangeCount == Core.AreaChangeCounter.Value)
                     {
                         var name = reader.ReadStdWString(information.Name);
