@@ -7,7 +7,9 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
     using System;
     using System.Collections.Generic;
     using GameHelper.RemoteObjects.Components;
+    using GameHelper.Utils;
     using GameOffsets.Objects.States.InGameState;
+    using ImGuiNET;
 
     /// <summary>
     /// Points to an Entity/Object in the game.
@@ -103,6 +105,35 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
 
             component = null;
             return false;
+        }
+
+        /// <summary>
+        /// Converts the <see cref="Entity"/> class data to ImGui.
+        /// </summary>
+        internal override void ToImGui()
+        {
+            base.ToImGui();
+            ImGui.Text($"Path: {this.Path}");
+            ImGui.Text($"Id: {this.Id}");
+            ImGui.Text($"Is Valid: {this.IsValid}");
+            if (ImGui.TreeNode($"Components"))
+            {
+                foreach (var kv in this.componentAddresses)
+                {
+                    if (this.componentCache.ContainsKey(kv.Key))
+                    {
+                        if (ImGui.TreeNode($"{kv.Key}"))
+                        {
+                            this.componentCache[kv.Key].ToImGui();
+                            ImGui.TreePop();
+                        }
+                    }
+
+                    UiHelper.IntPtrToImGui(kv.Key, kv.Value);
+                }
+
+                ImGui.TreePop();
+            }
         }
 
         /// <inheritdoc/>

@@ -7,9 +7,12 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
     using System;
     using System.Collections.Concurrent;
     using System.Collections.Generic;
+    using System.Numerics;
     using System.Threading.Tasks;
     using Coroutine;
     using GameHelper.CoroutineEvents;
+    using GameHelper.RemoteObjects.Components;
+    using GameHelper.Utils;
     using GameOffsets.Objects.States.InGameState;
     using ImGuiNET;
 
@@ -64,11 +67,31 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             base.ToImGui();
             ImGui.Text($"Area Hash: {this.AreaHash}");
             ImGui.Text($"Monster Level: {this.MonsterLevel}");
+
             if (ImGui.TreeNode("Awake Entities"))
             {
                 foreach (var awakeEntity in this.AwakeEntities)
                 {
-                    awakeEntity.Value.ToImGui();
+                    if (ImGui.TreeNode($"{awakeEntity.Value.Id} {awakeEntity.Value.Path}"))
+                    {
+                        awakeEntity.Value.ToImGui();
+                        ImGui.TreePop();
+                    }
+
+                    if (awakeEntity.Value.IsValid &&
+                        awakeEntity.Value.TryGetComponent<Render>(out var eRender))
+                    {
+                        var text = $"{awakeEntity.Key.id}";
+                        var colBg = UiHelper.Color(0, 0, 0, 255);
+                        var colFg = UiHelper.Color(255, 255, 255, 255);
+                        var textSizeHalf = ImGui.CalcTextSize(text) / 2;
+                        var location = Core.States.InGameStateObject.WorldToScreen(
+                            eRender.WorldPosition3D);
+                        var max = location + textSizeHalf;
+                        location = location - textSizeHalf;
+                        ImGui.GetBackgroundDrawList().AddRectFilled(location, max, colBg);
+                        ImGui.GetForegroundDrawList().AddText(location, colFg, text);
+                    }
                 }
 
                 ImGui.TreePop();

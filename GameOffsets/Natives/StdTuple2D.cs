@@ -7,5 +7,10 @@
     {
         public T X;
         public T Y;
+
+        public override string ToString()
+        {
+            return $"X: {X}, Y: {Y}";
+        }
     }
 }

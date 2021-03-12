@@ -4,7 +4,7 @@
     using GameOffsets.Natives;
 
     [StructLayout(LayoutKind.Explicit, Pack = 1)]
-    public struct PositionedOffset
+    public struct PositionedOffsets
     {
         [FieldOffset(0x0000)] public ComponentHeader Header;
         [FieldOffset(0x015C)] public byte Reaction;

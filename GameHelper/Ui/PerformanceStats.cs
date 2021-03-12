@@ -50,6 +50,7 @@ namespace GameHelper.Ui
                             $"{coroutine.AverageMoveNextTime.Milliseconds}(ms)");
                     }
 
+                    ImGui.Text($"FPS: {ImGui.GetIO().Framerate}");
                     ImGui.End();
                 }
             }

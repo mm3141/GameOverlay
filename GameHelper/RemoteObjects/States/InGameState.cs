@@ -11,6 +11,7 @@ namespace GameHelper.RemoteObjects.States
     using GameHelper.CoroutineEvents;
     using GameHelper.RemoteObjects.States.InGameStateObjects;
     using GameHelper.RemoteObjects.UiElement;
+    using GameOffsets.Natives;
     using GameOffsets.Objects.States;
     using ImGuiNET;
 
@@ -55,9 +56,9 @@ namespace GameHelper.RemoteObjects.States
         = new ImportantUiElements(IntPtr.Zero);
 
         /// <summary>
-        /// Gets the Window to Screen Matrix.
+        /// Gets the World to Screen Matrix.
         /// </summary>
-        public Matrix4x4 WindowToScreenMatrix
+        public Matrix4x4 WorldToScreenMatrix
         {
             get;
             private set;
@@ -77,6 +78,27 @@ namespace GameHelper.RemoteObjects.States
         = new UiElementBase(IntPtr.Zero);
 
         /// <summary>
+        /// Converts the World position to Screen location.
+        /// </summary>
+        /// <param name="worldPosition">3D world position of the entity.</param>
+        /// <returns>screen location of the entity.</returns>
+        public Vector2 WorldToScreen(StdTuple3D<float> worldPosition)
+        {
+            Vector2 result = Vector2.Zero;
+            if (this.Address == IntPtr.Zero)
+            {
+                return result;
+            }
+
+            Vector4 temp0 = new Vector4(worldPosition.X, worldPosition.Y, worldPosition.Z, 1f);
+            temp0 = Vector4.Transform(temp0, this.WorldToScreenMatrix);
+            temp0 /= temp0.W;
+            result.X = (temp0.X + 1f) * (Core.Process.WindowArea.Width / 2);
+            result.Y = (1.0f - temp0.Y) * (Core.Process.WindowArea.Height / 2);
+            return result;
+        }
+
+        /// <summary>
         /// Converts the <see cref="InGameState"/> class data to ImGui.
         /// </summary>
         internal override void ToImGui()
@@ -84,7 +106,7 @@ namespace GameHelper.RemoteObjects.States
             base.ToImGui();
             if (ImGui.TreeNode("WindowToScreenMatrix"))
             {
-                var d = this.WindowToScreenMatrix;
+                var d = this.WorldToScreenMatrix;
                 ImGui.Text($"{d.M11:0.00}\t{d.M12:0.00}\t{d.M13:0.00}\t{d.M14:0.00}");
                 ImGui.Text($"{d.M21:0.00}\t{d.M22:0.00}\t{d.M23:0.00}\t{d.M24:0.00}");
                 ImGui.Text($"{d.M31:0.00}\t{d.M32:0.00}\t{d.M33:0.00}\t{d.M34:0.00}");
@@ -98,7 +120,7 @@ namespace GameHelper.RemoteObjects.States
         {
             this.CurrentAreaInstance.Address = IntPtr.Zero;
             this.UiRoot.Address = IntPtr.Zero;
-            this.WindowToScreenMatrix = Matrix4x4.Identity;
+            this.WorldToScreenMatrix = Matrix4x4.Identity;
         }
 
         /// <inheritdoc/>
@@ -108,9 +130,9 @@ namespace GameHelper.RemoteObjects.States
             var data = reader.ReadMemory<InGameStateOffset>(this.Address);
             this.CurrentAreaInstance.Address = data.LocalData;
             this.UiRoot.Address = data.UiRootPtr;
-            if (this.WindowToScreenMatrix != data.WindowToScreenMatrix)
+            if (this.WorldToScreenMatrix != data.WorldToScreenMatrix)
             {
-                this.WindowToScreenMatrix = data.WindowToScreenMatrix;
+                this.WorldToScreenMatrix = data.WorldToScreenMatrix;
             }
         }
 

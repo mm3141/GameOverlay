@@ -258,7 +258,6 @@ namespace GameHelper.Utils
                     // Validating for infinite loop.
                     if (counter > MaxAllowed)
                     {
-                        this.readStdMapInfiniteCounter++;
 #if DEBUG
                         Console.WriteLine($"ERROR ({this.readStdMapInfiniteCounter}):" +
                             $" Reading HashMap failed current counter {counter} is greater than" +
@@ -271,6 +270,7 @@ namespace GameHelper.Utils
                                 $" Maximum allowed HashMap size ({MaxAllowed}).");
                         }
 
+                        this.readStdMapInfiniteCounter++;
                         break;
                     }
                 }

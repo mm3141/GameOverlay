@@ -14,7 +14,7 @@
 
         // First value is changing when we change the screen size (ratio)
         // 4 bytes before the matrix doesn't change
-        [FieldOffset(0x1100)] public Matrix4x4 WindowToScreenMatrix;
+        [FieldOffset(0x1100)] public Matrix4x4 WorldToScreenMatrix;
         // [FieldOffset(0x1170)] public Vector3 Position;
         // [FieldOffset(0x1244)] public float ZFar;
         [FieldOffset(0x1470)] public IntPtr IngameUi;
