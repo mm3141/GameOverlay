@@ -105,7 +105,6 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             // TODO: Create patterns for stuff, for easy finding.
             // TODO: HoverUi debugger. Should popup (beside mouse) "You are hovering over a UIElement, press J to debug it in DevTree.".
             // TODO: UiElement explorer that also handle InGameUi array (try/catch).
-            // TODO: *plugins stop rendering once game stop/minimized.
             var reader = Core.Process.Handle;
             var data = reader.ReadMemory<CurrentAreaDataOffsets>(this.Address);
             this.MonsterLevel = data.MonsterLevel;
@@ -122,10 +121,10 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             {
                 if (!kv.Value.IsValid &&
 
-                    // This isn't perfect in case entity is deleted before
-                    // we can cache the location of that entity. In that case
-                    // we will just delete that entity anyway. This is fine
-                    // as long as it doesn't crash the GameHelper.
+                    // This isn't perfect in case something happens to the entity before
+                    // we can cache the location of that entity. In that case we will just
+                    // delete that entity anyway. This activity is fine as long as it doesn't
+                    // crash the GameHelper.
                     this.Player.DistanceFrom(kv.Value) <
                     InGameStateDataConstants.NETWORK_BUBBLE_RADIUS)
                 {

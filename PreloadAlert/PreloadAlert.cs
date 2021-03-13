@@ -93,8 +93,7 @@ namespace PreloadAlert
             ImGui.TextWrapped("You can also lock it by double clicking it. " +
                 "However, you can only unlock it from here.");
             ImGui.Checkbox("Lock/Unlock Preload Window", ref this.Settings.Locked);
-            ImGui.Checkbox("Hide Ui On Background", ref this.Settings.HideUiWhenGameInBackground);
-            ImGui.Checkbox("Hide Ui On Not In Game", ref this.Settings.HideUiWhenNotInGame);
+            ImGui.Checkbox("Hide When Locked & Not In Game", ref this.Settings.EnableHideUi);
             ImGui.Separator();
             this.AddNewPreloadBox();
             this.DisplayAllImportantPreloads();
@@ -105,14 +104,10 @@ namespace PreloadAlert
         /// </summary>
         public override void DrawUI()
         {
-            if (this.Settings.HideUiWhenGameInBackground &&
-                !Core.Process.Foreground)
-            {
-                return;
-            }
-
-            if (this.Settings.HideUiWhenNotInGame &&
-                Core.States.GameCurrentState != GameStateTypes.InGameState)
+            if (this.Settings.EnableHideUi &&
+                this.Settings.Locked &&
+                (!Core.Process.Foreground ||
+                Core.States.GameCurrentState != GameStateTypes.InGameState))
             {
                 return;
             }

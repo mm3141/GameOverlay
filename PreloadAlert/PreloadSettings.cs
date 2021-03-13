@@ -17,8 +17,7 @@ namespace PreloadAlert
         public Vector2 Size = Vector2.Zero;
         public Vector4 BackgroundColor = Vector4.One;
         public bool Locked = false;
-        public bool HideUiWhenNotInGame = false;
-        public bool HideUiWhenGameInBackground = false;
+        public bool EnableHideUi = false;
 #pragma warning restore SA1401, SA1600 // Fields should be private
     }
 }
