@@ -44,7 +44,13 @@ namespace GameHelper
             {
                 try
                 {
-                    return this.Information.MainModule.BaseAddress;
+                    var reader = this.Handle;
+                    if (reader != null && !reader.IsClosed && !reader.IsInvalid)
+                    {
+                        return this.Information.MainModule.BaseAddress;
+                    }
+
+                    return IntPtr.Zero;
                 }
                 catch (Exception)
                 {
