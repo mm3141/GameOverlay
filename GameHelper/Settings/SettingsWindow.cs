@@ -92,6 +92,9 @@ namespace GameHelper.Settings
                     ImGui.NewLine();
                     ImGui.Text($"Current Game State: {Core.States.GameCurrentState}");
                     ImGui.NewLine();
+                    ImGui.TextWrapped($"Set the window scale value. Restart the overlay after.");
+                    ImGui.DragFloat("##WinScale", ref Core.GHSettings.WindowScale, 0.25f, 1f, 5f);
+                    ImGui.NewLine();
                     ImGui.Checkbox("Performance Stats", ref Core.GHSettings.ShowPerfStats);
                     ImGui.Checkbox("Game UiExplorer", ref Core.GHSettings.ShowGameUiExplorer);
                     ImGui.Checkbox("Data Visualization", ref Core.GHSettings.ShowDataVisualization);

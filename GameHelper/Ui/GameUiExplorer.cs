@@ -4,6 +4,7 @@
 
 namespace GameHelper.Ui
 {
+    using System;
     using System.Collections.Generic;
     using Coroutine;
     using GameHelper.CoroutineEvents;
@@ -76,19 +77,26 @@ namespace GameHelper.Ui
 
                 if (ImGui.Begin("Game UiExplorer", ref Core.GHSettings.ShowGameUiExplorer))
                 {
-                    ImGui.Text("NOTES");
-                    ImGui.TextWrapped("(0) To add element in this window go to UiElement" +
-                        "in Data Visualization window and click Explore button.");
-                    ImGui.TextWrapped("(1) To check currently loaded element bounds, " +
-                        "hover over the element header in blue.");
-                    ImGui.TextWrapped("(2) To check bounds of all the children hover " +
-                        "over the Children box.");
-                    ImGui.TextWrapped("(3) Feel free to add same element more than once.");
-                    ImGui.TextWrapped("(4) When children combo box is opened feel free " +
-                        "to use the up/down arrow key.");
-                    ImGui.TextWrapped("(5) Children bounds are drawn with RED color.");
-                    ImGui.TextWrapped("(6) Current element bounds are drawn with Yellow Color.");
-                    if (ImGui.Button("Clear all Ui Elements (Mischief managed)"))
+                    if (ImGui.TreeNode("NOTES"))
+                    {
+                        ImGui.BulletText("Closing the game will remove all objects.");
+                        ImGui.BulletText("To add element in this window go to UiElement\n" +
+                            "in Data Visualization window and click Explore button.");
+                        ImGui.BulletText("To check currently loaded element bounds,\n" +
+                            "hover over the element header in blue.");
+                        ImGui.BulletText("To check bounds of all the children hover\n" +
+                            "over the Children box.");
+                        ImGui.BulletText("Feel free to add same element more than once.");
+                        ImGui.BulletText("When children combo box is opened feel free\n" +
+                            "to use the up/down arrow key.");
+                        ImGui.BulletText("Children bounds are drawn with RED color.");
+                        ImGui.BulletText("Current element bounds are drawn with Yellow Color.");
+
+                        ImGui.TreePop();
+                    }
+
+                    if (ImGui.Button("Clear all Ui Elements (Mischief managed)") ||
+                        Core.Process.Address == IntPtr.Zero)
                     {
                         for (int i = elements.Count - 1; i >= 0; i--)
                         {

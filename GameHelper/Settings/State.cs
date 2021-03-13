@@ -60,6 +60,11 @@ namespace GameHelper.Settings
         /// to show Game Ui Explorer or not.
         /// </summary>
         public bool ShowGameUiExplorer = false;
+
+        /// <summary>
+        /// Gets the Window scale value.
+        /// </summary>
+        public float WindowScale = 1f;
     }
 
 #pragma warning restore SA1401 // Fields should be private

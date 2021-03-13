@@ -70,7 +70,7 @@ namespace GameHelper.RemoteObjects.UiElement
                 var pos = this.GetUnScaledPosition();
                 pos.X *= myScale.WidthScale;
                 pos.Y *= myScale.HeightScale;
-                return pos;
+                return pos / Core.GHSettings.WindowScale;
             }
 
             private set
@@ -90,7 +90,7 @@ namespace GameHelper.RemoteObjects.UiElement
                 var size = this.unScaledSize;
                 size.X *= scale.WidthScale;
                 size.Y *= scale.HeightScale;
-                return size;
+                return size / Core.GHSettings.WindowScale;
             }
 
             private set
@@ -230,6 +230,12 @@ namespace GameHelper.RemoteObjects.UiElement
             this.unScaledSize.Y = data.UnscaledSize.Y;
         }
 
+        /// <summary>
+        /// This function was basically parsed/read/decompiled from the game.
+        /// To find this function in the game, follow the data used in this function.
+        /// Although, this function haven't changed since last 3-4 years.
+        /// </summary>
+        /// <returns>Returns position without applying current element scaling values.</returns>
         private Vector2 GetUnScaledPosition()
         {
             if (this.Parent == null)

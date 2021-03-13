@@ -5,7 +5,6 @@
 namespace GameHelper.RemoteObjects
 {
     using System;
-    using System.Numerics;
     using System.Reflection;
     using GameHelper.Utils;
     using ImGuiNET;
