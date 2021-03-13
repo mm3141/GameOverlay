@@ -23,20 +23,15 @@ namespace PreloadAlert
         private string path = string.Empty;
         private string displayName = string.Empty;
         private Vector4 color = new Vector4(1f);
-        private Vector2 size = new Vector2(90f);
+        private ImGuiColorEditFlags colorEditflags
+            = ImGuiColorEditFlags.NoInputs | ImGuiColorEditFlags.NoLabel;
+
         private ActiveCoroutine onAreaChange;
         private Dictionary<string, PreloadInfo> importantPreloads
             = new Dictionary<string, PreloadInfo>();
 
         private Dictionary<PreloadInfo, byte> preloadFound
             = new Dictionary<PreloadInfo, byte>();
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PreloadAlert"/> class.
-        /// </summary>
-        public PreloadAlert()
-        {
-        }
 
         private string PreloadFileName => Path.Join(this.DllDirectory, "preloads.txt");
 
@@ -94,52 +89,12 @@ namespace PreloadAlert
         /// </summary>
         public override void DrawSettings()
         {
-            var flags = ImGuiColorEditFlags.NoInputs | ImGuiColorEditFlags.NoLabel;
             ImGui.TextWrapped("You can also lock it by double clicking it. " +
                 "However, you can only unlock it from here.");
             ImGui.Checkbox("Lock/Unlock Preload Window: ", ref this.Settings.Locked);
             ImGui.Separator();
-            this.size.X = ImGui.GetContentRegionAvail().X;
-            ImGui.BeginChild("Add New Preload", this.size, true);
-            ImGui.InputText("Path", ref this.path, 200);
-            ImGui.InputText("Display Name", ref this.displayName, 50);
-            ImGui.ColorEdit4("Color", ref this.color, flags);
-            ImGui.SameLine();
-            if (ImGui.Button("Add & Save"))
-            {
-                this.importantPreloads[this.path] = new PreloadInfo()
-                {
-                    Color = this.color,
-                    DisplayName = this.displayName,
-                };
-
-                this.path = string.Empty;
-                this.displayName = string.Empty;
-
-                var preloadsData = JsonConvert.SerializeObject(
-                    this.importantPreloads, Formatting.Indented);
-                File.WriteAllText(this.PreloadFileName, preloadsData);
-            }
-
-            ImGui.EndChild();
-            this.size.Y *= 2;
-            ImGui.BeginChild("All Important Preloads", this.size, true);
-            foreach (var kv in this.importantPreloads)
-            {
-                ImGui.TextColored(kv.Value.Color, $"{kv.Value.DisplayName}");
-                ImGui.SameLine();
-                ImGui.Text(" - ");
-                ImGui.SameLine();
-                if (ImGui.Selectable($"{kv.Key}"))
-                {
-                    this.path = kv.Key;
-                    this.color = kv.Value.Color;
-                    this.displayName = kv.Value.DisplayName;
-                }
-            }
-
-            this.size.Y /= 2;
-            ImGui.EndChild();
+            this.AddNewPreloadBox();
+            this.DisplayAllImportantPreloads();
         }
 
         /// <summary>
@@ -171,7 +126,10 @@ namespace PreloadAlert
                 ImGui.SameLine();
                 ImGui.TextColored(new Vector4(0, 0, 0, 1), "Dummy Preload 8");
                 ImGui.TextColored(new Vector4(.86f, .71f, .36f, 1), "Dummy Preload 9");
-                ImGui.ColorEdit4("Background Color", ref this.Settings.BackgroundColor);
+                ImGui.ColorEdit4(
+                    "Background Color",
+                    ref this.Settings.BackgroundColor,
+                    this.colorEditflags);
                 this.Settings.Pos = ImGui.GetWindowPos();
                 this.Settings.Size = ImGui.GetWindowSize();
                 if (ImGui.IsMouseDoubleClicked(ImGuiMouseButton.Left))
@@ -187,6 +145,52 @@ namespace PreloadAlert
 
             ImGui.End();
             ImGui.PopStyleColor();
+        }
+
+        private void AddNewPreloadBox()
+        {
+            if (ImGui.CollapsingHeader("Add New Preload"))
+            {
+                ImGui.InputText("Path", ref this.path, 200);
+                ImGui.InputText("Display Name", ref this.displayName, 50);
+                ImGui.ColorEdit4("Color", ref this.color, this.colorEditflags);
+                ImGui.SameLine();
+                if (ImGui.Button("Add & Save"))
+                {
+                    this.importantPreloads[this.path] = new PreloadInfo()
+                    {
+                        Color = this.color,
+                        DisplayName = this.displayName,
+                    };
+
+                    this.path = string.Empty;
+                    this.displayName = string.Empty;
+
+                    var preloadsData = JsonConvert.SerializeObject(
+                        this.importantPreloads, Formatting.Indented);
+                    File.WriteAllText(this.PreloadFileName, preloadsData);
+                }
+            }
+        }
+
+        private void DisplayAllImportantPreloads()
+        {
+            if (ImGui.CollapsingHeader("All Important Preloads (click path to edit)"))
+            {
+                foreach (var kv in this.importantPreloads)
+                {
+                    ImGui.TextColored(kv.Value.Color, $"{kv.Value.DisplayName}");
+                    ImGui.SameLine();
+                    ImGui.Text(" - ");
+                    ImGui.SameLine();
+                    if (ImGui.Selectable($"{kv.Key}"))
+                    {
+                        this.path = kv.Key;
+                        this.color = kv.Value.Color;
+                        this.displayName = kv.Value.DisplayName;
+                    }
+                }
+            }
         }
 
         private IEnumerator<Wait> OnAreaChanged()
