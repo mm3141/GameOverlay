@@ -23,7 +23,7 @@ namespace GameHelper.RemoteObjects.UiElement
         private string id = string.Empty;
         private byte scaleIndex = 0x00;
         private Vector2 relativePosition = Vector2.Zero;
-        private float localScaleMultiplier = 0x00f;
+        private float localScaleMultiplier = 0x00;
         private uint flags = 0x00;
         private Vector2 unScaledSize = Vector2.Zero;
 
