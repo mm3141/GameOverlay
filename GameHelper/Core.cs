@@ -55,6 +55,16 @@ namespace GameHelper
         = new LoadedFiles(IntPtr.Zero);
 
         /// <summary>
+        /// Gets the GameProcess instance. For details read class description.
+        /// </summary>
+        public static GameProcess Process
+        {
+            get; private set;
+        }
+
+        = new GameProcess();
+
+        /// <summary>
         /// Gets the AreaChangeCounter instance. For details read class description.
         /// </summary>
         internal static AreaChangeCounter AreaChangeCounter
@@ -75,16 +85,6 @@ namespace GameHelper
         }
 
         = new GameWindowScale(IntPtr.Zero);
-
-        /// <summary>
-        /// Gets the GameProcess instance. For details read class description.
-        /// </summary>
-        internal static GameProcess Process
-        {
-            get; private set;
-        }
-
-        = new GameProcess();
 
         /// <summary>
         /// Gets the GameHelper settings.

@@ -24,7 +24,7 @@ namespace GameHelper
     /// Limitation: This class will not open a game process if multiple processes match
     /// the name because it does not know which process to select.
     /// </summary>
-    internal class GameProcess
+    public class GameProcess
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GameProcess"/> class.
@@ -36,9 +36,14 @@ namespace GameHelper
         }
 
         /// <summary>
+        /// Gets a value indicating whether the game is foreground or not.
+        /// </summary>
+        public bool Foreground { get; private set; } = false;
+
+        /// <summary>
         /// Gets the Base Address of the game.
         /// </summary>
-        public IntPtr Address
+        internal IntPtr Address
         {
             get
             {
@@ -90,11 +95,6 @@ namespace GameHelper
         /// Gets the game size and position with respect to the monitor screen.
         /// </summary>
         internal Rectangle WindowArea { get; private set; } = Rectangle.Empty;
-
-        /// <summary>
-        /// Gets a value indicating whether the game is foreground or not.
-        /// </summary>
-        internal bool Foreground { get; private set; } = false;
 
         /// <summary>
         /// Closes the handle for the game and releases all the resources.

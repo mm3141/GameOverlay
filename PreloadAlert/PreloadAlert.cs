@@ -11,6 +11,7 @@ namespace PreloadAlert
     using GameHelper;
     using GameHelper.CoroutineEvents;
     using GameHelper.Plugin;
+    using GameHelper.RemoteEnums;
     using GameHelper.Utils;
     using ImGuiNET;
     using Newtonsoft.Json;
@@ -91,7 +92,9 @@ namespace PreloadAlert
         {
             ImGui.TextWrapped("You can also lock it by double clicking it. " +
                 "However, you can only unlock it from here.");
-            ImGui.Checkbox("Lock/Unlock Preload Window: ", ref this.Settings.Locked);
+            ImGui.Checkbox("Lock/Unlock Preload Window", ref this.Settings.Locked);
+            ImGui.Checkbox("Hide Ui On Background", ref this.Settings.HideUiWhenGameInBackground);
+            ImGui.Checkbox("Hide Ui On Not In Game", ref this.Settings.HideUiWhenNotInGame);
             ImGui.Separator();
             this.AddNewPreloadBox();
             this.DisplayAllImportantPreloads();
@@ -102,6 +105,18 @@ namespace PreloadAlert
         /// </summary>
         public override void DrawUI()
         {
+            if (this.Settings.HideUiWhenGameInBackground &&
+                !Core.Process.Foreground)
+            {
+                return;
+            }
+
+            if (this.Settings.HideUiWhenNotInGame &&
+                Core.States.GameCurrentState != GameStateTypes.InGameState)
+            {
+                return;
+            }
+
             string windowName = "Preload Window";
             ImGui.PushStyleColor(ImGuiCol.WindowBg, this.Settings.BackgroundColor);
             if (this.Settings.Locked)

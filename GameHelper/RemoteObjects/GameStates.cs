@@ -70,7 +70,7 @@ namespace GameHelper.RemoteObjects
         /// <summary>
         /// Gets the current state the game is in.
         /// </summary>
-        internal GameStateTypes GameCurrentState
+        public GameStateTypes GameCurrentState
         {
             get => this.currentStateName;
             private set
