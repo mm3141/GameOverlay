@@ -1,297 +1,214 @@
-﻿namespace PreloadAlert
+﻿// <copyright file="PreloadAlert.cs" company="PlaceholderCompany">
+// Copyright (c) PlaceholderCompany. All rights reserved.
+// </copyright>
+
+namespace PreloadAlert
 {
-    using System;
     using System.Collections.Generic;
-    using System.Globalization;
     using System.IO;
-    using System.Linq;
     using System.Numerics;
     using Coroutine;
     using GameHelper;
     using GameHelper.CoroutineEvents;
     using GameHelper.Plugin;
-    using GameHelper.RemoteObjects;
+    using GameHelper.Utils;
     using ImGuiNET;
     using Newtonsoft.Json;
 
     /// <summary>
-    /// TODO: Save all preloads to disk.
-    /// File Name: AreaName + hash
-    /// If file exists, logs on preload window and don't overwrite.
-    /// Sort before dumping
-    /// Maybe do in a different thread.
-    /// make a Diary UI too.
+    /// Displays important preload on the screen.
     /// </summary>
     public sealed class PreloadAlert : PCore<PreloadSettings>
     {
-        private const ImGuiWindowFlags overlayEnabled = ImGuiWindowFlags.NoInputs |
-            ImGuiWindowFlags.NoBringToFrontOnFocus | ImGuiWindowFlags.NoCollapse |
-            ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoScrollbar |
-            ImGuiWindowFlags.NoSavedSettings | ImGuiWindowFlags.NoResize |
-            ImGuiWindowFlags.NoTitleBar;
-
-        private string ERRORMSG = string.Empty;
-
-        private string SettingPathname => Path.Join(DllDirectory, "config", "settings.txt");
-
-        private string PreloadPathname => Path.Join(DllDirectory, "preloads.txt");
-
-        private Dictionary<string, PreloadInfo> importantPreloadsInArea
+        private string path = string.Empty;
+        private string displayName = string.Empty;
+        private Vector4 color = new Vector4(1f);
+        private Vector2 size = new Vector2(90f);
+        private ActiveCoroutine onAreaChange;
+        private Dictionary<string, PreloadInfo> importantPreloads
             = new Dictionary<string, PreloadInfo>();
 
-        private Dictionary<string, PreloadInfo> preloadsFromFile
-            = new Dictionary<string, PreloadInfo>();
+        private Dictionary<PreloadInfo, byte> preloadFound
+            = new Dictionary<PreloadInfo, byte>();
 
-        private HashSet<string> allPreloadsOfArea = new HashSet<string>();
-        private string DebugDirectory;
-        private string DebugFileName;
-
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PreloadAlert"/> class.
+        /// </summary>
         public PreloadAlert()
         {
-            CoroutineHandler.Start(OnAreaChanged());
         }
 
+        private string PreloadFileName => Path.Join(this.DllDirectory, "preloads.txt");
+
+        private string SettingPathname => Path.Join(this.DllDirectory, "config", "settings.txt");
+
+        /// <summary>
+        /// Clear all the important and found preloads and stops the co-routines.
+        /// </summary>
         public override void OnDisable()
         {
-            this.Cleanup(true);
+            this.importantPreloads.Clear();
+            this.preloadFound.Clear();
+            this.onAreaChange?.Cancel();
+            this.onAreaChange = null;
         }
 
+        /// <summary>
+        /// Reads the settings and preloads from the disk and
+        /// starts this plugin co-routione.
+        /// </summary>
         public override void OnEnable()
         {
-            this.DebugDirectory = Path.Join(DllDirectory, "Debug");
-            Directory.CreateDirectory(this.DebugDirectory);
-            this.LoadSettings();
-            this.LoadImportantPreloadsFromFile();
-        }
-        
-        public override void SaveSettings()
-        {
-            Directory.CreateDirectory(Path.GetDirectoryName(SettingPathname));
-            var settingsData = JsonConvert.SerializeObject(this.Settings, Formatting.Indented);
-            File.WriteAllText(this.SettingPathname, settingsData);
-        }
-
-        public override void DrawSettings()
-        {
-            if (!String.IsNullOrEmpty(ERRORMSG))
+            if (File.Exists(this.SettingPathname))
             {
-                ImGui.TextColored(new Vector4(1f, 0f, 0f, 1f), ERRORMSG);
+                var content = File.ReadAllText(this.SettingPathname);
+                this.Settings = JsonConvert.DeserializeObject<PreloadSettings>(content);
             }
 
-            ImGui.NewLine();
-            ImGui.Checkbox("Lock Preload Window Position/Size", ref this.Settings.Locked);
-            ImGui.ColorEdit4("Background", ref this.Settings.BackgroundColor);
-            ImGui.Checkbox("Find new preload mode", ref this.Settings.DebugMode);
+            if (File.Exists(this.PreloadFileName))
+            {
+                var content = File.ReadAllText(this.PreloadFileName);
+                this.importantPreloads = JsonConvert.DeserializeObject<
+                    Dictionary<string, PreloadInfo>>(content);
+            }
+
+            this.onAreaChange = CoroutineHandler.Start(this.OnAreaChanged());
         }
 
+        /// <summary>
+        /// Save this plugin settings to disk.
+        /// NOTE: it will always lock the preload window before storing.
+        /// </summary>
+        public override void SaveSettings()
+        {
+            var lockstatus = this.Settings.Locked;
+            this.Settings.Locked = true;
+            Directory.CreateDirectory(Path.GetDirectoryName(this.SettingPathname));
+            var settingsData = JsonConvert.SerializeObject(this.Settings, Formatting.Indented);
+            File.WriteAllText(this.SettingPathname, settingsData);
+            this.Settings.Locked = lockstatus;
+        }
+
+        /// <summary>
+        /// Draws the settings for this plugin on settings window.
+        /// </summary>
+        public override void DrawSettings()
+        {
+            var flags = ImGuiColorEditFlags.NoInputs | ImGuiColorEditFlags.NoLabel;
+            ImGui.TextWrapped("You can also lock it by double clicking it. " +
+                "However, you can only unlock it from here.");
+            ImGui.Checkbox("Lock/Unlock Preload Window: ", ref this.Settings.Locked);
+            ImGui.Separator();
+            this.size.X = ImGui.GetContentRegionAvail().X;
+            ImGui.BeginChild("Add New Preload", this.size, true);
+            ImGui.InputText("Path", ref this.path, 200);
+            ImGui.InputText("Display Name", ref this.displayName, 50);
+            ImGui.ColorEdit4("Color", ref this.color, flags);
+            ImGui.SameLine();
+            if (ImGui.Button("Add & Save"))
+            {
+                this.importantPreloads[this.path] = new PreloadInfo()
+                {
+                    Color = this.color,
+                    DisplayName = this.displayName,
+                };
+
+                this.path = string.Empty;
+                this.displayName = string.Empty;
+
+                var preloadsData = JsonConvert.SerializeObject(
+                    this.importantPreloads, Formatting.Indented);
+                File.WriteAllText(this.PreloadFileName, preloadsData);
+            }
+
+            ImGui.EndChild();
+            this.size.Y *= 2;
+            ImGui.BeginChild("All Important Preloads", this.size, true);
+            foreach (var kv in this.importantPreloads)
+            {
+                ImGui.TextColored(kv.Value.Color, $"{kv.Value.DisplayName}");
+                ImGui.SameLine();
+                ImGui.Text(" - ");
+                ImGui.SameLine();
+                if (ImGui.Selectable($"{kv.Key}"))
+                {
+                    this.path = kv.Key;
+                    this.color = kv.Value.Color;
+                    this.displayName = kv.Value.DisplayName;
+                }
+            }
+
+            this.size.Y /= 2;
+            ImGui.EndChild();
+        }
+
+        /// <summary>
+        /// Draws the Ui for this plugin.
+        /// </summary>
         public override void DrawUI()
         {
-            //CacheGameData();
-            BeginImGuiWindow();
-            ImGui.Text($"Pos: {this.Settings.Pos}");
-            ImGui.Text($"Size: {this.Settings.Size}");
-            //if (!String.IsNullOrEmpty(ERRORMSG))
-            //{
-            //    ImGui.TextColored(new Vector4(1f, 0f, 0f, 1f), ERRORMSG);
-            //    EndImGuiWindow();
-            //    return;
-            //}
-            //ImGui.TextWrapped($"Status: Scanned {Core.CurrentAreaLoadedFiles.CurrentPreloadScan}" +
-            //    $" times out of {LoadedFiles.MaximumPreloadScans}.");
-            //if (this.Settings.DebugMode)
-            //{
-            //    ImGui.TextWrapped($"Please wait for all {LoadedFiles.MaximumPreloadScans} " +
-            //        $"iterations before moving.");
-            //    ImGui.TextWrapped($"File Name: {this.DebugFileName}");
-            //}
-
-            //ImGui.Separator();
-            //foreach (var keyValuePair in importantPreloadsInArea)
-            //{
-            //    ImGui.TextColored(keyValuePair.Value.Color, keyValuePair.Value.DisplayName);
-            //}
-
-            EndImGuiWindow();
-        }
-
-        private void BeginImGuiWindow()
-        {
+            string windowName = "Preload Window";
             ImGui.PushStyleColor(ImGuiCol.WindowBg, this.Settings.BackgroundColor);
-            string title = $"Preload Alert";
             if (this.Settings.Locked)
             {
                 ImGui.SetNextWindowPos(this.Settings.Pos);
                 ImGui.SetNextWindowSize(this.Settings.Size);
-                ImGui.Begin(title, overlayEnabled);
+                ImGui.Begin(windowName, UiHelper.TransparentWindowFlags);
             }
             else
             {
-                ImGui.Begin(title, ImGuiWindowFlags.NoSavedSettings);
+                ImGui.Begin(windowName, ImGuiWindowFlags.NoSavedSettings);
+                ImGui.TextColored(new Vector4(1, 1, 1, 1), "Dummy Preload 1");
+                ImGui.SameLine();
+                ImGui.TextColored(new Vector4(0, 1, 1, 1), "Dummy Preload 2");
+                ImGui.TextColored(new Vector4(1, 0, 1, 1), "Dummy Preload 3");
+                ImGui.SameLine();
+                ImGui.TextColored(new Vector4(1, 1, 0, 1), "Dummy Preload 4");
+                ImGui.TextColored(new Vector4(1, 0, 0, 1), "Dummy Preload 5");
+                ImGui.SameLine();
+                ImGui.TextColored(new Vector4(0, 1, 0, 1), "Dummy Preload 6");
+                ImGui.TextColored(new Vector4(0, 0, 1, 1), "Dummy Preload 7");
+                ImGui.SameLine();
+                ImGui.TextColored(new Vector4(0, 0, 0, 1), "Dummy Preload 8");
+                ImGui.TextColored(new Vector4(.86f, .71f, .36f, 1), "Dummy Preload 9");
+                ImGui.ColorEdit4("Background Color", ref this.Settings.BackgroundColor);
                 this.Settings.Pos = ImGui.GetWindowPos();
                 this.Settings.Size = ImGui.GetWindowSize();
+                if (ImGui.IsMouseDoubleClicked(ImGuiMouseButton.Left))
+                {
+                    this.Settings.Locked = true;
+                }
             }
-        }
 
-        private void EndImGuiWindow()
-        {
+            foreach (var kv in this.preloadFound)
+            {
+                ImGui.TextColored(kv.Key.Color, kv.Key.DisplayName);
+            }
+
             ImGui.End();
             ImGui.PopStyleColor();
-        }
-
-        private void writeToFile()
-        {
-
-            if (!File.Exists(this.DebugFileName))
-            {
-                var dataToWrite = this.allPreloadsOfArea.ToList();
-                dataToWrite.Sort();
-                File.WriteAllLines(this.DebugFileName, dataToWrite);
-            }
-        }
-
-        private void CacheForFileWriting(string preload)
-        {
-            this.allPreloadsOfArea.Add(preload);
-        }
-
-        private void CacheGameData()
-        {
-            var files = Core.CurrentAreaLoadedFiles.PathNames;
-            if (!files.IsEmpty)
-            {
-                if (this.Settings.DebugMode)
-                {
-
-                }
-
-                /*while (!files.IsEmpty)
-                {
-                    files.TryTake(out string file);
-
-                    if (this.Settings.DebugMode)
-                    {
-                        this.CacheForFileWriting(file);
-                    }
-
-                    if (importantPreloadsInArea.ContainsKey(file))
-                    {
-                        continue;
-                    }
-
-                    foreach (var item in preloadsFromFile)
-                    {
-                        if (file.StartsWith(item.Key))
-                        {
-                            importantPreloadsInArea.Add(file, item.Value);
-                            break;
-                        }
-                    }
-                }*/
-
-                if (this.Settings.DebugMode)
-                {
-                    this.DebugFileName = Path.Join(
-                        this.DebugDirectory,
-                        $"{Core.States.AreaLoading.CurrentAreaName.Trim()}_" +
-                        $"{Core.States.InGameStateObject.CurrentAreaInstance.AreaHash}.txt");
-                    this.writeToFile();
-                }
-            }
-        }
-
-        private void LoadSettings()
-        {
-            if (File.Exists(SettingPathname))
-            {
-                var content = File.ReadAllText(SettingPathname);
-                this.Settings = JsonConvert.DeserializeObject<PreloadSettings>(content);
-            }
-        }
-
-        private void LoadImportantPreloadsFromFile()
-        {
-            if (!File.Exists(Path.Join(this.PreloadPathname)))
-            {
-                this.ERRORMSG = $"Missing {this.PreloadPathname} file.";
-            }
-            else
-            {
-                this.ERRORMSG = string.Empty;
-                foreach (var line in File.ReadAllText(this.PreloadPathname).Split("\r\n"))
-                {
-                    if (String.IsNullOrWhiteSpace(line) || line.StartsWith('#'))
-                    {
-                        continue;
-                    }
-
-                    var data = line.Split(';');
-                    if (data.Length < 2)
-                    {
-                        preloadsFromFile.Clear();
-                        this.ERRORMSG = $"Invalid preload line found: {line}. Please fix it.";
-                        break;
-                    }
-
-                    var key = data[0].Trim();
-                    var displayName = data[1].Trim();
-                    var color = Vector4.One;
-                    if (data.Length == 3)
-                    {
-                        color = this.ConvertToVector4FromStringColor(data[2].Trim().ToLower());
-                    }
-
-                    if (String.IsNullOrWhiteSpace(key) ||
-                        String.IsNullOrWhiteSpace(displayName))
-                    {
-                        preloadsFromFile.Clear();
-                        this.ERRORMSG = $"Invalid preload line found: {line}. Please fix it.";
-                        break;
-                    }
-
-                    var preloadInfo = new PreloadInfo()
-                    {
-                        DisplayName = displayName,
-                        Color = color
-                    };
-
-                    preloadsFromFile.Add(key, preloadInfo);
-                }
-            }
-        }
-
-        private Vector4 ConvertToVector4FromStringColor(string argb)
-        {
-            Vector4 color = Vector4.One;
-            color.W = uint.Parse($"{argb[0]}{argb[1]}", NumberStyles.HexNumber) / 255f;
-            color.X = uint.Parse($"{argb[2]}{argb[3]}", NumberStyles.HexNumber) / 255f;
-            color.Y = uint.Parse($"{argb[4]}{argb[5]}", NumberStyles.HexNumber) / 255f;
-            color.Z = uint.Parse($"{argb[6]}{argb[7]}", NumberStyles.HexNumber) / 255f;
-            return color;
-        }
-
-        private void Cleanup(bool clearPreloadsFromFile)
-        {
-            this.allPreloadsOfArea.Clear();
-            this.importantPreloadsInArea.Clear();
-            if (clearPreloadsFromFile)
-            {
-                this.preloadsFromFile.Clear();
-            }
-
         }
 
         private IEnumerator<Wait> OnAreaChanged()
         {
             while (true)
             {
-                // TODO: fix this with when game exit.
-                // TODO: doesn't work when game is moved to character select or login screen.
                 yield return new Wait(RemoteEvents.AreaChanged);
-                this.Cleanup(false);
+                this.preloadFound.Clear();
+                CoroutineHandler.InvokeLater(new Wait(0), () =>
+                {
+                    foreach (var kv in this.importantPreloads)
+                    {
+                        if (Core.CurrentAreaLoadedFiles.PathNames.TryGetValue(kv.Key, out var value))
+                        {
+                            this.preloadFound[kv.Value] = 1;
+                        }
+                    }
+                });
             }
         }
 
-        public struct PreloadInfo
+        private struct PreloadInfo
         {
             public string DisplayName;
             public Vector4 Color;

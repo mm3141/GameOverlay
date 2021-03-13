@@ -98,9 +98,12 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
 
             if (this.componentAddresses.TryGetValue(componenName, out IntPtr compAddr))
             {
-                component = (T)Activator.CreateInstance(typeof(T), compAddr);
-                this.componentCache[componenName] = component;
-                return true;
+                if (compAddr != IntPtr.Zero)
+                {
+                    component = (T)Activator.CreateInstance(typeof(T), compAddr);
+                    this.componentCache[componenName] = component;
+                    return true;
+                }
             }
 
             component = null;
