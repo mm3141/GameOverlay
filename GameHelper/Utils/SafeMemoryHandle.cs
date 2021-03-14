@@ -210,6 +210,12 @@ namespace GameHelper.Utils
             }
         }
 
+        /// <summary>
+        /// Reads Unicode string when string length isn't know.
+        /// Use  <see cref="ReadStdWString"/> if string length is known.
+        /// </summary>
+        /// <param name="address">points to the Unicode string pointer.</param>
+        /// <returns>string read from the memory.</returns>
         internal string ReadUnicodeString(IntPtr address)
         {
             var buffer = this.ReadMemoryArray<byte>(address, 128);
@@ -222,14 +228,13 @@ namespace GameHelper.Utils
                 }
             }
 
-            if ( count > 0)
-            {
-                return Encoding.Unicode.GetString(buffer, 0, count);
-            }
-            else
+            // let's not return a string if null isn't found.
+            if (count == 0)
             {
                 return string.Empty;
             }
+
+            return Encoding.Unicode.GetString(buffer, 0, count);
         }
 
         /// <summary>
