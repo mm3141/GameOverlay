@@ -167,18 +167,6 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
                     entityDetails.ComponentLookUpPtr);
                 var nameAndIndex = reader.ReadStdList<ComponentNameAndIndexStruct>(
                     lookupPtr.ComponentNameAndIndexPtr);
-                if (entityComponent.Length != nameAndIndex.Count)
-                {
-                    // Not sure why but sometime they get different length.
-                    // They should never be different. Returning here
-                    // will cause the entity to get deleted eventually.
-#if DEBUG
-                    Console.WriteLine($"Id: {this.Id}, Path: {this.Path}, " +
-                        $"EntityComponent Length: {entityComponent.Length}, " +
-                        $"NameAndIndex Count: {nameAndIndex.Count}, IsValid {this.IsValid}");
-#endif
-                    return;
-                }
 
                 for (int i = 0; i < nameAndIndex.Count; i++)
                 {
