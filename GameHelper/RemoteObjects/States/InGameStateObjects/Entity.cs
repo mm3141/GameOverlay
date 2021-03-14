@@ -152,6 +152,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             this.IsValid = EntityHelper.IsValidEntity(entityData.IsValid);
             if (!this.IsValid)
             {
+                // Invalid entity data is normally corrupted. let's not parse it.
                 return;
             }
 
