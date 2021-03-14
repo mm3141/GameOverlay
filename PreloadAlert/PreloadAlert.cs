@@ -90,11 +90,13 @@ namespace PreloadAlert
         /// </summary>
         public override void DrawSettings()
         {
-            ImGui.TextWrapped("You can also lock it by double clicking it. " +
+            ImGui.TextWrapped("You can also lock it by double clicking the preload window. " +
                 "However, you can only unlock it from here.");
             ImGui.Checkbox("Lock/Unlock Preload Window", ref this.Settings.Locked);
             ImGui.Checkbox("Hide When Locked & Not In Game", ref this.Settings.EnableHideUi);
             ImGui.Separator();
+            ImGui.TextWrapped("If you find something new and wants to add it in the preload " +
+                "you can use Core -> Data Visulization -> CurrentAreaLoadedFiles feature.");
             this.AddNewPreloadBox();
             this.DisplayAllImportantPreloads();
         }
@@ -151,11 +153,11 @@ namespace PreloadAlert
 
             if (areaDetails.IsHideout)
             {
-                ImGui.Text($"Preload not updated in hideout.");
+                ImGui.Text($"Preloads are not updated in hideout.");
             }
             else if (areaDetails.IsTown)
             {
-                ImGui.Text($"Preload not updated in town.");
+                ImGui.Text($"Preloads are not updated in town.");
             }
             else
             {

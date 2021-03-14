@@ -80,8 +80,8 @@ namespace GameHelper.Ui
                     if (ImGui.TreeNode("NOTES"))
                     {
                         ImGui.BulletText("Closing the game will remove all objects.");
-                        ImGui.BulletText("To add element in this window go to UiElement\n" +
-                            "in Data Visualization window and click Explore button.");
+                        ImGui.BulletText("To add element in this window go to any UiElement " +
+                            "in\nData Visualization window and click Explore button.");
                         ImGui.BulletText("To check currently loaded element bounds,\n" +
                             "hover over the element header in blue.");
                         ImGui.BulletText("To check bounds of all the children hover\n" +
