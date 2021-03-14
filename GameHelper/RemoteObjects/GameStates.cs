@@ -140,7 +140,7 @@ namespace GameHelper.RemoteObjects
                     {
                         if (state.Value == cStateAddr)
                         {
-                            this.currentStateName = this.ConvertStringToEnum(state.Key);
+                            this.GameCurrentState = this.ConvertStringToEnum(state.Key);
                             break;
                         }
                     }

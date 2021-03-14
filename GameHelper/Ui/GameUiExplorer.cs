@@ -8,6 +8,7 @@ namespace GameHelper.Ui
     using System.Collections.Generic;
     using Coroutine;
     using GameHelper.CoroutineEvents;
+    using GameHelper.RemoteEnums;
     using GameHelper.RemoteObjects.UiElement;
     using GameHelper.Utils;
     using ImGuiNET;
@@ -25,6 +26,7 @@ namespace GameHelper.Ui
         internal static void InitializeCoroutines()
         {
             CoroutineHandler.Start(GameUiExplorerRenderCoRoutine());
+            CoroutineHandler.Start(OnGameStateChange());
         }
 
         /// <summary>
@@ -59,6 +61,14 @@ namespace GameHelper.Ui
         {
             elements[i].Children.Clear();
             elements.RemoveAt(i);
+        }
+
+        private static void RemoveAllUiElements()
+        {
+            for (int i = elements.Count - 1; i >= 0; i--)
+            {
+                RemoveUiElement(i);
+            }
         }
 
         /// <summary>
@@ -98,10 +108,7 @@ namespace GameHelper.Ui
                     if (ImGui.Button("Clear all Ui Elements (Mischief managed)") ||
                         Core.Process.Address == IntPtr.Zero)
                     {
-                        for (int i = elements.Count - 1; i >= 0; i--)
-                        {
-                            RemoveUiElement(i);
-                        }
+                        RemoveAllUiElements();
                     }
 
                     ImGui.Separator();
@@ -264,6 +271,20 @@ namespace GameHelper.Ui
                 }
 
                 ImGui.End();
+            }
+        }
+
+        private static IEnumerator<Wait> OnGameStateChange()
+        {
+            while (true)
+            {
+                yield return new Wait(RemoteEvents.StateChanged);
+                if (Core.States.GameCurrentState != GameStateTypes.InGameState
+                    && Core.States.GameCurrentState != GameStateTypes.EscapeState
+                    && Core.States.GameCurrentState != GameStateTypes.AreaLoadingState)
+                {
+                    RemoveAllUiElements();
+                }
             }
         }
 

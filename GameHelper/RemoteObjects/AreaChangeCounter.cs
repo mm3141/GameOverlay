@@ -26,7 +26,6 @@ namespace GameHelper.RemoteObjects
             : base(address)
         {
             CoroutineHandler.Start(this.OnPerFrame());
-            CoroutineHandler.Start(this.OnGameStateChange());
         }
 
         /// <summary>
@@ -64,20 +63,6 @@ namespace GameHelper.RemoteObjects
                 if (this.Address != IntPtr.Zero)
                 {
                     this.UpdateData(false);
-                }
-            }
-        }
-
-        private IEnumerator<Wait> OnGameStateChange()
-        {
-            while (true)
-            {
-                yield return new Wait(RemoteEvents.StateChanged);
-                if (Core.States.GameCurrentState != GameStateTypes.InGameState
-                    && Core.States.GameCurrentState != GameStateTypes.EscapeState
-                    && Core.States.GameCurrentState != GameStateTypes.AreaLoadingState)
-                {
-                    this.CleanUpData();
                 }
             }
         }

@@ -36,7 +36,6 @@ namespace GameHelper.RemoteObjects
         {
             Core.CoroutinesRegistrar.Add(CoroutineHandler.Start(
                 this.OnAreaChange(), "[LoadedFiles] Gather Preload Data"));
-            CoroutineHandler.Start(this.OnGameStateChange());
         }
 
         /// <summary>
@@ -109,6 +108,10 @@ namespace GameHelper.RemoteObjects
         protected override void CleanUpData()
         {
             this.PathNames.Clear();
+            this.areaHashCache = string.Empty;
+            this.areaAlreadyDone = false;
+            this.filename = string.Empty;
+            this.searchText = string.Empty;
         }
 
         /// <inheritdoc/>
@@ -177,20 +180,6 @@ namespace GameHelper.RemoteObjects
                     this.CleanUpData();
                     this.UpdateData(false);
                     CoroutineHandler.RaiseEvent(RemoteEvents.OnPreloadUpdated);
-                }
-            }
-        }
-
-        private IEnumerator<Wait> OnGameStateChange()
-        {
-            while (true)
-            {
-                yield return new Wait(RemoteEvents.StateChanged);
-                if (Core.States.GameCurrentState != GameStateTypes.InGameState
-                    && Core.States.GameCurrentState != GameStateTypes.EscapeState
-                    && Core.States.GameCurrentState != GameStateTypes.AreaLoadingState)
-                {
-                    this.CleanUpData();
                 }
             }
         }

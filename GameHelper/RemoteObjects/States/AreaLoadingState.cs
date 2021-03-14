@@ -27,7 +27,6 @@ namespace GameHelper.RemoteObjects.States
             : base(address)
         {
             CoroutineHandler.Start(this.OnPerFrame());
-            CoroutineHandler.Start(this.OnGameStateChange());
         }
 
         /// <summary>
@@ -92,18 +91,6 @@ namespace GameHelper.RemoteObjects.States
                 if (this.Address != IntPtr.Zero)
                 {
                     this.UpdateData(false);
-                }
-            }
-        }
-
-        private IEnumerator<Wait> OnGameStateChange()
-        {
-            while (true)
-            {
-                yield return new Wait(RemoteEvents.StateChanged);
-                if (Core.States.GameCurrentState == GameStateTypes.PreGameState)
-                {
-                    this.CleanUpData();
                 }
             }
         }
