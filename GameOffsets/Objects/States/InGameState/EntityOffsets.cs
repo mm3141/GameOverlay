@@ -16,6 +16,17 @@
         public static byte Valid = 0x0C;
     };
 
+    public static class EntityHelper
+    {
+        // 0th bit set = invalid. test byte ptr [rcx+5C],01
+        // pass IsValid byte to this function.
+        public static Func<byte, bool> IsValidEntity =
+            new Func<byte, bool>((param) =>
+            {
+                return !Util.isBitSetByte(param, 0);
+            });
+    }
+
     [StructLayout(LayoutKind.Explicit, Pack = 1)]
     public struct EntityDetails
     {

@@ -149,7 +149,12 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
         {
             var reader = Core.Process.Handle;
             EntityOffsets entityData = reader.ReadMemory<EntityOffsets>(this.Address);
-            this.IsValid = entityData.IsValid == EntityOffsets.Valid;
+            this.IsValid = EntityHelper.IsValidEntity(entityData.IsValid);
+            if (!this.IsValid)
+            {
+                return;
+            }
+
             this.Id = entityData.Id;
             if (hasAddressChanged)
             {

@@ -4,7 +4,10 @@
 
 namespace Radar
 {
+    using GameHelper;
     using GameHelper.Plugin;
+    using GameHelper.RemoteEnums;
+    using ImGuiNET;
 
     /// <summary>
     /// <see cref="Radar"/> plugin.
@@ -19,6 +22,12 @@ namespace Radar
         /// <inheritdoc/>
         public override void DrawUI()
         {
+            if (Core.States.GameCurrentState != GameStateTypes.InGameState)
+            {
+                return;
+            }
+
+            // var fgDraw = ImGui.GetForegroundDrawList();
         }
 
         /// <inheritdoc/>
