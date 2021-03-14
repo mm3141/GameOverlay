@@ -112,6 +112,7 @@ namespace PreloadAlert
                 return;
             }
 
+            var areaDetails = Core.States.InGameStateObject.CurrentAreaInstance.AreaDetails;
             string windowName = "Preload Window";
             ImGui.PushStyleColor(ImGuiCol.WindowBg, this.Settings.BackgroundColor);
             if (this.Settings.Locked)
@@ -148,9 +149,20 @@ namespace PreloadAlert
                 }
             }
 
-            foreach (var kv in this.preloadFound)
+            if (areaDetails.IsHideout)
             {
-                ImGui.TextColored(kv.Key.Color, kv.Key.DisplayName);
+                ImGui.Text($"Preload not updated in hideout.");
+            }
+            else if (areaDetails.IsTown)
+            {
+                ImGui.Text($"Preload not updated in town.");
+            }
+            else
+            {
+                foreach (var kv in this.preloadFound)
+                {
+                    ImGui.TextColored(kv.Key.Color, kv.Key.DisplayName);
+                }
             }
 
             ImGui.End();
@@ -207,18 +219,15 @@ namespace PreloadAlert
         {
             while (true)
             {
-                yield return new Wait(RemoteEvents.AreaChanged);
+                yield return new Wait(RemoteEvents.OnPreloadUpdated);
                 this.preloadFound.Clear();
-                CoroutineHandler.InvokeLater(new Wait(0), () =>
+                foreach (var kv in this.importantPreloads)
                 {
-                    foreach (var kv in this.importantPreloads)
+                    if (Core.CurrentAreaLoadedFiles.PathNames.TryGetValue(kv.Key, out var value))
                     {
-                        if (Core.CurrentAreaLoadedFiles.PathNames.TryGetValue(kv.Key, out var value))
-                        {
-                            this.preloadFound[kv.Value] = 1;
-                        }
+                        this.preloadFound[kv.Value] = 1;
                     }
-                });
+                }
             }
         }
 

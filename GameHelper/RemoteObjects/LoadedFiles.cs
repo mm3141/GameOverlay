@@ -22,6 +22,7 @@ namespace GameHelper.RemoteObjects
     /// </summary>
     public class LoadedFiles : RemoteObjectBase
     {
+        private string areaHashCache = string.Empty;
         private bool areaAlreadyDone = false;
         private string filename = string.Empty;
         private string searchText = string.Empty;
@@ -161,12 +162,21 @@ namespace GameHelper.RemoteObjects
                 yield return new Wait(RemoteEvents.AreaChanged);
                 if (this.Address != IntPtr.Zero)
                 {
-                    var areaName = Core.States.AreaLoading.CurrentAreaName;
                     var areaHash = Core.States.InGameStateObject.CurrentAreaInstance.AreaHash;
-                    this.filename = $"{areaName}_{areaHash}.txt";
+                    var iH = Core.States.InGameStateObject.CurrentAreaInstance.AreaDetails.IsHideout;
+                    var iT = Core.States.InGameStateObject.CurrentAreaInstance.AreaDetails.IsTown;
+                    var name = Core.States.AreaLoading.CurrentAreaName;
+                    if (iH || iT || areaHash == this.areaHashCache)
+                    {
+                        continue;
+                    }
+
+                    this.filename = $"{name}_{areaHash}.txt";
                     this.areaAlreadyDone = false;
+                    this.areaHashCache = areaHash;
                     this.CleanUpData();
                     this.UpdateData(false);
+                    CoroutineHandler.RaiseEvent(RemoteEvents.OnPreloadUpdated);
                 }
             }
         }

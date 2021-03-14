@@ -210,6 +210,28 @@ namespace GameHelper.Utils
             }
         }
 
+        internal string ReadUnicodeString(IntPtr address)
+        {
+            var buffer = this.ReadMemoryArray<byte>(address, 128);
+            int count = 0x00;
+            for (int i = 0; i < buffer.Length - 1; i++)
+            {
+                if (buffer[i] == 0x00 && buffer[i + 1] == 0x00)
+                {
+                    count = i / 2;
+                }
+            }
+
+            if ( count > 0)
+            {
+                return Encoding.Unicode.GetString(buffer, 0, count);
+            }
+            else
+            {
+                return string.Empty;
+            }
+        }
+
         /// <summary>
         /// Reads the std::map into a List.
         /// </summary>

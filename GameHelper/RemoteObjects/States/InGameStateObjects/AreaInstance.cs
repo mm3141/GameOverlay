@@ -11,6 +11,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
     using Coroutine;
     using GameHelper.CoroutineEvents;
     using GameHelper.RemoteObjects.Components;
+    using GameHelper.RemoteObjects.FilesStructures;
     using GameHelper.Utils;
     using GameOffsets.Objects.States.InGameState;
     using ImGuiNET;
@@ -27,7 +28,6 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
         internal AreaInstance(IntPtr address)
             : base(address)
         {
-            CoroutineHandler.Start(this.OnAreaChange());
             Core.CoroutinesRegistrar.Add(CoroutineHandler.Start(
                 this.OnPerFrame(), "[AreaInstance] Update Area Data"));
         }
@@ -42,6 +42,11 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
         /// This value is sent to the client from the server.
         /// </summary>
         public string AreaHash { get; private set; } = string.Empty;
+
+        /// <summary>
+        /// Gets the Area Details.
+        /// </summary>
+        public WorldAreaDat AreaDetails { get; private set; } = new WorldAreaDat(IntPtr.Zero);
 
         /// <summary>
         /// Gets the player Entity.
@@ -106,7 +111,13 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             // TODO: HoverUi debugger. Should popup (beside mouse) "You are hovering over a UIElement, press J to debug it in DevTree.".
             // TODO: UiElement explorer that also handle InGameUi array (try/catch).
             var reader = Core.Process.Handle;
-            var data = reader.ReadMemory<CurrentAreaDataOffsets>(this.Address);
+            var data = reader.ReadMemory<AreaInstanceOffsets>(this.Address);
+            if (hasAddressChanged)
+            {
+                this.AwakeEntities.Clear();
+                this.AreaDetails.Address = data.AreaDetailsPtr;
+            }
+
             this.MonsterLevel = data.MonsterLevel;
             this.AreaHash = $"{data.CurrentAreaHash:X}";
 #if DEBUG
@@ -126,7 +137,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
                     // delete that entity anyway. This activity is fine as long as it doesn't
                     // crash the GameHelper.
                     this.Player.DistanceFrom(kv.Value) <
-                    InGameStateDataConstants.NETWORK_BUBBLE_RADIUS)
+                    AreaInstanceConstants.NETWORK_BUBBLE_RADIUS)
                 {
                     this.AwakeEntities.TryRemove(kv.Key, out _);
                     continue;
@@ -151,18 +162,6 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
                     }
                 }
             });
-        }
-
-        private IEnumerator<Wait> OnAreaChange()
-        {
-            while (true)
-            {
-                yield return new Wait(RemoteEvents.AreaChangeDetected);
-                if (this.Address != IntPtr.Zero)
-                {
-                    this.CleanUpData();
-                }
-            }
         }
 
         private IEnumerator<Wait> OnPerFrame()

@@ -1,0 +1,92 @@
+﻿// <copyright file="WorldAreaDat.cs" company="None">
+// Copyright (c) None. All rights reserved.
+// </copyright>
+
+namespace GameHelper.RemoteObjects.FilesStructures
+{
+    using System;
+    using GameHelper.RemoteObjects.States;
+    using GameOffsets.Objects.FilesStructures;
+    using ImGuiNET;
+
+    /// <summary>
+    /// Points to a row in WorldArea.dat file.
+    /// </summary>
+    public class WorldAreaDat : RemoteObjectBase
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="WorldAreaDat"/> class.
+        /// </summary>
+        /// <param name="address">address of the remote memory object.</param>
+        internal WorldAreaDat(IntPtr address)
+            : base(address)
+        {
+        }
+
+        /// <summary>
+        /// Gets the Area Id string.
+        /// </summary>
+        public string Id { get; private set; } = string.Empty;
+
+        /// <summary>
+        /// Gets the Area name.
+        /// The value is same as in <see cref="AreaLoadingState.CurrentAreaName"/>.
+        /// </summary>
+        public string Name { get; private set; } = string.Empty;
+
+        /// <summary>
+        /// Gets the area Act number.
+        /// </summary>
+        public int Act { get; private set; } = 0x00;
+
+        /// <summary>
+        /// Gets a value indicating whether the area is town or not.
+        /// </summary>
+        public bool IsTown { get; private set; } = false;
+
+        /// <summary>
+        /// Gets a value indicating whether area is hideout or not.
+        /// </summary>
+        public bool IsHideout { get; private set; } = false;
+
+        /// <summary>
+        /// Gets a value indicating whether area has a waypoint or not.
+        /// </summary>
+        public bool HasWaypoint { get; private set; } = false;
+
+        /// <summary>
+        /// Converts the <see cref="WorldAreaDat"/> class data to ImGui.
+        /// </summary>
+        internal override void ToImGui()
+        {
+            base.ToImGui();
+            ImGui.Text($"Id: {this.Id}");
+            ImGui.Text($"Name: {this.Name}");
+            ImGui.Text($"Is Town: {this.IsTown}");
+            ImGui.Text($"Is Hideout: {this.IsHideout}");
+            ImGui.Text($"Has Waypoint: {this.HasWaypoint}");
+        }
+
+        /// <inheritdoc/>
+        protected override void CleanUpData()
+        {
+            this.Id = string.Empty;
+            this.Name = string.Empty;
+            this.Act = 0x00;
+            this.IsTown = false;
+            this.HasWaypoint = false;
+        }
+
+        /// <inheritdoc/>
+        protected override void UpdateData(bool hasAddressChanged)
+        {
+            var reader = Core.Process.Handle;
+            var data = reader.ReadMemory<WorldAreaDatOffsets>(this.Address);
+            this.Id = reader.ReadUnicodeString(data.IdPtr);
+            this.Name = reader.ReadUnicodeString(data.NamePtr);
+            this.IsTown = data.IsTown || this.Name == "The Rogue Harbour";
+            this.HasWaypoint = data.HasWaypoint || this.Name == "The Rogue Harbour";
+            this.IsHideout = this.Id.ToLower().Contains("hideout");
+        }
+    }
+}

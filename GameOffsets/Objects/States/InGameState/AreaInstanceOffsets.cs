@@ -5,8 +5,9 @@
     using GameOffsets.Natives;
 
     [StructLayout(LayoutKind.Explicit, Pack = 1)]
-    public struct CurrentAreaDataOffsets
+    public struct AreaInstanceOffsets
     {
+        [FieldOffset(0x78)] public IntPtr AreaDetailsPtr; // WorldAreaDatOffsets.cs
         [FieldOffset(0x90)] public byte MonsterLevel;
         [FieldOffset(0xF4)] public uint CurrentAreaHash;
         [FieldOffset(0x438)] public IntPtr LocalPlayerPtr;
@@ -16,12 +17,13 @@
         //[FieldOffset(0x4D0)] public StdMap SleepingEntities;
     }
 
-    public static class InGameStateDataConstants
+    public static class AreaInstanceConstants
     {
         // should be few points less than the real value (2178)
         // real value manually calculating by checking when entity leave the bubble.
         public static int NETWORK_BUBBLE_RADIUS = 2000;
     }
+
     public static class EntityFilter
     {
         public static Func<EntityNodeKey, bool> IgnoreSleepingEntities =
