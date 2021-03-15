@@ -54,6 +54,17 @@ namespace GameHelper.RemoteObjects.States
         = Matrix4x4.Identity;
 
         /// <summary>
+        /// Gets the UiRoot main child which contains all the UiElements.
+        /// </summary>
+        public ImportantUiElements GameUi
+        {
+            get;
+            private set;
+        }
+
+        = new ImportantUiElements(IntPtr.Zero);
+
+        /// <summary>
         /// Gets the data related to the root ui element.
         /// </summary>
         internal UiElementBase UiRoot
@@ -117,6 +128,7 @@ namespace GameHelper.RemoteObjects.States
             var data = reader.ReadMemory<InGameStateOffset>(this.Address);
             this.CurrentAreaInstance.Address = data.LocalData;
             this.UiRoot.Address = data.UiRootPtr;
+            this.GameUi.Address = data.IngameUi;
             if (this.WorldToScreenMatrix != data.WorldToScreenMatrix)
             {
                 this.WorldToScreenMatrix = data.WorldToScreenMatrix;

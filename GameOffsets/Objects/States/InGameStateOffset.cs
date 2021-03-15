@@ -18,11 +18,4 @@
         // [FieldOffset(0x1244)] public float ZFar;
         [FieldOffset(0x1470)] public IntPtr IngameUi;
     }
-
-    public static class ImportantUiElementsIndexes
-    {
-        // Careful when counting, every index starts from 0.
-        public static int[] LargeMapIndex = new int[] { 1, 3, 1};
-        public static int[] MiniMapIndex = new int[] { 1, 3, 2 };
-    }
 }
