@@ -77,13 +77,17 @@ namespace Radar
         /// <returns>nothing.</returns>
         public static Vector2 DeltaInWorldToMinimapDelta(Vector2 delta, float deltaZ)
         {
-            // For fine tuning maybe allow this to be configurable by the user.
-            deltaZ /= 10f;
+            // WorldPosition distance between 2 points
+            // divide it by
+            // GridPosition distance between 2 points.
+            // Rounded to 2 decimal points.
+            deltaZ /= 10.87f;
             return new Vector2((delta.X - delta.Y) * cos, (deltaZ - (delta.X + delta.Y)) * sin);
         }
 
         private static void UpdateCosSin()
         {
+            // Magic number that works with diagnonal length.
             float miniMapScale = 120f / Scale;
             cos = (float)(DiagonalLength * Math.Cos(CameraAngle) / miniMapScale);
             sin = (float)(DiagonalLength * Math.Sin(CameraAngle) / miniMapScale);
