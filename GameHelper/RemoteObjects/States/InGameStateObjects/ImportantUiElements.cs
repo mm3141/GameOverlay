@@ -41,25 +41,25 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
         /// Gets the LargeMap UiElement.
         /// UiRoot -> MainChild -> 3rd index -> 1nd index.
         /// </summary>
-        public UiElementBase LargeMap
+        public MapUiElement LargeMap
         {
             get;
             private set;
         }
 
-        = new UiElementBase(IntPtr.Zero);
+        = new MapUiElement(IntPtr.Zero);
 
         /// <summary>
         /// Gets the MiniMap UiElement.
         /// UiRoot -> MainChild -> 3rd index -> 2nd index.
         /// </summary>
-        public UiElementBase MiniMap
+        public MapUiElement MiniMap
         {
             get;
             private set;
         }
 
-        = new UiElementBase(IntPtr.Zero);
+        = new MapUiElement(IntPtr.Zero);
 
         /// <inheritdoc/>
         protected override void CleanUpData()
@@ -74,8 +74,11 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             var reader = Core.Process.Handle;
             var data1 = reader.ReadMemory<ImportantUiElementsOffsets>(this.Address);
             var data2 = reader.ReadMemory<MapParentStruct>(data1.MapParentPtr);
-            this.LargeMap.Address = data2.LargeMapPtr; // put try/catch if this fails.
-            this.MiniMap.Address = data2.MiniMapPtr; // put try/catch if this fails.
+
+            // This won't throw an exception because (lucky us)
+            // game UiElement garbage collection is not instant.
+            this.LargeMap.Address = data2.LargeMapPtr;
+            this.MiniMap.Address = data2.MiniMapPtr;
         }
 
         private IEnumerator<Wait> OnTimeTick()

@@ -14,7 +14,6 @@ namespace GameHelper.RemoteObjects.Components
     /// </summary>
     public class Render : RemoteObjectBase
     {
-        private float terrainHeight = 0x00;
         private StdTuple3D<float> modelBounds = default;
 
         /// <summary>
@@ -28,8 +27,14 @@ namespace GameHelper.RemoteObjects.Components
 
         /// <summary>
         /// Gets the postion where entity is rendered in the game world.
+        /// NOTE: Z-Axis is pointing to the (visible/invisible) healthbar.
         /// </summary>
         public StdTuple3D<float> WorldPosition3D { get; private set; } = default;
+
+        /// <summary>
+        /// Gets the terrain height on which the Entity is standing.
+        /// </summary>
+        public float TerrainHeight { get; private set; } = 0x00;
 
         /// <summary>
         /// Converts the <see cref="Render"/> class data to ImGui.
@@ -38,7 +43,7 @@ namespace GameHelper.RemoteObjects.Components
         {
             base.ToImGui();
             ImGui.Text($"World Position: {this.WorldPosition3D}");
-            ImGui.Text($"Terrain Height (Z-Axis): {this.terrainHeight}");
+            ImGui.Text($"Terrain Height (Z-Axis): {this.TerrainHeight}");
             ImGui.Text($"Model Bonds: {this.modelBounds}");
         }
 
@@ -55,7 +60,7 @@ namespace GameHelper.RemoteObjects.Components
             var data = reader.ReadMemory<RenderOffsets>(this.Address);
             this.WorldPosition3D = data.CurrentWorldPosition;
             this.modelBounds = data.CharactorModelBounds;
-            this.terrainHeight = data.TerrainHeight;
+            this.TerrainHeight = data.TerrainHeight;
         }
     }
 }

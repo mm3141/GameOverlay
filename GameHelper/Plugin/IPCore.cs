@@ -35,7 +35,7 @@ namespace GameHelper.Plugin
         public abstract void DrawSettings();
 
         /// <summary>
-        /// Draws the plugin UI.
+        /// Draws the plugin UI. This function isn't called when the plugin is disabled.
         /// </summary>
         public abstract void DrawUI();
 

@@ -21,6 +21,8 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
     /// </summary>
     public class AreaInstance : RemoteObjectBase
     {
+        private string entityFilter = string.Empty;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="AreaInstance"/> class.
         /// </summary>
@@ -71,11 +73,17 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             base.ToImGui();
             ImGui.Text($"Area Hash: {this.AreaHash}");
             ImGui.Text($"Monster Level: {this.MonsterLevel}");
-            ImGui.Text($"Total Entities: {this.AwakeEntities.Count}");
-            if (ImGui.TreeNode($"Awake Entities"))
+            if (ImGui.TreeNode($"Awake Entities ({this.AwakeEntities.Count})###Awake Entities"))
             {
+                ImGui.InputText("Entity Filter", ref this.entityFilter, 10, ImGuiInputTextFlags.CharsDecimal);
                 foreach (var awakeEntity in this.AwakeEntities)
                 {
+                    if (!(string.IsNullOrEmpty(this.entityFilter) ||
+                        $"{awakeEntity.Key.id}".Contains(this.entityFilter)))
+                    {
+                        continue;
+                    }
+
                     if (ImGui.TreeNode($"{awakeEntity.Value.Id} {awakeEntity.Value.Path}"))
                     {
                         awakeEntity.Value.ToImGui();
@@ -100,6 +108,8 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
         {
             this.MonsterLevel = 0x00;
             this.AreaHash = string.Empty;
+            this.Player.Address = IntPtr.Zero;
+            this.AreaDetails.Address = IntPtr.Zero;
             this.AwakeEntities.Clear();
         }
 
@@ -110,6 +120,8 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             // TODO: Create patterns for stuff, for easy finding.
             // TODO: HoverUi debugger. Should popup (beside mouse) "You are hovering over a UIElement, press J to debug it in DevTree.".
             // TODO: UiElement explorer that also handle InGameUi array (try/catch).
+            // TODO: Change text color to RED of currently highlighted entity.
+            // TODO: Play few maps and make sure recient cleanup changes doesn't crash the overlay.
             var reader = Core.Process.Handle;
             var data = reader.ReadMemory<AreaInstanceOffsets>(this.Address);
             if (hasAddressChanged)
