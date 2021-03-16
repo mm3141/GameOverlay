@@ -4,14 +4,14 @@
 
 namespace Radar
 {
+    using System;
+    using System.Numerics;
     using GameHelper;
     using GameHelper.Plugin;
     using GameHelper.RemoteEnums;
     using GameHelper.RemoteObjects.Components;
     using GameHelper.Utils;
     using ImGuiNET;
-    using System;
-    using System.Numerics;
 
     /// <summary>
     /// <see cref="Radar"/> plugin.
@@ -38,7 +38,7 @@ namespace Radar
 
             if (Core.States.InGameStateObject.GameUi.MiniMap.IsVisible)
             {
-                this.DrawOnMiniMap();
+                // this.DrawOnMiniMap();
             }
         }
 

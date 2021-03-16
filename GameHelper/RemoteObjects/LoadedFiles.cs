@@ -7,12 +7,12 @@ namespace GameHelper.RemoteObjects
     using System;
     using System.Collections.Concurrent;
     using System.Collections.Generic;
+    using System.IO;
     using System.Linq;
     using System.Numerics;
     using System.Threading.Tasks;
     using Coroutine;
     using GameHelper.CoroutineEvents;
-    using GameHelper.RemoteEnums;
     using GameHelper.Utils;
     using GameOffsets.Objects;
     using ImGuiNET;
@@ -64,10 +64,12 @@ namespace GameHelper.RemoteObjects
             {
                 if (ImGui.Button("Save"))
                 {
+                    string dir_name = "preload_dumps";
+                    Directory.CreateDirectory(dir_name);
                     var dataToWrite = this.PathNames.Keys.ToList();
                     dataToWrite.Sort();
-                    System.IO.File.WriteAllText(
-                        this.filename,
+                    File.WriteAllText(
+                        Path.Join(dir_name, this.filename),
                         string.Join("\n", dataToWrite));
                     this.areaAlreadyDone = true;
                 }
@@ -174,10 +176,10 @@ namespace GameHelper.RemoteObjects
                         continue;
                     }
 
+                    this.CleanUpData();
                     this.filename = $"{name}_{areaHash}.txt";
                     this.areaAlreadyDone = false;
                     this.areaHashCache = areaHash;
-                    this.CleanUpData();
                     this.UpdateData(false);
                     CoroutineHandler.RaiseEvent(RemoteEvents.OnPreloadUpdated);
                 }
