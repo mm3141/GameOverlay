@@ -41,6 +41,11 @@ namespace GameHelper
         public bool Foreground { get; private set; } = false;
 
         /// <summary>
+        /// Gets the game size and position with respect to the monitor screen.
+        /// </summary>
+        public Rectangle WindowArea { get; private set; } = Rectangle.Empty;
+
+        /// <summary>
         /// Gets the Base Address of the game.
         /// </summary>
         internal IntPtr Address
@@ -90,11 +95,6 @@ namespace GameHelper
         /// Gets the game handle.
         /// </summary>
         internal SafeMemoryHandle Handle { get; private set; } = null;
-
-        /// <summary>
-        /// Gets the game size and position with respect to the monitor screen.
-        /// </summary>
-        internal Rectangle WindowArea { get; private set; } = Rectangle.Empty;
 
         /// <summary>
         /// Closes the handle for the game and releases all the resources.

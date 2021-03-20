@@ -15,7 +15,7 @@ namespace Radar
         /// <summary>
         /// Map rotation in Radian format.
         /// </summary>
-        public static readonly double CameraAngle = 38 * Math.PI / 180;
+        public static readonly double CameraAngle = 39 * Math.PI / 180;
         private static double diagonalLength = 0x00;
         private static float scale = 0.5f;
         private static float cos = 0x00;
@@ -75,13 +75,12 @@ namespace Radar
         /// Terrain level difference between player and entity.
         /// </param>
         /// <returns>nothing.</returns>
-        public static Vector2 DeltaInWorldToMinimapDelta(Vector2 delta, float deltaZ)
+        public static Vector2 DeltaInWorldToMapDelta(Vector2 delta, float deltaZ)
         {
             // WorldPosition distance between 2 points
             // divide it by
             // GridPosition distance between 2 points.
             // Rounded to 2 decimal points.
-            // TODO: Fix this after you start using InGameIcons.
             deltaZ /= 10.87f;
             return new Vector2((delta.X - delta.Y) * cos, (deltaZ - (delta.X + delta.Y)) * sin);
         }
@@ -89,10 +88,9 @@ namespace Radar
         private static void UpdateCosSin()
         {
             // Magic number that works with diagnonal length.
-            // TODO: make it work with DiagonalLength, no divide by 2.
-            float miniMapScale = 120f / Scale;
-            cos = (float)(DiagonalLength * Math.Cos(CameraAngle) / miniMapScale);
-            sin = (float)(DiagonalLength * Math.Sin(CameraAngle) / miniMapScale);
+            float mapScale = 240f / Scale;
+            cos = (float)(DiagonalLength * Math.Cos(CameraAngle) / mapScale);
+            sin = (float)(DiagonalLength * Math.Sin(CameraAngle) / mapScale);
         }
     }
 }

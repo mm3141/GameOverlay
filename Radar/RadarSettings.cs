@@ -11,5 +11,8 @@ namespace Radar
     /// </summary>
     public sealed class RadarSettings : IPSettings
     {
+#pragma warning disable SA1401, SA1600
+        public float LargeMapScaleMultiplier = 1;
+#pragma warning restore SA1401, SA1600
     }
 }
