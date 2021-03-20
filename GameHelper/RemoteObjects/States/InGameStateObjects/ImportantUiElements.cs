@@ -44,25 +44,25 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
         /// Gets the LargeMap UiElement.
         /// UiRoot -> MainChild -> 3rd index -> 1nd index.
         /// </summary>
-        public MapUiElement LargeMap
+        public LargeMapUiElement LargeMap
         {
             get;
             private set;
         }
 
-        = new MapUiElement(IntPtr.Zero);
+        = new LargeMapUiElement(IntPtr.Zero);
 
         /// <summary>
         /// Gets the MiniMap UiElement.
         /// UiRoot -> MainChild -> 3rd index -> 2nd index.
         /// </summary>
-        public MapUiElement MiniMap
+        public MiniMapUiElement MiniMap
         {
             get;
             private set;
         }
 
-        = new MapUiElement(IntPtr.Zero);
+        = new MiniMapUiElement(IntPtr.Zero);
 
         /// <inheritdoc/>
         protected override void CleanUpData()
@@ -89,8 +89,6 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
         {
             while (true)
             {
-                // TODO: Monitor and update if performance is bad.
-                //       Maybe only update Childrens on StateChanged event only.
                 yield return new Wait(0.1d);
                 if (this.Address != IntPtr.Zero &&
                     Core.States.GameCurrentState == GameStateTypes.InGameState)

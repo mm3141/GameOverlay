@@ -1,4 +1,4 @@
-﻿// <copyright file="MapUiElement.cs" company="None">
+﻿// <copyright file="LargeMapUiElement.cs" company="None">
 // Copyright (c) None. All rights reserved.
 // </copyright>
 
@@ -12,16 +12,16 @@ namespace GameHelper.RemoteObjects.UiElement
     /// <summary>
     /// Points to the Map UiElement.
     /// </summary>
-    public class MapUiElement : UiElementBase
+    public class LargeMapUiElement : UiElementBase
     {
         private Vector2 shift = Vector2.Zero;
         private Vector2 defaultShift = Vector2.Zero;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="MapUiElement"/> class.
+        /// Initializes a new instance of the <see cref="LargeMapUiElement"/> class.
         /// </summary>
         /// <param name="address">address to the Map Ui Element of the game.</param>
-        internal MapUiElement(IntPtr address)
+        internal LargeMapUiElement(IntPtr address)
             : base(address)
         {
         }
@@ -42,8 +42,25 @@ namespace GameHelper.RemoteObjects.UiElement
         /// </summary>
         public float Zoom { get; private set; } = 0.5f;
 
+        /// <inheritdoc/>
+        public override Vector2 Postion => Vector2.Zero;
+
+        /// <inheritdoc/>
+        public override Vector2 Size
+        {
+            get
+            {
+                return new Vector2(Core.Process.WindowArea.Width, Core.Process.WindowArea.Height);
+            }
+        }
+
         /// <summary>
-        /// Converts the <see cref="MapUiElement"/> class data to ImGui.
+        /// Gets the center of the map.
+        /// </summary>
+        public Vector2 Center => base.Postion;
+
+        /// <summary>
+        /// Converts the <see cref="LargeMapUiElement"/> class data to ImGui.
         /// </summary>
         internal override void ToImGui()
         {
@@ -65,15 +82,17 @@ namespace GameHelper.RemoteObjects.UiElement
         /// <inheritdoc/>
         protected override void UpdateData(bool hasAddressChanged)
         {
-            // This will cause 1 additional read
-            // but for now let's monitor how bad that is.
             base.UpdateData(hasAddressChanged);
             var reader = Core.Process.Handle;
             var data = reader.ReadMemory<MapUiElementOffset>(this.Address);
             this.shift.X = data.Shift.X;
             this.shift.Y = data.Shift.Y;
+            this.shift /= Core.GHSettings.WindowScale;
+
             this.defaultShift.X = data.DefaultShift.X;
             this.defaultShift.Y = data.DefaultShift.Y;
+            this.defaultShift /= Core.GHSettings.WindowScale;
+
             this.Zoom = data.Zoom;
         }
     }

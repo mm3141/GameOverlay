@@ -26,7 +26,7 @@ namespace Radar
         private ActiveCoroutine onMove;
         private ActiveCoroutine onForegroundChange;
 
-        private Vector2 miniMapCenter = Vector2.Zero;
+        private Vector2 miniMapCenterWithDefaultShift = Vector2.Zero;
         private double miniMapDiagonalLength = 0x00;
 
         private double largeMapDiagonalLength = 0x00;
@@ -37,18 +37,15 @@ namespace Radar
         /// <inheritdoc/>
         public override void DrawSettings()
         {
-            ImGui.SetNextItemWidth(ImGui.GetContentRegionAvail().X / 2);
+            ImGui.TextWrapped("Please provide the Large Map Scale multiplier" +
+                "value. Also, before providing this make sure your CORE ->" +
+                "window scale value is what your window setting is showing.");
             ImGui.DragFloat(
-                "Large Map Scale Multiplier",
+                "###LargeMapScaleMultiplier",
                 ref this.Settings.LargeMapScaleMultiplier,
                 0.001f,
                 0.01f,
                 0.2f);
-            ImGui.SetNextItemWidth(ImGui.GetContentRegionAvail().X / 2);
-            ImGui.DragFloat(
-                "Fine Tune",
-                ref this.Settings.LargeMapYFineTune,
-                0.001f);
         }
 
         /// <inheritdoc/>
@@ -62,10 +59,8 @@ namespace Radar
             var largeMap = Core.States.InGameStateObject.GameUi.LargeMap;
             if (largeMap.IsVisible)
             {
-                var pos = largeMap.Postion + largeMap.DefaultShift + largeMap.Shift;
-                pos.Y /= this.Settings.LargeMapYFineTune;
                 this.DrawOnMap(
-                    pos,
+                    largeMap.Center + largeMap.Shift + largeMap.DefaultShift,
                     this.largeMapDiagonalLength,
                     largeMap.Zoom * this.Settings.LargeMapScaleMultiplier);
             }
@@ -74,7 +69,7 @@ namespace Radar
             if (miniMap.IsVisible)
             {
                 this.DrawOnMap(
-                    this.miniMapCenter,
+                    this.miniMapCenterWithDefaultShift + miniMap.Shift,
                     this.miniMapDiagonalLength,
                     miniMap.Zoom);
             }
@@ -164,7 +159,7 @@ namespace Radar
         private void UpdateMiniMapDetails()
         {
             var map = Core.States.InGameStateObject.GameUi.MiniMap;
-            this.miniMapCenter = map.Postion + (map.Size / 2) + map.DefaultShift;
+            this.miniMapCenterWithDefaultShift = map.Postion + (map.Size / 2) + map.DefaultShift;
 
             var widthSq = map.Size.X * map.Size.X;
             var heightSq = map.Size.Y * map.Size.Y;
@@ -174,10 +169,8 @@ namespace Radar
         private void UpdateLargeMapDetails()
         {
             var map = Core.States.InGameStateObject.GameUi.LargeMap;
-
-            var window = Core.Process.WindowArea;
-            var widthSq = window.Width * window.Width;
-            var heightSq = window.Height * window.Height;
+            var widthSq = map.Size.X * map.Size.X;
+            var heightSq = map.Size.Y * map.Size.Y;
             this.largeMapDiagonalLength = Math.Sqrt(widthSq + heightSq);
         }
     }

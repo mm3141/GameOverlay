@@ -16,16 +16,17 @@ namespace GameHelper.RemoteObjects.UiElement
     /// </summary>
     public class UiElementBase : RemoteObjectBase
     {
+#pragma warning disable SA1401, SA1600 // Fields should be private
+        protected IntPtr[] childrenAddresses = new IntPtr[0];
+        protected Vector2 positionModifier = Vector2.Zero;
+        protected string id = string.Empty;
+        protected byte scaleIndex = 0x00;
+        protected Vector2 relativePosition = Vector2.Zero;
+        protected float localScaleMultiplier = 0x00;
+        protected uint flags = 0x00;
+        protected Vector2 unScaledSize = Vector2.Zero;
+#pragma warning restore SA1401, SA1600 // Fields should be private
         private bool show = false;
-
-        private IntPtr[] childrenAddresses = new IntPtr[0];
-        private Vector2 positionModifier = Vector2.Zero;
-        private string id = string.Empty;
-        private byte scaleIndex = 0x00;
-        private Vector2 relativePosition = Vector2.Zero;
-        private float localScaleMultiplier = 0x00;
-        private uint flags = 0x00;
-        private Vector2 unScaledSize = Vector2.Zero;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UiElementBase"/> class.
@@ -61,7 +62,7 @@ namespace GameHelper.RemoteObjects.UiElement
         /// <summary>
         /// Gets the position of the Ui Element w.r.t the game UI.
         /// </summary>
-        public Vector2 Postion
+        public virtual Vector2 Postion
         {
             get
             {
@@ -81,7 +82,7 @@ namespace GameHelper.RemoteObjects.UiElement
         /// <summary>
         /// Gets the size of the Ui Element w.r.t the game UI.
         /// </summary>
-        public Vector2 Size
+        public virtual Vector2 Size
         {
             get
             {
