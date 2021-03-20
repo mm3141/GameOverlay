@@ -37,12 +37,18 @@ namespace Radar
         /// <inheritdoc/>
         public override void DrawSettings()
         {
+            ImGui.SetNextItemWidth(ImGui.GetContentRegionAvail().X / 2);
             ImGui.DragFloat(
                 "Large Map Scale Multiplier",
                 ref this.Settings.LargeMapScaleMultiplier,
                 0.001f,
-                0.001f,
-                1f);
+                0.01f,
+                0.2f);
+            ImGui.SetNextItemWidth(ImGui.GetContentRegionAvail().X / 2);
+            ImGui.DragFloat(
+                "Fine Tune",
+                ref this.Settings.LargeMapYFineTune,
+                0.001f);
         }
 
         /// <inheritdoc/>
@@ -56,8 +62,10 @@ namespace Radar
             var largeMap = Core.States.InGameStateObject.GameUi.LargeMap;
             if (largeMap.IsVisible)
             {
+                var pos = largeMap.Postion + largeMap.DefaultShift + largeMap.Shift;
+                pos.Y /= this.Settings.LargeMapYFineTune;
                 this.DrawOnMap(
-                    largeMap.Postion + largeMap.DefaultShift + largeMap.Shift,
+                    pos,
                     this.largeMapDiagonalLength,
                     largeMap.Zoom * this.Settings.LargeMapScaleMultiplier);
             }
@@ -158,9 +166,9 @@ namespace Radar
             var map = Core.States.InGameStateObject.GameUi.MiniMap;
             this.miniMapCenter = map.Postion + (map.Size / 2) + map.DefaultShift;
 
-            var lengthSq = map.Size.X * map.Size.X;
-            var widthSqu = map.Size.Y * map.Size.Y;
-            this.miniMapDiagonalLength = Math.Sqrt(lengthSq + widthSqu);
+            var widthSq = map.Size.X * map.Size.X;
+            var heightSq = map.Size.Y * map.Size.Y;
+            this.miniMapDiagonalLength = Math.Sqrt(widthSq + heightSq);
         }
 
         private void UpdateLargeMapDetails()
@@ -168,9 +176,9 @@ namespace Radar
             var map = Core.States.InGameStateObject.GameUi.LargeMap;
 
             var window = Core.Process.WindowArea;
-            var lengthSq = window.Width * window.Width;
-            var widthSqu = window.Height * window.Height;
-            this.largeMapDiagonalLength = Math.Sqrt(lengthSq + widthSqu);
+            var widthSq = window.Width * window.Width;
+            var heightSq = window.Height * window.Height;
+            this.largeMapDiagonalLength = Math.Sqrt(widthSq + heightSq);
         }
     }
 }
