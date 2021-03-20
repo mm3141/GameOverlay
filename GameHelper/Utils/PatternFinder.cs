@@ -159,8 +159,8 @@ namespace GameHelper.Utils
                         state1.Break();
                         if (!isPatternFound.All(k => k == true))
                         {
-                            throw new Exception("There is a non-unique pattern." +
-                                                "Kindly fix the patterns.");
+                            throw new Exception(
+                                "There is a non-unique pattern. Kindly fix the patterns.");
                         }
                     }
 
@@ -170,8 +170,7 @@ namespace GameHelper.Utils
 
             if (totalPatternsFound < totalPatterns)
             {
-                throw new Exception("Couldn't find some patterns." +
-                                    "kindly fix the patterns.");
+                throw new Exception("Couldn't find some patterns. kindly fix the patterns.");
             }
 
             for (int i = 0; i < totalPatterns; i++)

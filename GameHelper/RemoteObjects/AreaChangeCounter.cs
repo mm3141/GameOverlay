@@ -25,7 +25,7 @@ namespace GameHelper.RemoteObjects
         internal AreaChangeCounter(IntPtr address)
             : base(address)
         {
-            CoroutineHandler.Start(this.OnPerFrame());
+            CoroutineHandler.Start(this.OnAreaChange(), priority: int.MaxValue);
         }
 
         /// <summary>
@@ -55,11 +55,11 @@ namespace GameHelper.RemoteObjects
             this.Value = reader.ReadMemory<AreaChangeOffset>(this.Address).counter;
         }
 
-        private IEnumerator<Wait> OnPerFrame()
+        private IEnumerator<Wait> OnAreaChange()
         {
             while (true)
             {
-                yield return new Wait(GameHelperEvents.PerFrameDataUpdate);
+                yield return new Wait(RemoteEvents.AreaChanged);
                 if (this.Address != IntPtr.Zero)
                 {
                     this.UpdateData(false);

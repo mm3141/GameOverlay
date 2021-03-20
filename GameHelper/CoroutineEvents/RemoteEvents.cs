@@ -20,11 +20,6 @@ namespace GameHelper.CoroutineEvents
         public static readonly Event AreaChanged = new Event();
 
         /// <summary>
-        /// Gets the event that is triggered once preloads are update.
-        /// </summary>
-        public static readonly Event OnPreloadUpdated = new Event();
-
-        /// <summary>
         /// Gets the Current State Changed event.
         /// </summary>
         internal static readonly Event StateChanged = new Event();

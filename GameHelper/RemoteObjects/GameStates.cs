@@ -31,7 +31,7 @@ namespace GameHelper.RemoteObjects
         internal GameStates(IntPtr address)
             : base(address)
         {
-            CoroutineHandler.Start(this.OnPerFrame());
+            CoroutineHandler.Start(this.OnPerFrame(), priority: int.MaxValue);
         }
 
         /// <summary>

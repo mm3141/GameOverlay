@@ -92,6 +92,7 @@ namespace PreloadAlert
         {
             ImGui.TextWrapped("You can also lock it by double clicking the preload window. " +
                 "However, you can only unlock it from here.");
+            ImGui.TextWrapped($"Plugin Performance: {this.onAreaChange.AverageMoveNextTime}");
             ImGui.Checkbox("Lock/Unlock Preload Window", ref this.Settings.Locked);
             ImGui.Checkbox("Hide When Locked & Not In Game", ref this.Settings.EnableHideUi);
             ImGui.Separator();
@@ -221,7 +222,7 @@ namespace PreloadAlert
         {
             while (true)
             {
-                yield return new Wait(RemoteEvents.OnPreloadUpdated);
+                yield return new Wait(RemoteEvents.AreaChanged);
                 this.preloadFound.Clear();
                 foreach (var kv in this.importantPreloads)
                 {

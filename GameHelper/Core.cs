@@ -101,12 +101,11 @@ namespace GameHelper
         /// </summary>
         internal static void InitializeCororutines()
         {
-            // Things added later are executed first when this app starts.
             CoroutineHandler.Start(GameClosedActions());
-            CoroutineHandler.Start(UpdateStatesData());
-            CoroutineHandler.Start(UpdateFilesData());
-            CoroutineHandler.Start(UpdateAreaChangeData());
-            CoroutineHandler.Start(UpdateScaleData());
+            CoroutineHandler.Start(UpdateStatesData(), priority: int.MaxValue - 3);
+            CoroutineHandler.Start(UpdateFilesData(), priority: int.MaxValue - 2);
+            CoroutineHandler.Start(UpdateAreaChangeData(), priority: int.MaxValue - 1);
+            CoroutineHandler.Start(UpdateScaleData(), priority: int.MaxValue);
         }
 
         /// <summary>

@@ -28,7 +28,7 @@ namespace GameHelper.RemoteObjects.States
             : base(address)
         {
             Core.CoroutinesRegistrar.Add(CoroutineHandler.Start(
-                this.OnPerFrame(), "[InGameState] Update Game State"));
+                this.OnPerFrame(), "[InGameState] Update Game State", int.MaxValue - 2));
         }
 
         /// <summary>

@@ -22,7 +22,7 @@ namespace GameHelper
         /// </summary>
         internal GameOverlay()
         {
-            CoroutineHandler.Start(this.UpdateOverlayBounds());
+            CoroutineHandler.Start(this.UpdateOverlayBounds(), priority: int.MaxValue);
             SettingsWindow.InitializeCoroutines();
             PerformanceStats.InitializeCoroutines();
             DataVisualization.InitializeCoroutines();

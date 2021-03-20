@@ -26,7 +26,7 @@ namespace GameHelper.RemoteObjects.States
         internal AreaLoadingState(IntPtr address)
             : base(address)
         {
-            CoroutineHandler.Start(this.OnPerFrame());
+            CoroutineHandler.Start(this.OnPerFrame(), priority: int.MaxValue - 1);
         }
 
         /// <summary>

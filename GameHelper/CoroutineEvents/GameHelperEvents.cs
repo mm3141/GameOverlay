@@ -12,6 +12,16 @@ namespace GameHelper.CoroutineEvents
     public static class GameHelperEvents
     {
         /// <summary>
+        /// Gets the event raised when the game has changed its size, position or both.
+        /// </summary>
+        public static readonly Event OnMoved = new Event();
+
+        /// <summary>
+        /// Gets the event raised when the game Foreground property has changed.
+        /// </summary>
+        public static readonly Event OnForegroundChanged = new Event();
+
+        /// <summary>
         /// To Update data every frame before rendering.
         /// </summary>
         internal static readonly Event PerFrameDataUpdate = new Event();
@@ -30,16 +40,6 @@ namespace GameHelper.CoroutineEvents
         /// Gets the event raised just before the GameProcess has closed the game.
         /// </summary>
         internal static readonly Event OnClose = new Event();
-
-        /// <summary>
-        /// Gets the event raised when the game has changed its size, position or both.
-        /// </summary>
-        internal static readonly Event OnMoved = new Event();
-
-        /// <summary>
-        /// Gets the event raised when the game Foreground property has changed.
-        /// </summary>
-        internal static readonly Event OnForegroundChanged = new Event();
 
         /// <summary>
         /// Gets the Game Helper closing event. The event is called whenever

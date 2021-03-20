@@ -81,6 +81,7 @@ namespace Radar
             // divide it by
             // GridPosition distance between 2 points.
             // Rounded to 2 decimal points.
+            // TODO: Fix this after you start using InGameIcons.
             deltaZ /= 10.87f;
             return new Vector2((delta.X - delta.Y) * cos, (deltaZ - (delta.X + delta.Y)) * sin);
         }
@@ -88,6 +89,7 @@ namespace Radar
         private static void UpdateCosSin()
         {
             // Magic number that works with diagnonal length.
+            // TODO: make it work with DiagonalLength, no divide by 2.
             float miniMapScale = 120f / Scale;
             cos = (float)(DiagonalLength * Math.Cos(CameraAngle) / miniMapScale);
             sin = (float)(DiagonalLength * Math.Sin(CameraAngle) / miniMapScale);

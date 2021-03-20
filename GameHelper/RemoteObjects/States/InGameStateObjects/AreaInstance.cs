@@ -31,7 +31,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             : base(address)
         {
             Core.CoroutinesRegistrar.Add(CoroutineHandler.Start(
-                this.OnPerFrame(), "[AreaInstance] Update Area Data"));
+                this.OnPerFrame(), "[AreaInstance] Update Area Data", int.MaxValue - 3));
         }
 
         /// <summary>

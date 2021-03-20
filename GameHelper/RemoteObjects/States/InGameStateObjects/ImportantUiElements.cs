@@ -7,6 +7,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
     using System;
     using System.Collections.Generic;
     using Coroutine;
+    using GameHelper.CoroutineEvents;
     using GameHelper.RemoteEnums;
     using GameHelper.RemoteObjects.UiElement;
     using GameOffsets.Objects.States.InGameState;
@@ -35,6 +36,8 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             : base(address)
         {
             CoroutineHandler.Start(this.OnTimeTick());
+            CoroutineHandler.Start(this.OnMove(), priority: int.MaxValue - 1);
+            CoroutineHandler.Start(this.OnForegroundChange(), priority: int.MaxValue - 1);
         }
 
         /// <summary>
@@ -77,6 +80,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
 
             // This won't throw an exception because (lucky us)
             // game UiElement garbage collection is not instant.
+            // if this ever changes, put try catch on it.
             this.LargeMap.Address = data2.LargeMapPtr;
             this.MiniMap.Address = data2.MiniMapPtr;
         }
@@ -85,7 +89,35 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
         {
             while (true)
             {
+                // TODO: Monitor and update if performance is bad.
+                //       Maybe only update Childrens on StateChanged event only.
                 yield return new Wait(0.1d);
+                if (this.Address != IntPtr.Zero &&
+                    Core.States.GameCurrentState == GameStateTypes.InGameState)
+                {
+                    this.UpdateData(false);
+                }
+            }
+        }
+
+        private IEnumerator<Wait> OnMove()
+        {
+            while (true)
+            {
+                yield return new Wait(GameHelperEvents.OnMoved);
+                if (this.Address != IntPtr.Zero &&
+                    Core.States.GameCurrentState == GameStateTypes.InGameState)
+                {
+                    this.UpdateData(false);
+                }
+            }
+        }
+
+        private IEnumerator<Wait> OnForegroundChange()
+        {
+            while (true)
+            {
+                yield return new Wait(GameHelperEvents.OnForegroundChanged);
                 if (this.Address != IntPtr.Zero &&
                     Core.States.GameCurrentState == GameStateTypes.InGameState)
                 {

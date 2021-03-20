@@ -24,8 +24,8 @@ namespace GameHelper.RemoteObjects
         internal GameWindowScale(IntPtr address)
             : base(address)
         {
-            CoroutineHandler.Start(this.OnGameMove());
-            CoroutineHandler.Start(this.OnGameForegroundChange());
+            CoroutineHandler.Start(this.OnGameMove(), priority: int.MaxValue);
+            CoroutineHandler.Start(this.OnGameForegroundChange(), priority: int.MaxValue);
         }
 
         /// <summary>

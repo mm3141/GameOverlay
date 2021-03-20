@@ -35,7 +35,7 @@ namespace GameHelper.RemoteObjects
             : base(address)
         {
             Core.CoroutinesRegistrar.Add(CoroutineHandler.Start(
-                this.OnAreaChange(), "[LoadedFiles] Gather Preload Data"));
+                this.OnAreaChange(), "[LoadedFiles] Gather Preload Data", int.MaxValue - 1));
         }
 
         /// <summary>
@@ -181,7 +181,6 @@ namespace GameHelper.RemoteObjects
                     this.areaAlreadyDone = false;
                     this.areaHashCache = areaHash;
                     this.UpdateData(false);
-                    CoroutineHandler.RaiseEvent(RemoteEvents.OnPreloadUpdated);
                 }
             }
         }
