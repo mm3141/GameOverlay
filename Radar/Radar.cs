@@ -132,7 +132,7 @@ namespace Radar
 
                 var ePos = new Vector2(entityPos.GridPosition.X, entityPos.GridPosition.Y);
                 var fpos = Helper.DeltaInWorldToMapDelta(ePos - pPos, entityZ.TerrainHeight - playerRender.TerrainHeight);
-                fgDraw.AddCircleFilled(mapCenter + fpos, 3f, UiHelper.Color(255, 0, 255, 255));
+                fgDraw.AddCircleFilled(mapCenter + fpos, 3f, UiHelper.Color(255, 0, 0, 255));
             }
         }
 

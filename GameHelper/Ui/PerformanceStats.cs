@@ -38,6 +38,8 @@ namespace GameHelper.Ui
                     ImGui.SetNextWindowPos(Vector2.Zero);
                     ImGui.Begin("Perf Stats Window", UiHelper.TransparentWindowFlags);
                     ImGui.Text($"Performance Related Stats");
+                    ImGui.Text($"Total Event Coroutines: {CoroutineHandler.EventCount}");
+                    ImGui.Text($"Total Tick Coroutines: {CoroutineHandler.TickingCount}");
                     for (int i = 0; i < Core.CoroutinesRegistrar.Count; i++)
                     {
                         var coroutine = Core.CoroutinesRegistrar[i];
