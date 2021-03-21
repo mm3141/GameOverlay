@@ -13,6 +13,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <PlatformTarget>x64</PlatformTarget>
     <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+    <DocumentationFile>C:\Users\zaafar\source\repos\GameOverlay\Radar\Radar.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>

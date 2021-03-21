@@ -11,8 +11,17 @@ namespace Radar
     /// </summary>
     public sealed class RadarSettings : IPSettings
     {
-#pragma warning disable SA1401, SA1600
-        public float LargeMapScaleMultiplier = 1f;
-#pragma warning restore SA1401, SA1600
+#pragma warning disable SA1401
+        /// <summary>
+        /// Multipler to apply to the Large Map icons
+        /// so they display correctly on the screen.
+        /// </summary>
+        public float LargeMapScaleMultiplier = 0.174f;
+
+        /// <summary>
+        /// Hides all the entities that doesn't have life or chest component.
+        /// </summary>
+        public bool HideUseless = true;
+#pragma warning restore SA1401
     }
 }

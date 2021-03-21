@@ -14,6 +14,7 @@ namespace Radar
     using GameHelper.Plugin;
     using GameHelper.RemoteEnums;
     using GameHelper.RemoteObjects.Components;
+    using GameHelper.RemoteObjects.States.InGameStateObjects;
     using GameHelper.Utils;
     using ImGuiNET;
     using Newtonsoft.Json;
@@ -46,6 +47,8 @@ namespace Radar
                 0.001f,
                 0.01f,
                 0.2f);
+            ImGui.Separator();
+            ImGui.Checkbox("Hide Entities without Life/Chest component", ref this.Settings.HideUseless);
         }
 
         /// <inheritdoc/>
@@ -56,22 +59,36 @@ namespace Radar
                 return;
             }
 
+            if (!Core.Process.Foreground)
+            {
+                return;
+            }
+
             var largeMap = Core.States.InGameStateObject.GameUi.LargeMap;
             if (largeMap.IsVisible)
             {
                 this.DrawOnMap(
+                    ImGui.GetForegroundDrawList(),
                     largeMap.Center + largeMap.Shift + largeMap.DefaultShift,
                     this.largeMapDiagonalLength,
-                    largeMap.Zoom * this.Settings.LargeMapScaleMultiplier);
+                    largeMap.Zoom * this.Settings.LargeMapScaleMultiplier,
+                    false);
             }
 
             var miniMap = Core.States.InGameStateObject.GameUi.MiniMap;
             if (miniMap.IsVisible)
             {
+                ImGui.SetNextWindowPos(miniMap.Postion);
+                ImGui.SetNextWindowSize(miniMap.Size);
+                ImGui.SetNextWindowBgAlpha(0f);
+                ImGui.Begin("###minimapRadar", UiHelper.TransparentWindowFlags);
                 this.DrawOnMap(
+                    ImGui.GetWindowDrawList(),
                     this.miniMapCenterWithDefaultShift + miniMap.Shift,
                     this.miniMapDiagonalLength,
-                    miniMap.Zoom);
+                    miniMap.Zoom,
+                    true);
+                ImGui.End();
             }
         }
 
@@ -105,9 +122,8 @@ namespace Radar
             File.WriteAllText(this.SettingPathname, settingsData);
         }
 
-        private void DrawOnMap(Vector2 mapCenter, double diagonalLength, float scale)
+        private void DrawOnMap(ImDrawListPtr fgDraw, Vector2 mapCenter, double diagonalLength, float scale, bool isMiniMap)
         {
-            var fgDraw = ImGui.GetForegroundDrawList();
             Helper.DiagonalLength = diagonalLength;
             Helper.Scale = scale;
             Core.States.InGameStateObject.CurrentAreaInstance.Player.TryGetComponent<Positioned>(out var playerPos);
@@ -120,6 +136,14 @@ namespace Radar
             var pPos = new Vector2(playerPos.GridPosition.X, playerPos.GridPosition.Y);
             foreach (var entity in Core.States.InGameStateObject.CurrentAreaInstance.AwakeEntities)
             {
+                var hasVital = entity.Value.TryGetComponent<Life>(out var _);
+                var isChest = entity.Value.TryGetComponent<Chest>(out var _);
+
+                if (this.Settings.HideUseless && !(hasVital || isChest))
+                {
+                    continue;
+                }
+
                 if (!entity.Value.TryGetComponent<Positioned>(out var entityPos))
                 {
                     continue;
@@ -132,8 +156,18 @@ namespace Radar
 
                 var ePos = new Vector2(entityPos.GridPosition.X, entityPos.GridPosition.Y);
                 var fpos = Helper.DeltaInWorldToMapDelta(ePos - pPos, entityZ.TerrainHeight - playerRender.TerrainHeight);
-                fgDraw.AddCircleFilled(mapCenter + fpos, 3f, UiHelper.Color(255, 0, 0, 255));
+
+                if (!this.DrawEntity(mapCenter + fpos, entity.Value, isMiniMap))
+                {
+                    fgDraw.AddCircleFilled(mapCenter + fpos, 5f, UiHelper.Color(255, 0, 255, 255));
+                }
             }
+        }
+
+        private bool DrawEntity(Vector2 position, Entity entity, bool isMiniMap)
+        {
+            // Name Filter IconInfo/Color/null LargeMapSize MinimapSize
+            return false;
         }
 
         private IEnumerator<Wait> OnMove()

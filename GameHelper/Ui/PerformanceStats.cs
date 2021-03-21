@@ -40,6 +40,8 @@ namespace GameHelper.Ui
                     ImGui.Text($"Performance Related Stats");
                     ImGui.Text($"Total Event Coroutines: {CoroutineHandler.EventCount}");
                     ImGui.Text($"Total Tick Coroutines: {CoroutineHandler.TickingCount}");
+                    ImGui.Text($"FPS: {ImGui.GetIO().Framerate}");
+                    ImGui.NewLine();
                     for (int i = 0; i < Core.CoroutinesRegistrar.Count; i++)
                     {
                         var coroutine = Core.CoroutinesRegistrar[i];
@@ -49,10 +51,10 @@ namespace GameHelper.Ui
                         }
 
                         ImGui.Text($"{coroutine.Name}: " +
-                            $"{coroutine.AverageMoveNextTime.Milliseconds}(ms)");
+                            $"Avg {coroutine.AverageMoveNextTime.Milliseconds}(ms), " +
+                            $"Max {coroutine.MaxMoveNextTime.Milliseconds}(ms)");
                     }
 
-                    ImGui.Text($"FPS: {ImGui.GetIO().Framerate}");
                     ImGui.End();
                 }
             }

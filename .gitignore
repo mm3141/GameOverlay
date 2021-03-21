@@ -360,3 +360,5 @@ MigrationBackup/
 FodyWeavers.xsd
 
 GameHelper.xml
+PreloadAlert.xml
+Radar.xml

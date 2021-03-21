@@ -21,18 +21,19 @@ namespace PreloadAlert
     /// </summary>
     public sealed class PreloadAlert : PCore<PreloadSettings>
     {
+        private readonly ImGuiColorEditFlags colorEditflags
+            = ImGuiColorEditFlags.NoInputs | ImGuiColorEditFlags.NoLabel;
+
+        private readonly Dictionary<PreloadInfo, byte> preloadFound
+            = new Dictionary<PreloadInfo, byte>();
+
         private string path = string.Empty;
         private string displayName = string.Empty;
         private Vector4 color = new Vector4(1f);
-        private ImGuiColorEditFlags colorEditflags
-            = ImGuiColorEditFlags.NoInputs | ImGuiColorEditFlags.NoLabel;
 
         private ActiveCoroutine onAreaChange;
         private Dictionary<string, PreloadInfo> importantPreloads
             = new Dictionary<string, PreloadInfo>();
-
-        private Dictionary<PreloadInfo, byte> preloadFound
-            = new Dictionary<PreloadInfo, byte>();
 
         private string PreloadFileName => Path.Join(this.DllDirectory, "preloads.txt");
 
@@ -190,10 +191,7 @@ namespace PreloadAlert
 
                     this.path = string.Empty;
                     this.displayName = string.Empty;
-
-                    var preloadsData = JsonConvert.SerializeObject(
-                        this.importantPreloads, Formatting.Indented);
-                    File.WriteAllText(this.PreloadFileName, preloadsData);
+                    this.SaveAllPreloadsToDisk();
                 }
             }
         }
@@ -204,6 +202,13 @@ namespace PreloadAlert
             {
                 foreach (var kv in this.importantPreloads)
                 {
+                    if (ImGui.SmallButton("Delete"))
+                    {
+                        this.importantPreloads.Remove(kv.Key);
+                        this.SaveAllPreloadsToDisk();
+                    }
+
+                    ImGui.SameLine();
                     ImGui.TextColored(kv.Value.Color, $"{kv.Value.DisplayName}");
                     ImGui.SameLine();
                     ImGui.Text(" - ");
@@ -226,12 +231,19 @@ namespace PreloadAlert
                 this.preloadFound.Clear();
                 foreach (var kv in this.importantPreloads)
                 {
-                    if (Core.CurrentAreaLoadedFiles.PathNames.TryGetValue(kv.Key, out var value))
+                    if (Core.CurrentAreaLoadedFiles.PathNames.TryGetValue(kv.Key, out var _))
                     {
                         this.preloadFound[kv.Value] = 1;
                     }
                 }
             }
+        }
+
+        private void SaveAllPreloadsToDisk()
+        {
+            var preloadsData = JsonConvert.SerializeObject(
+                this.importantPreloads, Formatting.Indented);
+            File.WriteAllText(this.PreloadFileName, preloadsData);
         }
 
         private struct PreloadInfo

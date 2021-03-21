@@ -12,12 +12,31 @@ namespace PreloadAlert
     /// </summary>
     public sealed class PreloadSettings : IPSettings
     {
-#pragma warning disable SA1401, SA1600 // Fields should be private
+#pragma warning disable SA1401 // Fields should be private
+        /// <summary>
+        /// Position of the preload alert window.
+        /// </summary>
         public Vector2 Pos = Vector2.Zero;
+
+        /// <summary>
+        /// Size of the preload alert window.
+        /// </summary>
         public Vector2 Size = Vector2.Zero;
+
+        /// <summary>
+        /// Background color of the preload alert window.
+        /// </summary>
         public Vector4 BackgroundColor = Vector4.One;
+
+        /// <summary>
+        /// Gets a value indicating whether the preload alert window is locked or not.
+        /// </summary>
         public bool Locked = false;
+
+        /// <summary>
+        /// Gets a value indicating whether to hide the Ui when not in the game or game in background.
+        /// </summary>
         public bool EnableHideUi = false;
-#pragma warning restore SA1401, SA1600 // Fields should be private
+#pragma warning restore SA1401 // Fields should be private
     }
 }
