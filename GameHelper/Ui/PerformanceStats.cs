@@ -53,8 +53,7 @@ namespace GameHelper.Ui
                         }
 
                         ImGui.Text($"{coroutine.Name}: " +
-                            $"Avg {coroutine.AverageMoveNextTime.TotalMilliseconds}(ms), " +
-                            $"Max {coroutine.MaxMoveNextTime.TotalMilliseconds}(ms)");
+                            $"{(int)coroutine.LastMoveNextTime.TotalMilliseconds}(ms)");
                     }
 
                     ImGui.End();
