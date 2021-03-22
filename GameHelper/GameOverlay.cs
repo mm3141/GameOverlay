@@ -15,7 +15,7 @@ namespace GameHelper
     using ImGuiNET;
 
     /// <inheritdoc/>
-    internal class GameOverlay : Overlay
+    public class GameOverlay : Overlay
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GameOverlay"/> class.
@@ -27,8 +27,13 @@ namespace GameHelper
             PerformanceStats.InitializeCoroutines();
             DataVisualization.InitializeCoroutines();
             GameUiExplorer.InitializeCoroutines();
-            PManager.InitializePlugins();
+        }
+
+        /// <inheritdoc/>
+        public override async Task Run()
+        {
             Core.InitializeCororutines();
+            await base.Run();
         }
 
         /// <inheritdoc/>
@@ -36,6 +41,20 @@ namespace GameHelper
         {
             base.Dispose();
             Core.Dispose();
+        }
+
+        /// <inheritdoc/>
+        protected override void AddFonts()
+        {
+            base.AddFonts();
+            ImGui.GetIO().Fonts.AddFontFromFileTTF(@"C:\Windows\Fonts\segoeui.ttf", 24);
+            ImGui.GetIO().Fonts.AddFontFromFileTTF(@"C:\Windows\Fonts\segoeui.ttf", 36);
+        }
+
+        /// <inheritdoc/>
+        protected override void PostStart()
+        {
+            PManager.InitializePlugins();
         }
 
         /// <inheritdoc/>

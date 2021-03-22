@@ -22,6 +22,17 @@ namespace GameHelper
     public static class Core
     {
         /// <summary>
+        /// Gets the GameHelper Overlay.
+        /// </summary>
+        public static GameOverlay Overlay
+        {
+            get;
+            internal set;
+        }
+
+        = null;
+
+        /// <summary>
         /// Gets the list of active coroutines.
         /// </summary>
         public static List<ActiveCoroutine> CoroutinesRegistrar

@@ -21,6 +21,7 @@ namespace GameHelper.Settings
     {
         private static bool isSettingsWindowVisible = true;
         private static string currentlySelectedPlugin = "Core";
+        private static bool showImGuiStyleEditor = false;
 
         /// <summary>
         /// Initializes the Main Menu.
@@ -99,6 +100,12 @@ namespace GameHelper.Settings
                     ImGui.Checkbox("Performance Stats", ref Core.GHSettings.ShowPerfStats);
                     ImGui.Checkbox("Game UiExplorer", ref Core.GHSettings.ShowGameUiExplorer);
                     ImGui.Checkbox("Data Visualization", ref Core.GHSettings.ShowDataVisualization);
+                    ImGui.Checkbox("Show ImGui Editor", ref showImGuiStyleEditor);
+                    if (showImGuiStyleEditor)
+                    {
+                        ImGui.ShowStyleEditor();
+                    }
+
                     ImGui.EndGroup();
                     break;
                 default:

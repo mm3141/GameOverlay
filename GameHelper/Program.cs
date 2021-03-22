@@ -26,8 +26,10 @@ namespace GameHelper
                 Environment.Exit(1);
             };
 
-            using var overlay = new GameOverlay();
-            await overlay.Run();
+            using (Core.Overlay = new GameOverlay())
+            {
+                await Core.Overlay.Run();
+            }
         }
     }
 }
