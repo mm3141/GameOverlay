@@ -17,16 +17,16 @@
     [StructLayout(LayoutKind.Explicit, Pack = 1)]
     public struct BuffStruct
     {
-        [FieldOffset(0x0008)] public long BuffInternalPtr;
+        [FieldOffset(0x0008)] public IntPtr BuffInternalPtr;
     }
 
     [StructLayout(LayoutKind.Explicit, Pack = 1)]
     public struct BuffInternalStruct
     {
         //// BuffDefination.DAT file
-        [FieldOffset(0x0008)] public long Name;
+        [FieldOffset(0x0008)] public IntPtr Name;
         [FieldOffset(0x0010)] public float MaxTime;
-        [FieldOffset(0x0014)] public float CurrTimer;
+        [FieldOffset(0x0014)] public float CurrTime;
         [FieldOffset(0x0030)] public ushort Charges; // 2 bytes long but 1 is enough
     }
 
