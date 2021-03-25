@@ -5,6 +5,8 @@
 namespace GameHelper.RemoteObjects.Components
 {
     using System;
+    using GameOffsets.Objects.Components;
+    using ImGuiNET;
 
     /// <summary>
     /// The <see cref="Chest"/> component in the entity.
@@ -20,6 +22,20 @@ namespace GameHelper.RemoteObjects.Components
         {
         }
 
+        /// <summary>
+        /// Gets a value indicating whether chest is opened or not.
+        /// </summary>
+        public bool IsOpened { get; private set; } = false;
+
+        /// <summary>
+        /// Converts the <see cref="Positioned"/> class data to ImGui.
+        /// </summary>
+        internal override void ToImGui()
+        {
+            base.ToImGui();
+            ImGui.Text($"IsOpened: {this.IsOpened}");
+        }
+
         /// <inheritdoc/>
         protected override void CleanUpData()
         {
@@ -29,6 +45,9 @@ namespace GameHelper.RemoteObjects.Components
         /// <inheritdoc/>
         protected override void UpdateData(bool hasAddressChanged)
         {
+            var reader = Core.Process.Handle;
+            var data = reader.ReadMemory<ChestOffsets>(this.Address);
+            this.IsOpened = data.IsOpened;
         }
     }
 }

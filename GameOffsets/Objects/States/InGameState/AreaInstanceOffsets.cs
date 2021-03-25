@@ -31,9 +31,6 @@
             {
                 return !Util.isBitSetByte(param.type, 7);
             });
-
-        public static Func<EntityNodeKey, bool> IgnoreNothing =
-            new Func<EntityNodeKey, bool>((param) => { return true; });
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]

@@ -40,8 +40,9 @@ namespace GameHelper.Ui
                     ImGui.Text($"Performance Related Stats");
                     ImGui.Text($"Total Event Coroutines: {CoroutineHandler.EventCount}");
                     ImGui.Text($"Total Tick Coroutines: {CoroutineHandler.TickingCount}");
-                    var t = Core.States.InGameStateObject.CurrentAreaInstance.AwakeEntities.Count;
-                    ImGui.Text($"Total Entities: {t}");
+                    var cAI = Core.States.InGameStateObject.CurrentAreaInstance;
+                    ImGui.Text($"Total Entities: {cAI.AwakeEntities.Count}");
+                    ImGui.Text($"Currently Active Entities: {cAI.NetworkBubbleEntityCount}");
                     ImGui.Text($"FPS: {ImGui.GetIO().Framerate}");
                     ImGui.NewLine();
                     for (int i = 0; i < Core.CoroutinesRegistrar.Count; i++)

@@ -131,8 +131,10 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
                             ImGui.TreePop();
                         }
                     }
-
-                    UiHelper.IntPtrToImGui(kv.Key, kv.Value);
+                    else
+                    {
+                        UiHelper.IntPtrToImGui(kv.Key, kv.Value);
+                    }
                 }
 
                 ImGui.TreePop();

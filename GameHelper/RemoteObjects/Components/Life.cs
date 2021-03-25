@@ -5,6 +5,9 @@
 namespace GameHelper.RemoteObjects.Components
 {
     using System;
+    using GameHelper.Utils;
+    using GameOffsets.Objects.Components;
+    using ImGuiNET;
 
     /// <summary>
     /// The <see cref="Life"/> component in the entity.
@@ -20,6 +23,44 @@ namespace GameHelper.RemoteObjects.Components
         {
         }
 
+        /// <summary>
+        /// Gets the health related information of the entity.
+        /// </summary>
+        public VitalStruct Health { get; private set; } = default;
+
+        /// <summary>
+        /// Gets the energyshield related information of the entity.
+        /// </summary>
+        public VitalStruct EnergyShield { get; private set; } = default;
+
+        /// <summary>
+        /// Gets the mana related information of the entity.
+        /// </summary>
+        public VitalStruct Mana { get; private set; } = default;
+
+        /// <inheritdoc/>
+        internal override void ToImGui()
+        {
+            base.ToImGui();
+            if (ImGui.TreeNode("Health"))
+            {
+                this.VitalToImGui(this.Health);
+                ImGui.TreePop();
+            }
+
+            if (ImGui.TreeNode("Energy Shield"))
+            {
+                this.VitalToImGui(this.EnergyShield);
+                ImGui.TreePop();
+            }
+
+            if (ImGui.TreeNode("Mana"))
+            {
+                this.VitalToImGui(this.Mana);
+                ImGui.TreePop();
+            }
+        }
+
         /// <inheritdoc/>
         protected override void CleanUpData()
         {
@@ -29,6 +70,21 @@ namespace GameHelper.RemoteObjects.Components
         /// <inheritdoc/>
         protected override void UpdateData(bool hasAddressChanged)
         {
+            var reader = Core.Process.Handle;
+            var data = reader.ReadMemory<LifeOffset>(this.Address);
+            this.Health = data.Health;
+            this.EnergyShield = data.EnergyShield;
+            this.Mana = data.Mana;
+        }
+
+        private void VitalToImGui(VitalStruct data)
+        {
+            UiHelper.IntPtrToImGui("PtrToSelf", data.PtrToLifeComponent);
+            ImGui.Text($"Regeneration: {data.Regeneration}");
+            ImGui.Text($"Total: {data.Total}");
+            ImGui.Text($"ReservedFlat: {data.ReservedFlat}");
+            ImGui.Text($"Current: {data.Current}");
+            ImGui.Text($"Reserved(%%): {data.ReservedPercent}");
         }
     }
 }

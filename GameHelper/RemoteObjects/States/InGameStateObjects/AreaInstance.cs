@@ -66,6 +66,11 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             new ConcurrentDictionary<EntityNodeKey, Entity>();
 
         /// <summary>
+        /// Gets the total number of entities in the network bubble.
+        /// </summary>
+        public int NetworkBubbleEntityCount { get; private set; } = 0x00;
+
+        /// <summary>
         /// Converts the <see cref="AreaInstance"/> class data to ImGui.
         /// </summary>
         internal override void ToImGui()
@@ -73,6 +78,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             base.ToImGui();
             ImGui.Text($"Area Hash: {this.AreaHash}");
             ImGui.Text($"Monster Level: {this.MonsterLevel}");
+            ImGui.Text($"Entities in network bubble: {this.NetworkBubbleEntityCount}");
             if (ImGui.TreeNode($"Awake Entities ({this.AwakeEntities.Count})###Awake Entities"))
             {
                 ImGui.InputText("Entity Filter", ref this.entityFilter, 10, ImGuiInputTextFlags.CharsDecimal);
@@ -132,11 +138,12 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             this.AreaHash = $"{data.CurrentAreaHash:X}";
 #if DEBUG
             var entitiesInNetworkBubble = reader.ReadStdMapAsList<EntityNodeKey, EntityNodeValue>(
-                data.AwakeEntities, false, EntityFilter.IgnoreNothing);
+                data.AwakeEntities, false, null);
 #else
             var entitiesInNetworkBubble = reader.ReadStdMapAsList<EntityNodeKey, EntityNodeValue>(
                 data.AwakeEntities, false, EntityFilter.IgnoreSleepingEntities);
 #endif
+            this.NetworkBubbleEntityCount = entitiesInNetworkBubble.Count;
             this.Player.Address = data.LocalPlayerPtr;
             foreach (var kv in this.AwakeEntities)
             {
