@@ -4,6 +4,7 @@
 
 namespace Radar
 {
+    using System.Collections.Generic;
     using GameHelper.Plugin;
 
     /// <summary>
@@ -22,6 +23,11 @@ namespace Radar
         /// Hides all the entities that doesn't have life or chest component.
         /// </summary>
         public bool HideUseless = true;
+
+        /// <summary>
+        /// Icons to display on the map.
+        /// </summary>
+        public Dictionary<string, IconPicker> Icons = new Dictionary<string, IconPicker>();
 #pragma warning restore SA1401
     }
 }

@@ -97,14 +97,9 @@ namespace GameHelper.Utils
         {
             var typeSize = Marshal.SizeOf<T>();
             var length = nativeContainer.Last.ToInt64() - nativeContainer.First.ToInt64();
-            if (length == 0)
+            if (length == 0 || length % typeSize != 0)
             {
                 return new T[0];
-            }
-
-            if (length % typeSize != 0)
-            {
-                throw new ArgumentException($"The buffer is not aligned for '{typeof(T).Name}'");
             }
 
             return this.ReadMemoryArray<T>(nativeContainer.First, (int)length / typeSize);

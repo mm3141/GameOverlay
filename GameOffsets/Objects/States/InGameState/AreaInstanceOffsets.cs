@@ -21,7 +21,10 @@
     {
         // should be few points less than the real value (2178)
         // real value manually calculating by checking when entity leave the bubble.
-        public static int NETWORK_BUBBLE_RADIUS = 2000;
+        // Updating it to 1630 to remove false positive.
+        // 1630 render distance is around 150 grid distance. ( divide by 10.87 )
+        // 1 full screen size is around 14xx so this is slightly more than 1 screen size.
+        public static int NETWORK_BUBBLE_RADIUS = 1630;
     }
 
     public static class EntityFilter

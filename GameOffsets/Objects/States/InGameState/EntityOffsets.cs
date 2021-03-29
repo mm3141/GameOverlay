@@ -26,6 +26,12 @@
             {
                 return !Util.isBitSetByte(param, 0);
             });
+
+        public static Func<byte, bool> IsFriendly =
+            new Func<byte, bool>((param) =>
+            {
+                return Util.isBitSetByte(param, 0);
+            });
     }
 
     [StructLayout(LayoutKind.Explicit, Pack = 1)]

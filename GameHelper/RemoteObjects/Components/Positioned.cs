@@ -7,6 +7,7 @@ namespace GameHelper.RemoteObjects.Components
     using System;
     using GameOffsets.Natives;
     using GameOffsets.Objects.Components;
+    using GameOffsets.Objects.States.InGameState;
     using ImGuiNET;
 
     /// <summary>
@@ -24,10 +25,15 @@ namespace GameHelper.RemoteObjects.Components
         }
 
         /// <summary>
-        /// Gets the flag to figure out if the entity is hostile or not.
-        /// NOTE: For isHostile flag do bitwise-and with 0x7F.
+        /// Gets the flags related to the entity from the positioned component.
+        /// NOTE: This flag contains the information if the entity is friendly or not.
         /// </summary>
         public byte Flags { get; private set; } = 0x00;
+
+        /// <summary>
+        /// Gets a value indicating whether the entity is friendly or not.
+        /// </summary>
+        public bool IsFriendly { get; private set; } = false;
 
         /// <summary>
         /// Gets the grid position of the entity.
@@ -48,6 +54,7 @@ namespace GameHelper.RemoteObjects.Components
             ImGui.Text($"Grid Position: {this.GridPosition}");
             ImGui.Text($"World Position: {this.WorldPosition}");
             ImGui.Text($"Flags: {this.Flags:X}");
+            ImGui.Text($"IsFriendly: {this.IsFriendly}");
         }
 
         /// <inheritdoc/>
@@ -56,6 +63,7 @@ namespace GameHelper.RemoteObjects.Components
             var reader = Core.Process.Handle;
             var data = reader.ReadMemory<PositionedOffsets>(this.Address);
             this.Flags = data.Reaction;
+            this.IsFriendly = EntityHelper.IsFriendly(data.Reaction);
             this.GridPosition = data.GridPosition;
             this.WorldPosition = data.WorldPosition;
         }

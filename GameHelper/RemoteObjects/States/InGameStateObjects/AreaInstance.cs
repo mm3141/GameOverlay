@@ -124,8 +124,14 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
         {
             // TODO: Find new stuff
             // TODO: Create patterns for stuff, for easy finding.
+            // TODO: Enabling Docking/Multi-view-port
+            //          docking enabled will allow setting window to use tabs rather than 1 screen.
+            //          multi-view-port will allow folks to use multiple monitors
             // TODO: HoverUi debugger. Should popup (beside mouse) "You are hovering over a UIElement, press J to debug it in DevTree.".
             // TODO: UiElement explorer that also handle InGameUi array (try/catch).
+            // TODO: loaded file searcher should allow comma seperated words
+            // TODO: Search entities by pathname (allow comma seperated words here too)
+            // TODO: Use grid pos for detecting exploding entities and make it variable.
             var reader = Core.Process.Handle;
             var data = reader.ReadMemory<AreaInstanceOffsets>(this.Address);
             if (hasAddressChanged)

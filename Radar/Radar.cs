@@ -38,8 +38,8 @@ namespace Radar
         /// <inheritdoc/>
         public override void DrawSettings()
         {
-            ImGui.TextWrapped("Please provide the Large Map Scale multiplier" +
-                "value. Also, before providing this make sure your CORE ->" +
+            ImGui.TextWrapped("Please provide the Large Map Scale multiplier " +
+                "value. Also, before providing this value make sure the Core -> " +
                 "window scale value is what your window setting is showing.");
             ImGui.DragFloat(
                 "###LargeMapScaleMultiplier",
@@ -47,8 +47,23 @@ namespace Radar
                 0.001f,
                 0.01f,
                 0.2f);
+            ImGui.TextWrapped("If, after changing the game/monitor resolution, your " +
+                "mini/large map icon gets invisible. Open this setting window, " +
+                "click anywhere on it and then close this setting window. " +
+                "It will fix the issue.");
             ImGui.Separator();
             ImGui.Checkbox("Hide Entities without Life/Chest component", ref this.Settings.HideUseless);
+
+            ImGui.Columns(2, "icons columns", false);
+            foreach (var icon in this.Settings.Icons)
+            {
+                ImGui.Text(icon.Key);
+                ImGui.NextColumn();
+                icon.Value.ShowSettingWidget();
+                ImGui.NextColumn();
+            }
+
+            ImGui.Columns(1);
         }
 
         /// <inheritdoc/>
@@ -109,6 +124,13 @@ namespace Radar
                 var content = File.ReadAllText(this.SettingPathname);
                 this.Settings = JsonConvert.DeserializeObject<RadarSettings>(content);
             }
+            else
+            {
+                var iconPathName = Path.Join(this.DllDirectory, "icons.png");
+                this.Settings.Icons.Add("Chest Icon", new IconPicker(iconPathName, 14, 41));
+                this.Settings.Icons.Add("Monster Icon", new IconPicker(iconPathName, 14, 41));
+                this.Settings.Icons.Add("Friendly Monster Icon", new IconPicker(iconPathName, 14, 41));
+            }
 
             this.onMove = CoroutineHandler.Start(this.OnMove());
             this.onForegroundChange = CoroutineHandler.Start(this.OnForegroundChange());
@@ -126,8 +148,10 @@ namespace Radar
         {
             Helper.DiagonalLength = diagonalLength;
             Helper.Scale = scale;
-            Core.States.InGameStateObject.CurrentAreaInstance.Player.TryGetComponent<Positioned>(out var playerPos);
-            Core.States.InGameStateObject.CurrentAreaInstance.Player.TryGetComponent<Render>(out var playerRender);
+            Core.States.InGameStateObject.CurrentAreaInstance.
+                Player.TryGetComponent<Positioned>(out var playerPos);
+            Core.States.InGameStateObject.CurrentAreaInstance.
+                Player.TryGetComponent<Render>(out var playerRender);
             if (playerPos == null || playerRender == null)
             {
                 return;
@@ -136,10 +160,26 @@ namespace Radar
             var pPos = new Vector2(playerPos.GridPosition.X, playerPos.GridPosition.Y);
             foreach (var entity in Core.States.InGameStateObject.CurrentAreaInstance.AwakeEntities)
             {
-                var hasVital = entity.Value.TryGetComponent<Life>(out var _);
-                var isChest = entity.Value.TryGetComponent<Chest>(out var _);
+                var hasVital = entity.Value.TryGetComponent<Life>(out var lifeComp);
+                var isChest = entity.Value.TryGetComponent<Chest>(out var chestComp);
+                var hasOMP = entity.Value.TryGetComponent<ObjectMagicProperties>(out var omp);
 
                 if (this.Settings.HideUseless && !(hasVital || isChest))
+                {
+                    continue;
+                }
+
+                if (this.Settings.HideUseless && isChest && chestComp.IsOpened)
+                {
+                    continue;
+                }
+
+                if (this.Settings.HideUseless && hasVital && lifeComp.Health.Current <= 0)
+                {
+                    continue;
+                }
+
+                if (this.Settings.HideUseless && hasVital && !hasOMP)
                 {
                     continue;
                 }
@@ -155,19 +195,61 @@ namespace Radar
                 }
 
                 var ePos = new Vector2(entityPos.GridPosition.X, entityPos.GridPosition.Y);
-                var fpos = Helper.DeltaInWorldToMapDelta(ePos - pPos, entityZ.TerrainHeight - playerRender.TerrainHeight);
-
-                if (!this.DrawEntity(mapCenter + fpos, entity.Value, isMiniMap))
+                var fpos = Helper.DeltaInWorldToMapDelta(
+                    ePos - pPos, entityZ.TerrainHeight - playerRender.TerrainHeight);
+                var finalSize = Vector2.One * scale * (isMiniMap ? 1f : 5f);
+                if (isChest)
+                {
+                    // TODO: Name Filter IconInfo/Color/null LargeMapSize MinimapSize
+                    // TODO: Strongbox Draw
+                    // TODO: Delve Chests
+                    // TODO: Heist Chest
+                    // TODO: Legion Chest
+                    // TODO: Breach big chests
+                    var chestIcon = this.Settings.Icons["Chest Icon"];
+                    finalSize *= chestIcon.IconScale;
+                    fgDraw.AddImage(
+                        chestIcon.TexturePtr,
+                        mapCenter + fpos - finalSize,
+                        mapCenter + fpos + finalSize,
+                        chestIcon.UV0,
+                        chestIcon.UV1);
+                }
+                else if (hasVital)
+                {
+                    // TODO: Delierium pauses show?
+                    // TODO: Fix bug, legion monster showing as friendly.
+                    // TODO: Monsters with 0 rarity.
+                    // TODO: Normal, Magic, Rare, Unique Monster
+                    // TODO: Invisible/Hidden/Non-Targetable/Frozen/Exploding/in-the-cloud/not-giving-exp things
+                    if (entityPos.IsFriendly)
+                    {
+                        var monsterIcon = this.Settings.Icons["Friendly Monster Icon"];
+                        finalSize *= monsterIcon.IconScale;
+                        fgDraw.AddImage(
+                            monsterIcon.TexturePtr,
+                            mapCenter + fpos - finalSize,
+                            mapCenter + fpos + finalSize,
+                            monsterIcon.UV0,
+                            monsterIcon.UV1);
+                    }
+                    else
+                    {
+                        var monsterIcon = this.Settings.Icons["Monster Icon"];
+                        finalSize *= monsterIcon.IconScale;
+                        fgDraw.AddImage(
+                            monsterIcon.TexturePtr,
+                            mapCenter + fpos - finalSize,
+                            mapCenter + fpos + finalSize,
+                            monsterIcon.UV0,
+                            monsterIcon.UV1);
+                    }
+                }
+                else
                 {
                     fgDraw.AddCircleFilled(mapCenter + fpos, 5f, UiHelper.Color(255, 0, 255, 255));
                 }
             }
-        }
-
-        private bool DrawEntity(Vector2 position, Entity entity, bool isMiniMap)
-        {
-            // Name Filter IconInfo/Color/null LargeMapSize MinimapSize
-            return false;
         }
 
         private IEnumerator<Wait> OnMove()
