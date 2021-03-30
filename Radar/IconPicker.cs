@@ -129,7 +129,7 @@ namespace Radar
             if (this.showPopUp)
             {
                 ImGui.SetNextWindowPos(this.popUpPos, ImGuiCond.Appearing);
-                ImGui.SetNextWindowSizeConstraints(new Vector2(100), new Vector2(400));
+                ImGui.SetNextWindowSize(new Vector2(400), ImGuiCond.Appearing);
                 var title = $"Icon Picker (Double click to select an item)";
                 if (ImGui.Begin(title, ref this.showPopUp, popUpFlags))
                 {

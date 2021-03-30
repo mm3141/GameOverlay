@@ -26,7 +26,7 @@ namespace PreloadAlert
         /// <summary>
         /// Background color of the preload alert window.
         /// </summary>
-        public Vector4 BackgroundColor = Vector4.One;
+        public Vector4 BackgroundColor = new Vector4(Vector3.Zero, 0.8f);
 
         /// <summary>
         /// Gets a value indicating whether the preload alert window is locked or not.

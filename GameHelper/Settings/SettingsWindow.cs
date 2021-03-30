@@ -143,6 +143,7 @@ namespace GameHelper.Settings
                     continue;
                 }
 
+                ImGui.SetNextWindowSize(new Vector2(800, 600), ImGuiCond.Appearing);
                 var isMainMenuExpanded = ImGui.Begin(
                     "Game Overlay Settings Menu",
                     ref Core.GHSettings.IsOverlayRunning);

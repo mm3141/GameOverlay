@@ -127,6 +127,12 @@ namespace PreloadAlert
             else
             {
                 ImGui.Begin(windowName, ImGuiWindowFlags.NoSavedSettings);
+                ImGui.TextColored(new Vector4(.86f, .71f, .36f, 1), "Edit Color: ");
+                ImGui.SameLine();
+                ImGui.ColorEdit4(
+                    "Background Color##PreloadAlertBackground",
+                    ref this.Settings.BackgroundColor,
+                    this.colorEditflags);
                 ImGui.TextColored(new Vector4(1, 1, 1, 1), "Dummy Preload 1");
                 ImGui.SameLine();
                 ImGui.TextColored(new Vector4(0, 1, 1, 1), "Dummy Preload 2");
@@ -139,11 +145,6 @@ namespace PreloadAlert
                 ImGui.TextColored(new Vector4(0, 0, 1, 1), "Dummy Preload 7");
                 ImGui.SameLine();
                 ImGui.TextColored(new Vector4(0, 0, 0, 1), "Dummy Preload 8");
-                ImGui.TextColored(new Vector4(.86f, .71f, .36f, 1), "Dummy Preload 9");
-                ImGui.ColorEdit4(
-                    "Background Color",
-                    ref this.Settings.BackgroundColor,
-                    this.colorEditflags);
                 this.Settings.Pos = ImGui.GetWindowPos();
                 this.Settings.Size = ImGui.GetWindowSize();
                 if (ImGui.IsMouseDoubleClicked(ImGuiMouseButton.Left))
