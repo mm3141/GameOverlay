@@ -28,7 +28,7 @@ namespace GameHelper.RemoteObjects.Components
         public bool IsOpened { get; private set; } = false;
 
         /// <summary>
-        /// Converts the <see cref="Positioned"/> class data to ImGui.
+        /// Converts the <see cref="Chest"/> class data to ImGui.
         /// </summary>
         internal override void ToImGui()
         {

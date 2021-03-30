@@ -38,7 +38,9 @@ namespace GameHelper.RemoteObjects.Components
         /// </summary>
         public VitalStruct Mana { get; private set; } = default;
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Converts the <see cref="Life"/> class data to ImGui.
+        /// </summary>
         internal override void ToImGui()
         {
             base.ToImGui();

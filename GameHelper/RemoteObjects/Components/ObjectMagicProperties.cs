@@ -5,6 +5,9 @@
 namespace GameHelper.RemoteObjects.Components
 {
     using System;
+    using GameHelper.RemoteEnums;
+    using GameOffsets.Objects.Components;
+    using ImGuiNET;
 
     /// <summary>
     /// ObjectMagicProperties component of the entity.
@@ -20,6 +23,20 @@ namespace GameHelper.RemoteObjects.Components
         {
         }
 
+        /// <summary>
+        /// Gets a value indicating entity rarity information.
+        /// </summary>
+        public Rarity Rarity { get; private set; } = Rarity.Normal;
+
+        /// <summary>
+        /// Converts the <see cref="ObjectMagicProperties"/> class data to ImGui.
+        /// </summary>
+        internal override void ToImGui()
+        {
+            base.ToImGui();
+            ImGui.Text($"Rarity: {this.Rarity}");
+        }
+
         /// <inheritdoc/>
         protected override void CleanUpData()
         {
@@ -29,6 +46,12 @@ namespace GameHelper.RemoteObjects.Components
         /// <inheritdoc/>
         protected override void UpdateData(bool hasAddressChanged)
         {
+            if (hasAddressChanged)
+            {
+                var reader = Core.Process.Handle;
+                var data = reader.ReadMemory<ObjectMagicPropertiesOffsets>(this.Address);
+                this.Rarity = (Rarity)data.Rarity;
+            }
         }
     }
 }

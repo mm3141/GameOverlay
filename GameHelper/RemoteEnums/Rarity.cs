@@ -10,11 +10,6 @@ namespace GameHelper.RemoteEnums
     public enum Rarity
     {
         /// <summary>
-        /// Unknown Item/Monster. This is not a real one.
-        /// </summary>
-        Unknown = -1,
-
-        /// <summary>
         /// Normal Item/Monster.
         /// </summary>
         Normal,

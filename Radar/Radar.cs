@@ -124,14 +124,8 @@ namespace Radar
                 var content = File.ReadAllText(this.SettingPathname);
                 this.Settings = JsonConvert.DeserializeObject<RadarSettings>(content);
             }
-            else
-            {
-                var iconPathName = Path.Join(this.DllDirectory, "icons.png");
-                this.Settings.Icons.Add("Chest Icon", new IconPicker(iconPathName, 14, 41));
-                this.Settings.Icons.Add("Monster Icon", new IconPicker(iconPathName, 14, 41));
-                this.Settings.Icons.Add("Friendly Monster Icon", new IconPicker(iconPathName, 14, 41));
-            }
 
+            this.AddDefaultIcons();
             this.onMove = CoroutineHandler.Start(this.OnMove());
             this.onForegroundChange = CoroutineHandler.Start(this.OnForegroundChange());
         }
@@ -206,7 +200,7 @@ namespace Radar
                     // TODO: Heist Chest
                     // TODO: Legion Chest
                     // TODO: Breach big chests
-                    var chestIcon = this.Settings.Icons["Chest Icon"];
+                    var chestIcon = this.Settings.Icons["Chest"];
                     finalSize *= chestIcon.IconScale;
                     fgDraw.AddImage(
                         chestIcon.TexturePtr,
@@ -218,32 +212,17 @@ namespace Radar
                 else if (hasVital)
                 {
                     // TODO: Delierium pauses show?
-                    // TODO: Fix bug, legion monster showing as friendly.
-                    // TODO: Monsters with 0 rarity.
-                    // TODO: Normal, Magic, Rare, Unique Monster
                     // TODO: Invisible/Hidden/Non-Targetable/Frozen/Exploding/in-the-cloud/not-giving-exp things
-                    if (entityPos.IsFriendly)
-                    {
-                        var monsterIcon = this.Settings.Icons["Friendly Monster Icon"];
-                        finalSize *= monsterIcon.IconScale;
-                        fgDraw.AddImage(
-                            monsterIcon.TexturePtr,
-                            mapCenter + fpos - finalSize,
-                            mapCenter + fpos + finalSize,
-                            monsterIcon.UV0,
-                            monsterIcon.UV1);
-                    }
-                    else
-                    {
-                        var monsterIcon = this.Settings.Icons["Monster Icon"];
-                        finalSize *= monsterIcon.IconScale;
-                        fgDraw.AddImage(
-                            monsterIcon.TexturePtr,
-                            mapCenter + fpos - finalSize,
-                            mapCenter + fpos + finalSize,
-                            monsterIcon.UV0,
-                            monsterIcon.UV1);
-                    }
+                    var monsterIcon = entityPos.IsFriendly ?
+                        this.Settings.Icons["Friendly"] :
+                        this.RarityToIconMapping(omp.Rarity);
+                    finalSize *= monsterIcon.IconScale;
+                    fgDraw.AddImage(
+                        monsterIcon.TexturePtr,
+                        mapCenter + fpos - finalSize,
+                        mapCenter + fpos + finalSize,
+                        monsterIcon.UV0,
+                        monsterIcon.UV1);
                 }
                 else
                 {
@@ -288,6 +267,29 @@ namespace Radar
             var widthSq = map.Size.X * map.Size.X;
             var heightSq = map.Size.Y * map.Size.Y;
             this.largeMapDiagonalLength = Math.Sqrt(widthSq + heightSq);
+        }
+
+        private void AddDefaultIcons()
+        {
+            var iconPathName = Path.Join(this.DllDirectory, "icons.png");
+            this.Settings.Icons.TryAdd("Chest", new IconPicker(iconPathName, 14, 41));
+            this.Settings.Icons.TryAdd("Friendly", new IconPicker(iconPathName, 14, 41));
+            this.Settings.Icons.TryAdd("Normal Monster", new IconPicker(iconPathName, 14, 41));
+            this.Settings.Icons.TryAdd("Magic Monster", new IconPicker(iconPathName, 14, 41));
+            this.Settings.Icons.TryAdd("Rare Monster", new IconPicker(iconPathName, 14, 41));
+            this.Settings.Icons.TryAdd("Unique Monster", new IconPicker(iconPathName, 14, 41));
+        }
+
+        private IconPicker RarityToIconMapping(Rarity rarity)
+        {
+            return rarity switch
+            {
+                Rarity.Normal => this.Settings.Icons["Normal Monster"],
+                Rarity.Magic => this.Settings.Icons["Magic Monster"],
+                Rarity.Rare => this.Settings.Icons["Rare Monster"],
+                Rarity.Unique => this.Settings.Icons["Unique Monster"],
+                _ => throw new Exception($"Unknown Rarity {rarity} {(int)rarity} found."),
+            };
         }
     }
 }

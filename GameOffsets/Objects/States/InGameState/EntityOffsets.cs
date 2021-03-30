@@ -30,7 +30,7 @@
         public static Func<byte, bool> IsFriendly =
             new Func<byte, bool>((param) =>
             {
-                return Util.isBitSetByte(param, 0);
+                return (param & 0x7F) == 0x01;
             });
     }
 
