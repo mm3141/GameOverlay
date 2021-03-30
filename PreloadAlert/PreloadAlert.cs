@@ -54,7 +54,8 @@ namespace PreloadAlert
         /// Reads the settings and preloads from the disk and
         /// starts this plugin co-routione.
         /// </summary>
-        public override void OnEnable()
+        /// <param name="isGameOpened">value indicating whether game is opened or not.</param>
+        public override void OnEnable(bool isGameOpened)
         {
             if (File.Exists(this.SettingPathname))
             {

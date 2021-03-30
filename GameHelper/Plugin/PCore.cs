@@ -26,7 +26,7 @@ namespace GameHelper.Plugin
         public abstract void OnDisable();
 
         /// <inheritdoc/>
-        public abstract void OnEnable();
+        public abstract void OnEnable(bool isGameOpened);
 
         /// <inheritdoc/>
         public abstract void DrawSettings();

@@ -133,13 +133,17 @@ namespace Radar
                 var title = $"Icon Picker (Double click to select an item)";
                 if (ImGui.Begin(title, ref this.showPopUp, popUpFlags))
                 {
-                    if (ImGui.GetIO().MouseDoubleClicked[0])
+                    if (ImGui.IsWindowHovered() && ImGui.GetIO().MouseDoubleClicked[0])
                     {
                         var clicked = ImGui.GetIO().MouseClickedPos[0] - ImGui.GetCursorScreenPos();
                         var x = (int)(clicked.X / (w * this.IconDimension.X));
                         var y = (int)(clicked.Y / (h * this.IconDimension.Y));
                         this.Clicked = new Vector2(x, y);
                         this.UpdateUV0UV1();
+                        this.showPopUp = false;
+                    }
+                    else if (!ImGui.IsWindowFocused())
+                    {
                         this.showPopUp = false;
                     }
 

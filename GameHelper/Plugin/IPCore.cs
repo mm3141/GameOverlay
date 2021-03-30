@@ -17,14 +17,14 @@ namespace GameHelper.Plugin
         public abstract void SetPluginDllLocation(string dllLocation);
 
         /// <summary>
-        /// Called when the plugin needs to be enabled
-        /// (e.g. game opened or user wants the plugin).
+        /// Called when the plugin is enabled by the user or when GameOverlay
+        /// starts and plugin is already enabled.
         /// </summary>
-        public abstract void OnEnable();
+        /// <param name="isGameOpened">value indicating whether game is open or not.</param>
+        public abstract void OnEnable(bool isGameOpened);
 
         /// <summary>
-        /// Called when the plugin needs to be disabled
-        /// (e.g. game closed or user don't want the plugin).
+        /// Called when the plugin is disabled by the user.
         /// </summary>
         public abstract void OnDisable();
 

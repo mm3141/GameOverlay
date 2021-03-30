@@ -153,17 +153,19 @@ namespace GameHelper.Utils
         /// <returns>string.</returns>
         internal string ReadStdWString(StdWString nativecontainer)
         {
-            int length = nativecontainer.Length.ToInt32();
+            long length = nativecontainer.Length.ToInt64();
             const int MaxAllowed = 1000;
             if (length < 0 || length > MaxAllowed)
             {
-                throw new Exception($"ERROR: Reading std::wstring, Length is invalid {length}");
+                throw new Exception($"ERROR: Reading std::wstring, " +
+                    $"Length is invalid {length}");
             }
 
-            int capacity = nativecontainer.Capacity.ToInt32();
+            long capacity = nativecontainer.Capacity.ToInt64();
             if (capacity < 0 || capacity > MaxAllowed)
             {
-                throw new Exception($"ERROR: Reading std::wstring, Capacity is invalid {capacity}");
+                throw new Exception($"ERROR: Reading std::wstring, " +
+                    $"Capacity is invalid {capacity}");
             }
 
             if (length == 0 || capacity == 0)
@@ -177,7 +179,7 @@ namespace GameHelper.Utils
                 string ret = Encoding.Unicode.GetString(buffer);
                 buffer = BitConverter.GetBytes(nativecontainer.ReservedBytes.ToInt64());
                 ret += Encoding.Unicode.GetString(buffer);
-                return ret[0..length];
+                return ret[0 .. (int)length];
             }
             else
             {

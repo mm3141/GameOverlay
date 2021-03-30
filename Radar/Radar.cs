@@ -14,7 +14,6 @@ namespace Radar
     using GameHelper.Plugin;
     using GameHelper.RemoteEnums;
     using GameHelper.RemoteObjects.Components;
-    using GameHelper.RemoteObjects.States.InGameStateObjects;
     using GameHelper.Utils;
     using ImGuiNET;
     using Newtonsoft.Json;
@@ -24,8 +23,15 @@ namespace Radar
     /// </summary>
     public sealed class Radar : PCore<RadarSettings>
     {
+        /// <summary>
+        /// If we don't do this, user will be asked to
+        /// setup the culling window everytime they open the game.
+        /// </summary>
+        private bool skipOneSettingChange = false;
+
         private ActiveCoroutine onMove;
         private ActiveCoroutine onForegroundChange;
+        private ActiveCoroutine onGameClose;
 
         private Vector2 miniMapCenterWithDefaultShift = Vector2.Zero;
         private double miniMapDiagonalLength = 0x00;
@@ -52,6 +58,7 @@ namespace Radar
                 "click anywhere on it and then close this setting window. " +
                 "It will fix the issue.");
             ImGui.Separator();
+            ImGui.Checkbox("Modify Large Map Culling Window", ref this.Settings.ModifyCullWindow);
             ImGui.Checkbox("Hide Entities without Life/Chest component", ref this.Settings.HideUseless);
 
             ImGui.Columns(2, "icons columns", false);
@@ -69,6 +76,25 @@ namespace Radar
         /// <inheritdoc/>
         public override void DrawUI()
         {
+            if (this.Settings.ModifyCullWindow)
+            {
+                var lMap = Core.States.InGameStateObject.GameUi.LargeMap;
+                ImGui.SetNextWindowPos(lMap.Center, ImGuiCond.Appearing);
+                ImGui.SetNextWindowSize(new Vector2(400f), ImGuiCond.Appearing);
+                ImGui.Begin("Large Map Culling Window");
+                ImGui.TextWrapped("This is a culling window for the large map icons. " +
+                    "Any large map icons outside of this window will be hidden automatically. " +
+                    "Feel free to change the position/size of this window. " +
+                    "Once you are happy with the dimensions, double click this window. " +
+                    "You can bring this window back from the settings menu.");
+                this.Settings.CullWindowPos = ImGui.GetWindowPos();
+                this.Settings.CullWindowSize = ImGui.GetWindowSize();
+                if (ImGui.IsWindowHovered() && ImGui.IsMouseDoubleClicked(ImGuiMouseButton.Left))
+                {
+                    this.Settings.ModifyCullWindow = false;
+                }
+            }
+
             if (Core.States.GameCurrentState != GameStateTypes.InGameState)
             {
                 return;
@@ -82,12 +108,19 @@ namespace Radar
             var largeMap = Core.States.InGameStateObject.GameUi.LargeMap;
             if (largeMap.IsVisible)
             {
+                ImGui.SetNextWindowPos(this.Settings.CullWindowPos);
+                ImGui.SetNextWindowSize(this.Settings.CullWindowSize);
+                ImGui.SetNextWindowBgAlpha(0f);
+                ImGui.PushStyleVar(ImGuiStyleVar.WindowBorderSize, 0f);
+                ImGui.Begin("Large Map Culling Window", UiHelper.TransparentWindowFlags);
+                ImGui.PopStyleVar();
                 this.DrawOnMap(
-                    ImGui.GetForegroundDrawList(),
+                    ImGui.GetWindowDrawList(),
                     largeMap.Center + largeMap.Shift + largeMap.DefaultShift,
                     this.largeMapDiagonalLength,
                     largeMap.Zoom * this.Settings.LargeMapScaleMultiplier,
                     false);
+                ImGui.End();
             }
 
             var miniMap = Core.States.InGameStateObject.GameUi.MiniMap;
@@ -112,13 +145,20 @@ namespace Radar
         {
             this.onMove?.Cancel();
             this.onForegroundChange?.Cancel();
+            this.onGameClose?.Cancel();
             this.onMove = null;
             this.onForegroundChange = null;
+            this.onGameClose = null;
         }
 
         /// <inheritdoc/>
-        public override void OnEnable()
+        public override void OnEnable(bool isGameOpened)
         {
+            if (!isGameOpened)
+            {
+                this.skipOneSettingChange = true;
+            }
+
             if (File.Exists(this.SettingPathname))
             {
                 var content = File.ReadAllText(this.SettingPathname);
@@ -128,6 +168,7 @@ namespace Radar
             this.AddDefaultIcons();
             this.onMove = CoroutineHandler.Start(this.OnMove());
             this.onForegroundChange = CoroutineHandler.Start(this.OnForegroundChange());
+            this.onGameClose = CoroutineHandler.Start(this.OnClose());
         }
 
         /// <inheritdoc/>
@@ -197,7 +238,7 @@ namespace Radar
                     // TODO: Name Filter IconInfo/Color/null LargeMapSize MinimapSize
                     // TODO: Strongbox Draw
                     // TODO: Delve Chests
-                    // TODO: Heist Chest
+                    // TODO: Heist Chest // update heist-cache icon to be none/empty as default.
                     // TODO: Legion Chest
                     // TODO: Breach big chests
                     var chestIcon = this.Settings.Icons["Chest"];
@@ -211,6 +252,7 @@ namespace Radar
                 }
                 else if (hasVital)
                 {
+                    // TODO: Shrine -> Hide.
                     // TODO: Delierium pauses show?
                     // TODO: Invisible/Hidden/Non-Targetable/Frozen/Exploding/in-the-cloud/not-giving-exp things
                     var monsterIcon = entityPos.IsFriendly ?
@@ -238,6 +280,23 @@ namespace Radar
                 yield return new Wait(GameHelperEvents.OnMoved);
                 this.UpdateMiniMapDetails();
                 this.UpdateLargeMapDetails();
+                if (this.skipOneSettingChange)
+                {
+                    this.skipOneSettingChange = false;
+                }
+                else
+                {
+                    this.Settings.ModifyCullWindow = true;
+                }
+            }
+        }
+
+        private IEnumerator<Wait> OnClose()
+        {
+            while (true)
+            {
+                yield return new Wait(GameHelperEvents.OnClose);
+                this.skipOneSettingChange = true;
             }
         }
 

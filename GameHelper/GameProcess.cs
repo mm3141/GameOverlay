@@ -159,7 +159,7 @@ namespace GameHelper
                 // Have to check MainWindowHandle because
                 // sometime HasExited returns false even when game isn't running..
                 if (this.Information.HasExited ||
-                    this.Information.MainWindowHandle.ToInt32() <= 0x00)
+                    this.Information.MainWindowHandle.ToInt64() <= 0x00)
                 {
                     this.Close();
                     break;

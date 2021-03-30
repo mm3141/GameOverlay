@@ -5,6 +5,7 @@
 namespace Radar
 {
     using System.Collections.Generic;
+    using System.Numerics;
     using GameHelper.Plugin;
 
     /// <summary>
@@ -23,6 +24,21 @@ namespace Radar
         /// Hides all the entities that doesn't have life or chest component.
         /// </summary>
         public bool HideUseless = true;
+
+        /// <summary>
+        /// Gets a value indicating whether user wants to modify large map culling window or not.
+        /// </summary>
+        public bool ModifyCullWindow = true;
+
+        /// <summary>
+        /// Gets the position of the cull window that the user wants.
+        /// </summary>
+        public Vector2 CullWindowPos = Vector2.Zero;
+
+        /// <summary>
+        /// Get the size of the cull window that the user wants.
+        /// </summary>
+        public Vector2 CullWindowSize = Vector2.Zero;
 
         /// <summary>
         /// Icons to display on the map.

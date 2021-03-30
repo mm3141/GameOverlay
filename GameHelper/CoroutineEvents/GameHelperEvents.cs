@@ -22,6 +22,11 @@ namespace GameHelper.CoroutineEvents
         public static readonly Event OnForegroundChanged = new Event();
 
         /// <summary>
+        /// Gets the event raised just before the GameProcess has closed the game.
+        /// </summary>
+        public static readonly Event OnClose = new Event();
+
+        /// <summary>
         /// To Update data every frame before rendering.
         /// </summary>
         internal static readonly Event PerFrameDataUpdate = new Event();
@@ -35,11 +40,6 @@ namespace GameHelper.CoroutineEvents
         /// Gets the event raised when GameProcess has opened a new game.
         /// </summary>
         internal static readonly Event OnOpened = new Event();
-
-        /// <summary>
-        /// Gets the event raised just before the GameProcess has closed the game.
-        /// </summary>
-        internal static readonly Event OnClose = new Event();
 
         /// <summary>
         /// Gets the Game Helper closing event. The event is called whenever

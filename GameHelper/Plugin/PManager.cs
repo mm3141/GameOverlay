@@ -172,7 +172,7 @@ namespace GameHelper.Plugin
         {
             if (kv.Value.Enable)
             {
-                kv.Value.Plugin.OnEnable();
+                kv.Value.Plugin.OnEnable(Core.Process.Address != IntPtr.Zero);
             }
         }
 

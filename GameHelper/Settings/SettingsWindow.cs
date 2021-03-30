@@ -4,6 +4,7 @@
 
 namespace GameHelper.Settings
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Numerics;
@@ -58,7 +59,7 @@ namespace GameHelper.Settings
                     pluginContainer.Enable = !pluginContainer.Enable;
                     if (pluginContainer.Enable)
                     {
-                        pluginContainer.Plugin.OnEnable();
+                        pluginContainer.Plugin.OnEnable(Core.Process.Address != IntPtr.Zero);
                     }
                     else
                     {
