@@ -198,6 +198,7 @@ namespace Radar
                 var hasVital = entity.Value.TryGetComponent<Life>(out var lifeComp);
                 var isChest = entity.Value.TryGetComponent<Chest>(out var chestComp);
                 var hasOMP = entity.Value.TryGetComponent<ObjectMagicProperties>(out var omp);
+                var isShrine = entity.Value.TryGetComponent<Shrine>(out var shrineComp);
 
                 if (this.Settings.HideUseless && !(hasVital || isChest))
                 {
@@ -250,10 +251,25 @@ namespace Radar
                         chestIcon.UV0,
                         chestIcon.UV1);
                 }
+                else if (isShrine)
+                {
+                    if (!shrineComp.IsUsed)
+                    {
+                        var shrineIcon = this.Settings.Icons["Shrine"];
+                        finalSize *= shrineIcon.IconScale;
+                        fgDraw.AddImage(
+                            shrineIcon.TexturePtr,
+                            mapCenter + fpos - finalSize,
+                            mapCenter + fpos + finalSize,
+                            shrineIcon.UV0,
+                            shrineIcon.UV1);
+                    }
+
+                    continue;
+                }
                 else if (hasVital)
                 {
-                    // TODO: Shrine -> Hide.
-                    // TODO: Delierium pauses show?
+                    // TODO: Legion first wave done monsters
                     // TODO: Invisible/Hidden/Non-Targetable/Frozen/Exploding/in-the-cloud/not-giving-exp things
                     var monsterIcon = entityPos.IsFriendly ?
                         this.Settings.Icons["Friendly"] :
@@ -332,6 +348,7 @@ namespace Radar
         {
             var iconPathName = Path.Join(this.DllDirectory, "icons.png");
             this.Settings.Icons.TryAdd("Chest", new IconPicker(iconPathName, 14, 41));
+            this.Settings.Icons.TryAdd("Shrine", new IconPicker(iconPathName, 14, 41));
             this.Settings.Icons.TryAdd("Friendly", new IconPicker(iconPathName, 14, 41));
             this.Settings.Icons.TryAdd("Normal Monster", new IconPicker(iconPathName, 14, 41));
             this.Settings.Icons.TryAdd("Magic Monster", new IconPicker(iconPathName, 14, 41));
