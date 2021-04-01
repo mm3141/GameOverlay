@@ -276,6 +276,7 @@ namespace Radar
                 }
                 else if (hasVital)
                 {
+                    // Hiding condition for Legion Monster.
                     if (lifeComp.StatusEffects.ContainsKey("frozen_in_time"))
                     {
                         this.frozenInTimeEntities.TryAdd(entity.Key.id, 1);

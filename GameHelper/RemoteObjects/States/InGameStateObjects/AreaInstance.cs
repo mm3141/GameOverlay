@@ -129,9 +129,11 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             //          multi-view-port will allow folks to use multiple monitors
             // TODO: HoverUi debugger. Should popup (beside mouse) "You are hovering over a UIElement, press J to debug it in DevTree.".
             // TODO: UiElement explorer that also handle InGameUi array (try/catch).
+            // TODO: change entity id from ushort to int so handle maps with lots of entities.
+            //       0xC << 31 is for detecting sleeping entities.
             // TODO: loaded file searcher should allow comma seperated words
             // TODO: Search entities by pathname (allow comma seperated words here too)
-            // TODO: Use grid pos for detecting exploding entities and make it variable.
+            // TODO: detecting exploding entities -> make it variable that user can change.
             var reader = Core.Process.Handle;
             var data = reader.ReadMemory<AreaInstanceOffsets>(this.Address);
             if (hasAddressChanged)
