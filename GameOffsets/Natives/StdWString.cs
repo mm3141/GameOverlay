@@ -19,5 +19,11 @@ namespace GameOffsets.Natives
         public IntPtr ReservedBytes;
         public IntPtr Length;
         public IntPtr Capacity;
+
+        public override string ToString()
+        {
+            return $"Buffer: {Buffer.ToInt64():X}, ReservedBytes: {ReservedBytes.ToInt64():X}, " +
+                $"Length: {Length.ToInt64():X}, Capacity: {Capacity.ToInt64():X}";
+        }
     }
 }

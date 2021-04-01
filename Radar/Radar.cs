@@ -210,7 +210,7 @@ namespace Radar
                     continue;
                 }
 
-                if (this.Settings.HideUseless && hasVital && lifeComp.Health.Current <= 0)
+                if (this.Settings.HideUseless && hasVital && !lifeComp.IsAlive)
                 {
                     continue;
                 }

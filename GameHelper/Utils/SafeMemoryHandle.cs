@@ -154,18 +154,12 @@ namespace GameHelper.Utils
         internal string ReadStdWString(StdWString nativecontainer)
         {
             long length = nativecontainer.Length.ToInt64();
-            const int MaxAllowed = 1000;
-            if (length < 0 || length > MaxAllowed)
-            {
-                throw new Exception($"ERROR: Reading std::wstring, " +
-                    $"Length is invalid {length}");
-            }
-
             long capacity = nativecontainer.Capacity.ToInt64();
-            if (capacity < 0 || capacity > MaxAllowed)
+            const int MaxAllowed = 1000;
+            if (length < 0 || length > MaxAllowed || capacity < 0 || capacity > MaxAllowed)
             {
-                throw new Exception($"ERROR: Reading std::wstring, " +
-                    $"Capacity is invalid {capacity}");
+                Console.WriteLine($"ERROR: Reading std::wstring. Details: {nativecontainer}");
+                return string.Empty;
             }
 
             if (length == 0 || capacity == 0)
@@ -210,18 +204,20 @@ namespace GameHelper.Utils
         /// <summary>
         /// Reads Unicode string when string length isn't know.
         /// Use  <see cref="ReadStdWString"/> if string length is known.
+        /// NOTE: haven't tested on non-english characters.
         /// </summary>
         /// <param name="address">points to the Unicode string pointer.</param>
         /// <returns>string read from the memory.</returns>
         internal string ReadUnicodeString(IntPtr address)
         {
-            var buffer = this.ReadMemoryArray<byte>(address, 128);
+            var buffer = this.ReadMemoryArray<byte>(address, 256);
             int count = 0x00;
-            for (int i = 0; i < buffer.Length - 1; i++)
+            for (int i = 0; i < buffer.Length - 2; i++)
             {
-                if (buffer[i] == 0x00 && buffer[i + 1] == 0x00)
+                if (buffer[i] == 0x00 && buffer[i + 1] == 0x00 && buffer[i + 2] == 0x00)
                 {
-                    count = i / 2;
+                    count = i + 1;
+                    break;
                 }
             }
 
@@ -231,7 +227,8 @@ namespace GameHelper.Utils
                 return string.Empty;
             }
 
-            return Encoding.Unicode.GetString(buffer, 0, count);
+            var ret = Encoding.Unicode.GetString(buffer, 0, count);
+            return ret;
         }
 
         /// <summary>

@@ -111,6 +111,22 @@ namespace GameHelper.Utils
         }
 
         /// <summary>
+        /// Helps display the text and copy text if user click it.
+        /// </summary>
+        /// <param name="displayText">text to display on the ImGui.</param>
+        /// <param name="copyText">text to copy when user click</param>
+        public static void DisplayTextAndCopyOnClick(string displayText, string copyText)
+        {
+            ImGui.PushStyleColor(ImGuiCol.Button, Color(0, 0, 0, 0));
+            if (ImGui.SmallButton(displayText))
+            {
+                ImGui.SetClipboardText(copyText);
+            }
+
+            ImGui.PopStyleColor();
+        }
+
+        /// <summary>
         /// Iterates over properties of the given class via reflection
         /// and yields the <see cref="RemoteObjectBase"/> property name and its
         /// <see cref="RemoteObjectBase.ToImGui"/> method. Any property
