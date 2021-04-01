@@ -147,6 +147,11 @@ namespace GameHelper.RemoteObjects.Components
                     }
                 }
             }
+            else
+            {
+                this.StatusEffects.Clear();
+                this.keyToEffectNameCache.Clear();
+            }
         }
 
         private void VitalToImGui(VitalStruct data)

@@ -32,11 +32,15 @@ namespace Radar
         private ActiveCoroutine onMove;
         private ActiveCoroutine onForegroundChange;
         private ActiveCoroutine onGameClose;
+        private ActiveCoroutine onAreaChange;
 
         private Vector2 miniMapCenterWithDefaultShift = Vector2.Zero;
         private double miniMapDiagonalLength = 0x00;
 
         private double largeMapDiagonalLength = 0x00;
+
+        private Dictionary<ushort, byte> frozenInTimeEntities
+            = new Dictionary<ushort, byte>();
 
         private string SettingPathname
             => Path.Join(this.DllDirectory, "config", "settings.txt");
@@ -146,9 +150,11 @@ namespace Radar
             this.onMove?.Cancel();
             this.onForegroundChange?.Cancel();
             this.onGameClose?.Cancel();
+            this.onAreaChange?.Cancel();
             this.onMove = null;
             this.onForegroundChange = null;
             this.onGameClose = null;
+            this.onAreaChange = null;
         }
 
         /// <inheritdoc/>
@@ -169,6 +175,7 @@ namespace Radar
             this.onMove = CoroutineHandler.Start(this.OnMove());
             this.onForegroundChange = CoroutineHandler.Start(this.OnForegroundChange());
             this.onGameClose = CoroutineHandler.Start(this.OnClose());
+            this.onAreaChange = CoroutineHandler.Start(this.ClearFrozenInTime());
         }
 
         /// <inheritdoc/>
@@ -269,7 +276,16 @@ namespace Radar
                 }
                 else if (hasVital)
                 {
-                    // TODO: Legion first wave done monsters
+                    if (lifeComp.StatusEffects.ContainsKey("frozen_in_time"))
+                    {
+                        this.frozenInTimeEntities.TryAdd(entity.Key.id, 1);
+                    }
+                    else if (this.frozenInTimeEntities.ContainsKey(entity.Key.id) &&
+                        lifeComp.StatusEffects.ContainsKey("hidden_monster"))
+                    {
+                        continue;
+                    }
+
                     // TODO: Invisible/Hidden/Non-Targetable/Frozen/Exploding/in-the-cloud/not-giving-exp things
                     var monsterIcon = entityPos.IsFriendly ?
                         this.Settings.Icons["Friendly"] :
@@ -286,6 +302,15 @@ namespace Radar
                 {
                     fgDraw.AddCircleFilled(mapCenter + fpos, 5f, UiHelper.Color(255, 0, 255, 255));
                 }
+            }
+        }
+
+        private IEnumerator<Wait> ClearFrozenInTime()
+        {
+            while (true)
+            {
+                yield return new Wait(RemoteEvents.AreaChanged);
+                this.frozenInTimeEntities.Clear();
             }
         }
 

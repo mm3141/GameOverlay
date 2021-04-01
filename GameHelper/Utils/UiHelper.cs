@@ -111,10 +111,11 @@ namespace GameHelper.Utils
         }
 
         /// <summary>
-        /// Helps display the text and copy text if user click it.
+        /// Helps convert the text into ImGui widget that display the text
+        /// and copy it if user click on it.
         /// </summary>
         /// <param name="displayText">text to display on the ImGui.</param>
-        /// <param name="copyText">text to copy when user click</param>
+        /// <param name="copyText">text to copy when user click.</param>
         public static void DisplayTextAndCopyOnClick(string displayText, string copyText)
         {
             ImGui.PushStyleColor(ImGuiCol.Button, Color(0, 0, 0, 0));
