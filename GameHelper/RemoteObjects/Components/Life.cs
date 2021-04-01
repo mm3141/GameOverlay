@@ -141,7 +141,7 @@ namespace GameHelper.RemoteObjects.Components
                         statusEffectData.BuffDefinationPtr,
                         out var newEffectName))
                     {
-                        // New and Valid Effect.
+                        // New Effect.
                         this.StatusEffects[newEffectName] = effectInfo;
                         this.keyToEffectNameCache[kv.key] = newEffectName;
                     }

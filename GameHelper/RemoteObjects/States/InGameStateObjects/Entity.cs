@@ -182,8 +182,6 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
 
                     this.componentAddresses.Add(name, entityComponent[data.Index]);
                 }
-
-                this.TryGetComponent<Life>(out var _);
             }
             else
             {

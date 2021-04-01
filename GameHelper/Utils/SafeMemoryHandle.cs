@@ -204,7 +204,6 @@ namespace GameHelper.Utils
         /// <summary>
         /// Reads Unicode string when string length isn't know.
         /// Use  <see cref="ReadStdWString"/> if string length is known.
-        /// NOTE: haven't tested on non-english characters.
         /// </summary>
         /// <param name="address">points to the Unicode string pointer.</param>
         /// <returns>string read from the memory.</returns>
@@ -216,7 +215,7 @@ namespace GameHelper.Utils
             {
                 if (buffer[i] == 0x00 && buffer[i + 1] == 0x00 && buffer[i + 2] == 0x00)
                 {
-                    count = i + 1;
+                    count = i % 2 == 0 ? i : i + 1;
                     break;
                 }
             }
