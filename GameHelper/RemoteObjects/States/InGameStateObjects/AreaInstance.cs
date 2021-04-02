@@ -157,7 +157,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             {
                 if (!kv.Value.IsValid &&
 
-                    // This isn't perfect in case something happens to the entity before
+                    // This logic isn't perfect in case something happens to the entity before
                     // we can cache the location of that entity. In that case we will just
                     // delete that entity anyway. This activity is fine as long as it doesn't
                     // crash the GameHelper.

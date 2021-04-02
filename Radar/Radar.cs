@@ -276,15 +276,29 @@ namespace Radar
                 }
                 else if (hasVital)
                 {
-                    // Hiding condition for Legion Monster.
                     if (lifeComp.StatusEffects.ContainsKey("frozen_in_time"))
                     {
                         this.frozenInTimeEntities.TryAdd(entity.Key.id, 1);
+                        if (lifeComp.StatusEffects.ContainsKey("legion_reward_display") ||
+                            entity.Value.Path.Contains("Chest"))
+                        {
+                            var monsterChestIcon = this.Settings.Icons["Legion Monster Chest"];
+                            finalSize *= monsterChestIcon.IconScale;
+                            fgDraw.AddImage(
+                                monsterChestIcon.TexturePtr,
+                                mapCenter + fpos - finalSize,
+                                mapCenter + fpos + finalSize,
+                                monsterChestIcon.UV0,
+                                monsterChestIcon.UV1);
+                            continue;
+                        }
                     }
-                    else if (this.frozenInTimeEntities.ContainsKey(entity.Key.id) &&
-                        lifeComp.StatusEffects.ContainsKey("hidden_monster"))
+                    else if (lifeComp.StatusEffects.ContainsKey("hidden_monster"))
                     {
-                        continue;
+                        if (this.frozenInTimeEntities.ContainsKey(entity.Key.id))
+                        {
+                            continue;
+                        }
                     }
 
                     // TODO: Invisible/Hidden/Non-Targetable/Frozen/Exploding/in-the-cloud/not-giving-exp things
@@ -374,7 +388,10 @@ namespace Radar
         {
             var iconPathName = Path.Join(this.DllDirectory, "icons.png");
             this.Settings.Icons.TryAdd("Chest", new IconPicker(iconPathName, 14, 41));
+            this.Settings.Icons.TryAdd("Legion Monster Chest", new IconPicker(iconPathName, 14, 41));
+
             this.Settings.Icons.TryAdd("Shrine", new IconPicker(iconPathName, 14, 41));
+
             this.Settings.Icons.TryAdd("Friendly", new IconPicker(iconPathName, 14, 41));
             this.Settings.Icons.TryAdd("Normal Monster", new IconPicker(iconPathName, 14, 41));
             this.Settings.Icons.TryAdd("Magic Monster", new IconPicker(iconPathName, 14, 41));
