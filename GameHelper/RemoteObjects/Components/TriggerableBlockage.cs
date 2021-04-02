@@ -25,7 +25,7 @@ namespace GameHelper.RemoteObjects.Components
         /// <summary>
         /// Gets a value indicating whether TriggerableBlockage is closed or not.
         /// </summary>
-        public bool IsClosed { get; private set; } = false;
+        public bool IsBlocked { get; private set; } = false;
 
         /// <summary>
         /// Converts the <see cref="Chest"/> class data to ImGui.
@@ -33,7 +33,7 @@ namespace GameHelper.RemoteObjects.Components
         internal override void ToImGui()
         {
             base.ToImGui();
-            ImGui.Text($"IsOpened: {this.IsClosed}");
+            ImGui.Text($"Is Blocked: {this.IsBlocked}");
         }
 
         /// <inheritdoc/>
@@ -47,7 +47,7 @@ namespace GameHelper.RemoteObjects.Components
         {
             var reader = Core.Process.Handle;
             var data = reader.ReadMemory<TriggerableBlockageOffsets>(this.Address);
-            this.IsClosed = data.IsClosed;
+            this.IsBlocked = data.IsBlocked;
         }
     }
 }

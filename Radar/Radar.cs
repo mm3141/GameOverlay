@@ -231,17 +231,25 @@ namespace Radar
                     continue;
                 }
 
-                if (this.Settings.HideUseless && hasVital && !lifeComp.IsAlive)
+                if (this.Settings.HideUseless && hasVital)
                 {
-                    continue;
+                    if (!lifeComp.IsAlive)
+                    {
+                        continue;
+                    }
+
+                    if (!hasOMP && !isBlockage)
+                    {
+                        continue;
+                    }
+
+                    if (isBlockage && !blockageComp.IsBlocked)
+                    {
+                        continue;
+                    }
                 }
 
-                if (this.Settings.HideUseless && hasVital && !hasOMP)
-                {
-                    continue;
-                }
-
-                if (this.Settings.HideUseless && isBlockage && !blockageComp.IsClosed)
+                if (this.Settings.HideUseless && isBlockage && !blockageComp.IsBlocked)
                 {
                     continue;
                 }
@@ -472,7 +480,7 @@ namespace Radar
         private void AddDefaultIcons()
         {
             var iconPathName = Path.Join(this.DllDirectory, "icons.png");
-            this.Settings.Icons.TryAdd("Blockage OR DelveWall", new IconPicker(iconPathName, 14, 41, 1, 11, 24));
+            this.Settings.Icons.TryAdd("Blockage OR DelveWall", new IconPicker(iconPathName, 14, 41, 1, 11, 40));
 
             this.Settings.Icons.TryAdd("Chest", new IconPicker(iconPathName, 14, 41, 1, 13, 24));
             this.Settings.Icons.TryAdd("Legion Monster Chest", new IconPicker(iconPathName, 14, 41, 1, 13, 50));

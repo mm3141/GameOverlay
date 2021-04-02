@@ -6,6 +6,6 @@
     public struct TriggerableBlockageOffsets
     {
         [FieldOffset(0x000)] public ComponentHeader Header;
-        [FieldOffset(0x0030)] public bool IsClosed;
+        [FieldOffset(0x0030)] public bool IsBlocked;
     }
 }
