@@ -44,11 +44,15 @@ namespace Radar
 
         private string heistUsefullChestContains = "HeistChestSecondary";
         private string heistAllChestStarting = "Metadata/Chests/LeagueHeist";
-        private Dictionary<ushort, string> heistChestCache // Heist Cache.
+        private Dictionary<ushort, string> heistChestCache
             = new Dictionary<ushort, string>();
 
         private string deliriumHiddenMonsterStarting = "Metadata/Monsters/LeagueAffliction/DoodadDaemons/DoodadDaemon";
         private Dictionary<ushort, string> deliriumHiddenMonster // Delirium Hidden Monster cache.
+            = new Dictionary<ushort, string>();
+
+        private string delveChestStarting = "Metadata/Chests/DelveChests/";
+        private Dictionary<ushort, string> delveChestCache
             = new Dictionary<ushort, string>();
 
         private string SettingPathname
@@ -215,6 +219,7 @@ namespace Radar
                 var isChest = entity.Value.TryGetComponent<Chest>(out var chestComp);
                 var hasOMP = entity.Value.TryGetComponent<ObjectMagicProperties>(out var omp);
                 var isShrine = entity.Value.TryGetComponent<Shrine>(out var shrineComp);
+                var isBlockage = entity.Value.TryGetComponent<TriggerableBlockage>(out var blockageComp);
 
                 if (this.Settings.HideUseless && !(hasVital || isChest))
                 {
@@ -236,6 +241,11 @@ namespace Radar
                     continue;
                 }
 
+                if (this.Settings.HideUseless && isBlockage && !blockageComp.IsClosed)
+                {
+                    continue;
+                }
+
                 if (!entity.Value.TryGetComponent<Positioned>(out var entityPos))
                 {
                     continue;
@@ -250,7 +260,18 @@ namespace Radar
                 var fpos = Helper.DeltaInWorldToMapDelta(
                     ePos - pPos, entityZ.TerrainHeight - playerRender.TerrainHeight);
                 var finalSize = Vector2.One * scale * (isMiniMap ? 1f : 5f);
-                if (isChest)
+                if (isBlockage)
+                {
+                    var blockageIcon = this.Settings.Icons["Blockage OR DelveWall"];
+                    finalSize *= blockageIcon.IconScale;
+                    fgDraw.AddImage(
+                        blockageIcon.TexturePtr,
+                        mapCenter + fpos - finalSize,
+                        mapCenter + fpos + finalSize,
+                        blockageIcon.UV0,
+                        blockageIcon.UV1);
+                }
+                else if (isChest)
                 {
                     // TODO: Name Filter IconInfo/Color/null LargeMapSize MinimapSize
                     // TODO: Strongbox Draw
@@ -451,6 +472,8 @@ namespace Radar
         private void AddDefaultIcons()
         {
             var iconPathName = Path.Join(this.DllDirectory, "icons.png");
+            this.Settings.Icons.TryAdd("Blockage OR DelveWall", new IconPicker(iconPathName, 14, 41, 1, 11, 24));
+
             this.Settings.Icons.TryAdd("Chest", new IconPicker(iconPathName, 14, 41, 1, 13, 24));
             this.Settings.Icons.TryAdd("Legion Monster Chest", new IconPicker(iconPathName, 14, 41, 1, 13, 50));
 
