@@ -247,7 +247,22 @@ namespace Radar
                     // TODO: Strongbox Draw
                     // TODO: Delve Chests
                     // TODO: Heist Chest // update heist-cache icon to be none/empty as default.
-                    // TODO: Legion Chest
+                    if (entity.Value.TryGetComponent<MinimapIcon>(out var _))
+                    {
+                        var chestName = entity.Value.Path.Replace(
+                            "Metadata/Chests/LeagueHeist/HeistChestSecondary",
+                            string.Empty,
+                            StringComparison.Ordinal);
+                        if (!chestName.StartsWith("Meta"))
+                        {
+                            fgDraw.AddText(
+                                mapCenter + fpos,
+                                UiHelper.Color(255, 255, 255, 255),
+                                chestName);
+                            continue;
+                        }
+                    }
+
                     // TODO: Breach big chests
                     var chestIcon = this.Settings.Icons["Chest"];
                     finalSize *= chestIcon.IconScale;
