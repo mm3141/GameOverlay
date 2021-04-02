@@ -42,6 +42,11 @@ namespace Radar
         private Dictionary<ushort, byte> frozenInTimeEntities
             = new Dictionary<ushort, byte>();
 
+        private string heistUsefullChestContains = "HeistChestSecondary";
+        private string heistAllChestStarting = "Metadata/Chests/LeagueHeist";
+        private Dictionary<ushort, string> heistChestCache
+            = new Dictionary<ushort, string>();
+
         private string SettingPathname
             => Path.Join(this.DllDirectory, "config", "settings.txt");
 
@@ -175,7 +180,7 @@ namespace Radar
             this.onMove = CoroutineHandler.Start(this.OnMove());
             this.onForegroundChange = CoroutineHandler.Start(this.OnForegroundChange());
             this.onGameClose = CoroutineHandler.Start(this.OnClose());
-            this.onAreaChange = CoroutineHandler.Start(this.ClearFrozenInTime());
+            this.onAreaChange = CoroutineHandler.Start(this.ClearCaches());
         }
 
         /// <inheritdoc/>
@@ -246,19 +251,32 @@ namespace Radar
                     // TODO: Name Filter IconInfo/Color/null LargeMapSize MinimapSize
                     // TODO: Strongbox Draw
                     // TODO: Delve Chests
-                    // TODO: Heist Chest // update heist-cache icon to be none/empty as default.
                     if (entity.Value.TryGetComponent<MinimapIcon>(out var _))
                     {
-                        var chestName = entity.Value.Path.Replace(
-                            "Metadata/Chests/LeagueHeist/HeistChestSecondary",
-                            string.Empty,
-                            StringComparison.Ordinal);
-                        if (!chestName.StartsWith("Meta"))
+                        if (this.heistChestCache.TryGetValue(entity.Key.id, out var iconFinder))
                         {
-                            fgDraw.AddText(
-                                mapCenter + fpos,
-                                UiHelper.Color(255, 255, 255, 255),
-                                chestName);
+                            var heistchestIcon = this.Settings.Icons[iconFinder];
+                            finalSize *= heistchestIcon.IconScale;
+                            fgDraw.AddImage(
+                                heistchestIcon.TexturePtr,
+                                mapCenter + fpos - finalSize,
+                                mapCenter + fpos + finalSize,
+                                heistchestIcon.UV0,
+                                heistchestIcon.UV1);
+                            continue;
+                        }
+                        else if (entity.Value.Path.StartsWith(
+                            this.heistAllChestStarting,
+                            StringComparison.Ordinal))
+                        {
+                            if (entity.Value.Path.Contains(
+                                this.heistUsefullChestContains,
+                                StringComparison.Ordinal))
+                            {
+                                this.heistChestCache[entity.Key.id] =
+                                    this.HeistChestPathToIcon(entity.Value.Path);
+                            }
+
                             continue;
                         }
                     }
@@ -291,6 +309,7 @@ namespace Radar
                 }
                 else if (hasVital)
                 {
+                    // TODO: Invisible/Hidden/Non-Targetable/Frozen/Exploding/in-the-cloud/not-giving-exp things
                     if (lifeComp.StatusEffects.ContainsKey("frozen_in_time"))
                     {
                         this.frozenInTimeEntities.TryAdd(entity.Key.id, 1);
@@ -316,7 +335,6 @@ namespace Radar
                         }
                     }
 
-                    // TODO: Invisible/Hidden/Non-Targetable/Frozen/Exploding/in-the-cloud/not-giving-exp things
                     var monsterIcon = entityPos.IsFriendly ?
                         this.Settings.Icons["Friendly"] :
                         this.RarityToIconMapping(omp.Rarity);
@@ -335,12 +353,13 @@ namespace Radar
             }
         }
 
-        private IEnumerator<Wait> ClearFrozenInTime()
+        private IEnumerator<Wait> ClearCaches()
         {
             while (true)
             {
                 yield return new Wait(RemoteEvents.AreaChanged);
                 this.frozenInTimeEntities.Clear();
+                this.heistChestCache.Clear();
             }
         }
 
@@ -402,28 +421,48 @@ namespace Radar
         private void AddDefaultIcons()
         {
             var iconPathName = Path.Join(this.DllDirectory, "icons.png");
-            this.Settings.Icons.TryAdd("Chest", new IconPicker(iconPathName, 14, 41));
-            this.Settings.Icons.TryAdd("Legion Monster Chest", new IconPicker(iconPathName, 14, 41));
+            this.Settings.Icons.TryAdd("Chest", new IconPicker(iconPathName, 14, 41, 1, 13, 24));
+            this.Settings.Icons.TryAdd("Legion Monster Chest", new IconPicker(iconPathName, 14, 41, 1, 13, 50));
 
-            this.Settings.Icons.TryAdd("Shrine", new IconPicker(iconPathName, 14, 41));
+            this.Settings.Icons.TryAdd("Shrine", new IconPicker(iconPathName, 14, 41, 5, 0, 30));
 
-            this.Settings.Icons.TryAdd("Friendly", new IconPicker(iconPathName, 14, 41));
-            this.Settings.Icons.TryAdd("Normal Monster", new IconPicker(iconPathName, 14, 41));
-            this.Settings.Icons.TryAdd("Magic Monster", new IconPicker(iconPathName, 14, 41));
-            this.Settings.Icons.TryAdd("Rare Monster", new IconPicker(iconPathName, 14, 41));
-            this.Settings.Icons.TryAdd("Unique Monster", new IconPicker(iconPathName, 14, 41));
+            this.Settings.Icons.TryAdd("Friendly", new IconPicker(iconPathName, 14, 41, 1, 0, 20));
+            this.Settings.Icons.TryAdd("Normal Monster", new IconPicker(iconPathName, 14, 41, 0, 14, 20));
+            this.Settings.Icons.TryAdd("Magic Monster", new IconPicker(iconPathName, 14, 41, 6, 3, 20));
+            this.Settings.Icons.TryAdd("Rare Monster", new IconPicker(iconPathName, 14, 41, 3, 14, 20));
+            this.Settings.Icons.TryAdd("Unique Monster", new IconPicker(iconPathName, 14, 41, 5, 14, 30));
+
+            this.Settings.Icons.TryAdd("Heist Armour", new IconPicker(iconPathName, 14, 41, 1, 39, 30));
+            this.Settings.Icons.TryAdd("Heist Corrupted", new IconPicker(iconPathName, 14, 41, 7, 12, 30));
+            this.Settings.Icons.TryAdd("Heist Currency", new IconPicker(iconPathName, 14, 41, 10, 38, 30));
+            this.Settings.Icons.TryAdd("Heist DivinationCards", new IconPicker(iconPathName, 14, 41, 11, 39, 30));
+            this.Settings.Icons.TryAdd("Heist Essences", new IconPicker(iconPathName, 14, 41, 7, 39, 30));
+            this.Settings.Icons.TryAdd("Heist Gems", new IconPicker(iconPathName, 14, 41, 12, 38, 30));
+            this.Settings.Icons.TryAdd("Heist Jewellery", new IconPicker(iconPathName, 14, 41, 0, 39, 30));
+            this.Settings.Icons.TryAdd("Heist Jewels", new IconPicker(iconPathName, 14, 41, 0, 39, 30));
+            this.Settings.Icons.TryAdd("Heist Maps", new IconPicker(iconPathName, 14, 41, 13, 38, 30));
+            this.Settings.Icons.TryAdd("Heist Prophecies", new IconPicker(iconPathName, 14, 41, 10, 39, 30));
+            this.Settings.Icons.TryAdd("Heist QualityCurrency", new IconPicker(iconPathName, 14, 41, 9, 12, 30));
+            this.Settings.Icons.TryAdd("Heist StackedDecks", new IconPicker(iconPathName, 14, 41, 10, 12, 30));
+            this.Settings.Icons.TryAdd("Heist Uniques", new IconPicker(iconPathName, 14, 41, 11, 38, 30));
+            this.Settings.Icons.TryAdd("Heist Weapons", new IconPicker(iconPathName, 14, 41, 2, 39, 30));
         }
 
         private IconPicker RarityToIconMapping(Rarity rarity)
         {
-            return rarity switch
-            {
-                Rarity.Normal => this.Settings.Icons["Normal Monster"],
-                Rarity.Magic => this.Settings.Icons["Magic Monster"],
-                Rarity.Rare => this.Settings.Icons["Rare Monster"],
-                Rarity.Unique => this.Settings.Icons["Unique Monster"],
-                _ => throw new Exception($"Unknown Rarity {rarity} {(int)rarity} found."),
-            };
+            return this.Settings.Icons[$"{rarity} Monster"];
+        }
+
+        private string HeistChestPathToIcon(string path)
+        {
+            var strToReplace = string.Join('/', this.heistAllChestStarting, this.heistUsefullChestContains);
+            var afterStripStart = path.Replace(strToReplace, string.Empty);
+            var afterstripEnd = afterStripStart
+                .Replace("Military", null, StringComparison.Ordinal)
+                .Replace("Thug", null, StringComparison.Ordinal)
+                .Replace("Science", null, StringComparison.Ordinal)
+                .Replace("Robot", null, StringComparison.Ordinal);
+            return $"Heist {afterstripEnd}";
         }
     }
 }

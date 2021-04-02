@@ -57,10 +57,15 @@ namespace Radar
         /// <param name="filepathname">file pathname to the icon sprite file.</param>
         /// <param name="totalRows">total number of rows in icon sprite file.</param>
         /// <param name="totalColumns">total number of columns in icon sprite file.</param>
-        public IconPicker(string filepathname, int totalColumns, int totalRows)
+        /// <param name="x">Default Icon Column number. Note: start from 0.</param>
+        /// <param name="y">Default Icon Row number. Note: start from 0.</param>
+        /// <param name="s">Default Icon size.</param>
+        public IconPicker(string filepathname, int totalColumns, int totalRows, int x, int y, int s)
         {
             this.FilePathName = filepathname;
             this.IconDimension = new Vector2(1f / totalColumns, 1f / totalRows);
+            this.Clicked = new Vector2(x, y);
+            this.iconScale = s;
             this.Initialize();
         }
 
