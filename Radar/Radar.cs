@@ -39,12 +39,16 @@ namespace Radar
 
         private double largeMapDiagonalLength = 0x00;
 
-        private Dictionary<ushort, byte> frozenInTimeEntities
+        private Dictionary<ushort, byte> frozenInTimeEntities // Legion Cache.
             = new Dictionary<ushort, byte>();
 
         private string heistUsefullChestContains = "HeistChestSecondary";
         private string heistAllChestStarting = "Metadata/Chests/LeagueHeist";
-        private Dictionary<ushort, string> heistChestCache
+        private Dictionary<ushort, string> heistChestCache // Heist Cache.
+            = new Dictionary<ushort, string>();
+
+        private string deliriumHiddenMonsterStarting = "Metadata/Monsters/LeagueAffliction/DoodadDaemons/DoodadDaemon";
+        private Dictionary<ushort, string> deliriumHiddenMonster // Delirium Hidden Monster cache.
             = new Dictionary<ushort, string>();
 
         private string SettingPathname
@@ -251,6 +255,7 @@ namespace Radar
                     // TODO: Name Filter IconInfo/Color/null LargeMapSize MinimapSize
                     // TODO: Strongbox Draw
                     // TODO: Delve Chests
+                    // TODO: Breach big chests
                     if (entity.Value.TryGetComponent<MinimapIcon>(out var _))
                     {
                         if (this.heistChestCache.TryGetValue(entity.Key.id, out var iconFinder))
@@ -281,7 +286,6 @@ namespace Radar
                         }
                     }
 
-                    // TODO: Breach big chests
                     var chestIcon = this.Settings.Icons["Chest"];
                     finalSize *= chestIcon.IconScale;
                     fgDraw.AddImage(
@@ -333,6 +337,31 @@ namespace Radar
                         {
                             continue;
                         }
+
+                        if (this.deliriumHiddenMonster.TryGetValue(entity.Key.id, out var iconFinder))
+                        {
+                            if (this.Settings.Icons.TryGetValue(iconFinder, out var dHiddenMIcon))
+                            {
+                                finalSize *= dHiddenMIcon.IconScale;
+                                fgDraw.AddImage(
+                                    dHiddenMIcon.TexturePtr,
+                                    mapCenter + fpos - finalSize,
+                                    mapCenter + fpos + finalSize,
+                                    dHiddenMIcon.UV0,
+                                    dHiddenMIcon.UV1);
+                            }
+
+                            continue;
+                        }
+
+                        if (entity.Value.Path.StartsWith(
+                            this.deliriumHiddenMonsterStarting,
+                            StringComparison.Ordinal))
+                        {
+                            this.deliriumHiddenMonster[entity.Key.id] =
+                                this.DeliriumHiddenMonsterPathToIcon(entity.Value.Path);
+                            continue;
+                        }
                     }
 
                     var monsterIcon = entityPos.IsFriendly ?
@@ -360,6 +389,7 @@ namespace Radar
                 yield return new Wait(RemoteEvents.AreaChanged);
                 this.frozenInTimeEntities.Clear();
                 this.heistChestCache.Clear();
+                this.deliriumHiddenMonster.Clear();
             }
         }
 
@@ -424,13 +454,16 @@ namespace Radar
             this.Settings.Icons.TryAdd("Chest", new IconPicker(iconPathName, 14, 41, 1, 13, 24));
             this.Settings.Icons.TryAdd("Legion Monster Chest", new IconPicker(iconPathName, 14, 41, 1, 13, 50));
 
-            this.Settings.Icons.TryAdd("Shrine", new IconPicker(iconPathName, 14, 41, 5, 0, 30));
+            this.Settings.Icons.TryAdd("Shrine", new IconPicker(iconPathName, 14, 41, 7, 0, 30));
 
             this.Settings.Icons.TryAdd("Friendly", new IconPicker(iconPathName, 14, 41, 1, 0, 20));
             this.Settings.Icons.TryAdd("Normal Monster", new IconPicker(iconPathName, 14, 41, 0, 14, 20));
             this.Settings.Icons.TryAdd("Magic Monster", new IconPicker(iconPathName, 14, 41, 6, 3, 20));
             this.Settings.Icons.TryAdd("Rare Monster", new IconPicker(iconPathName, 14, 41, 3, 14, 20));
             this.Settings.Icons.TryAdd("Unique Monster", new IconPicker(iconPathName, 14, 41, 5, 14, 30));
+
+            this.Settings.Icons.TryAdd("Delirium Bomb", new IconPicker(iconPathName, 14, 41, 5, 0, 30));
+            this.Settings.Icons.TryAdd("Delirium Spawner", new IconPicker(iconPathName, 14, 41, 6, 0, 30));
 
             this.Settings.Icons.TryAdd("Heist Armour", new IconPicker(iconPathName, 14, 41, 1, 39, 30));
             this.Settings.Icons.TryAdd("Heist Corrupted", new IconPicker(iconPathName, 14, 41, 7, 12, 30));
@@ -463,6 +496,26 @@ namespace Radar
                 .Replace("Science", null, StringComparison.Ordinal)
                 .Replace("Robot", null, StringComparison.Ordinal);
             return $"Heist {afterstripEnd}";
+        }
+
+        private string DeliriumHiddenMonsterPathToIcon(string path)
+        {
+            if (path.Contains("BloodBag"))
+            {
+                return "Delirium Bomb";
+            }
+            else if (path.Contains("EggFodder"))
+            {
+                return "Delirium Spawner";
+            }
+            else if (path.Contains("GlobSpawn"))
+            {
+                return "Delirium Spawner";
+            }
+            else
+            {
+                return "Delirium Ignore";
+            }
         }
     }
 }
