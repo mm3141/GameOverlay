@@ -52,6 +52,7 @@ namespace Radar
             = new Dictionary<ushort, string>();
 
         private string delveChestStarting = "Metadata/Chests/DelveChests/";
+        private bool isAzuriteMine = false;
         private Dictionary<ushort, string> delveChestCache
             = new Dictionary<ushort, string>();
 
@@ -188,7 +189,7 @@ namespace Radar
             this.onMove = CoroutineHandler.Start(this.OnMove());
             this.onForegroundChange = CoroutineHandler.Start(this.OnForegroundChange());
             this.onGameClose = CoroutineHandler.Start(this.OnClose());
-            this.onAreaChange = CoroutineHandler.Start(this.ClearCaches());
+            this.onAreaChange = CoroutineHandler.Start(this.ClearCachesAndUpdateAreaInfo());
         }
 
         /// <inheritdoc/>
@@ -283,8 +284,13 @@ namespace Radar
                 {
                     // TODO: Name Filter IconInfo/Color/null LargeMapSize MinimapSize
                     // TODO: Strongbox Draw
-                    // TODO: Delve Chests
                     // TODO: Breach big chests
+                    if (this.isAzuriteMine)
+                    {
+                        // TODO: Only show important Delve Chests
+                        continue;
+                    }
+
                     if (entity.Value.TryGetComponent<MinimapIcon>(out var _))
                     {
                         if (this.heistChestCache.TryGetValue(entity.Key.id, out var iconFinder))
@@ -411,7 +417,7 @@ namespace Radar
             }
         }
 
-        private IEnumerator<Wait> ClearCaches()
+        private IEnumerator<Wait> ClearCachesAndUpdateAreaInfo()
         {
             while (true)
             {
@@ -419,6 +425,7 @@ namespace Radar
                 this.frozenInTimeEntities.Clear();
                 this.heistChestCache.Clear();
                 this.deliriumHiddenMonster.Clear();
+                this.isAzuriteMine = Core.States.AreaLoading.CurrentAreaName == "Azurite Mine";
             }
         }
 
