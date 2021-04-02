@@ -287,7 +287,25 @@ namespace Radar
                     // TODO: Breach big chests
                     if (this.isAzuriteMine)
                     {
-                        // TODO: Only show important Delve Chests
+                        if (this.delveChestCache.TryGetValue(entity.Key.id, out var iconFinder))
+                        {
+                            if (this.Settings.Icons.TryGetValue(iconFinder, out var delveChestIcon))
+                            {
+                                finalSize *= delveChestIcon.IconScale;
+                                fgDraw.AddImage(
+                                    delveChestIcon.TexturePtr,
+                                    mapCenter + fpos - finalSize,
+                                    mapCenter + fpos + finalSize,
+                                    delveChestIcon.UV0,
+                                    delveChestIcon.UV1);
+                            }
+                        }
+                        else
+                        {
+                            this.delveChestCache[entity.Key.id] =
+                                this.DelveChestPathToIcon(entity.Value.Path);
+                        }
+
                         continue;
                     }
 
@@ -295,28 +313,25 @@ namespace Radar
                     {
                         if (this.heistChestCache.TryGetValue(entity.Key.id, out var iconFinder))
                         {
-                            var heistchestIcon = this.Settings.Icons[iconFinder];
-                            finalSize *= heistchestIcon.IconScale;
-                            fgDraw.AddImage(
-                                heistchestIcon.TexturePtr,
-                                mapCenter + fpos - finalSize,
-                                mapCenter + fpos + finalSize,
-                                heistchestIcon.UV0,
-                                heistchestIcon.UV1);
+                            if (this.Settings.Icons.TryGetValue(iconFinder, out var heistChestIcon))
+                            {
+                                finalSize *= heistChestIcon.IconScale;
+                                fgDraw.AddImage(
+                                    heistChestIcon.TexturePtr,
+                                    mapCenter + fpos - finalSize,
+                                    mapCenter + fpos + finalSize,
+                                    heistChestIcon.UV0,
+                                    heistChestIcon.UV1);
+                            }
+
                             continue;
                         }
                         else if (entity.Value.Path.StartsWith(
                             this.heistAllChestStarting,
                             StringComparison.Ordinal))
                         {
-                            if (entity.Value.Path.Contains(
-                                this.heistUsefullChestContains,
-                                StringComparison.Ordinal))
-                            {
-                                this.heistChestCache[entity.Key.id] =
-                                    this.HeistChestPathToIcon(entity.Value.Path);
-                            }
-
+                            this.heistChestCache[entity.Key.id] =
+                                this.HeistChestPathToIcon(entity.Value.Path);
                             continue;
                         }
                     }
@@ -425,6 +440,7 @@ namespace Radar
                 this.frozenInTimeEntities.Clear();
                 this.heistChestCache.Clear();
                 this.deliriumHiddenMonster.Clear();
+                this.delveChestCache.Clear();
                 this.isAzuriteMine = Core.States.AreaLoading.CurrentAreaName == "Azurite Mine";
             }
         }
@@ -527,13 +543,13 @@ namespace Radar
         private string HeistChestPathToIcon(string path)
         {
             var strToReplace = string.Join('/', this.heistAllChestStarting, this.heistUsefullChestContains);
-            var afterStripStart = path.Replace(strToReplace, string.Empty);
-            var afterstripEnd = afterStripStart
+            var truncatedPath = path
+                .Replace(strToReplace, null, StringComparison.Ordinal)
                 .Replace("Military", null, StringComparison.Ordinal)
                 .Replace("Thug", null, StringComparison.Ordinal)
                 .Replace("Science", null, StringComparison.Ordinal)
                 .Replace("Robot", null, StringComparison.Ordinal);
-            return $"Heist {afterstripEnd}";
+            return $"Heist {truncatedPath}";
         }
 
         private string DeliriumHiddenMonsterPathToIcon(string path)
@@ -552,8 +568,18 @@ namespace Radar
             }
             else
             {
-                return "Delirium Ignore";
+                return $"Delirium Ignore";
             }
+        }
+
+        private string DelveChestPathToIcon(string path)
+        {
+            if (path.StartsWith(this.delveChestStarting, StringComparison.Ordinal))
+            {
+                return "Chest";
+            }
+
+            return "Delve Ignore";
         }
     }
 }
