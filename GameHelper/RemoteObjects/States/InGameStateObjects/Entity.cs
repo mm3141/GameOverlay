@@ -111,6 +111,15 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
         }
 
         /// <summary>
+        /// Calling this function will make sure entity isn't deleted
+        /// in the very next frame even if GameHelper consider it invalid.
+        /// </summary>
+        public void ForceKeepEntity()
+        {
+            this.IsValid = true;
+        }
+
+        /// <summary>
         /// Converts the <see cref="Entity"/> class data to ImGui.
         /// </summary>
         internal override void ToImGui()

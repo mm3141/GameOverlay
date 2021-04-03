@@ -291,6 +291,9 @@ namespace Radar
                         {
                             if (this.Settings.Icons.TryGetValue(iconFinder, out var delveChestIcon))
                             {
+                                // Have to force keep the Delve Chest since GGG changed
+                                // network bubble radius for them.
+                                entity.Value.ForceKeepEntity();
                                 finalSize *= delveChestIcon.IconScale;
                                 fgDraw.AddImage(
                                     delveChestIcon.TexturePtr,
