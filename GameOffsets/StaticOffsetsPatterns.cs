@@ -56,7 +56,7 @@
             /// 3: "Find out what accesses this address"
             /// 4: Highlight one of the instruction (make sure the highlighted instruction is in POE memory, not Kernel/Windows-Lib memory).
             /// 5: For each static (green) address on the register RAX, RBX and etc do the following
-            /// 6: Find the value 1 in float format. It must be either before or on that green address. If not, go to step-4 and choose next instruction.
+            /// 6: Find the value 1 (or 0) in float format. It must be either before or on that green address. If not, go to step-4 and choose next instruction.
             /// 8: Valid address found in step-6, do "Find out what accesses this address" on it.
             /// 9: On this instruction do "Find out what addresses this instruction accesses"
             /// 10: Go to the game, change area/zone 2 or 3 times.
@@ -64,42 +64,47 @@
             /// 12: On the step-9 instruction do "Break and trace instruction" 
             /// 12.1: Put (RSI)==0xAddress-of-step8 in the start-condition.
             /// 13 From here, find the function which loads that address.
-            /// ==Function start==to==10 lines after== 
-            /// PathOfExile_x64.exe+E89360 - 48 8B C4              - mov rax,rsp
-            /// PathOfExile_x64.exe+E89363 - 56                    - push rsi
-            /// PathOfExile_x64.exe+E89364 - 57                    - push rdi
-            /// PathOfExile_x64.exe+E89365 - 41 56                 - push r14
-            /// PathOfExile_x64.exe+E89367 - 48 83 EC 60           - sub rsp,60
-            /// PathOfExile_x64.exe+E8936B - 48 C7 40 B8 FEFFFFFF  - mov qword ptr [rax-48],FFFFFFFFFFFFFFFE
-            /// PathOfExile_x64.exe+E89373 - 48 89 58 10           - mov [rax+10],rbx
-            /// PathOfExile_x64.exe+E89377 - 48 89 68 18           - mov [rax+18],rbp
-            /// PathOfExile_x64.exe+E8937B - 0F29 70 D8            - movaps [rax-28],xmm6
-            /// PathOfExile_x64.exe+E8937F - 0F29 78 C8            - movaps [rax-38],xmm7
-            /// PathOfExile_x64.exe+E89383 - BE 70000000           - mov esi,00000070
-            /// PathOfExile_x64.exe+E89388 - 65 48 8B 04 25 58000000  - mov rax,gs:[00000058]
-            /// PathOfExile_x64.exe+E89391 - 48 8B 08              - mov rcx,[rax]
-            /// PathOfExile_x64.exe+E89394 - 4C 8D 35 750D6901     - lea r14,[PathOfExile_x64.exe + 251A110] <---- here's the address (i.e. array-start-ptr)
-            /// PathOfExile_x64.exe+E8939B - 8B 04 0E              - mov eax,[rsi + rcx]
-            /// PathOfExile_x64.exe+E8939E - 39 05 640D6901        - cmp[PathOfExile_x64.exe + 251A108],eax
-            /// PathOfExile_x64.exe+E893A4 - 0F8E A6010000         - jng PathOfExile_x64.exe+E89550
-            /// PathOfExile_x64.exe+E893AA - 48 8D 0D 570D6901     - lea rcx, [PathOfExile_x64.exe+251A108]
-            /// PathOfExile_x64.exe+E893B1 - E8 D6758F00           - call PathOfExile_x64.exe+178098C
-            /// PathOfExile_x64.exe+E893B6 - 83 3D 4B0D6901 FF     - cmp dword ptr[PathOfExile_x64.exe + 251A108],-01
-            /// PathOfExile_x64.exe+E893BD - 0F85 8D010000         - jne PathOfExile_x64.exe+E89550
-            /// PathOfExile_x64.exe+E893C3 - 48 8D 05 A6F3FFFF     - lea rax, [PathOfExile_x64.exe+E88770]
-            /// PathOfExile_x64.exe+E893CA - 48 89 44 24 20        - mov[rsp + 20], rax
-            /// PathOfExile_x64.exe+E893CF - 4C 8D 0D 4A030000     - lea r9, [PathOfExile_x64.exe+E89720]
-            /// PathOfExile_x64.exe+E893D6 - BA 40000000           - mov edx,00000040
-            /// PathOfExile_x64.exe+E893DB - 44 8D 42 40           - lea r8d, [rdx+40]
-            /// PathOfExile_x64.exe+E893DF - 49 8B CE              - mov rcx, r14
-            /// PathOfExile_x64.exe+E893E2 - E8 19788F00           - call PathOfExile_x64.exe+1780C00
-            /// PathOfExile_x64.exe+E893E7 - 90                    - nop
-            /// PathOfExile_x64.exe+E893E8 - 48 8D 3D 212D6901     - lea rdi, [PathOfExile_x64.exe+251C110] <---- For calculating array length (i.e. array-end-ptr)
+
+            /// PathOfExile_x64.exe+EA6D40 - 41 56                 - push r14
+            /// PathOfExile_x64.exe+EA6D42 - 48 83 EC 50           - sub rsp,50
+            /// PathOfExile_x64.exe+EA6D46 - 48 C7 44 24 30 FEFFFFFF - mov qword ptr [rsp+30],FFFFFFFFFFFFFFFE
+            /// PathOfExile_x64.exe+EA6D4F - 48 89 5C 24 68        - mov [rsp+68],rbx
+            /// PathOfExile_x64.exe+EA6D54 - 48 89 74 24 70        - mov [rsp+70],rsi
+            /// PathOfExile_x64.exe+EA6D59 - 48 89 7C 24 78        - mov [rsp+78],rdi
+            /// PathOfExile_x64.exe+EA6D5E - 0F29 74 24 40         - movaps [rsp+40],xmm6
+            /// PathOfExile_x64.exe+EA6D63 - 41 BE 70000000        - mov r14d,00000070
+            /// PathOfExile_x64.exe+EA6D69 - 65 48 8B 04 25 58000000  - mov rax,gs:[00000058]
+            /// PathOfExile_x64.exe+EA6D72 - 48 8B 08              - mov rcx,[rax]
+            /// PathOfExile_x64.exe+EA6D75 - 48 8D 3D 144D6901     - lea rdi,[PathOfExile_x64.exe + 253BA90] <---- here's the address (i.e. array-start-ptr)
+            /// PathOfExile_x64.exe+EA6D7C - 41 8B 04 0E           - mov eax,[r14 + rcx]
+            /// PathOfExile_x64.exe+EA6D80 - 39 05 024D6901        - cmp[PathOfExile_x64.exe + 253BA88],eax
+            ///  PathOfExile_x64.exe+EA6D86 - 0F8E 3A010000         - jng PathOfExile_x64.exe+EA6EC6
+            ///  PathOfExile_x64.exe+EA6D8C - 48 8D 0D F54C6901     - lea rcx, [PathOfExile_x64.exe+253BA88]
+            /// PathOfExile_x64.exe+EA6D93 - E8 74A89000           - call PathOfExile_x64.exe+17B160C
+            ///  PathOfExile_x64.exe+EA6D98 - 83 3D E94C6901 FF     - cmp dword ptr[PathOfExile_x64.exe + 253BA88],-01
+            /// PathOfExile_x64.exe+EA6D9F - 0F85 21010000         - jne PathOfExile_x64.exe+EA6EC6
+            ///  PathOfExile_x64.exe+EA6DA5 - 48 8D 05 C4F6FFFF     - lea rax, [PathOfExile_x64.exe+EA6470]
+            /// PathOfExile_x64.exe+EA6DAC - 48 89 44 24 20        - mov[rsp + 20], rax
+            ///  PathOfExile_x64.exe+EA6DB1 - 4C 8D 0D 480A0000     - lea r9, [PathOfExile_x64.exe+EA7800]
+            /// PathOfExile_x64.exe+EA6DB8 - BA 28000000           - mov edx,00000028
+            /// PathOfExile_x64.exe+EA6DBD - 44 8D 42 E8           - lea r8d, [rdx-18]
+            /// PathOfExile_x64.exe+EA6DC1 - 48 8B CF              - mov rcx, rdi
+            ///  PathOfExile_x64.exe+EA6DC4 - E8 B7AA9000           - call PathOfExile_x64.exe+17B1880
+            ///  PathOfExile_x64.exe+EA6DC9 - 90                    - nop
+            ///  PathOfExile_x64.exe+EA6DCA - 48 8D 0D 3F4F6901     - lea rcx, [PathOfExile_x64.exe+253BD10] <---- For calculating array length (i.e. array-end-ptr)
+            /// PathOfExile_x64.exe+EA6DD1 - 48 8D 05 88CC8BFF     - lea rax, [PathOfExile_x64.exe+763A60]
+            /// PathOfExile_x64.exe+EA6DD8 - 48 89 44 24 20        - mov[rsp + 20], rax
+            ///  PathOfExile_x64.exe+EA6DDD - 4C 8D 0D 5CCC8BFF     - lea r9, [PathOfExile_x64.exe+763A40]
+            /// PathOfExile_x64.exe+EA6DE4 - BA 28000000           - mov edx,00000028
+            /// PathOfExile_x64.exe+EA6DE9 - 44 8D 42 E8           - lea r8d, [rdx-18]
+            /// PathOfExile_x64.exe+EA6DED - E8 8EAA9000           - call PathOfExile_x64.exe+17B1880
+            ///  PathOfExile_x64.exe+EA6DF2 - 90                    - nop
+            ///  PathOfExile_x64.exe+EA6DF3 - 48 8D 35 96516901     - lea rsi, [PathOfExile_x64.exe+253BF90]
             ///</HowToFindIt>
         new Pattern
             (
                 "File Root",
-                "4C ?? ?? ^ ?? ?? ?? ?? 8B ?? ?? 39 ?? ?? ?? ?? ?? 0F"
+                "48 ?? ?? ^ ?? ?? ?? ?? 41 ?? ?? ?? 39 ?? ?? ?? ?? ?? 0F 8E"
             ),
 
             /// <HowToFindIt>
