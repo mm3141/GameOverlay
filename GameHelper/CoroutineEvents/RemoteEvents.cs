@@ -16,6 +16,7 @@ namespace GameHelper.CoroutineEvents
         /// Area change is detected by checking if the time spend on the
         /// loading screen (given to us by the game) is greater than the
         /// last recorded time and IsLoading bool is set to false.
+        /// NOTE: when this is triggered the preloads might not be up to date.
         /// </summary>
         public static readonly Event AreaChanged = new Event();
 

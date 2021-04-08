@@ -116,48 +116,88 @@ namespace GameHelper.RemoteObjects
             this.searchText = string.Empty;
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// this function is overrided to do nothing because it's done @ AreaChange event.
+        /// </summary>
+        /// <param name="hasAddressChanged">ignore me.</param>
         protected override void UpdateData(bool hasAddressChanged)
+        {
+        }
+
+        private LoadedFilesRootObject[] GetAllPointers()
         {
             var totalFiles = LoadedFilesRootObject.TotalCount;
             var reader = Core.Process.Handle;
-            var filesRootObjs = reader.ReadMemoryArray<LoadedFilesRootObject>(this.Address, totalFiles);
-            var totalIgnoreAreas = FileInfoValueStruct.IGNORE_FIRST_X_AREAS;
-            Parallel.For(0, filesRootObjs.Length, (i) =>
+            return reader.ReadMemoryArray<LoadedFilesRootObject>(
+                this.Address + LoadedFilesRootObject.SkipBytes,
+                totalFiles);
+        }
+
+        private void ScanAllBucketsParallel(SafeMemoryHandle reader, LoadedFilesRootObject filesRootObj)
+        {
+            if (filesRootObj.FilesArray == IntPtr.Zero)
             {
-                var filesRootObj = filesRootObjs[i];
-                if (filesRootObj.FilesList.Head == IntPtr.Zero || filesRootObj.IsValid != 1f)
+                throw new Exception("Couldn't read LoadedFilesRootObject array " +
+                    $"from FileRoot address: {this.Address.ToInt64():X}");
+            }
+
+            var filesPtr = reader.ReadMemoryArray<FilesArrayStructure>(
+                filesRootObj.FilesArray,
+                FilesArrayStructure.MaximumBuckets);
+            Parallel.For(0, filesPtr.Length, (i) =>
+            {
+                var fileNode = filesPtr[i];
+                if (fileNode.Flag0 != FilesArrayStructure.InValidPointerFlagValue)
                 {
-                    throw new Exception("Couldn't read LoadedFilesRootObject array " +
-                        $"from FileRoot address: {this.Address.ToInt64():X}");
+                    this.AddFileIfLoadedInCurrentArea(reader, fileNode.Pointer0.FilesPointer);
                 }
 
-                switch (filesRootObj.TemplateId2)
+                if (fileNode.Flag1 != FilesArrayStructure.InValidPointerFlagValue)
                 {
-                    case 512:
-                    case 1024:
-                        break;
-                    default:
-                        throw new Exception($"New template found (in index {i}) " +
-                            $"(templateId {filesRootObj.TemplateId1}," +
-                            $"{filesRootObj.TemplateId2}) in " +
-                            $"LoadedFilesRootObject object at " +
-                            $"address: {this.Address.ToInt64():X}.");
+                    this.AddFileIfLoadedInCurrentArea(reader, fileNode.Pointer1.FilesPointer);
                 }
 
-                var filesPtr = reader.ReadStdList<FilesKeyValueStruct>(filesRootObj.FilesList);
-                for (int j = 0; j < filesPtr.Count; j++)
+                if (fileNode.Flag2 != FilesArrayStructure.InValidPointerFlagValue)
                 {
-                    var fileNode = filesPtr[j];
-                    var information = reader.ReadMemory<FileInfoValueStruct>(fileNode.ValuePtr);
-                    if (information.AreaChangeCount > totalIgnoreAreas &&
-                    information.AreaChangeCount == Core.AreaChangeCounter.Value)
-                    {
-                        var name = reader.ReadStdWString(information.Name);
-                        this.PathNames[name] = information.AreaChangeCount;
-                    }
+                    this.AddFileIfLoadedInCurrentArea(reader, fileNode.Pointer2.FilesPointer);
+                }
+
+                if (fileNode.Flag3 != FilesArrayStructure.InValidPointerFlagValue)
+                {
+                    this.AddFileIfLoadedInCurrentArea(reader, fileNode.Pointer3.FilesPointer);
+                }
+
+                if (fileNode.Flag4 != FilesArrayStructure.InValidPointerFlagValue)
+                {
+                    this.AddFileIfLoadedInCurrentArea(reader, fileNode.Pointer4.FilesPointer);
+                }
+
+                if (fileNode.Flag5 != FilesArrayStructure.InValidPointerFlagValue)
+                {
+                    this.AddFileIfLoadedInCurrentArea(reader, fileNode.Pointer5.FilesPointer);
+                }
+
+                if (fileNode.Flag6 != FilesArrayStructure.InValidPointerFlagValue)
+                {
+                    this.AddFileIfLoadedInCurrentArea(reader, fileNode.Pointer6.FilesPointer);
+                }
+
+                if (fileNode.Flag7 != FilesArrayStructure.InValidPointerFlagValue)
+                {
+                    this.AddFileIfLoadedInCurrentArea(reader, fileNode.Pointer7.FilesPointer);
                 }
             });
+        }
+
+        private void AddFileIfLoadedInCurrentArea(SafeMemoryHandle reader, IntPtr address)
+        {
+            var information = reader.ReadMemory<FileInfoValueStruct>(address);
+            if (information.AreaChangeCount > FileInfoValueStruct.IGNORE_FIRST_X_AREAS &&
+            information.AreaChangeCount == Core.AreaChangeCounter.Value)
+            {
+                var name = reader.ReadStdWString(information.Name);
+                this.PathNames[name] = information.AreaChangeCount;
+            }
         }
 
         private IEnumerator<Wait> OnAreaChange()
@@ -180,7 +220,16 @@ namespace GameHelper.RemoteObjects
                     this.filename = $"{name}_{areaHash}.txt";
                     this.areaAlreadyDone = false;
                     this.areaHashCache = areaHash;
-                    this.UpdateData(false);
+
+                    var filesRootObjs = this.GetAllPointers();
+                    var reader = Core.Process.Handle;
+                    for (int i = 0; i < filesRootObjs.Length; i++)
+                    {
+                        this.ScanAllBucketsParallel(reader, filesRootObjs[i]);
+                        yield return new Wait(0d);
+                    }
+
+                    CoroutineHandler.RaiseEvent(HybridEvents.PreloadsUpdated);
                 }
             }
         }

@@ -31,7 +31,7 @@ namespace PreloadAlert
         private string displayName = string.Empty;
         private Vector4 color = new Vector4(1f);
 
-        private ActiveCoroutine onAreaChange;
+        private ActiveCoroutine onPreloadUpdated;
         private Dictionary<string, PreloadInfo> importantPreloads
             = new Dictionary<string, PreloadInfo>();
 
@@ -46,8 +46,8 @@ namespace PreloadAlert
         {
             this.importantPreloads.Clear();
             this.preloadFound.Clear();
-            this.onAreaChange?.Cancel();
-            this.onAreaChange = null;
+            this.onPreloadUpdated?.Cancel();
+            this.onPreloadUpdated = null;
         }
 
         /// <summary>
@@ -70,7 +70,7 @@ namespace PreloadAlert
                     Dictionary<string, PreloadInfo>>(content);
             }
 
-            this.onAreaChange = CoroutineHandler.Start(this.OnAreaChanged());
+            this.onPreloadUpdated = CoroutineHandler.Start(this.OnPreloadsUpdated());
         }
 
         /// <summary>
@@ -224,11 +224,11 @@ namespace PreloadAlert
             }
         }
 
-        private IEnumerator<Wait> OnAreaChanged()
+        private IEnumerator<Wait> OnPreloadsUpdated()
         {
             while (true)
             {
-                yield return new Wait(RemoteEvents.AreaChanged);
+                yield return new Wait(HybridEvents.PreloadsUpdated);
                 this.preloadFound.Clear();
                 foreach (var kv in this.importantPreloads)
                 {

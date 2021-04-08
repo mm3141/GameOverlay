@@ -16,6 +16,9 @@ namespace GameHelper.Ui
     /// </summary>
     public static class PerformanceStats
     {
+        private static Dictionary<string, MovingAverage> movingAverage
+            = new Dictionary<string, MovingAverage>();
+
         /// <summary>
         /// Initializes the co-routines.
         /// </summary>
@@ -53,12 +56,55 @@ namespace GameHelper.Ui
                             Core.CoroutinesRegistrar.Remove(coroutine);
                         }
 
-                        ImGui.Text($"{coroutine.Name}: " +
-                            $"{(int)coroutine.LastMoveNextTime.TotalMilliseconds}(ms)");
+                        if (movingAverage.TryGetValue(coroutine.Name, out var value))
+                        {
+                            value.ComputeAverage(
+                                coroutine.LastMoveNextTime.TotalMilliseconds,
+                                coroutine.MoveNextCount);
+                            ImGui.Text($"{coroutine.Name}: {value.Average:0.00}(ms)");
+                        }
+                        else
+                        {
+                            movingAverage[coroutine.Name] = new MovingAverage();
+                        }
                     }
 
                     ImGui.End();
                 }
+            }
+        }
+
+        private class MovingAverage
+        {
+            private Queue<double> samples = new Queue<double>();
+            private int windowSize = 144 * 10; // 10 seconds moving average @ 144 FPS.
+            private double sampleAccumulator;
+            private int lastIterationNumber = 0;
+
+            public double Average { get; private set; }
+
+            /// <summary>
+            /// Computes a new windowed average each time a new sample arrives.
+            /// </summary>
+            /// <param name="newSample">new sample to add into the moving average.</param>
+            /// <param name="iterationNumber">iteration number who's sample you are adding.</param>
+            public void ComputeAverage(double newSample, int iterationNumber)
+            {
+                if (iterationNumber <= this.lastIterationNumber)
+                {
+                    return;
+                }
+
+                this.lastIterationNumber = iterationNumber;
+                this.sampleAccumulator += newSample;
+                this.samples.Enqueue(newSample);
+
+                if (this.samples.Count > this.windowSize)
+                {
+                    this.sampleAccumulator -= this.samples.Dequeue();
+                }
+
+                this.Average = this.sampleAccumulator / this.samples.Count;
             }
         }
     }
