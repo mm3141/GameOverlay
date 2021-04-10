@@ -84,7 +84,7 @@ namespace Radar
             this.Settings.DrawIconsSettingToImGui(
                 "Legion Icons",
                 this.Settings.LegionIcons,
-                "Legion bosses are same as Base Game unique monsters.");
+                "Legion bosses are same as BaseGame Icons -> Unique Monsters.");
 
             this.Settings.DrawIconsSettingToImGui(
                 "Delirium Icons",
@@ -99,7 +99,7 @@ namespace Radar
             this.Settings.DrawIconsSettingToImGui(
                 "Delve Icons",
                 this.Settings.DelveIcons,
-                "Delve wall is in the Base Game Icons.");
+                "Delve wall is in the BaseGame Icons");
         }
 
         /// <inheritdoc/>
