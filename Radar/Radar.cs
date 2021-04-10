@@ -79,7 +79,7 @@ namespace Radar
             this.Settings.DrawIconsSettingToImGui(
                 "BaseGame Icons",
                 this.Settings.BaseIcons,
-                string.Empty);
+                "Blockages are in Delve Icons");
 
             this.Settings.DrawIconsSettingToImGui(
                 "Legion Icons",
@@ -99,7 +99,7 @@ namespace Radar
             this.Settings.DrawIconsSettingToImGui(
                 "Delve Icons",
                 this.Settings.DelveIcons,
-                "Delve wall is in the BaseGame Icons");
+                string.Empty);
         }
 
         /// <inheritdoc/>
