@@ -39,25 +39,22 @@ namespace Radar
 
         private double largeMapDiagonalLength = 0x00;
 
-        private Dictionary<ushort, byte> frozenInTimeEntities // Legion Cache.
-            = new Dictionary<ushort, byte>();
+        // Legion Cache.
+        private Dictionary<ushort, byte> frozenInTimeEntities = new Dictionary<ushort, byte>();
 
         private string heistUsefullChestContains = "HeistChestSecondary";
         private string heistAllChestStarting = "Metadata/Chests/LeagueHeist";
-        private Dictionary<ushort, string> heistChestCache
-            = new Dictionary<ushort, string>();
+        private Dictionary<ushort, string> heistChestCache = new Dictionary<ushort, string>();
 
+        // Delirium Hidden Monster cache.
+        private Dictionary<ushort, string> deliriumHiddenMonster = new Dictionary<ushort, string>();
         private string deliriumHiddenMonsterStarting = "Metadata/Monsters/LeagueAffliction/DoodadDaemons/DoodadDaemon";
-        private Dictionary<ushort, string> deliriumHiddenMonster // Delirium Hidden Monster cache.
-            = new Dictionary<ushort, string>();
 
         private string delveChestStarting = "Metadata/Chests/DelveChests/";
         private bool isAzuriteMine = false;
-        private Dictionary<ushort, string> delveChestCache
-            = new Dictionary<ushort, string>();
+        private Dictionary<ushort, string> delveChestCache = new Dictionary<ushort, string>();
 
-        private string SettingPathname
-            => Path.Join(this.DllDirectory, "config", "settings.txt");
+        private string SettingPathname => Path.Join(this.DllDirectory, "config", "settings.txt");
 
         /// <inheritdoc/>
         public override void DrawSettings()
@@ -79,16 +76,30 @@ namespace Radar
             ImGui.Checkbox("Modify Large Map Culling Window", ref this.Settings.ModifyCullWindow);
             ImGui.Checkbox("Hide Entities without Life/Chest component", ref this.Settings.HideUseless);
 
-            ImGui.Columns(2, "icons columns", false);
-            foreach (var icon in this.Settings.Icons)
-            {
-                ImGui.Text(icon.Key);
-                ImGui.NextColumn();
-                icon.Value.ShowSettingWidget();
-                ImGui.NextColumn();
-            }
+            this.Settings.DrawIconsSettingToImGui(
+                "BaseGame Icons",
+                this.Settings.BaseIcons,
+                string.Empty);
 
-            ImGui.Columns(1);
+            this.Settings.DrawIconsSettingToImGui(
+                "Legion Icons",
+                this.Settings.LegionIcons,
+                "Legion bosses are same as Base Game unique monsters.");
+
+            this.Settings.DrawIconsSettingToImGui(
+                "Delirium Icons",
+                this.Settings.DeliriumIcons,
+                string.Empty);
+
+            this.Settings.DrawIconsSettingToImGui(
+                "Heist Icons",
+                this.Settings.HeistIcons,
+                string.Empty);
+
+            this.Settings.DrawIconsSettingToImGui(
+                "Delve Icons",
+                this.Settings.DelveIcons,
+                "Delve wall is in the Base Game Icons.");
         }
 
         /// <inheritdoc/>
@@ -185,7 +196,8 @@ namespace Radar
                 this.Settings = JsonConvert.DeserializeObject<RadarSettings>(content);
             }
 
-            this.AddDefaultIcons();
+            this.Settings.AddDefaultIcons(this.DllDirectory);
+
             this.onMove = CoroutineHandler.Start(this.OnMove());
             this.onForegroundChange = CoroutineHandler.Start(this.OnForegroundChange());
             this.onGameClose = CoroutineHandler.Start(this.OnClose());
@@ -271,7 +283,7 @@ namespace Radar
                 var finalSize = Vector2.One * scale * (isMiniMap ? 1f : 5f);
                 if (isBlockage)
                 {
-                    var blockageIcon = this.Settings.Icons["Blockage OR DelveWall"];
+                    var blockageIcon = this.Settings.BaseIcons["Blockage OR DelveWall"];
                     finalSize *= blockageIcon.IconScale;
                     fgDraw.AddImage(
                         blockageIcon.TexturePtr,
@@ -289,7 +301,7 @@ namespace Radar
                     {
                         if (this.delveChestCache.TryGetValue(entity.Key.id, out var iconFinder))
                         {
-                            if (this.Settings.Icons.TryGetValue(iconFinder, out var delveChestIcon))
+                            if (this.Settings.DelveIcons.TryGetValue(iconFinder, out var delveChestIcon))
                             {
                                 // Have to force keep the Delve Chest since GGG changed
                                 // network bubble radius for them.
@@ -316,7 +328,7 @@ namespace Radar
                     {
                         if (this.heistChestCache.TryGetValue(entity.Key.id, out var iconFinder))
                         {
-                            if (this.Settings.Icons.TryGetValue(iconFinder, out var heistChestIcon))
+                            if (this.Settings.HeistIcons.TryGetValue(iconFinder, out var heistChestIcon))
                             {
                                 finalSize *= heistChestIcon.IconScale;
                                 fgDraw.AddImage(
@@ -339,7 +351,7 @@ namespace Radar
                         }
                     }
 
-                    var chestIcon = this.Settings.Icons["Chest"];
+                    var chestIcon = this.Settings.BaseIcons["Chest"];
                     finalSize *= chestIcon.IconScale;
                     fgDraw.AddImage(
                         chestIcon.TexturePtr,
@@ -352,7 +364,7 @@ namespace Radar
                 {
                     if (!shrineComp.IsUsed)
                     {
-                        var shrineIcon = this.Settings.Icons["Shrine"];
+                        var shrineIcon = this.Settings.BaseIcons["Shrine"];
                         finalSize *= shrineIcon.IconScale;
                         fgDraw.AddImage(
                             shrineIcon.TexturePtr,
@@ -373,7 +385,7 @@ namespace Radar
                         if (lifeComp.StatusEffects.ContainsKey("legion_reward_display") ||
                             entity.Value.Path.Contains("Chest"))
                         {
-                            var monsterChestIcon = this.Settings.Icons["Legion Monster Chest"];
+                            var monsterChestIcon = this.Settings.LegionIcons["Legion Monster Chest"];
                             finalSize *= monsterChestIcon.IconScale;
                             fgDraw.AddImage(
                                 monsterChestIcon.TexturePtr,
@@ -393,7 +405,7 @@ namespace Radar
 
                         if (this.deliriumHiddenMonster.TryGetValue(entity.Key.id, out var iconFinder))
                         {
-                            if (this.Settings.Icons.TryGetValue(iconFinder, out var dHiddenMIcon))
+                            if (this.Settings.DeliriumIcons.TryGetValue(iconFinder, out var dHiddenMIcon))
                             {
                                 finalSize *= dHiddenMIcon.IconScale;
                                 fgDraw.AddImage(
@@ -418,7 +430,7 @@ namespace Radar
                     }
 
                     var monsterIcon = entityPos.IsFriendly ?
-                        this.Settings.Icons["Friendly"] :
+                        this.Settings.BaseIcons["Friendly"] :
                         this.RarityToIconMapping(omp.Rarity);
                     finalSize *= monsterIcon.IconScale;
                     fgDraw.AddImage(
@@ -503,44 +515,9 @@ namespace Radar
             this.largeMapDiagonalLength = Math.Sqrt(widthSq + heightSq);
         }
 
-        private void AddDefaultIcons()
-        {
-            var iconPathName = Path.Join(this.DllDirectory, "icons.png");
-            this.Settings.Icons.TryAdd("Blockage OR DelveWall", new IconPicker(iconPathName, 14, 41, 1, 11, 40));
-
-            this.Settings.Icons.TryAdd("Chest", new IconPicker(iconPathName, 14, 41, 1, 13, 24));
-            this.Settings.Icons.TryAdd("Legion Monster Chest", new IconPicker(iconPathName, 14, 41, 1, 13, 50));
-
-            this.Settings.Icons.TryAdd("Shrine", new IconPicker(iconPathName, 14, 41, 7, 0, 30));
-
-            this.Settings.Icons.TryAdd("Friendly", new IconPicker(iconPathName, 14, 41, 1, 0, 20));
-            this.Settings.Icons.TryAdd("Normal Monster", new IconPicker(iconPathName, 14, 41, 0, 14, 20));
-            this.Settings.Icons.TryAdd("Magic Monster", new IconPicker(iconPathName, 14, 41, 6, 3, 20));
-            this.Settings.Icons.TryAdd("Rare Monster", new IconPicker(iconPathName, 14, 41, 3, 14, 20));
-            this.Settings.Icons.TryAdd("Unique Monster", new IconPicker(iconPathName, 14, 41, 5, 14, 30));
-
-            this.Settings.Icons.TryAdd("Delirium Bomb", new IconPicker(iconPathName, 14, 41, 5, 0, 30));
-            this.Settings.Icons.TryAdd("Delirium Spawner", new IconPicker(iconPathName, 14, 41, 6, 0, 30));
-
-            this.Settings.Icons.TryAdd("Heist Armour", new IconPicker(iconPathName, 14, 41, 1, 39, 30));
-            this.Settings.Icons.TryAdd("Heist Corrupted", new IconPicker(iconPathName, 14, 41, 7, 12, 30));
-            this.Settings.Icons.TryAdd("Heist Currency", new IconPicker(iconPathName, 14, 41, 10, 38, 30));
-            this.Settings.Icons.TryAdd("Heist DivinationCards", new IconPicker(iconPathName, 14, 41, 11, 39, 30));
-            this.Settings.Icons.TryAdd("Heist Essences", new IconPicker(iconPathName, 14, 41, 7, 39, 30));
-            this.Settings.Icons.TryAdd("Heist Gems", new IconPicker(iconPathName, 14, 41, 12, 38, 30));
-            this.Settings.Icons.TryAdd("Heist Jewellery", new IconPicker(iconPathName, 14, 41, 0, 39, 30));
-            this.Settings.Icons.TryAdd("Heist Jewels", new IconPicker(iconPathName, 14, 41, 0, 39, 30));
-            this.Settings.Icons.TryAdd("Heist Maps", new IconPicker(iconPathName, 14, 41, 13, 38, 30));
-            this.Settings.Icons.TryAdd("Heist Prophecies", new IconPicker(iconPathName, 14, 41, 10, 39, 30));
-            this.Settings.Icons.TryAdd("Heist QualityCurrency", new IconPicker(iconPathName, 14, 41, 9, 12, 30));
-            this.Settings.Icons.TryAdd("Heist StackedDecks", new IconPicker(iconPathName, 14, 41, 10, 12, 30));
-            this.Settings.Icons.TryAdd("Heist Uniques", new IconPicker(iconPathName, 14, 41, 11, 38, 30));
-            this.Settings.Icons.TryAdd("Heist Weapons", new IconPicker(iconPathName, 14, 41, 2, 39, 30));
-        }
-
         private IconPicker RarityToIconMapping(Rarity rarity)
         {
-            return this.Settings.Icons[$"{rarity} Monster"];
+            return this.Settings.BaseIcons[$"{rarity} Monster"];
         }
 
         private string HeistChestPathToIcon(string path)
@@ -577,7 +554,12 @@ namespace Radar
 
         private string DelveChestPathToIcon(string path)
         {
-            if (path.StartsWith(this.delveChestStarting, StringComparison.Ordinal))
+            string truncatedPath = path.Replace(
+                this.delveChestStarting,
+                null,
+                StringComparison.Ordinal);
+
+            if (truncatedPath.Length != path.Length)
             {
                 return "Chest";
             }
