@@ -46,8 +46,10 @@ namespace GameHelper.Ui
                     var cAI = Core.States.InGameStateObject.CurrentAreaInstance;
                     ImGui.Text($"Total Entities: {cAI.AwakeEntities.Count}");
                     ImGui.Text($"Currently Active Entities: {cAI.NetworkBubbleEntityCount}");
-                    ImGui.Text($"FPS: {ImGui.GetIO().Framerate}");
+                    var fps = ImGui.GetIO().Framerate;
+                    ImGui.Text($"FPS: {fps}");
                     ImGui.NewLine();
+                    ImGui.Text($"==Average of last {(int)(1440 / fps)} seconds==");
                     for (int i = 0; i < Core.CoroutinesRegistrar.Count; i++)
                     {
                         var coroutine = Core.CoroutinesRegistrar[i];
