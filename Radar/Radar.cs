@@ -283,7 +283,7 @@ namespace Radar
                 var finalSize = Vector2.One * scale * (isMiniMap ? 1f : 5f);
                 if (isBlockage)
                 {
-                    var blockageIcon = this.Settings.BaseIcons["Blockage OR DelveWall"];
+                    var blockageIcon = this.Settings.DelveIcons["Blockage OR DelveWall"];
                     finalSize *= blockageIcon.IconScale;
                     fgDraw.AddImage(
                         blockageIcon.TexturePtr,
@@ -561,7 +561,7 @@ namespace Radar
 
             if (truncatedPath.Length != path.Length)
             {
-                return "Chest";
+                return truncatedPath;
             }
 
             return "Delve Ignore";
