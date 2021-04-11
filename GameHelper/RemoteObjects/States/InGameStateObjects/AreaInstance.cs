@@ -71,6 +71,25 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
         public int NetworkBubbleEntityCount { get; private set; } = 0x00;
 
         /// <summary>
+        /// Gets the terrain metadata data of the current Area/Zone instance.
+        /// </summary>
+        public TerrainStruct TerrainMetadata { get; private set; } = default;
+
+        /// <summary>
+        /// Gets the terrain data of the current Area/Zone instance.
+        /// WARNING: This should only be used together with AreaChange event!.
+        /// </summary>
+        public byte[] WalkableData =>
+            Core.Process.Handle.ReadStdVector<byte>(this.TerrainMetadata.WalkableData);
+
+        /// <summary>
+        /// Gets the terrain data of the current Area/Zone instance.
+        /// WARNING: This should only be used together with AreaChange event!.
+        /// </summary>
+        public byte[] LandscapeData =>
+            Core.Process.Handle.ReadStdVector<byte>(this.TerrainMetadata.LandscapeData);
+
+        /// <summary>
         /// Converts the <see cref="AreaInstance"/> class data to ImGui.
         /// </summary>
         internal override void ToImGui()
@@ -78,6 +97,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             base.ToImGui();
             ImGui.Text($"Area Hash: {this.AreaHash}");
             ImGui.Text($"Monster Level: {this.MonsterLevel}");
+            ImGui.Text($"Terrain Metadata: {this.TerrainMetadata}");
             ImGui.Text($"Entities in network bubble: {this.NetworkBubbleEntityCount}");
             if (ImGui.TreeNode($"Awake Entities ({this.AwakeEntities.Count})###Awake Entities"))
             {
@@ -116,6 +136,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             this.AreaHash = string.Empty;
             this.Player.Address = IntPtr.Zero;
             this.AreaDetails.Address = IntPtr.Zero;
+            this.TerrainMetadata = default;
             this.AwakeEntities.Clear();
         }
 
@@ -153,6 +174,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
 #endif
             this.NetworkBubbleEntityCount = entitiesInNetworkBubble.Count;
             this.Player.Address = data.LocalPlayerPtr;
+            this.TerrainMetadata = data.TerrainMetadata;
             foreach (var kv in this.AwakeEntities)
             {
                 if (!kv.Value.IsValid &&

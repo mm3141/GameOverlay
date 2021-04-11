@@ -17,6 +17,9 @@ namespace Radar
     using GameHelper.Utils;
     using ImGuiNET;
     using Newtonsoft.Json;
+    using SixLabors.ImageSharp;
+    using SixLabors.ImageSharp.PixelFormats;
+    using SixLabors.ImageSharp.Processing;
 
     /// <summary>
     /// <see cref="Radar"/> plugin.
@@ -54,6 +57,9 @@ namespace Radar
         private bool isAzuriteMine = false;
         private Dictionary<ushort, string> delveChestCache = new Dictionary<ushort, string>();
 
+        private IntPtr walkableMapTexture = IntPtr.Zero;
+        private Vector2 walkableMapDimension = Vector2.Zero;
+
         private string SettingPathname => Path.Join(this.DllDirectory, "config", "settings.txt");
 
         /// <inheritdoc/>
@@ -73,6 +79,12 @@ namespace Radar
                 "click anywhere on it and then close this setting window. " +
                 "It will fix the issue.");
             ImGui.Separator();
+            ImGui.Checkbox("(Incomplete Feature) Draw Area/Zone Map", ref this.Settings.DrawWalkableMap);
+            if (this.Settings.DrawWalkableMap)
+            {
+                ImGui.DragFloat2("Walkable Map Position", ref this.Settings.WalkableMapPosition);
+            }
+
             ImGui.Checkbox("Modify Large Map Culling Window", ref this.Settings.ModifyCullWindow);
             ImGui.Checkbox("Hide Entities without Life/Chest component", ref this.Settings.HideUseless);
 
@@ -122,6 +134,26 @@ namespace Radar
                 {
                     this.Settings.ModifyCullWindow = false;
                 }
+            }
+
+            if (this.Settings.DrawWalkableMap && this.walkableMapTexture != IntPtr.Zero)
+            {
+                var rectf = new RectangleF(
+                    this.Settings.WalkableMapPosition.X,
+                    this.Settings.WalkableMapPosition.Y,
+                    this.walkableMapDimension.X,
+                    this.walkableMapDimension.Y);
+
+                var p1 = Helper.DeltaInWorldToMapDelta(new Vector2(rectf.Left, rectf.Top), 0);
+                var p2 = Helper.DeltaInWorldToMapDelta(new Vector2(rectf.Right, rectf.Top), 0);
+                var p3 = Helper.DeltaInWorldToMapDelta(new Vector2(rectf.Right, rectf.Bottom), 0);
+                var p4 = Helper.DeltaInWorldToMapDelta(new Vector2(rectf.Left, rectf.Bottom), 0);
+                ImGui.GetBackgroundDrawList().AddImageQuad(
+                    this.walkableMapTexture,
+                    p1,
+                    p2,
+                    p3,
+                    p4);
             }
 
             if (Core.States.GameCurrentState != GameStateTypes.InGameState)
@@ -457,6 +489,10 @@ namespace Radar
                 this.deliriumHiddenMonster.Clear();
                 this.delveChestCache.Clear();
                 this.isAzuriteMine = Core.States.AreaLoading.CurrentAreaName == "Azurite Mine";
+                if (this.Settings.DrawWalkableMap)
+                {
+                    this.GenerateMapTexture();
+                }
             }
         }
 
@@ -513,6 +549,51 @@ namespace Radar
             var widthSq = map.Size.X * map.Size.X;
             var heightSq = map.Size.Y * map.Size.Y;
             this.largeMapDiagonalLength = Math.Sqrt(widthSq + heightSq);
+        }
+
+        private void GenerateMapTexture()
+        {
+            Core.Overlay.RemoveImage("walkable_map");
+            var instance = Core.States.InGameStateObject.CurrentAreaInstance;
+            var mapTextureData = instance.WalkableData;
+            var bytesPerRow = instance.TerrainMetadata.BytesPerRow;
+            var totalRows = mapTextureData.Length / bytesPerRow;
+            using Image<Rgba32> image = new Image<Rgba32>(bytesPerRow * 2, totalRows);
+            image.Mutate(c => c.ProcessPixelRowsAsVector4((row, i) =>
+            {
+                for (int x = 0; x < row.Length - 1; x += 2)
+                {
+                    byte data = mapTextureData[(i.Y * bytesPerRow) + (x / 2)];
+
+                    // each byte contains 2 data points of size 4 bit.
+                    // I know this because if we don't do this, the whole map texture (final output)
+                    // has to be multiplied (scaled) by 2 since (at that point) we are eating 1 data point.
+                    // In the following loop, in iteration 0, we draw 1st data point and, in iteration 1,
+                    // we draw the 2nd data point.
+                    for (int k = 0; k < 2; k++)
+                    {
+                        switch ((data >> (0x04 * k)) & 0x0F)
+                        {
+                            case 1: // walkable
+                                row[x + k] = Vector4.One;
+                                break;
+                            case 5: // walkable
+                            case 4: // walkable
+                            case 3: // walkable
+                            case 2: // walkable
+                            case 0: // non-walable
+                                row[x + k] = Vector4.Zero;
+                                break;
+                            default:
+                                throw new Exception($"New digit found {(data >> (0x04 * k)) & 0x0F}");
+                        }
+                    }
+                }
+            }));
+
+            Core.Overlay.AddOrGetImagePointer("walkable_map", image, false, false, out var t, out var w, out var h);
+            this.walkableMapTexture = t;
+            this.walkableMapDimension = new Vector2(w, h);
         }
 
         private IconPicker RarityToIconMapping(Rarity rarity)
