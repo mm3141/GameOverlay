@@ -14,6 +14,7 @@
         [FieldOffset(0x20)] public long PAD_20;
         public static int TotalCount = 0x10;
         public static int SkipBytes = 0x08;
+        public static int Capacity = 0xFFF;
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]

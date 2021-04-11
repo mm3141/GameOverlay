@@ -141,6 +141,12 @@ namespace GameHelper.RemoteObjects
                     $"from FileRoot address: {this.Address.ToInt64():X}");
             }
 
+            if (filesRootObj.ArrayCapacity != LoadedFilesRootObject.Capacity)
+            {
+                throw new Exception($"Looks like Capacity changed to {filesRootObj.ArrayCapacity} " +
+                    $"from {LoadedFilesRootObject.Capacity}");
+            }
+
             var filesPtr = reader.ReadMemoryArray<FilesArrayStructure>(
                 filesRootObj.FilesArray,
                 FilesArrayStructure.MaximumBuckets);
