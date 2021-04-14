@@ -82,7 +82,8 @@ namespace Radar
             ImGui.Checkbox("(Incomplete Feature) Draw Area/Zone Map", ref this.Settings.DrawWalkableMap);
             if (this.Settings.DrawWalkableMap)
             {
-                ImGui.DragFloat2("Walkable Map Position", ref this.Settings.WalkableMapPosition);
+                ImGui.Text("Map Position On the Screen");
+                ImGui.DragFloat2("##MapPositionOnScreen", ref this.Settings.WalkableMapPosition);
             }
 
             ImGui.Checkbox("Modify Large Map Culling Window", ref this.Settings.ModifyCullWindow);
