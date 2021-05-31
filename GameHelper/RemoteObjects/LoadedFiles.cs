@@ -128,9 +128,7 @@ namespace GameHelper.RemoteObjects
         {
             var totalFiles = LoadedFilesRootObject.TotalCount;
             var reader = Core.Process.Handle;
-            return reader.ReadMemoryArray<LoadedFilesRootObject>(
-                this.Address + LoadedFilesRootObject.SkipBytes,
-                totalFiles);
+            return reader.ReadMemoryArray<LoadedFilesRootObject>(this.Address, totalFiles);
         }
 
         private void ScanAllBucketsParallel(SafeMemoryHandle reader, LoadedFilesRootObject filesRootObj)
@@ -141,12 +139,18 @@ namespace GameHelper.RemoteObjects
                     $"from FileRoot address: {this.Address.ToInt64():X}");
             }
 
-            if (filesRootObj.ArrayCapacity != LoadedFilesRootObject.Capacity)
+            if (filesRootObj.FilesPointerStructureCapacity != LoadedFilesRootObject.Capacity)
             {
-                throw new Exception($"Looks like Capacity changed to {filesRootObj.ArrayCapacity} " +
+                throw new Exception($"Looks like Capacity changed to" +
+                    $"{filesRootObj.FilesPointerStructureCapacity} " +
                     $"from {LoadedFilesRootObject.Capacity}");
             }
 
+            // Max buckets can be calculated from FilesPointerStructureCapacity
+            // but I don't expect it to ever change unless GGG change their
+            // FileStoring algorithm. With that being said, I prefer known constants
+            // rather than calculations. How to calculate this constant is given in
+            // FilesArrayStructure.MaximumBuckets description.
             var filesPtr = reader.ReadMemoryArray<FilesArrayStructure>(
                 filesRootObj.FilesArray,
                 FilesArrayStructure.MaximumBuckets);

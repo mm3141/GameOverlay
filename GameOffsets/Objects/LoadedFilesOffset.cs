@@ -7,14 +7,14 @@
     [StructLayout(LayoutKind.Explicit, Pack = 1)]
     public struct LoadedFilesRootObject
     {
-        [FieldOffset(0x00)] public IntPtr FilesArray; // FilesArrayStructure
-        [FieldOffset(0x08)] public long ArrayCapacity;
-        [FieldOffset(0x10)] public int Unknown0;
-        [FieldOffset(0x18)] public long TotalElements;
-        [FieldOffset(0x20)] public long PAD_20;
+        [FieldOffset(0x00)] public long PAD_00;
+        [FieldOffset(0x08)] public IntPtr FilesArray; // FilesArrayStructure
+        [FieldOffset(0x10)] public long FilesPointerStructureCapacity; // actually, it's Capacity number - 1.
+        [FieldOffset(0x18)] public int Unknown0; // byte + padd
+        [FieldOffset(0x1C)] public float Unknown1;
+        [FieldOffset(0x20)] public long FilesPointerStructureCounter;
         public static int TotalCount = 0x10;
-        public static int SkipBytes = 0x08;
-        public static int Capacity = 0xFFF;
+        public static int Capacity = 0xFFF; // Expected FilesPointerStructureCapacity (unless GGG changes the algo)
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
@@ -38,6 +38,8 @@
         public FilesPointerStructure Pointer6;
         public FilesPointerStructure Pointer7;
         public static byte InValidPointerFlagValue = 0xFF;
+
+        // ( FilesPointerStructureCapacity + 1 ) / Total Number Of FilesPointerStructures
         public static int MaximumBuckets = 0x200;
     }
 
