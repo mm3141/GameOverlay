@@ -3,7 +3,6 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <StartupObject>GameHelper.Program</StartupObject>
-    <Platforms>AnyCPU</Platforms>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <Authors>zaafar</Authors>
     <Description>An overlay to help play the game.</Description>
