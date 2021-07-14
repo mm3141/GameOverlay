@@ -1,8 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <OutputType>Library</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <OutputType>Library</OutputType>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -29,7 +30,7 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="mkdir &quot;..\GameHelper\bin\x64\$(ConfigurationName)\netcoreapp3.1\Plugins\$(ProjectName)&quot;&#xD;&#xA;copy &quot;$(OutDir)$(TargetName)$(TargetExt)&quot; &quot;..\GameHelper\bin\x64\$(ConfigurationName)\netcoreapp3.1\Plugins\$(ProjectName)&quot;" />
+    <Exec Command="mkdir &quot;..\GameHelper\bin\$(ConfigurationName)\netcoreapp3.1\Plugins\$(ProjectName)&quot;&#xD;&#xA;copy &quot;$(OutDir)$(TargetName)$(TargetExt)&quot; &quot;..\GameHelper\bin\$(ConfigurationName)\netcoreapp3.1\Plugins\$(ProjectName)&quot;" />
   </Target>
 
 </Project>
