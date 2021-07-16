@@ -14,7 +14,7 @@
         //[FieldOffset(0x1D8)] public IntPtr UnknownPtr2;
         //[FieldOffset(0x1E0)] public IntPtr UnknownPtr3;
         //[FieldOffset(0x1D8)] public IntPtr UnknownPtr4;
-        [FieldOffset(0x1F0)] public StdWString CurrentAreaName;
+        [FieldOffset(0x1F8)] public StdWString CurrentAreaName;
         //[FieldOffset(0x218)] public IntPtr LoadScreenImagePtr;
     }
 }

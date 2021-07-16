@@ -129,9 +129,9 @@ namespace GameHelper.RemoteObjects.States
             this.CurrentAreaInstance.Address = data.LocalData;
             this.UiRoot.Address = data.UiRootPtr;
             this.GameUi.Address = data.IngameUi;
-            if (this.WorldToScreenMatrix != data.WorldToScreenMatrix)
+            if (this.WorldToScreenMatrix != data.CameraData.WorldToScreenMatrix)
             {
-                this.WorldToScreenMatrix = data.WorldToScreenMatrix;
+                this.WorldToScreenMatrix = data.CameraData.WorldToScreenMatrix;
             }
         }
 

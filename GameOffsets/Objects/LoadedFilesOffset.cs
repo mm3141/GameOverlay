@@ -1,4 +1,4 @@
-﻿namespace GameOffsets.Objects
+namespace GameOffsets.Objects
 {
     using System;
     using System.Runtime.InteropServices;
