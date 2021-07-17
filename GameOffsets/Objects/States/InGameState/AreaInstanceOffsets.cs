@@ -1,4 +1,4 @@
-﻿namespace GameOffsets.Objects.States.InGameState
+namespace GameOffsets.Objects.States.InGameState
 {
     using System;
     using System.Runtime.InteropServices;
@@ -7,15 +7,15 @@
     [StructLayout(LayoutKind.Explicit, Pack = 1)]
     public struct AreaInstanceOffsets
     {
-        [FieldOffset(0x78)] public IntPtr AreaDetailsPtr; // WorldAreaDatOffsets.cs
-        [FieldOffset(0x90)] public byte MonsterLevel;
-        [FieldOffset(0xF4)] public uint CurrentAreaHash;
-        [FieldOffset(0x438)] public IntPtr LocalPlayerPtr;
+        [FieldOffset(0x80)] public IntPtr AreaDetailsPtr; // WorldAreaDatOffsets.cs
+        [FieldOffset(0xA0)] public byte MonsterLevel;
+        [FieldOffset(0x104)] public uint CurrentAreaHash;
+        [FieldOffset(0x4F8)] public IntPtr LocalPlayerPtr;
         // Sleeping is decorations, disabled particles, effects.
         // Awake is objects like Chests, Monsters, Players, Npcs and etc.
-        [FieldOffset(0x4C0)] public StdMap AwakeEntities;
-        //[FieldOffset(0x4D0)] public StdMap SleepingEntities;
-        [FieldOffset(0x640)] public TerrainStruct TerrainMetadata;
+        [FieldOffset(0x5A0)] public StdMap AwakeEntities;
+        //[FieldOffset(0x5B0)] public StdMap SleepingEntities; // always after awake entities.
+        [FieldOffset(0x720)] public TerrainStruct TerrainMetadata;
     }
 
     public static class AreaInstanceConstants
@@ -52,9 +52,8 @@
 
         public override bool Equals(object ob)
         {
-            if (ob is EntityNodeKey)
+            if (ob is EntityNodeKey c)
             {
-                EntityNodeKey c = (EntityNodeKey)ob;
                 return this.id == c.id && this.type == c.type;
             }
             else
