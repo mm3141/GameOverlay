@@ -28,24 +28,31 @@
 
     public static class UiElementBaseFuncs
     {
+        private const int SHOULD_MODIFY_BINARY_POS = 0x0A;
+        private const int IS_VISIBLE_BINARY_POS = 0x0B;
+
+        public const int SCALE_INDEX_1 = 0x04;
+        public const int SCALE_INDEX_2 = 0x00;
+        public const int SCALE_INDEX_3 = 0x02;
+
         public static Func<uint, bool> IsVisibleChecker = new Func<uint, bool>((param) =>
         {
-            return Util.isBitSetUint(param, 0x0B);
+            return Util.isBitSetUint(param, IS_VISIBLE_BINARY_POS);
         });
 
         public static Func<uint, bool> ShouldModifyPos = new Func<uint, bool>((param) =>
         {
-            return Util.isBitSetUint(param, 0xA);
+            return Util.isBitSetUint(param, SHOULD_MODIFY_BINARY_POS);
         });
 
         public static Func<uint, bool> Unknown1 = new Func<uint, bool>((param) =>
         {
-            return Util.isBitSetUint(param, 0x03);
+            return Util.isBitSetUint(param, 0x02);
         });
 
         public static Func<uint, bool> Unknown2 = new Func<uint, bool>((param) =>
         {
-            return Util.isBitSetUint(param, 0x02);
+            return Util.isBitSetUint(param, 0x03);
         });
 
         public static Func<uint, bool> Unknown3 = new Func<uint, bool>((param) =>

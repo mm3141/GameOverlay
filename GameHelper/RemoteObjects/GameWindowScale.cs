@@ -8,6 +8,7 @@ namespace GameHelper.RemoteObjects
     using System.Collections.Generic;
     using Coroutine;
     using GameHelper.CoroutineEvents;
+    using GameOffsets.Objects.UiElement;
     using ImGuiNET;
 
     /// <summary>
@@ -46,16 +47,16 @@ namespace GameHelper.RemoteObjects
             switch (index)
             {
                 case 1:
-                    widthScale *= this.Values[4];
-                    heightScale *= this.Values[5];
+                    widthScale *= this.Values[UiElementBaseFuncs.SCALE_INDEX_1];
+                    heightScale *= this.Values[UiElementBaseFuncs.SCALE_INDEX_1 + 1];
                     break;
                 case 2:
-                    widthScale *= this.Values[0];
-                    heightScale *= this.Values[1];
+                    widthScale *= this.Values[UiElementBaseFuncs.SCALE_INDEX_2];
+                    heightScale *= this.Values[UiElementBaseFuncs.SCALE_INDEX_2 + 1];
                     break;
                 case 3:
-                    widthScale *= this.Values[2];
-                    heightScale *= this.Values[3];
+                    widthScale *= this.Values[UiElementBaseFuncs.SCALE_INDEX_3];
+                    heightScale *= this.Values[UiElementBaseFuncs.SCALE_INDEX_3 + 1];
                     break;
                 default:
                     break;
