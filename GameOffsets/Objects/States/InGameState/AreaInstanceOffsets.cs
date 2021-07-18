@@ -33,28 +33,29 @@ namespace GameOffsets.Objects.States.InGameState
         public static Func<EntityNodeKey, bool> IgnoreSleepingEntities =
             new Func<EntityNodeKey, bool>((param) =>
             {
-                return !Util.isBitSetByte(param.type, 7);
+                // from the game code
+                //     if (0x3fffffff < *(uint *)(lVar1 + 0x60)) {}
+                //     CMP    dword ptr [RSI + 0x60],0x40000000
+                return param.id <= 0x3fffffff;
             });
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct EntityNodeKey
     {
-        public ushort id;
-        public byte pad_0x22;
-        public byte type; // 0x00 object/entity, 0xC0 object/entity-effects
+        public uint id;
         public int pad_0x24;
 
         public override string ToString()
         {
-            return $"id: {id}, type: {type}";
+            return $"id: {id}";
         }
 
         public override bool Equals(object ob)
         {
             if (ob is EntityNodeKey c)
             {
-                return this.id == c.id && this.type == c.type;
+                return this.id == c.id;
             }
             else
             {
@@ -64,7 +65,7 @@ namespace GameOffsets.Objects.States.InGameState
 
         public override int GetHashCode()
         {
-            return this.id.GetHashCode() ^ this.type.GetHashCode();
+            return this.id.GetHashCode();
         }
     }
 

@@ -43,19 +43,19 @@ namespace Radar
         private double largeMapDiagonalLength = 0x00;
 
         // Legion Cache.
-        private Dictionary<ushort, byte> frozenInTimeEntities = new Dictionary<ushort, byte>();
+        private Dictionary<uint, byte> frozenInTimeEntities = new Dictionary<uint, byte>();
 
         private string heistUsefullChestContains = "HeistChestSecondary";
         private string heistAllChestStarting = "Metadata/Chests/LeagueHeist";
-        private Dictionary<ushort, string> heistChestCache = new Dictionary<ushort, string>();
+        private Dictionary<uint, string> heistChestCache = new Dictionary<uint, string>();
 
         // Delirium Hidden Monster cache.
-        private Dictionary<ushort, string> deliriumHiddenMonster = new Dictionary<ushort, string>();
+        private Dictionary<uint, string> deliriumHiddenMonster = new Dictionary<uint, string>();
         private string deliriumHiddenMonsterStarting = "Metadata/Monsters/LeagueAffliction/DoodadDaemons/DoodadDaemon";
 
         private string delveChestStarting = "Metadata/Chests/DelveChests/";
         private bool isAzuriteMine = false;
-        private Dictionary<ushort, string> delveChestCache = new Dictionary<ushort, string>();
+        private Dictionary<uint, string> delveChestCache = new Dictionary<uint, string>();
 
         private IntPtr walkableMapTexture = IntPtr.Zero;
         private Vector2 walkableMapDimension = Vector2.Zero;

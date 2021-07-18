@@ -121,7 +121,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
                     {
                         UiHelper.DrawText(
                             eRender.WorldPosition3D,
-                            $"ID: {awakeEntity.Key.id} - Type: {awakeEntity.Key.type:X}");
+                            $"ID: {awakeEntity.Key.id}");
                     }
                 }
 
