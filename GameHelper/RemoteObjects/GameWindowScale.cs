@@ -46,16 +46,16 @@ namespace GameHelper.RemoteObjects
             switch (index)
             {
                 case 1:
-                    widthScale *= this.Values[2];
-                    heightScale *= this.Values[3];
-                    break;
-                case 2:
                     widthScale *= this.Values[4];
                     heightScale *= this.Values[5];
                     break;
-                case 3:
+                case 2:
                     widthScale *= this.Values[0];
                     heightScale *= this.Values[1];
+                    break;
+                case 3:
+                    widthScale *= this.Values[2];
+                    heightScale *= this.Values[3];
                     break;
                 default:
                     break;

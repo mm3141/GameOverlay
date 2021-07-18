@@ -30,17 +30,27 @@
     {
         public static Func<uint, bool> IsVisibleChecker = new Func<uint, bool>((param) =>
         {
-            return Util.isBitSetUint(param, 0x0A);
+            return Util.isBitSetUint(param, 0x0B);
         });
 
         public static Func<uint, bool> ShouldModifyPos = new Func<uint, bool>((param) =>
         {
-            return Util.isBitSetUint(param, 0x09);
+            return Util.isBitSetUint(param, 0xA);
         });
 
-        public static Func<uint, bool> Unknown = new Func<uint, bool>((param) =>
+        public static Func<uint, bool> Unknown1 = new Func<uint, bool>((param) =>
+        {
+            return Util.isBitSetUint(param, 0x03);
+        });
+
+        public static Func<uint, bool> Unknown2 = new Func<uint, bool>((param) =>
         {
             return Util.isBitSetUint(param, 0x02);
+        });
+
+        public static Func<uint, bool> Unknown3 = new Func<uint, bool>((param) =>
+        {
+            return Util.isBitSetUint(param, 0x13);
         });
     }
 }
