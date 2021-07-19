@@ -10,7 +10,7 @@
     [StructLayout(LayoutKind.Explicit, Pack = 1)]
     public struct ImportantUiElementsOffsets
     {
-        [FieldOffset(0x5B8)] public IntPtr MapParentPtr;
+        [FieldOffset(0x638)] public IntPtr MapParentPtr;
     }
 
     [StructLayout(LayoutKind.Explicit, Pack = 1)]
