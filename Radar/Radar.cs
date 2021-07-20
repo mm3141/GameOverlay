@@ -267,8 +267,9 @@ namespace Radar
                 var hasOMP = entity.Value.TryGetComponent<ObjectMagicProperties>(out var omp);
                 var isShrine = entity.Value.TryGetComponent<Shrine>(out var shrineComp);
                 var isBlockage = entity.Value.TryGetComponent<TriggerableBlockage>(out var blockageComp);
+                var isPlayer = entity.Value.TryGetComponent<Player>(out var playerComp);
 
-                if (this.Settings.HideUseless && !(hasVital || isChest))
+                if (this.Settings.HideUseless && !(hasVital || isChest || isPlayer))
                 {
                     continue;
                 }
@@ -285,12 +286,7 @@ namespace Radar
                         continue;
                     }
 
-                    if (!hasOMP && !isBlockage)
-                    {
-                        continue;
-                    }
-
-                    if (isBlockage && !blockageComp.IsBlocked)
+                    if (!hasOMP && !isBlockage && !isPlayer)
                     {
                         continue;
                     }
@@ -315,7 +311,13 @@ namespace Radar
                 var fpos = Helper.DeltaInWorldToMapDelta(
                     ePos - pPos, entityZ.TerrainHeight - playerRender.TerrainHeight);
                 var finalSize = Vector2.One * scale * (isMiniMap ? 1f : 5f);
-                if (isBlockage)
+                if (isPlayer)
+                {
+                    var pNameSizeH = ImGui.CalcTextSize(playerComp.Name);
+                    fgDraw.AddRectFilled(mapCenter + fpos, mapCenter + fpos + pNameSizeH, UiHelper.Color(0, 0, 0, 200));
+                    fgDraw.AddText(ImGui.GetFont(), ImGui.GetFontSize(), mapCenter + fpos, UiHelper.Color(255, 128, 128, 255), playerComp.Name);
+                }
+                else if (isBlockage)
                 {
                     var blockageIcon = this.Settings.DelveIcons["Blockage OR DelveWall"];
                     finalSize *= blockageIcon.IconScale;

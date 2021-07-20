@@ -93,6 +93,8 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
                 if (this.Address != IntPtr.Zero &&
                     Core.States.GameCurrentState == GameStateTypes.InGameState)
                 {
+                    // sending false because "true" use-case is handled
+                    // by UpdateData function when address actually gets changed.
                     this.UpdateData(false);
                 }
             }
@@ -106,6 +108,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
                 if (this.Address != IntPtr.Zero &&
                     Core.States.GameCurrentState == GameStateTypes.InGameState)
                 {
+                    // Reason for sending false given above.
                     this.UpdateData(false);
                 }
             }
@@ -119,6 +122,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
                 if (this.Address != IntPtr.Zero &&
                     Core.States.GameCurrentState == GameStateTypes.InGameState)
                 {
+                    // Reason for sending false given above.
                     this.UpdateData(false);
                 }
             }
