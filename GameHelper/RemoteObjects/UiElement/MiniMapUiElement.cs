@@ -65,24 +65,9 @@ namespace GameHelper.RemoteObjects.UiElement
         /// <inheritdoc/>
         protected override void UpdateData(bool hasAddressChanged)
         {
+            base.UpdateData(hasAddressChanged);
             var reader = Core.Process.Handle;
             var data = reader.ReadMemory<MapUiElementOffset>(this.Address);
-            if (data.UiElementBase.Self != IntPtr.Zero && data.UiElementBase.Self != this.Address)
-            {
-                throw new Exception($"This (address: {this.Address.ToInt64():X})" +
-                    $"is not a Ui Element. Self Address = {data.UiElementBase.Self.ToInt64():X}");
-            }
-
-            this.scaleIndex = data.UiElementBase.ScaleIndex;
-            this.localScaleMultiplier = data.UiElementBase.LocalScaleMultiplier;
-            this.flags = data.UiElementBase.Flags;
-
-            this.relativePosition.X = data.UiElementBase.RelativePosition.X;
-            this.relativePosition.Y = data.UiElementBase.RelativePosition.Y;
-
-            this.unScaledSize.X = data.UiElementBase.UnscaledSize.X;
-            this.unScaledSize.Y = data.UiElementBase.UnscaledSize.Y;
-
             this.shift.X = data.Shift.X;
             this.shift.Y = data.Shift.Y;
             this.shift /= Core.GHSettings.WindowScale;
