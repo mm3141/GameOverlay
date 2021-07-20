@@ -6,10 +6,10 @@
     [StructLayout(LayoutKind.Explicit, Pack = 1)]
     public struct PositionedOffsets
     {
-        [FieldOffset(0x0000)] public ComponentHeader Header;
-        [FieldOffset(0x015C)] public byte Reaction;
-        [FieldOffset(0x01EC)] public StdTuple2D<int> GridPosition;
-        [FieldOffset(0x021C)] public StdTuple2D<float> WorldPosition;
+        [FieldOffset(0x000)] public ComponentHeader Header;
+        [FieldOffset(0x159)] public byte Reaction;
+        [FieldOffset(0x1E8)] public StdTuple2D<int> GridPosition;
+        [FieldOffset(0x214)] public StdTuple2D<float> WorldPosition;
     }
 
     // Amount of data in this component is a lot, but HUD don't really need all of it.

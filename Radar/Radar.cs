@@ -262,6 +262,7 @@ namespace Radar
             foreach (var entity in Core.States.InGameStateObject.CurrentAreaInstance.AwakeEntities)
             {
                 var hasVital = entity.Value.TryGetComponent<Life>(out var lifeComp);
+                var hasBuffs = entity.Value.TryGetComponent<Buffs>(out var buffsComp);
                 var isChest = entity.Value.TryGetComponent<Chest>(out var chestComp);
                 var hasOMP = entity.Value.TryGetComponent<ObjectMagicProperties>(out var omp);
                 var isShrine = entity.Value.TryGetComponent<Shrine>(out var shrineComp);
@@ -412,10 +413,10 @@ namespace Radar
                 else if (hasVital)
                 {
                     // TODO: Invisible/Hidden/Non-Targetable/Frozen/Exploding/in-the-cloud/not-giving-exp things
-                    if (lifeComp.StatusEffects.ContainsKey("frozen_in_time"))
+                    if (hasBuffs && buffsComp.StatusEffects.ContainsKey("frozen_in_time"))
                     {
                         this.frozenInTimeEntities.TryAdd(entity.Key.id, 1);
-                        if (lifeComp.StatusEffects.ContainsKey("legion_reward_display") ||
+                        if (buffsComp.StatusEffects.ContainsKey("legion_reward_display") ||
                             entity.Value.Path.Contains("Chest"))
                         {
                             var monsterChestIcon = this.Settings.LegionIcons["Legion Monster Chest"];
@@ -429,7 +430,7 @@ namespace Radar
                             continue;
                         }
                     }
-                    else if (lifeComp.StatusEffects.ContainsKey("hidden_monster"))
+                    else if (hasBuffs && buffsComp.StatusEffects.ContainsKey("hidden_monster"))
                     {
                         if (this.frozenInTimeEntities.ContainsKey(entity.Key.id))
                         {

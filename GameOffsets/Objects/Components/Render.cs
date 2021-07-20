@@ -11,7 +11,7 @@
         // Same as Positioned Component CurrentWorldPosition,
         // but this one contains Z axis; Z axis is where the HealthBar is.
         // If you want to use ground Z axis, swap current one with TerrainHeight.
-        [FieldOffset(0x80)] public StdTuple3D<float> CurrentWorldPosition;
+        [FieldOffset(0x88)] public StdTuple3D<float> CurrentWorldPosition;
 
         // Changing this value will move the in-game healthbar up/down.
         // Not sure if it's really X,Y,Z or something else. They all move
@@ -22,6 +22,6 @@
         // Exactly the same as provided in the Positioned component.
         // [FieldOffset(0x00C0)] public float RotationCurrent;
         // [FieldOffset(0x00C4)] public float RotationFuture;
-        [FieldOffset(0x00E8)] public float TerrainHeight;
+        [FieldOffset(0x00F0)] public float TerrainHeight;
     }
 }
