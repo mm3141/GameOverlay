@@ -89,14 +89,15 @@ namespace GameHelper.Settings
             {
                 case "Core":
                     ImGui.BeginGroup();
+                    ImGui.TextWrapped($"!!!!IMPORTANT!!!! Please provide below the " +
+                        $"Window Settings -> Display Settings -> Scale value. Restart the " +
+                        $"Overlay after setting this value.\nExample Values:\n\t100%% -> 1\n\t" +
+                        $"125%% -> 1.25\n\t150%% -> 1.50 etc");
+                    ImGui.DragFloat("##WinScale", ref Core.GHSettings.WindowScale, 0.25f, 1f, 5f);
                     ImGui.TextWrapped("NOTE: (Plugins/Core) Settings are saved automatically " +
                         "when you close the overlay or hide it via F12 button.");
                     ImGui.NewLine();
                     ImGui.Text($"Current Game State: {Core.States.GameCurrentState}");
-                    ImGui.NewLine();
-                    ImGui.TextWrapped($"Set the window scale value (e.g. 100%% -> 1" +
-                        $", 150%% -> 1.50 etc). Restart the overlay after setting the value.");
-                    ImGui.DragFloat("##WinScale", ref Core.GHSettings.WindowScale, 0.25f, 1f, 5f);
                     ImGui.NewLine();
                     ImGui.Checkbox("Performance Stats", ref Core.GHSettings.ShowPerfStats);
                     ImGui.Checkbox("Game UiExplorer", ref Core.GHSettings.ShowGameUiExplorer);

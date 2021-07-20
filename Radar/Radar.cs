@@ -65,9 +65,10 @@ namespace Radar
         /// <inheritdoc/>
         public override void DrawSettings()
         {
-            ImGui.TextWrapped("Please provide the Large Map Scale multiplier " +
-                "value. Also, before providing this value make sure the Core -> " +
-                "window scale value is what your window setting is showing.");
+            ImGui.TextWrapped("Following slider is known as large-map icons multiplier." +
+                " When setting the icons sizes only make sure that they look nice on the mini-map." +
+                " After that use the slider below to adjust large map icon" +
+                " size w.r.t the mini-map-icon size.");
             ImGui.DragFloat(
                 "###LargeMapScaleMultiplier",
                 ref this.Settings.LargeMapScaleMultiplier,
@@ -75,8 +76,8 @@ namespace Radar
                 0.01f,
                 0.2f);
             ImGui.TextWrapped("If, after changing the game/monitor resolution, your " +
-                "mini/large map icon gets invisible. Open this setting window, " +
-                "click anywhere on it and then close this setting window. " +
+                "mini/large map icon gets invisible. Open this Overlay setting window, " +
+                "click anywhere on it and then hide this Overlay setting window. " +
                 "It will fix the issue.");
             ImGui.Separator();
             ImGui.Checkbox("(Incomplete Feature) Draw Area/Zone Map", ref this.Settings.DrawWalkableMap);
