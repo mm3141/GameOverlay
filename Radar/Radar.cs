@@ -89,11 +89,12 @@ namespace Radar
 
             ImGui.Checkbox("Modify Large Map Culling Window", ref this.Settings.ModifyCullWindow);
             ImGui.Checkbox("Hide Entities without Life/Chest component", ref this.Settings.HideUseless);
+            ImGui.Checkbox("Show Player Names", ref this.Settings.ShowPlayersNames);
 
             this.Settings.DrawIconsSettingToImGui(
                 "BaseGame Icons",
                 this.Settings.BaseIcons,
-                "Blockages are in Delve Icons");
+                "Blockages icon can be set from Delve Icons category i.e. 'Blockage OR DelveWall'");
 
             this.Settings.DrawIconsSettingToImGui(
                 "Legion Icons",
@@ -298,6 +299,11 @@ namespace Radar
                     continue;
                 }
 
+                if (this.Settings.HideUseless && isPlayer && entity.Value.Address == Core.States.InGameStateObject.CurrentAreaInstance.Player.Address)
+                {
+                    continue;
+                }
+
                 if (!entity.Value.TryGetComponent<Positioned>(out var entityPos))
                 {
                     continue;
@@ -314,9 +320,23 @@ namespace Radar
                 var finalSize = Vector2.One * scale * (isMiniMap ? 1f : 5f);
                 if (isPlayer)
                 {
-                    var pNameSizeH = ImGui.CalcTextSize(playerComp.Name);
-                    fgDraw.AddRectFilled(mapCenter + fpos, mapCenter + fpos + pNameSizeH, UiHelper.Color(0, 0, 0, 200));
-                    fgDraw.AddText(ImGui.GetFont(), ImGui.GetFontSize(), mapCenter + fpos, UiHelper.Color(255, 128, 128, 255), playerComp.Name);
+                    if (this.Settings.ShowPlayersNames)
+                    {
+                        var pNameSizeH = ImGui.CalcTextSize(playerComp.Name) / 2;
+                        fgDraw.AddRectFilled(mapCenter + fpos - pNameSizeH, mapCenter + fpos + pNameSizeH, UiHelper.Color(0, 0, 0, 200));
+                        fgDraw.AddText(ImGui.GetFont(), ImGui.GetFontSize(), mapCenter + fpos - pNameSizeH, UiHelper.Color(255, 128, 128, 255), playerComp.Name);
+                    }
+                    else
+                    {
+                        var playerIcon = this.Settings.BaseIcons["Player"];
+                        finalSize *= playerIcon.IconScale;
+                        fgDraw.AddImage(
+                            playerIcon.TexturePtr,
+                            mapCenter + fpos - finalSize,
+                            mapCenter + fpos + finalSize,
+                            playerIcon.UV0,
+                            playerIcon.UV1);
+                    }
                 }
                 else if (isBlockage)
                 {

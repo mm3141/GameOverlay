@@ -10,12 +10,12 @@ namespace GameOffsets.Objects.States.InGameState
         [FieldOffset(0x80)] public IntPtr AreaDetailsPtr; // WorldAreaDatOffsets.cs
         [FieldOffset(0xA0)] public byte MonsterLevel;
         [FieldOffset(0x104)] public uint CurrentAreaHash;
-        [FieldOffset(0x4F8)] public IntPtr LocalPlayerPtr;
+        [FieldOffset(0x500)] public IntPtr LocalPlayerPtr;
         // Sleeping is decorations, disabled particles, effects.
         // Awake is objects like Chests, Monsters, Players, Npcs and etc.
-        [FieldOffset(0x5A0)] public StdMap AwakeEntities;
+        [FieldOffset(0x5B0)] public StdMap AwakeEntities;
         //[FieldOffset(0x5B0)] public StdMap SleepingEntities; // always after awake entities.
-        [FieldOffset(0x720)] public TerrainStruct TerrainMetadata;
+        [FieldOffset(0x750)] public TerrainStruct TerrainMetadata;
     }
 
     public static class AreaInstanceConstants

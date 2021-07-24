@@ -5,6 +5,7 @@
 namespace GameHelper.RemoteObjects.Components
 {
     using System;
+    using System.Collections.Concurrent;
     using System.Collections.Generic;
     using GameHelper.Utils;
     using GameOffsets.Objects.Components;
@@ -21,8 +22,8 @@ namespace GameHelper.RemoteObjects.Components
         ///     N = total life components in gamehelper memory,
         ///     M = total number of buff those components has.
         /// </summary>
-        private Dictionary<IntPtr, string> addressToEffectNameCache
-            = new Dictionary<IntPtr, string>();
+        private static ConcurrentDictionary<IntPtr, string> addressToEffectNameCache
+            = new ConcurrentDictionary<IntPtr, string>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Buffs"/> class.
@@ -37,8 +38,8 @@ namespace GameHelper.RemoteObjects.Components
         /// Gets the Buffs/Debuffs associated with the entity.
         /// This is not updated anymore once entity dies.
         /// </summary>
-        public Dictionary<string, StatusEffectStruct> StatusEffects { get; private set; }
-            = new Dictionary<string, StatusEffectStruct>();
+        public ConcurrentDictionary<string, StatusEffectStruct> StatusEffects { get; private set; }
+            = new ConcurrentDictionary<string, StatusEffectStruct>();
 
         /// <inheritdoc/>
         internal override void ToImGui()
@@ -72,8 +73,7 @@ namespace GameHelper.RemoteObjects.Components
             for (int i = 0; i < statusEffects.Length; i++)
             {
                 var statusEffectData = reader.ReadMemory<StatusEffectStruct>(statusEffects[i]);
-
-                if (this.addressToEffectNameCache.TryGetValue(statusEffectData.BuffDefinationPtr, out var oldEffectname))
+                if (addressToEffectNameCache.TryGetValue(statusEffectData.BuffDefinationPtr, out var oldEffectname))
                 {
                     // existing Effect
                     this.StatusEffects[oldEffectname] = statusEffectData;
@@ -84,7 +84,7 @@ namespace GameHelper.RemoteObjects.Components
                 {
                     // New Effect.
                     this.StatusEffects[newEffectName] = statusEffectData;
-                    this.addressToEffectNameCache[statusEffectData.BuffDefinationPtr] = newEffectName;
+                    addressToEffectNameCache[statusEffectData.BuffDefinationPtr] = newEffectName;
                 }
             }
         }

@@ -14,14 +14,14 @@
     [StructLayout(LayoutKind.Explicit, Pack = 1)]
     public struct StatusEffectStruct
     {
-        [FieldOffset(0x0000)] public IntPtr BuffDefinationPtr; //// BuffDefination.DAT file
-        [FieldOffset(0x0010)] public float TotalTime;
-        [FieldOffset(0x0014)] public float TimeLeft;
-        [FieldOffset(0x0036)] public ushort Charges; // 2 bytes long but 1 is enough
+        [FieldOffset(0x0008)] public IntPtr BuffDefinationPtr; //// BuffDefination.DAT file
+        [FieldOffset(0x0018)] public float TotalTime;
+        [FieldOffset(0x001C)] public float TimeLeft;
+        [FieldOffset(0x003E)] public ushort Charges; // 2 bytes long but 1 is enough
 
         public override string ToString()
         {
-            return $"Key: {this.BuffDefinationPtr:X}, MaxTime: {this.TotalTime}, " +
+            return $"BuffDefinationPtr: {this.BuffDefinationPtr.ToInt64():X}, MaxTime: {this.TotalTime}, " +
                 $"TimeLeft: {this.TimeLeft}, Charges: {this.Charges}";
         }
     }

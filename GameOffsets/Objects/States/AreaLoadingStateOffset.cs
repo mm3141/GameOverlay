@@ -1,6 +1,5 @@
 namespace GameOffsets.Objects.States
 {
-    using System;
     using System.Runtime.InteropServices;
     using GameOffsets.Natives;
 

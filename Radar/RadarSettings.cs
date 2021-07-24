@@ -53,6 +53,11 @@ namespace Radar
         public Vector2 CullWindowSize = Vector2.Zero;
 
         /// <summary>
+        /// Gets a value indicating wether user wants to show Player icon or names.
+        /// </summary>
+        public bool ShowPlayersNames = false;
+
+        /// <summary>
         /// Icons to display on the map. Base game includes normal chests, strongboxes, monsters etc.
         /// </summary>
         public Dictionary<string, IconPicker> BaseIcons = new Dictionary<string, IconPicker>();
@@ -132,6 +137,7 @@ namespace Radar
 
         private void AddDefaultBaseGameIcons(string iconPathName)
         {
+            this.BaseIcons.TryAdd("Player", new IconPicker(iconPathName, 14, 41, 2, 0, 20));
             this.BaseIcons.TryAdd("Chest", new IconPicker(iconPathName, 14, 41, 1, 13, 24));
 
             this.BaseIcons.TryAdd("Shrine", new IconPicker(iconPathName, 14, 41, 7, 0, 30));
@@ -174,7 +180,7 @@ namespace Radar
 
         private void AddDefaultDelveIcons(string iconPathName)
         {
-            this.BaseIcons.TryAdd("Blockage OR DelveWall", new IconPicker(iconPathName, 9, 9, 0, 0, 30));
+            this.DelveIcons.TryAdd("Blockage OR DelveWall", new IconPicker(iconPathName, 9, 9, 3, 0, 30));
             this.DelveIcons.TryAdd("AberrantFossilChest", new IconPicker(iconPathName, 9, 9, 0, 0, 30));
             this.DelveIcons.TryAdd("AethericFossilChest", new IconPicker(iconPathName, 9, 9, 0, 0, 30));
             this.DelveIcons.TryAdd("AethericFossilChestDynamite", new IconPicker(iconPathName, 9, 9, 0, 0, 30));

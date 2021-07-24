@@ -18,13 +18,13 @@
     /*    [StructLayout(LayoutKind.Explicit, Pack = 1)]
         public struct Positioned
         {
-            [FieldOffset(0x0000)] public ComponentHeader Header;
+            [FieldOffset(0x0000)] public ComponentHeader OldHeader;
             // It's just a pointer to:
             //   0x00: PathFindingComponent @ offset 0x488.
             //   0x08: RenderComponent @ offset 0x30.
             // So it's useless to us.
             [FieldOffset(0x0018)] public NativePtrArray OtherRelatedComponentsPtr;
-            [FieldOffset(0x0058)] public byte Reaction; // Used for isHostile by &ing it with 0x7F.
+            [FieldOffset(0x0058)] public byte OldReaction; // Used for isHostile by &ing it with 0x7F.
             // Game is using an algorithm to move to player from point A to point B.
             // Let's say the algorithm calculated 3 stops between point A to point B.
             // i.e. A->X->Y->Z->B. Lets say player is somewhere between X, Y.
