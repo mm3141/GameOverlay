@@ -57,7 +57,7 @@ namespace GameHelper.Utils
         /// <param name="b">color selector blue 0 - 255.</param>
         public static void DrawRect(Vector2 pos, Vector2 size, byte r, byte g, byte b)
         {
-            ImGui.GetForegroundDrawList().AddRect(pos, pos + size, UiHelper.Color(r, g, b, 255));
+            ImGui.GetForegroundDrawList().AddRect(pos, pos + size, UiHelper.Color(r, g, b, 255), 0f, ImDrawCornerFlags.None, 2f);
         }
 
         /// <summary>

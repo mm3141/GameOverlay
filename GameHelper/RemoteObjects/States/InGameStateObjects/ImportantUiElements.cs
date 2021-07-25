@@ -41,6 +41,30 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
         }
 
         /// <summary>
+        /// Gets the Player Inventory Panel UiElement.
+        /// UiRoot -> MainChild -> 35th index.
+        /// </summary>
+        public InventoryPanelUiElement InventoryPanel
+        {
+            get;
+            private set;
+        }
+
+        = new InventoryPanelUiElement(IntPtr.Zero);
+
+        /*/// <summary>
+        /// Gets the Player Stash Panel UiElement.
+        /// UiRoot -> MainChild -> 36th index.
+        /// </summary>
+        public UiElementBase StashPanel
+        {
+            get;
+            private set;
+        }
+
+        = new UiElementBase(IntPtr.Zero);*/
+
+        /// <summary>
         /// Gets the LargeMap UiElement.
         /// UiRoot -> MainChild -> 3rd index -> 1nd index.
         /// </summary>
@@ -67,6 +91,9 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
         /// <inheritdoc/>
         protected override void CleanUpData()
         {
+            this.InventoryPanel.Address = IntPtr.Zero;
+
+            // this.StashPanel.Address = IntPtr.Zero;
             this.MiniMap.Address = IntPtr.Zero;
             this.LargeMap.Address = IntPtr.Zero;
         }
@@ -81,6 +108,9 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             // This won't throw an exception because (lucky us)
             // game UiElement garbage collection is not instant.
             // if this ever changes, put try catch on it.
+            this.InventoryPanel.Address = data1.InvAndStashPanels.InventoryPanelPtr;
+
+            // this.StashPanel.Address = data1.InvAndStashPanels.StashPanelPtr;
             this.LargeMap.Address = data2.LargeMapPtr;
             this.MiniMap.Address = data2.MiniMapPtr;
         }

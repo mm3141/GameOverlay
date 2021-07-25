@@ -188,7 +188,7 @@ namespace GameHelper.Ui
                                     var child = current.Children[j];
                                     child.Address = child.Address;
 
-                                    if (ImGui.Selectable($"{child.Address.ToInt64():X}-{child.Id}", selected))
+                                    if (ImGui.Selectable($"{j}-{child.Address.ToInt64():X}-{child.Id}", selected))
                                     {
                                         current.CurrentChildIndex = j;
                                         current.CurrentChildPreview = $"{child.Address.ToInt64():X}-{child.Id}";

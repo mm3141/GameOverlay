@@ -42,10 +42,15 @@ namespace GameHelper.RemoteObjects.UiElement
         /// Index of the List of scale values.
         /// </summary>
         protected byte scaleIndex = 0x00;
+
+        /// <summary>
+        /// Gets the children addresses of this Ui Element.
+        /// </summary>
+        protected IntPtr[] childrenAddresses = new IntPtr[0];
+
 #pragma warning restore SA1401 // Fields should be private
         private string id = string.Empty;
         private Vector2 positionModifier = Vector2.Zero;
-        private IntPtr[] childrenAddresses = new IntPtr[0];
         private bool show = false;
 
         /// <summary>
