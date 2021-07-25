@@ -100,6 +100,11 @@ namespace GameHelper.Settings
                     ImGui.Text($"Current Game State: {Core.States.GameCurrentState}");
                     ImGui.NewLine();
                     ImGui.Checkbox("Performance Stats", ref Core.GHSettings.ShowPerfStats);
+                    ImGui.Spacing();
+                    ImGui.SameLine();
+                    ImGui.Spacing();
+                    ImGui.SameLine();
+                    ImGui.Checkbox("Hide when game is in background", ref Core.GHSettings.HidePerfStatsWhenBg);
                     ImGui.Checkbox("Game UiExplorer", ref Core.GHSettings.ShowGameUiExplorer);
                     ImGui.Checkbox("Data Visualization", ref Core.GHSettings.ShowDataVisualization);
                     ImGui.Checkbox("Show ImGui Editor", ref showImGuiStyleEditor);

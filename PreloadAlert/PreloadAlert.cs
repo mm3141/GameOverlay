@@ -35,11 +35,11 @@ namespace PreloadAlert
         private Dictionary<string, PreloadInfo> importantPreloads
             = new Dictionary<string, PreloadInfo>();
 
+        private bool isPreloadAlertHovered = false;
+
         private string PreloadFileName => Path.Join(this.DllDirectory, "preloads.txt");
 
         private string SettingPathname => Path.Join(this.DllDirectory, "config", "settings.txt");
-
-        private bool isPreloadAlertHovered = false;
 
         /// <summary>
         /// Clear all the important and found preloads and stops the co-routines.

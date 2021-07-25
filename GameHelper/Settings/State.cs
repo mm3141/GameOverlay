@@ -50,6 +50,12 @@ namespace GameHelper.Settings
         public bool ShowPerfStats = false;
 
         /// <summary>
+        /// Gets or sets a value indicating whether to hide
+        /// the performance stats window when game is in background.
+        /// </summary>
+        public bool HidePerfStatsWhenBg = false;
+
+        /// <summary>
         /// Gets or sets a value indicating whether
         /// to show DataVisualization window or not.
         /// </summary>

@@ -40,6 +40,11 @@ namespace GameHelper.Ui
                 yield return new Wait(GameHelperEvents.OnRender);
                 if (Core.GHSettings.ShowPerfStats)
                 {
+                    if (Core.GHSettings.HidePerfStatsWhenBg && !Core.Process.Foreground)
+                    {
+                        continue;
+                    }
+
                     ImGui.SetNextWindowPos(Vector2.Zero);
                     if (isPerformanceWindowHovered)
                     {
