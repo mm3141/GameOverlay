@@ -155,6 +155,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             // TODO: loaded file searcher should allow comma seperated words
             // TODO: Search entities by pathname (allow comma seperated words here too)
             // TODO: detecting exploding entities -> make it variable that user can change.
+            // TODO: Flask Manager Idea: NoParentUiElement.
             var reader = Core.Process.Handle;
             var data = reader.ReadMemory<AreaInstanceOffsets>(this.Address);
             if (hasAddressChanged)

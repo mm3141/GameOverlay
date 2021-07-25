@@ -39,6 +39,8 @@ namespace PreloadAlert
 
         private string SettingPathname => Path.Join(this.DllDirectory, "config", "settings.txt");
 
+        private bool isPreloadAlertHovered = false;
+
         /// <summary>
         /// Clear all the important and found preloads and stops the co-routines.
         /// </summary>
@@ -118,12 +120,13 @@ namespace PreloadAlert
 
             var areaDetails = Core.States.InGameStateObject.CurrentAreaInstance.AreaDetails;
             string windowName = "Preload Window";
-            ImGui.PushStyleColor(ImGuiCol.WindowBg, this.Settings.BackgroundColor);
+            ImGui.PushStyleColor(ImGuiCol.WindowBg, this.isPreloadAlertHovered ? Vector4.Zero : this.Settings.BackgroundColor);
             if (this.Settings.Locked)
             {
                 ImGui.SetNextWindowPos(this.Settings.Pos);
                 ImGui.SetNextWindowSize(this.Settings.Size);
                 ImGui.Begin(windowName, UiHelper.TransparentWindowFlags);
+                this.isPreloadAlertHovered = ImGui.IsMouseHoveringRect(this.Settings.Pos, this.Settings.Pos + this.Settings.Size);
             }
             else
             {
@@ -154,19 +157,22 @@ namespace PreloadAlert
                 }
             }
 
-            if (areaDetails.IsHideout)
+            if (!this.isPreloadAlertHovered)
             {
-                ImGui.Text($"Preloads are not updated in hideout.");
-            }
-            else if (areaDetails.IsTown)
-            {
-                ImGui.Text($"Preloads are not updated in town.");
-            }
-            else
-            {
-                foreach (var kv in this.preloadFound)
+                if (areaDetails.IsHideout)
                 {
-                    ImGui.TextColored(kv.Key.Color, kv.Key.DisplayName);
+                    ImGui.Text($"Preloads are not updated in hideout.");
+                }
+                else if (areaDetails.IsTown)
+                {
+                    ImGui.Text($"Preloads are not updated in town.");
+                }
+                else if (this.Settings.Locked)
+                {
+                    foreach (var kv in this.preloadFound)
+                    {
+                        ImGui.TextColored(kv.Key.Color, kv.Key.DisplayName);
+                    }
                 }
             }
 
