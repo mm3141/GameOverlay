@@ -121,6 +121,8 @@ namespace PreloadAlert
             var areaDetails = Core.States.InGameStateObject.CurrentAreaInstance.AreaDetails;
             string windowName = "Preload Window";
             ImGui.PushStyleColor(ImGuiCol.WindowBg, this.isPreloadAlertHovered ? Vector4.Zero : this.Settings.BackgroundColor);
+            ImGui.PushStyleVar(ImGuiStyleVar.WindowBorderSize, this.isPreloadAlertHovered ? 0.0f : 0.5f);
+
             if (this.Settings.Locked)
             {
                 ImGui.SetNextWindowPos(this.Settings.Pos);
@@ -177,6 +179,7 @@ namespace PreloadAlert
             }
 
             ImGui.End();
+            ImGui.PopStyleVar();
             ImGui.PopStyleColor();
         }
 

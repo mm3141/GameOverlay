@@ -137,6 +137,8 @@ namespace Radar
                 {
                     this.Settings.ModifyCullWindow = false;
                 }
+
+                ImGui.End();
             }
 
             if (this.Settings.DrawWalkableMap && this.walkableMapTexture != IntPtr.Zero)
@@ -193,7 +195,9 @@ namespace Radar
                 ImGui.SetNextWindowPos(miniMap.Postion);
                 ImGui.SetNextWindowSize(miniMap.Size);
                 ImGui.SetNextWindowBgAlpha(0f);
+                ImGui.PushStyleVar(ImGuiStyleVar.WindowBorderSize, 0f);
                 ImGui.Begin("###minimapRadar", UiHelper.TransparentWindowFlags);
+                ImGui.PopStyleVar();
                 this.DrawOnMap(
                     ImGui.GetWindowDrawList(),
                     this.miniMapCenterWithDefaultShift + miniMap.Shift,

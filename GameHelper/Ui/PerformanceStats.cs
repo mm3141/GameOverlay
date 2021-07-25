@@ -19,6 +19,8 @@ namespace GameHelper.Ui
         private static Dictionary<string, MovingAverage> movingAverage
             = new Dictionary<string, MovingAverage>();
 
+        private static bool isPerformanceWindowHovered = false;
+
         /// <summary>
         /// Initializes the co-routines.
         /// </summary>
@@ -39,7 +41,26 @@ namespace GameHelper.Ui
                 if (Core.GHSettings.ShowPerfStats)
                 {
                     ImGui.SetNextWindowPos(Vector2.Zero);
+                    if (isPerformanceWindowHovered)
+                    {
+                        ImGui.PushStyleColor(ImGuiCol.WindowBg, Vector4.Zero);
+                        ImGui.PushStyleVar(ImGuiStyleVar.WindowBorderSize, 0f);
+                    }
+
                     ImGui.Begin("Perf Stats Window", UiHelper.TransparentWindowFlags);
+
+                    if (isPerformanceWindowHovered)
+                    {
+                        ImGui.PopStyleVar();
+                        ImGui.PopStyleColor();
+                    }
+
+                    isPerformanceWindowHovered = ImGui.IsMouseHoveringRect(Vector2.Zero, ImGui.GetWindowSize());
+                    if (isPerformanceWindowHovered)
+                    {
+                        ImGui.PushStyleColor(ImGuiCol.Text, Vector4.Zero);
+                    }
+
                     ImGui.Text($"Performance Related Stats");
                     ImGui.Text($"Total Event Coroutines: {CoroutineHandler.EventCount}");
                     ImGui.Text($"Total Tick Coroutines: {CoroutineHandler.TickingCount}");
@@ -69,6 +90,11 @@ namespace GameHelper.Ui
                         {
                             movingAverage[coroutine.Name] = new MovingAverage();
                         }
+                    }
+
+                    if (isPerformanceWindowHovered)
+                    {
+                        ImGui.PopStyleColor();
                     }
 
                     ImGui.End();
