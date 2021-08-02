@@ -13,6 +13,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
 
     /// <summary>
     /// Points to an Entity/Object in the game.
+    /// Entity is basically item/monster/effect/player/etc on the ground.
     /// </summary>
     public class Entity : RemoteObjectBase
     {
@@ -150,30 +151,20 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             }
         }
 
-        /// <inheritdoc/>
-        protected override void CleanUpData()
-        {
-        }
-
-        /// <inheritdoc/>
-        protected override void UpdateData(bool hasAddressChanged)
+        /// <summary>
+        /// Updates the component data associated with the Entity base object (i.e. item).
+        /// </summary>
+        /// <param name="idata">Entity base (i.e. item) data.</param>
+        /// <param name="hasAddressChanged">has this class Address changed or not.</param>
+        protected void UpdateComponentData(ItemStruct idata, bool hasAddressChanged)
         {
             var reader = Core.Process.Handle;
-            EntityOffsets entityData = reader.ReadMemory<EntityOffsets>(this.Address);
-            this.IsValid = EntityHelper.IsValidEntity(entityData.IsValid);
-            if (!this.IsValid)
-            {
-                // Invalid entity data is normally corrupted. let's not parse it.
-                return;
-            }
-
-            this.Id = entityData.Id;
             if (hasAddressChanged)
             {
                 this.componentAddresses.Clear();
                 this.componentCache.Clear();
-                var entityComponent = reader.ReadStdVector<IntPtr>(entityData.ComponentListPtr);
-                var entityDetails = reader.ReadMemory<EntityDetails>(entityData.EntityDetailsPtr);
+                var entityComponent = reader.ReadStdVector<IntPtr>(idata.ComponentListPtr);
+                var entityDetails = reader.ReadMemory<EntityDetails>(idata.EntityDetailsPtr);
                 this.Path = reader.ReadStdWString(entityDetails.name);
                 var lookupPtr = reader.ReadMemory<ComponentLookUpStruct>(
                     entityDetails.ComponentLookUpPtr);
@@ -199,6 +190,27 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
                     kv.Value.Address = kv.Value.Address;
                 }
             }
+        }
+
+        /// <inheritdoc/>
+        protected override void CleanUpData()
+        {
+        }
+
+        /// <inheritdoc/>
+        protected override void UpdateData(bool hasAddressChanged)
+        {
+            var reader = Core.Process.Handle;
+            EntityOffsets entityData = reader.ReadMemory<EntityOffsets>(this.Address);
+            this.IsValid = EntityHelper.IsValidEntity(entityData.IsValid);
+            if (!this.IsValid)
+            {
+                // Invalid entity data is normally corrupted. let's not parse it.
+                return;
+            }
+
+            this.Id = entityData.Id;
+            this.UpdateComponentData(entityData.ItemBase, hasAddressChanged);
         }
     }
 }

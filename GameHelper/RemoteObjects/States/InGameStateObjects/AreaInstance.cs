@@ -136,6 +136,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             this.AreaHash = string.Empty;
             this.Player.Address = IntPtr.Zero;
             this.AreaDetails.Address = IntPtr.Zero;
+            this.NetworkBubbleEntityCount = 0x00;
             this.TerrainMetadata = default;
             this.AwakeEntities.Clear();
         }

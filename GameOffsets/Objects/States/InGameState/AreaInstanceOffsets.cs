@@ -14,7 +14,7 @@ namespace GameOffsets.Objects.States.InGameState
         // Sleeping is decorations, disabled particles, effects.
         // Awake is objects like Chests, Monsters, Players, Npcs and etc.
         [FieldOffset(0x5B0)] public StdMap AwakeEntities;
-        //[FieldOffset(0x5B0)] public StdMap SleepingEntities; // always after awake entities.
+        //[FieldOffset(0x5C0)] public StdMap SleepingEntities; // always after awake entities.
         [FieldOffset(0x750)] public TerrainStruct TerrainMetadata;
     }
 
