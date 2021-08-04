@@ -10,7 +10,6 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
     using System.Linq;
     using System.Threading.Tasks;
     using Coroutine;
-    using GameHelper.Utils;
     using GameOffsets.Natives;
     using GameOffsets.Objects.States.InGameState;
     using ImGuiNET;
@@ -54,6 +53,38 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
         /// </summary>
         public ConcurrentDictionary<IntPtr, Item> Items { get; private set; } =
             new ConcurrentDictionary<IntPtr, Item>();
+
+        /// <summary>
+        /// Gets the item at the specific slot in the inventory.
+        /// Always check if the returned item IsValid or not.
+        /// </summary>
+        /// <param name="y">Inventory slot row, starting from 0.</param>
+        /// <param name="x">Inventory slot column, starting from 0.</param>
+        /// <returns>Item on the given slot.</returns>
+        public Item this[int y, int x]
+        {
+            get
+            {
+                if (y >= this.TotalBoxes.Y || x >= this.TotalBoxes.X)
+                {
+                    return new Item(IntPtr.Zero);
+                }
+
+                int index = (y * this.TotalBoxes.X) + x;
+                IntPtr itemAddr = this.itemsToInventorySlotMapping[index];
+                if (itemAddr == IntPtr.Zero)
+                {
+                    return new Item(IntPtr.Zero);
+                }
+
+                if (this.Items.TryGetValue(itemAddr, out var item))
+                {
+                    return item;
+                }
+
+                return new Item(IntPtr.Zero);
+            }
+        }
 
         /// <inheritdoc/>
         internal override void ToImGui()
@@ -160,7 +191,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
         {
             while (true)
             {
-                yield return new Wait(CoroutineEvents.GameHelperEvents.PerFrameDataUpdate);
+                yield return new Wait(0.02d);
                 if (this.Address != IntPtr.Zero)
                 {
                     this.UpdateData(false);
