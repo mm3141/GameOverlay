@@ -144,15 +144,11 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
         /// <inheritdoc/>
         protected override void UpdateData(bool hasAddressChanged)
         {
-            // TODO: Find new stuff
-            // TODO: Create patterns for stuff, for easy finding.
             // TODO: Enabling Docking/Multi-view-port
-            //          docking enabled will allow setting window to use tabs rather than 1 screen.
+            //          docking enabled will allow setting window to use ImGui-Tabs rather than 1 ImGui Window.
             //          multi-view-port will allow folks to use multiple monitors
             // TODO: HoverUi debugger. Should popup (beside mouse) "You are hovering over a UIElement, press J to debug it in DevTree.".
             // TODO: UiElement explorer that also handle InGameUi array (try/catch).
-            // TODO: change entity id from ushort to int so handle maps with lots of entities.
-            //       0xC << 31 is for detecting sleeping entities.
             // TODO: loaded file searcher should allow comma seperated words
             // TODO: Search entities by pathname (allow comma seperated words here too)
             // TODO: detecting exploding entities -> make it variable that user can change.

@@ -11,7 +11,7 @@ namespace GameHelper.RemoteEnums
     /// </summary>
     public enum InventoryName
     {
-#pragma warning disable SA1602, CS1591 // Enumeration items should be documented
+#pragma warning disable SA1602, CS1591 // Got it from the game, no need to document it.
         NoInvSelected,
         MainInventory1,
         BodyArmour1,
@@ -83,6 +83,6 @@ namespace GameHelper.RemoteEnums
         RESERVED5,
         RESERVED6,
         ExpeditionStorage1,
-#pragma warning restore SA1602, CS1591 // Enumeration items should be documented
+#pragma warning restore SA1602, CS1591
     }
 }

@@ -627,7 +627,16 @@ namespace Radar
 
         private IconPicker RarityToIconMapping(Rarity rarity)
         {
-            return this.Settings.BaseIcons[$"{rarity} Monster"];
+            switch (rarity)
+            {
+                case Rarity.Normal:
+                case Rarity.Magic:
+                case Rarity.Rare:
+                case Rarity.Unique:
+                    return this.Settings.BaseIcons[$"{rarity} Monster"];
+                default:
+                    return this.Settings.BaseIcons[$"Normal Monster"];
+            }
         }
 
         private string HeistChestPathToIcon(string path)
