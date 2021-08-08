@@ -65,16 +65,20 @@ namespace Radar
         /// <inheritdoc/>
         public override void DrawSettings()
         {
-            ImGui.TextWrapped("Following slider is known as large-map icons multiplier." +
-                " When setting the icons sizes only make sure that they look nice on the mini-map." +
-                " After that use the slider below to adjust large map icon" +
-                " size w.r.t the mini-map-icon size.");
+            ImGui.TextWrapped("Following slider is for fixing large map icons. " +
+                "You have to use it if you feel that LargeMap Icons " +
+                "are moving while your player is moving. You only have " +
+                "to find a value that works for you per game window resolution. " +
+                "Basically, you don't have to change it unless you change your " +
+                "game window resolution. Also, please contribute back, let me know " +
+                "what resolution you use and what value works best for you. " +
+                "This slider has no impact on mini-map icons.");
             ImGui.DragFloat(
                 "###LargeMapScaleMultiplier",
                 ref this.Settings.LargeMapScaleMultiplier,
                 0.001f,
                 0.01f,
-                0.2f);
+                0.3f);
             ImGui.TextWrapped("If, after changing the game/monitor resolution, your " +
                 "mini/large map icon gets invisible. Open this Overlay setting window, " +
                 "click anywhere on it and then hide this Overlay setting window. " +
