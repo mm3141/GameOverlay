@@ -36,7 +36,7 @@ namespace GameOffsets.Objects.States.InGameState
                 // from the game code
                 //     if (0x3fffffff < *(uint *)(lVar1 + 0x60)) {}
                 //     CMP    dword ptr [RSI + 0x60],0x40000000
-                return param.id <= 0x3fffffff;
+                return param.id < 0x40000000;
             });
     }
 
