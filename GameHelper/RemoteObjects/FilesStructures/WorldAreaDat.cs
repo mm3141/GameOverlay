@@ -50,6 +50,11 @@ namespace GameHelper.RemoteObjects.FilesStructures
         public bool IsHideout { get; private set; } = false;
 
         /// <summary>
+        /// Gets a value indicating whether player is in Battle Royale or not.
+        /// </summary>
+        public bool IsBattleRoyale { get; private set; } = false;
+
+        /// <summary>
         /// Gets a value indicating whether area has a waypoint or not.
         /// </summary>
         public bool HasWaypoint { get; private set; } = false;
@@ -64,6 +69,7 @@ namespace GameHelper.RemoteObjects.FilesStructures
             ImGui.Text($"Name: {this.Name}");
             ImGui.Text($"Is Town: {this.IsTown}");
             ImGui.Text($"Is Hideout: {this.IsHideout}");
+            ImGui.Text($"Is BattleRoyale: {this.IsBattleRoyale}");
             ImGui.Text($"Has Waypoint: {this.HasWaypoint}");
         }
 
@@ -74,6 +80,8 @@ namespace GameHelper.RemoteObjects.FilesStructures
             this.Name = string.Empty;
             this.Act = 0x00;
             this.IsTown = false;
+            this.IsHideout = false;
+            this.IsBattleRoyale = false;
             this.HasWaypoint = false;
         }
 
@@ -87,6 +95,7 @@ namespace GameHelper.RemoteObjects.FilesStructures
             this.IsTown = data.IsTown || this.Name == "The Rogue Harbour";
             this.HasWaypoint = data.HasWaypoint || this.Name == "The Rogue Harbour";
             this.IsHideout = this.Id.ToLower().Contains("hideout");
+            this.IsBattleRoyale = this.Id.ToLower().Contains("exileroyale");
         }
     }
 }
