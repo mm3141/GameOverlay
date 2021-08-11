@@ -108,6 +108,12 @@ namespace GameHelper.Settings
                     ImGui.Checkbox("Game UiExplorer", ref Core.GHSettings.ShowGameUiExplorer);
                     ImGui.Checkbox("Data Visualization", ref Core.GHSettings.ShowDataVisualization);
                     ImGui.Checkbox("Show ImGui Editor", ref showImGuiStyleEditor);
+                    ImGui.NewLine();
+                    if (ImGui.Button("Test Disconnect POE"))
+                    {
+                        MiscHelper.KillTCPConnectionForProcess((uint)Core.Process.Information.Id);
+                    }
+
                     if (showImGuiStyleEditor)
                     {
                         ImGui.ShowStyleEditor();
