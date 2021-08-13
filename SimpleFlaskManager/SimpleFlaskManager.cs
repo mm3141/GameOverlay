@@ -4,7 +4,9 @@
 
 namespace SimpleFlaskManager
 {
+    using GameHelper;
     using GameHelper.Plugin;
+    using GameHelper.RemoteEnums;
 
     /// <summary>
     /// <see cref="SimpleFlaskManager"/> plugin.
@@ -19,6 +21,10 @@ namespace SimpleFlaskManager
         /// <inheritdoc/>
         public override void DrawUI()
         {
+            if (Core.States.GameCurrentState != GameStateTypes.InGameState)
+            {
+                return;
+            }
         }
 
         /// <inheritdoc/>
