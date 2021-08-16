@@ -102,9 +102,11 @@ namespace GameHelper.Utils
         {
             public uint State;
             public uint LocalAddr;
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)] public byte[] LocalPort;
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
+            public byte[] LocalPort;
             public uint RemoteAddr;
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)] public byte[] RemotePort;
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
+            public byte[] RemotePort;
             public uint OwningPid;
         }
 
