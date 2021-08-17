@@ -74,7 +74,7 @@ namespace Radar
                 "what resolution you use and what value works best for you. " +
                 "This slider has no impact on mini-map icons.");
             ImGui.DragFloat(
-                "###LargeMapScaleMultiplier",
+                "Large Map Fix",
                 ref this.Settings.LargeMapScaleMultiplier,
                 0.001f,
                 0.01f,

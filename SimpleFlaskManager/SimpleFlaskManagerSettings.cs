@@ -4,6 +4,7 @@
 
 namespace SimpleFlaskManager
 {
+    using System.Collections.Generic;
     using GameHelper.Plugin;
 
     /// <summary>
@@ -11,5 +12,26 @@ namespace SimpleFlaskManager
     /// </summary>
     public sealed class SimpleFlaskManagerSettings : IPSettings
     {
+#pragma warning disable SA1401
+        /// <summary>
+        /// Gets a value indicating weather flask manager debug mode is enabled or not.
+        /// </summary>
+        public bool DebugMode = false;
+
+        /// <summary>
+        /// Gets a value indicating weather flask manager should work in hideoutor not.
+        /// </summary>
+        public bool ShouldRunInHideout = true;
+
+        /// <summary>
+        /// Gets the currently selected profile.
+        /// </summary>
+        public string CurrentlySelectedProfile = string.Empty;
+
+        /// <summary>
+        /// Gets all the profiles containing rules on when to drink the flasks.
+        /// </summary>
+        public Dictionary<string, Profile> Profiles = new Dictionary<string, Profile>();
+#pragma warning restore SA1401
     }
 }

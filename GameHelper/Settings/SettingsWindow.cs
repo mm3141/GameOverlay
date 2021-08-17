@@ -85,6 +85,7 @@ namespace GameHelper.Settings
         /// </summary>
         private static void DrawCurrentlySelectedSettings()
         {
+            ImGui.PushItemWidth(ImGui.GetContentRegionAvail().X - (8f * ImGui.GetFontSize()));
             switch (currentlySelectedPlugin)
             {
                 case "Core":
@@ -93,7 +94,7 @@ namespace GameHelper.Settings
                         $"Window Settings -> Display Settings -> Scale value. Restart the " +
                         $"Overlay after setting this value.\nExample Values:\n\t100%% -> 1\n\t" +
                         $"125%% -> 1.25\n\t150%% -> 1.50 etc");
-                    ImGui.DragFloat("##WinScale", ref Core.GHSettings.WindowScale, 0.25f, 1f, 5f);
+                    ImGui.DragFloat("Window Scale", ref Core.GHSettings.WindowScale, 0.25f, 1f, 5f);
                     ImGui.TextWrapped("NOTE: (Plugins/Core) Settings are saved automatically " +
                         "when you close the overlay or hide it via F12 button.");
                     ImGui.NewLine();
@@ -131,6 +132,8 @@ namespace GameHelper.Settings
 
                     break;
             }
+
+            ImGui.PopItemWidth();
         }
 
         /// <summary>
