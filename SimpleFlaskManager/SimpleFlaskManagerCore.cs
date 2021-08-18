@@ -1,4 +1,4 @@
-﻿// <copyright file="SimpleFlaskManager.cs" company="PlaceholderCompany">
+﻿// <copyright file="SimpleFlaskManagerCore.cs" company="PlaceholderCompany">
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
@@ -9,11 +9,12 @@ namespace SimpleFlaskManager
     using GameHelper.RemoteEnums;
     using GameHelper.Utils;
     using ImGuiNET;
+    using SimpleFlaskManager.ProfileManager;
 
     /// <summary>
     /// <see cref="SimpleFlaskManager"/> plugin.
     /// </summary>
-    public sealed class SimpleFlaskManager : PCore<SimpleFlaskManagerSettings>
+    public sealed class SimpleFlaskManagerCore : PCore<SimpleFlaskManagerSettings>
     {
         private string newProfileName = string.Empty;
 
@@ -22,19 +23,11 @@ namespace SimpleFlaskManager
         {
             ImGui.Checkbox("Debug Mode", ref this.Settings.DebugMode);
             ImGui.Checkbox("Should Run In Hideout", ref this.Settings.ShouldRunInHideout);
-            ImGui.InputText("Profile Name", ref this.newProfileName, 50);
-            if (ImGui.Button("Add Profile"))
-            {
-                this.Settings.Profiles.Add(this.newProfileName, new Profile());
-                this.newProfileName = string.Empty;
-            }
-
-            ImGui.NewLine();
-            if (ImGui.BeginCombo("Select Profile", this.Settings.CurrentlySelectedProfile))
+            if (ImGui.BeginCombo("Profile", this.Settings.CurrentProfile))
             {
                 foreach (var profile in this.Settings.Profiles)
                 {
-                    bool selected = profile.Key == this.Settings.CurrentlySelectedProfile;
+                    bool selected = profile.Key == this.Settings.CurrentProfile;
                     if (ImGui.IsWindowAppearing() && selected)
                     {
                         ImGui.SetScrollHereY();
@@ -42,11 +35,48 @@ namespace SimpleFlaskManager
 
                     if (ImGui.Selectable(profile.Key, selected))
                     {
-                        this.Settings.CurrentlySelectedProfile = profile.Key;
+                        this.Settings.CurrentProfile = profile.Key;
                     }
                 }
 
                 ImGui.EndCombo();
+            }
+
+            ImGui.NewLine();
+            if (ImGui.CollapsingHeader("Add New Profile"))
+            {
+                ImGui.InputText("Name", ref this.newProfileName, 50);
+                ImGui.SameLine();
+                if (ImGui.Button("Add"))
+                {
+                    if (!string.IsNullOrEmpty(this.newProfileName))
+                    {
+                        this.Settings.Profiles.Add(this.newProfileName, new Profile());
+                        this.newProfileName = string.Empty;
+                    }
+                }
+            }
+
+            if (ImGui.CollapsingHeader("Profiles"))
+            {
+                foreach (var profile in this.Settings.Profiles)
+                {
+                    if (ImGui.TreeNode($"{profile.Key}"))
+                    {
+                        ImGui.SameLine();
+                        if (ImGui.SmallButton("Delete Me"))
+                        {
+                            this.Settings.Profiles.Remove(profile.Key);
+                            if (this.Settings.CurrentProfile == profile.Key)
+                            {
+                                this.Settings.CurrentProfile = string.Empty;
+                            }
+                        }
+
+                        profile.Value.DrawSettings();
+                        ImGui.TreePop();
+                    }
+                }
             }
         }
 
@@ -59,11 +89,11 @@ namespace SimpleFlaskManager
                 return;
             }
 
-            foreach (var rule in this.Settings.Profiles[this.Settings.CurrentlySelectedProfile].Rules)
+            foreach (var rule in this.Settings.Profiles[this.Settings.CurrentProfile].Rules)
             {
                 if (rule.Condition.Evaluate())
                 {
-                    MiscHelper.KeyUp(rule.ActionKey);
+                    MiscHelper.KeyUp(rule.Key);
                 }
             }
         }
@@ -124,9 +154,9 @@ namespace SimpleFlaskManager
                 return false;
             }
 
-            if (!this.Settings.Profiles.ContainsKey(this.Settings.CurrentlySelectedProfile))
+            if (!this.Settings.Profiles.ContainsKey(this.Settings.CurrentProfile))
             {
-                debugMessage = $"{this.Settings.CurrentlySelectedProfile} not found.";
+                debugMessage = $"{this.Settings.CurrentProfile} not found.";
                 return false;
             }
 

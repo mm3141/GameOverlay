@@ -2,7 +2,7 @@
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
-namespace SimpleFlaskManager
+namespace SimpleFlaskManager.ProfileManager
 {
     /// <summary>
     /// Different type of operators available to use on the Conditions.
@@ -12,22 +12,22 @@ namespace SimpleFlaskManager
         /// <summary>
         /// Equal To Operator.
         /// </summary>
-        EQUAL,
+        EQUAL_TO,
 
         /// <summary>
         /// Not Equal To Operator.
         /// </summary>
-        NOT_EQUAL,
+        NOT_EQUAL_TO,
 
         /// <summary>
         /// Greater Than Operator.
         /// </summary>
-        BIGGER,
+        BIGGER_THAN,
 
         /// <summary>
         /// Less Than Operator.
         /// </summary>
-        LESS,
+        LESS_THAN,
 
         /// <summary>
         /// List/Dict Contains Operator.

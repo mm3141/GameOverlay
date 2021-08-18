@@ -6,6 +6,7 @@ namespace SimpleFlaskManager
 {
     using System.Collections.Generic;
     using GameHelper.Plugin;
+    using SimpleFlaskManager.ProfileManager;
 
     /// <summary>
     /// <see cref="SimpleFlaskManager"/> plugin settings class.
@@ -26,7 +27,7 @@ namespace SimpleFlaskManager
         /// <summary>
         /// Gets the currently selected profile.
         /// </summary>
-        public string CurrentlySelectedProfile = string.Empty;
+        public string CurrentProfile = string.Empty;
 
         /// <summary>
         /// Gets all the profiles containing rules on when to drink the flasks.

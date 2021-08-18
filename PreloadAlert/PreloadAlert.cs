@@ -210,9 +210,10 @@ namespace PreloadAlert
         {
             if (ImGui.CollapsingHeader("All Important Preloads (click path to edit)"))
             {
+                ImGui.Text("Click on the display name to edit that preload.");
                 foreach (var kv in this.importantPreloads)
                 {
-                    if (ImGui.SmallButton("Delete"))
+                    if (ImGui.SmallButton($"Delete##{kv.Key}"))
                     {
                         this.importantPreloads.Remove(kv.Key);
                         this.SaveAllPreloadsToDisk();

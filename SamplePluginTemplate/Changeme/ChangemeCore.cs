@@ -1,4 +1,4 @@
-﻿// <copyright file="Changeme.cs" company="PlaceholderCompany">
+﻿// <copyright file="ChangemeCore.cs" company="PlaceholderCompany">
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
@@ -9,7 +9,7 @@ namespace Changeme
     /// <summary>
     /// <see cref="Changeme"/> plugin.
     /// </summary>
-    public sealed class Changeme : PCore<ChangemeSettings>
+    public sealed class ChangemeCore : PCore<ChangemeSettings>
     {
         /// <inheritdoc/>
         public override void DrawSettings()
