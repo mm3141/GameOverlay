@@ -18,19 +18,34 @@ namespace SimpleFlaskManager.ProfileManager
         public enum ConditionEnum
         {
             /// <summary>
-            /// Conditions based on player Mana.
+            /// Condition based on player Mana.
             /// </summary>
             MANA,
 
             /// <summary>
-            /// Conditions based on player Life.
+            /// Condition based on player Mana.
+            /// </summary>
+            MANA_PERCENT,
+
+            /// <summary>
+            /// Condition based on player Life.
             /// </summary>
             LIFE,
 
             /// <summary>
-            /// Conditions based on player Energy Shield.
+            /// Condition based on player Life.
+            /// </summary>
+            LIFE_PERCENT,
+
+            /// <summary>
+            /// Condition based on player Energy Shield.
             /// </summary>
             ES,
+
+            /// <summary>
+            /// Condition based on player Energy Shield.
+            /// </summary>
+            ES_PERCENT,
 
             /// <summary>
             /// Conditions based on player Buffs/Debuffs.
@@ -56,6 +71,8 @@ namespace SimpleFlaskManager.ProfileManager
             return conditionType switch
             {
                 ConditionEnum.MANA => ManaCondition.AddConditionImGuiWidget(),
+                ConditionEnum.LIFE => LifeCondition.AddConditionImGuiWidget(),
+                ConditionEnum.ES => EnergyShieldCondition.AddConditionImGuiWidget(),
                 _ => throw new Exception($"{conditionType} not implemented in ConditionHelper class"),
             };
         }

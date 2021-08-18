@@ -47,6 +47,7 @@ namespace GameHelper
         protected override void AddFonts()
         {
             base.AddFonts();
+            ImGui.GetIO().Fonts.AddFontFromFileTTF(@"C:\Windows\Fonts\segoeui.ttf", 18);
             ImGui.GetIO().Fonts.AddFontFromFileTTF(@"C:\Windows\Fonts\segoeui.ttf", 24);
             ImGui.GetIO().Fonts.AddFontFromFileTTF(@"C:\Windows\Fonts\segoeui.ttf", 36);
         }

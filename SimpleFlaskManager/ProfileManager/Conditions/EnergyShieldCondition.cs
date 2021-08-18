@@ -1,4 +1,4 @@
-﻿// <copyright file="ManaCondition.cs" company="PlaceholderCompany">
+﻿// <copyright file="EnergyShieldCondition.cs" company="PlaceholderCompany">
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
@@ -10,32 +10,32 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
     using ImGuiNET;
 
     /// <summary>
-    /// FlaskManager condition to trigger flask on Mana changes.
+    /// FlaskManager condition to trigger flask on EnergyShield changes.
     /// </summary>
-    public class ManaCondition
+    public class EnergyShieldCondition
         : DecimalCondition
     {
-        private static string name = "Mana";
+        private static string name = "EnergyShield";
         private static OperatorEnum op = OperatorEnum.BIGGER_THAN;
         private static int threshold = 0;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ManaCondition"/> class.
+        /// Initializes a new instance of the <see cref="EnergyShieldCondition"/> class.
         /// </summary>
-        /// <param name="op">Operator to perform on the <see cref="ManaCondition"/>.</param>
-        /// <param name="threshold">threshold of <see cref="ManaCondition"/>.</param>
-        public ManaCondition(OperatorEnum op, int threshold)
+        /// <param name="op">Operator to perform on the <see cref="EnergyShieldCondition"/>.</param>
+        /// <param name="threshold">threshold of <see cref="EnergyShieldCondition"/>.</param>
+        public EnergyShieldCondition(OperatorEnum op, int threshold)
         : base(name, op, threshold)
         {
         }
 
         /// <summary>
-        /// Draws the ImGui Widget for creating  <see cref="ManaCondition"/> class.
+        /// Draws the ImGui Widget for creating  <see cref="EnergyShieldCondition"/> class.
         /// </summary>
         /// <returns>
-        /// <see cref="ManaCondition"/> if user allows it to be created otherwise null.
+        /// <see cref="EnergyShieldCondition"/> if user allows it to be created otherwise null.
         /// </returns>
-        public static ManaCondition AddConditionImGuiWidget()
+        public static EnergyShieldCondition AddConditionImGuiWidget()
         {
             ImGui.Text(name);
             ImGui.SameLine();
@@ -59,7 +59,7 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
             ImGui.SameLine();
             if (ImGui.Button($"Add##{name}"))
             {
-                return new ManaCondition(op, threshold);
+                return new EnergyShieldCondition(op, threshold);
             }
 
             return null;
@@ -73,8 +73,8 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
             {
                 return this.Operator switch
                 {
-                    OperatorEnum.BIGGER_THAN => lifeComponent.Mana.Current > this.value && this.EvaluateNext(),
-                    OperatorEnum.LESS_THAN => lifeComponent.Mana.Current < this.value && this.EvaluateNext(),
+                    OperatorEnum.BIGGER_THAN => lifeComponent.EnergyShield.Current > this.value && this.EvaluateNext(),
+                    OperatorEnum.LESS_THAN => lifeComponent.EnergyShield.Current < this.value && this.EvaluateNext(),
                     _ => throw new Exception($"{name}Condition doesn't support {this.Operator}."),
                 };
             }
