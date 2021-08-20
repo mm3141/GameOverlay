@@ -21,10 +21,13 @@
         public float Regeneration;
         public int Total;
         public int Current;
-        //// e.g. ICICLE MINE reserve flat Vital
+        //// e.g. Clarity reserve flat Vital
         public int ReservedFlat;
         //// e.g. HERALD reserve % Vital.
         //// ReservedFlat does not change this value.
         public int ReservedPercent;
+
+        public int CurrentInPercent() =>
+            (int)Math.Round(100 * Current / (Total - (ReservedFlat + Math.Round(ReservedPercent * 0.0001 * Total))));
     }
 }

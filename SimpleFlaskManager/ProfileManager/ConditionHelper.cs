@@ -48,22 +48,34 @@ namespace SimpleFlaskManager.ProfileManager
             ES_PERCENT,
 
             /// <summary>
-            /// Conditions based on player Buffs/Debuffs.
+            /// Condition based on what player is doing.
+            /// </summary>
+            Animation,
+
+            /// <summary>
+            /// Condition based on player Buffs/Debuffs.
             /// </summary>
             MOD,
 
             /// <summary>
-            /// Conditions based on what player is doing.
+            /// Condition based on flask mod active on player or not.
             /// </summary>
-            Animation,
+            FLASK_MOD,
+
+            /// <summary>
+            /// Condition based on number of flask Uses.
+            /// </summary>
+            FLASK_USES,
         }
 
         /// <summary>
-        /// Converts the <see cref="ConditionEnum"/> to appropriate ConditionObject.
+        /// Converts the <see cref="ConditionEnum"/> to the appropriate
+        /// <see cref="BaseCondition"/> derived class. This is a wrapper function
+        /// that uses the derived classes static function to help create the class.
         /// </summary>
         /// <param name="conditionType">Condition type to create.</param>
         /// <returns>
-        /// Returns appropriate condition object in BaseCondition format.
+        /// Returns appropriate condition object in BaseCondition format or null.
         /// Throws an exception in case it doesn't know how to create a specific Condition.
         /// </returns>
         public static BaseCondition EnumToObject(ConditionEnum conditionType)
@@ -71,8 +83,12 @@ namespace SimpleFlaskManager.ProfileManager
             return conditionType switch
             {
                 ConditionEnum.MANA => ManaCondition.AddConditionImGuiWidget(),
+                ConditionEnum.MANA_PERCENT => ManaPercentCondition.AddConditionImGuiWidget(),
                 ConditionEnum.LIFE => LifeCondition.AddConditionImGuiWidget(),
+                ConditionEnum.LIFE_PERCENT => LifePercentCondition.AddConditionImGuiWidget(),
                 ConditionEnum.ES => EnergyShieldCondition.AddConditionImGuiWidget(),
+                ConditionEnum.ES_PERCENT => EnergyShieldPercentCondition.AddConditionImGuiWidget(),
+                ConditionEnum.Animation => AnimationCondition.AddConditionImGuiWidget(),
                 _ => throw new Exception($"{conditionType} not implemented in ConditionHelper class"),
             };
         }

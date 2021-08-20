@@ -94,6 +94,8 @@ namespace GameHelper.RemoteObjects.Components
             ImGui.Text($"ReservedFlat: {data.ReservedFlat}");
             ImGui.Text($"Current: {data.Current}");
             ImGui.Text($"Reserved(%%): {data.ReservedPercent}");
+            ImGui.NewLine();
+            ImGui.Text($"Current(%%): {data.CurrentInPercent()}");
         }
     }
 }

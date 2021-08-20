@@ -73,10 +73,12 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
             {
                 return this.Operator switch
                 {
-                    OperatorEnum.BIGGER_THAN => lifeComponent.Mana.Current > this.value && this.EvaluateNext(),
-                    OperatorEnum.LESS_THAN => lifeComponent.Mana.Current < this.value && this.EvaluateNext(),
+                    OperatorEnum.BIGGER_THAN => lifeComponent.Mana.Current > this.value,
+                    OperatorEnum.LESS_THAN => lifeComponent.Mana.Current < this.value,
                     _ => throw new Exception($"{name}Condition doesn't support {this.Operator}."),
-                };
+                }
+
+                && this.EvaluateNext();
             }
 
             return false;

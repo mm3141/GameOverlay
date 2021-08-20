@@ -154,6 +154,12 @@ namespace SimpleFlaskManager
                 return false;
             }
 
+            if (string.IsNullOrEmpty(this.Settings.CurrentProfile))
+            {
+                debugMessage = $"No Profile Selected.";
+                return false;
+            }
+
             if (!this.Settings.Profiles.ContainsKey(this.Settings.CurrentProfile))
             {
                 debugMessage = $"{this.Settings.CurrentProfile} not found.";

@@ -5,6 +5,7 @@
 namespace GameHelper.Utils
 {
     using System;
+    using System.Diagnostics;
     using System.Linq;
     using System.Runtime.InteropServices;
 
@@ -13,6 +14,9 @@ namespace GameHelper.Utils
     /// </summary>
     public static class MiscHelper
     {
+        private static Random rand = new Random();
+        private static Stopwatch delayBetweenKeys = Stopwatch.StartNew();
+
         private enum TcpTableClass
         {
             TcpTableBasicListener,
@@ -35,15 +39,30 @@ namespace GameHelper.Utils
         }*/
 
         /// <summary>
-        /// Releases the key in the game.
+        /// Releases the key in the game. There is a hard delay of 30ms - 40ms
+        /// between Key releases to make sure game doesn't kick us for
+        /// too many key-presses.
         /// </summary>
         /// <param name="key">key to release.</param>
-        public static void KeyUp(ConsoleKey key)
+        /// <returns>Is the key actually pressed or not.</returns>
+        public static bool KeyUp(ConsoleKey key)
         {
+            if (delayBetweenKeys.ElapsedMilliseconds >= 30 + (rand.Next() % 10))
+            {
+                delayBetweenKeys.Restart();
+            }
+            else
+            {
+                return false;
+            }
+
             if (Core.Process.Address != IntPtr.Zero)
             {
                 SendMessage(Core.Process.Information.MainWindowHandle, 0x101, (int)key, 0);
+                return true;
             }
+
+            return false;
         }
 
         /// <summary>
