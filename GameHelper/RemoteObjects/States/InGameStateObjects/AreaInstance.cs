@@ -154,6 +154,8 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             // TODO: detecting exploding entities -> make it variable that user can change.
             // TODO: Flask Manager Idea: NoParentUiElement.
             // TODO: DRY out combo box code.
+            // TODO: Incorporate latency in KeyPress code.
+            // TODO: Add a TODO in on_patch that fixes server data size.
             // TODO: Really need to investigate "too many actions" bug when using FM.
             //         Figure out what game do with NUMPAD trick.
             //         Figure out what MS is good (20-40) when FM charges/buff conditions are working.
