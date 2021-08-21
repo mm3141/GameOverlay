@@ -9,6 +9,7 @@ namespace SimpleFlaskManager
     using GameHelper;
     using GameHelper.Plugin;
     using GameHelper.RemoteEnums;
+    using GameHelper.RemoteObjects.Components;
     using GameHelper.Utils;
     using ImGuiNET;
     using Newtonsoft.Json;
@@ -170,6 +171,15 @@ namespace SimpleFlaskManager
             {
                 debugMessage = $"{this.Settings.CurrentProfile} not found.";
                 return false;
+            }
+
+            if (Core.States.InGameStateObject.CurrentAreaInstance.Player.TryGetComponent<Life>(out var lifeComp))
+            {
+                if (lifeComp.Health.Current <= 0)
+                {
+                    debugMessage = $"Player is dead.";
+                    return false;
+                }
             }
 
             return true;

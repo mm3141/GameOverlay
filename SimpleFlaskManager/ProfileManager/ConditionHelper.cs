@@ -38,9 +38,9 @@ namespace SimpleFlaskManager.ProfileManager
             FLASK_EFFECT,
 
             /// <summary>
-            /// Condition based on number of flask Uses.
+            /// Condition based on number of charges flask has.
             /// </summary>
-            FLASK_USES,
+            FLASK_CHARGES,
         }
 
         /// <summary>
@@ -60,6 +60,7 @@ namespace SimpleFlaskManager.ProfileManager
                 ConditionEnum.ANIMATION => AnimationCondition.Add(),
                 ConditionEnum.STATUS_EFFECT => StatusEffectCondition.Add(),
                 ConditionEnum.FLASK_EFFECT => FlaskEffectCondition.Add(),
+                ConditionEnum.FLASK_CHARGES => FlaskChargesCondition.Add(),
                 _ => throw new Exception($"{conditionType} not implemented in ConditionHelper class"),
             };
         }
