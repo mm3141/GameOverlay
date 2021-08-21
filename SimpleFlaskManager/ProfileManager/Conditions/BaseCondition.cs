@@ -4,47 +4,96 @@
 
 namespace SimpleFlaskManager.ProfileManager.Conditions
 {
+    using System;
+    using ImGuiNET;
+
     /// <summary>
-    /// Abstract class to store FlaskManager trigger conditions.
+    /// Abstract class for creating conditions on which flasks can trigger.
     /// </summary>
-    public abstract class BaseCondition
+    /// <typeparam name="T">
+    /// The condition right hand side operand type.
+    /// </typeparam>
+    public abstract class BaseCondition<T>
+        : ICondition
     {
+#pragma warning disable SA1401 // Fields should be private
         /// <summary>
-        /// Gets or sets the user friendly name of the condition.
+        /// Right hand side operand of the condition.
         /// </summary>
-        public string Name { get; set; } = string.Empty;
+        protected T rightHandOperand;
 
         /// <summary>
-        /// Gets or sets a value indicating the kind of comparison to perform on the data.
+        /// The operator to use for the condition.
         /// </summary>
-        public OperatorEnum Operator { get; set; } = OperatorEnum.EQUAL_TO;
+        protected OperatorEnum conditionOperator;
+#pragma warning restore SA1401 // Fields should be private
+
+        private ICondition next;
 
         /// <summary>
-        /// Gets or sets the next condition to evaluate in case this condition is true.
+        /// Initializes a new instance of the <see cref="BaseCondition{T}"/> class.
         /// </summary>
-        public BaseCondition Next { get; set; } = null;
+        /// <param name="operator_">
+        /// <see cref="OperatorEnum"/> to use in this condition.
+        /// </param>
+        /// <param name="rightHandSide">
+        /// Right hand side operand of the Condition.
+        /// </param>
+        public BaseCondition(OperatorEnum operator_, T rightHandSide)
+        {
+            this.next = null;
+            this.conditionOperator = operator_;
+            this.rightHandOperand = rightHandSide;
+        }
 
         /// <summary>
-        /// Evaluates the condition.
-        /// </summary>
-        /// <returns>True in case the condition is successful otherwise fase.</returns>
-        public abstract bool Evaluate();
-
-        /// <summary>
-        /// Displays the Condition on ImGui window.
-        /// </summary>
-        public abstract void DisplayConditionImGuiWidget();
-
-        /// <summary>
-        /// A helper function to evaluates the next condition.
+        /// Draws the ImGui widget for adding the condition.
         /// </summary>
         /// <returns>
-        /// True if next condition is successfull
-        /// or next condition is null otherwise false.
+        /// <see cref="ICondition"/> if user wants to add the condition, otherwise null.
+        /// </returns>
+        public static ICondition Add() =>
+            throw new NotImplementedException($"{typeof(BaseCondition<T>).Name} " +
+                $"class doesn't have ImGui widget for creating conditions.");
+
+        /// <inheritdoc/>
+        public abstract bool Evaluate();
+
+        /// <inheritdoc/>
+        public virtual void Display()
+        {
+            if (this.next != null)
+            {
+                ImGui.TreePush();
+                this.next.Display();
+                ImGui.TreePop();
+            }
+        }
+
+        /// <inheritdoc/>
+        public ICondition Next() => this.next;
+
+        /// <inheritdoc/>
+        public void Append(ICondition condition)
+        {
+            var nxt = this.next;
+            while (nxt != null)
+            {
+                nxt = nxt.Next();
+            }
+
+            nxt = condition;
+        }
+
+        /// <summary>
+        /// Evaluates the next in line condition.
+        /// </summary>
+        /// <returns>
+        /// True if the next condition doesn't exists or is successful otherwise false.
         /// </returns>
         protected bool EvaluateNext()
         {
-            return this.Next == null || this.Next.Evaluate();
+            return this.next == null || this.next.Evaluate();
         }
     }
 }

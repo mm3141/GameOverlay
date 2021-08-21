@@ -119,7 +119,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             {
                 foreach (var item in this.Items)
                 {
-                    if (ImGui.TreeNode(item.Value.Path))
+                    if (ImGui.TreeNode($"{item.Value.Path}##{item.Value.Address.ToInt64()}"))
                     {
                         item.Value.ToImGui();
                         ImGui.TreePop();

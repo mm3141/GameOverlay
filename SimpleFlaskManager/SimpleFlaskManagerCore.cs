@@ -4,11 +4,14 @@
 
 namespace SimpleFlaskManager
 {
+    using System.Collections.Generic;
+    using System.IO;
     using GameHelper;
     using GameHelper.Plugin;
     using GameHelper.RemoteEnums;
     using GameHelper.Utils;
     using ImGuiNET;
+    using Newtonsoft.Json;
     using SimpleFlaskManager.ProfileManager;
 
     /// <summary>
@@ -106,6 +109,9 @@ namespace SimpleFlaskManager
         /// <inheritdoc/>
         public override void OnEnable(bool isGameOpened)
         {
+            var jsonData = File.ReadAllText(this.DllDirectory + @"/FlaskNameToBuff.json");
+            JsonDataHelper.FlaskNameToBuff =
+                JsonConvert.DeserializeObject<Dictionary<string, string>>(jsonData);
         }
 
         /// <inheritdoc/>

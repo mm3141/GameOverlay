@@ -18,49 +18,24 @@ namespace SimpleFlaskManager.ProfileManager
         public enum ConditionEnum
         {
             /// <summary>
-            /// Condition based on player Mana.
+            /// Condition based on player Vitals.
             /// </summary>
-            MANA,
-
-            /// <summary>
-            /// Condition based on player Mana.
-            /// </summary>
-            MANA_PERCENT,
-
-            /// <summary>
-            /// Condition based on player Life.
-            /// </summary>
-            LIFE,
-
-            /// <summary>
-            /// Condition based on player Life.
-            /// </summary>
-            LIFE_PERCENT,
-
-            /// <summary>
-            /// Condition based on player Energy Shield.
-            /// </summary>
-            ES,
-
-            /// <summary>
-            /// Condition based on player Energy Shield.
-            /// </summary>
-            ES_PERCENT,
+            VITALS,
 
             /// <summary>
             /// Condition based on what player is doing.
             /// </summary>
-            Animation,
+            ANIMATION,
 
             /// <summary>
             /// Condition based on player Buffs/Debuffs.
             /// </summary>
-            MOD,
+            STATUS_EFFECT,
 
             /// <summary>
             /// Condition based on flask mod active on player or not.
             /// </summary>
-            FLASK_MOD,
+            FLASK_EFFECT,
 
             /// <summary>
             /// Condition based on number of flask Uses.
@@ -70,25 +45,21 @@ namespace SimpleFlaskManager.ProfileManager
 
         /// <summary>
         /// Converts the <see cref="ConditionEnum"/> to the appropriate
-        /// <see cref="BaseCondition"/> derived class. This is a wrapper function
-        /// that uses the derived classes static function to help create the class.
+        /// <see cref="ICondition"/> object.
         /// </summary>
         /// <param name="conditionType">Condition type to create.</param>
         /// <returns>
-        /// Returns appropriate condition object in BaseCondition format or null.
+        /// Returns <see cref="ICondition"/> if user wants to create it or null.
         /// Throws an exception in case it doesn't know how to create a specific Condition.
         /// </returns>
-        public static BaseCondition EnumToObject(ConditionEnum conditionType)
+        public static ICondition EnumToObject(ConditionEnum conditionType)
         {
             return conditionType switch
             {
-                ConditionEnum.MANA => ManaCondition.AddConditionImGuiWidget(),
-                ConditionEnum.MANA_PERCENT => ManaPercentCondition.AddConditionImGuiWidget(),
-                ConditionEnum.LIFE => LifeCondition.AddConditionImGuiWidget(),
-                ConditionEnum.LIFE_PERCENT => LifePercentCondition.AddConditionImGuiWidget(),
-                ConditionEnum.ES => EnergyShieldCondition.AddConditionImGuiWidget(),
-                ConditionEnum.ES_PERCENT => EnergyShieldPercentCondition.AddConditionImGuiWidget(),
-                ConditionEnum.Animation => AnimationCondition.AddConditionImGuiWidget(),
+                ConditionEnum.VITALS => VitalsCondition.Add(),
+                ConditionEnum.ANIMATION => AnimationCondition.Add(),
+                ConditionEnum.STATUS_EFFECT => StatusEffectCondition.Add(),
+                ConditionEnum.FLASK_EFFECT => FlaskEffectCondition.Add(),
                 _ => throw new Exception($"{conditionType} not implemented in ConditionHelper class"),
             };
         }

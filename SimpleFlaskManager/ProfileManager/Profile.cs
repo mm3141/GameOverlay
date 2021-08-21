@@ -84,13 +84,7 @@ namespace SimpleFlaskManager.ProfileManager
                 }
                 else if (this.index < this.Rules.Count)
                 {
-                    var cond = this.Rules[this.index].Condition;
-                    while (cond.Next != null)
-                    {
-                        cond = cond.Next;
-                    }
-
-                    cond.Next = newCondition;
+                    this.Rules[this.index].Condition.Append(newCondition);
                 }
             }
 
@@ -101,7 +95,7 @@ namespace SimpleFlaskManager.ProfileManager
                     ImGui.Text($"Rule: {i}, Key: {this.Rules[i].Key}");
                     if (ImGui.TreeNode($"Conditions##{i}"))
                     {
-                        this.Rules[i].Condition.DisplayConditionImGuiWidget();
+                        this.Rules[i].Condition.Display();
                         ImGui.TreePop();
                     }
                 }
@@ -120,7 +114,7 @@ namespace SimpleFlaskManager.ProfileManager
             /// <summary>
             /// Rule condition to evaluate.
             /// </summary>
-            public BaseCondition Condition;
+            public ICondition Condition;
 
             /// <summary>
             /// Rule key to press on success.

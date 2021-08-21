@@ -116,6 +116,24 @@ namespace GameHelper.Utils
         }
 
         /// <summary>
+        /// Creates a ImGui ComboBox for C# Enums.
+        /// </summary>
+        /// <typeparam name="T">Enum type to display in the ComboBox.</typeparam>
+        /// <param name="displayText">Text to display along the ComboBox.</param>
+        /// <param name="selected">Selected enum value in the ComboBox.</param>
+        public static void EnumComboBox<T>(string displayText, ref T selected)
+            where T : Enum
+        {
+            Type enumType = typeof(T);
+            string[] enumNames = Enum.GetNames(enumType);
+            int selectedIndex = (int)Convert.ChangeType(selected, typeof(int));
+            if (ImGui.Combo(displayText, ref selectedIndex, enumNames, enumNames.Length))
+            {
+                selected = (T)Enum.Parse(enumType, enumNames[selectedIndex]);
+            }
+        }
+
+        /// <summary>
         /// Iterates over properties of the given class via reflection
         /// and yields the <see cref="RemoteObjectBase"/> property name and its
         /// <see cref="RemoteObjectBase.ToImGui"/> method. Any property
