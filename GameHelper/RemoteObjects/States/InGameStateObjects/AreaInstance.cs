@@ -153,7 +153,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             // TODO: Search entities by pathname (allow comma seperated words here too)
             // TODO: detecting exploding entities -> make it variable that user can change.
             // TODO: Flask Manager Idea: NoParentUiElement.
-            // TODO: Really need to DRY out the FM profile code.
+            // TODO: DRY out combo box code.
             // TODO: Really need to investigate "too many actions" bug when using FM.
             //         Figure out what game do with NUMPAD trick.
             //         Figure out what MS is good (20-40) when FM charges/buff conditions are working.

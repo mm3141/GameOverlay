@@ -47,7 +47,7 @@ namespace GameHelper.Utils
         /// <returns>Is the key actually pressed or not.</returns>
         public static bool KeyUp(ConsoleKey key)
         {
-            if (delayBetweenKeys.ElapsedMilliseconds >= 30 + (rand.Next() % 10))
+            if (delayBetweenKeys.ElapsedMilliseconds >= 200 + (rand.Next() % 10))
             {
                 delayBetweenKeys.Restart();
             }

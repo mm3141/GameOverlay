@@ -75,15 +75,24 @@ namespace GameHelper.RemoteObjects.Components
                 var statusEffectData = reader.ReadMemory<StatusEffectStruct>(statusEffects[i]);
                 if (addressToEffectNameCache.TryGetValue(statusEffectData.BuffDefinationPtr, out var oldEffectname))
                 {
-                    // existing Effect
-                    this.StatusEffects[oldEffectname] = statusEffectData;
+                    // known Effect
+                    this.StatusEffects.AddOrUpdate(oldEffectname, statusEffectData, (key, oldValue) =>
+                    {
+                        oldValue.Charges++;
+                        return oldValue;
+                    });
                 }
                 else if (this.TryGetNameFromBuffDefination(
                     statusEffectData.BuffDefinationPtr,
                     out var newEffectName))
                 {
-                    // New Effect.
-                    this.StatusEffects[newEffectName] = statusEffectData;
+                    // Unknown Effect.
+                    this.StatusEffects.AddOrUpdate(newEffectName, statusEffectData, (key, oldValue) =>
+                    {
+                        oldValue.Charges++;
+                        return oldValue;
+                    });
+
                     addressToEffectNameCache[statusEffectData.BuffDefinationPtr] = newEffectName;
                 }
             }

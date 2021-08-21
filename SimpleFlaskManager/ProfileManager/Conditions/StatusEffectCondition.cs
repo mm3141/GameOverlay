@@ -18,15 +18,20 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
     {
         private static OperatorEnum operatorStatic = OperatorEnum.CONTAINS;
         private static string buffIdStatic = string.Empty;
+        private static int buffChargesStatic = 0;
+
+        private int charges = 0;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="StatusEffectCondition"/> class.
         /// </summary>
         /// <param name="operator_"><see cref="OperatorEnum"/> to use in this condition.</param>
         /// <param name="buffId">Player buff/debuff to use in this condition.</param>
-        public StatusEffectCondition(OperatorEnum operator_, string buffId)
+        /// <param name="buffCharges">Number of charges the buff/debuff has.</param>
+        public StatusEffectCondition(OperatorEnum operator_, string buffId, int buffCharges)
         : base(operator_, buffId)
         {
+            this.charges = buffCharges;
         }
 
         /// <summary>
@@ -37,13 +42,15 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
         /// </returns>
         public static new StatusEffectCondition Add()
         {
-            ToImGui(ref operatorStatic, ref buffIdStatic);
+            ToImGui(ref operatorStatic, ref buffIdStatic, ref buffChargesStatic);
             ImGui.SameLine();
             if (ImGui.Button($"Add##StatusEffect") &&
                 (operatorStatic == OperatorEnum.CONTAINS ||
-                operatorStatic == OperatorEnum.NOT_CONTAINS))
+                operatorStatic == OperatorEnum.NOT_CONTAINS ||
+                operatorStatic == OperatorEnum.BIGGER_THAN ||
+                operatorStatic == OperatorEnum.LESS_THAN))
             {
-                return new StatusEffectCondition(operatorStatic, buffIdStatic);
+                return new StatusEffectCondition(operatorStatic, buffIdStatic, buffChargesStatic);
             }
 
             return null;
@@ -52,7 +59,7 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
         /// <inheritdoc/>
         public override void Display()
         {
-            ToImGui(ref this.conditionOperator, ref this.rightHandOperand);
+            ToImGui(ref this.conditionOperator, ref this.rightHandOperand, ref this.charges);
             base.Display();
         }
 
@@ -66,6 +73,10 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
                 {
                     OperatorEnum.CONTAINS => buffComponent.StatusEffects.ContainsKey(this.rightHandOperand),
                     OperatorEnum.NOT_CONTAINS => !buffComponent.StatusEffects.ContainsKey(this.rightHandOperand),
+                    OperatorEnum.BIGGER_THAN => buffComponent.StatusEffects.ContainsKey(this.rightHandOperand) &&
+                                                buffComponent.StatusEffects[this.rightHandOperand].Charges > this.charges,
+                    OperatorEnum.LESS_THAN => buffComponent.StatusEffects.ContainsKey(this.rightHandOperand) &&
+                                                buffComponent.StatusEffects[this.rightHandOperand].Charges < this.charges,
                     _ => throw new Exception($"BuffCondition doesn't support {this.conditionOperator}."),
                 }
 
@@ -75,14 +86,22 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
             return false;
         }
 
-        private static void ToImGui(ref OperatorEnum operator_, ref string buffId)
+        private static void ToImGui(ref OperatorEnum operator_, ref string buffId, ref int charges)
         {
-            ImGui.Text($"Only {OperatorEnum.CONTAINS} & {OperatorEnum.NOT_CONTAINS} supported.");
+            ImGui.TextWrapped($"{OperatorEnum.CONTAINS}, {OperatorEnum.NOT_CONTAINS}, " +
+                $"{OperatorEnum.BIGGER_THAN} and {OperatorEnum.LESS_THAN} are supported." +
+                $"{OperatorEnum.CONTAINS} and {OperatorEnum.NOT_CONTAINS} just checks if " +
+                $"buff/debuff is there or not. {OperatorEnum.BIGGER_THAN} and " +
+                $"{OperatorEnum.LESS_THAN} checks if buff/debuff is there and charges " +
+                $"are valid as well.");
             ImGui.Text($"Player");
             ImGui.SameLine();
             UiHelper.EnumComboBox("##StatusEffectOperator", ref operator_);
             ImGui.SameLine();
-            ImGui.InputText("buff-id/debuff-id##StatusEffect", ref buffId, 200);
+            ImGui.InputText("buff/debuff##StatusEffect", ref buffId, 200);
+            ImGui.Text("with");
+            ImGui.SameLine();
+            ImGui.InputInt("charges##StatusEffect", ref charges);
         }
     }
 }
