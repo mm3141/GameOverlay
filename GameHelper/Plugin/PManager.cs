@@ -18,15 +18,6 @@ namespace GameHelper.Plugin
 
     /// <summary>
     /// Finds, loads and unloads the plugins.
-    /// TODO: Download/copy paste plugin from a folder.
-    /// TODO: Hot Reload plugins on on plugin hash changes.
-    /// TODO: Demostrate a plugin with multiple profiles.
-    /// TODO: write a guide for adding new plugin.
-    /// TODO:    also talk about debugging a plugin.
-    /// TODO:    talking about project fork/pull request etc.
-    /// TODO: pause/resume plugin when game close/minimize.
-    ///       Render function can be stopped from core but
-    ///       pause/resume would be for threads running inside plugins.
     /// </summary>
     internal static class PManager
     {

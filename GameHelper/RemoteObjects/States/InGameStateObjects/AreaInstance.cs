@@ -144,19 +144,6 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
         /// <inheritdoc/>
         protected override void UpdateData(bool hasAddressChanged)
         {
-            // TODO: Enabling Docking/Multi-view-port
-            //          docking enabled will allow setting window to use ImGui-Tabs rather than 1 ImGui Window.
-            //          multi-view-port will allow folks to use multiple monitors
-            // TODO: HoverUi debugger. Should popup (beside mouse) "You are hovering over a UIElement, press J to debug it in DevTree.".
-            // TODO: Search entities by pathname (allow comma seperated words here too)
-            // TODO: detecting exploding entities -> make it variable that user can change.
-            // TODO: Flask Manager Idea: NoParentUiElement.
-            // TODO: DRY out combo box code.
-            // TODO: Incorporate latency in KeyPress code.
-            // TODO: Add a TODO in on_patch that fixes server data size.
-            // TODO: Really need to investigate "too many actions" bug when using FM.
-            //         Figure out what game do with NUMPAD trick.
-            //         Figure out what MS is good (20-40) when FM charges/buff conditions are working.
             var reader = Core.Process.Handle;
             var data = reader.ReadMemory<AreaInstanceOffsets>(this.Address);
             if (hasAddressChanged)

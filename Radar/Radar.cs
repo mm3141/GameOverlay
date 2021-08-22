@@ -359,9 +359,6 @@ namespace Radar
                 }
                 else if (isChest)
                 {
-                    // TODO: Name Filter IconInfo/Color/null LargeMapSize MinimapSize
-                    // TODO: Strongbox Draw
-                    // TODO: Breach big chests
                     if (this.isAzuriteMine)
                     {
                         if (this.delveChestCache.TryGetValue(entity.Key.id, out var iconFinder))
@@ -443,7 +440,6 @@ namespace Radar
                 }
                 else if (hasVital)
                 {
-                    // TODO: Invisible/Hidden/Non-Targetable/Frozen/Exploding/in-the-cloud/not-giving-exp things
                     if (hasBuffs && buffsComp.StatusEffects.ContainsKey("frozen_in_time"))
                     {
                         this.frozenInTimeEntities.TryAdd(entity.Key.id, 1);

@@ -10,7 +10,6 @@ namespace GameHelper
 
     /// <summary>
     /// Class executed when the application starts.
-    /// TODO: Disable when Game is minimized.
     /// </summary>
     internal class Program
     {
