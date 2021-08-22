@@ -166,9 +166,7 @@ namespace GameHelper.Utils
 
                 Type propertyType = propertyValue.GetType();
 
-                // TODO: improve this!!! DRY it out.
-                if (propertyType.BaseType.Name != "RemoteObjectBase" &&
-                    propertyType.BaseType.Name != "UiElementBase")
+                if (!typeof(RemoteObjectBase).IsAssignableFrom(propertyType))
                 {
                     continue;
                 }
