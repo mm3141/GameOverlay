@@ -21,7 +21,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
     /// </summary>
     public class AreaInstance : RemoteObjectBase
     {
-        private string entityFilter = string.Empty;
+        private string entityIdFilter = string.Empty;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AreaInstance"/> class.
@@ -101,11 +101,11 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             ImGui.Text($"Entities in network bubble: {this.NetworkBubbleEntityCount}");
             if (ImGui.TreeNode($"Awake Entities ({this.AwakeEntities.Count})###Awake Entities"))
             {
-                ImGui.InputText("Entity Filter", ref this.entityFilter, 10, ImGuiInputTextFlags.CharsDecimal);
+                ImGui.InputText("Entity Id Filter", ref this.entityIdFilter, 10, ImGuiInputTextFlags.CharsDecimal);
                 foreach (var awakeEntity in this.AwakeEntities)
                 {
-                    if (!(string.IsNullOrEmpty(this.entityFilter) ||
-                        $"{awakeEntity.Key.id}".Contains(this.entityFilter)))
+                    if (!(string.IsNullOrEmpty(this.entityIdFilter) ||
+                        $"{awakeEntity.Key.id}".Contains(this.entityIdFilter)))
                     {
                         continue;
                     }
@@ -148,8 +148,6 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             //          docking enabled will allow setting window to use ImGui-Tabs rather than 1 ImGui Window.
             //          multi-view-port will allow folks to use multiple monitors
             // TODO: HoverUi debugger. Should popup (beside mouse) "You are hovering over a UIElement, press J to debug it in DevTree.".
-            // TODO: UiElement explorer that also handle InGameUi array (try/catch).
-            // TODO: loaded file searcher should allow comma seperated words
             // TODO: Search entities by pathname (allow comma seperated words here too)
             // TODO: detecting exploding entities -> make it variable that user can change.
             // TODO: Flask Manager Idea: NoParentUiElement.
@@ -179,20 +177,28 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             this.NetworkBubbleEntityCount = entitiesInNetworkBubble.Count;
             this.Player.Address = data.LocalPlayerPtr;
             this.TerrainMetadata = data.TerrainMetadata;
+
+            // No point in saving out of NetworkBubble entities when in BattleRoyale.
+            // since other players would have killed that entity anyway. Also, in BR
+            // when you die and teleport to other ppl (i.e. spectate) the AwakeEntities
+            // gets corrupted anyway.
+            if (this.AreaDetails.IsHideout ||
+                this.AreaDetails.IsTown ||
+                this.AreaDetails.IsBattleRoyale)
+            {
+                this.AwakeEntities.Clear();
+            }
+
             foreach (var kv in this.AwakeEntities)
             {
                 if (!kv.Value.IsValid &&
-
-                    (this.AreaDetails.IsHideout ||
-                    this.AreaDetails.IsTown ||
-                    this.AreaDetails.IsBattleRoyale ||
 
                     // This logic isn't perfect in case something happens to the entity before
                     // we can cache the location of that entity. In that case we will just
                     // delete that entity anyway. This activity is fine as long as it doesn't
                     // crash the GameHelper.
                     this.Player.DistanceFrom(kv.Value) <
-                    AreaInstanceConstants.NETWORK_BUBBLE_RADIUS))
+                    AreaInstanceConstants.NETWORK_BUBBLE_RADIUS)
                 {
                     this.AwakeEntities.TryRemove(kv.Key, out _);
                     continue;

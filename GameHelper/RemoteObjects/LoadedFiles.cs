@@ -26,6 +26,7 @@ namespace GameHelper.RemoteObjects
         private bool areaAlreadyDone = false;
         private string filename = string.Empty;
         private string searchText = string.Empty;
+        private string[] searchTextSplit = new string[0];
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LoadedFiles"/> class.
@@ -83,16 +84,26 @@ namespace GameHelper.RemoteObjects
             ImGui.SameLine();
             if (ImGui.InputText("##LoadedFiles", ref this.searchText, 50))
             {
-                this.searchText = this.searchText.ToLower();
+                this.searchTextSplit = this.searchText.ToLower().Split(",", StringSplitOptions.RemoveEmptyEntries);
             }
 
+            ImGui.Text("NOTE: Search is Case-Insensitive. Use commas (,) to narrow down the resulting files.");
             if (!string.IsNullOrEmpty(this.searchText))
             {
                 ImGui.BeginChild("Result##loadedfiles", Vector2.Zero, true);
                 ImGui.PushStyleColor(ImGuiCol.Button, new Vector4(0, 0, 0, 0));
                 foreach (var pathname in this.PathNames.Keys)
                 {
-                    if (pathname.ToLower().Contains(this.searchText))
+                    bool containsAll = true;
+                    for (int i = 0; i < this.searchTextSplit.Length; i++)
+                    {
+                        if (!pathname.ToLower().Contains(this.searchTextSplit[i]))
+                        {
+                            containsAll = false;
+                        }
+                    }
+
+                    if (containsAll)
                     {
                         if (ImGui.SmallButton(pathname))
                         {
