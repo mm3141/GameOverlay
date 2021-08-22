@@ -7,7 +7,7 @@ namespace Changeme
     using GameHelper.Plugin;
 
     /// <summary>
-    /// <see cref="Changeme"/> plugin.
+    /// <see cref="ChangemeCore"/> plugin.
     /// </summary>
     public sealed class ChangemeCore : PCore<ChangemeSettings>
     {
