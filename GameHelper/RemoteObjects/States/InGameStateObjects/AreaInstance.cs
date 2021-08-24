@@ -21,7 +21,9 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
     /// </summary>
     public class AreaInstance : RemoteObjectBase
     {
+        private bool filterByPath = false;
         private string entityIdFilter = string.Empty;
+        private string entityPathFilter = string.Empty;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AreaInstance"/> class.
@@ -99,13 +101,41 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             ImGui.Text($"Monster Level: {this.MonsterLevel}");
             ImGui.Text($"Terrain Metadata: {this.TerrainMetadata}");
             ImGui.Text($"Entities in network bubble: {this.NetworkBubbleEntityCount}");
+
             if (ImGui.TreeNode($"Awake Entities ({this.AwakeEntities.Count})###Awake Entities"))
             {
-                ImGui.InputText("Entity Id Filter", ref this.entityIdFilter, 10, ImGuiInputTextFlags.CharsDecimal);
+                if (ImGui.RadioButton("Filter by Id           ", this.filterByPath == false))
+                {
+                    this.filterByPath = false;
+                    this.entityPathFilter = string.Empty;
+                }
+
+                ImGui.SameLine();
+                if (ImGui.RadioButton("Filter by Path", this.filterByPath == true))
+                {
+                    this.filterByPath = true;
+                    this.entityIdFilter = string.Empty;
+                }
+
+                if (this.filterByPath)
+                {
+                    ImGui.InputText("Entity Path Filter", ref this.entityPathFilter, 100, ImGuiInputTextFlags.CharsDecimal);
+                }
+                else
+                {
+                    ImGui.InputText("Entity Id Filter", ref this.entityIdFilter, 10, ImGuiInputTextFlags.CharsDecimal);
+                }
+
                 foreach (var awakeEntity in this.AwakeEntities)
                 {
                     if (!(string.IsNullOrEmpty(this.entityIdFilter) ||
                         $"{awakeEntity.Key.id}".Contains(this.entityIdFilter)))
+                    {
+                        continue;
+                    }
+
+                    if (!(string.IsNullOrEmpty(this.entityPathFilter) ||
+                        awakeEntity.Value.Path.Contains(this.entityPathFilter)))
                     {
                         continue;
                     }
