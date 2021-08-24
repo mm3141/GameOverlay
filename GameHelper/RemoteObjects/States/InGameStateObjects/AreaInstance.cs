@@ -119,7 +119,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
 
                 if (this.filterByPath)
                 {
-                    ImGui.InputText("Entity Path Filter", ref this.entityPathFilter, 100, ImGuiInputTextFlags.CharsDecimal);
+                    ImGui.InputText("Entity Path Filter", ref this.entityPathFilter, 100);
                 }
                 else
                 {
@@ -135,7 +135,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
                     }
 
                     if (!(string.IsNullOrEmpty(this.entityPathFilter) ||
-                        awakeEntity.Value.Path.Contains(this.entityPathFilter)))
+                        awakeEntity.Value.Path.ToLower().Contains(this.entityPathFilter.ToLower())))
                     {
                         continue;
                     }

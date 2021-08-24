@@ -57,6 +57,12 @@ namespace GameHelper.RemoteObjects
         {
             base.ToImGui();
             ImGui.Text($"Total Loaded Files in current area: {this.PathNames.Count}");
+            ImGui.TextWrapped("NOTE: The Overlay caches the preloads when you enter a new map. " +
+                "This cache is only cleared & updated when you enter a new Map. Going to town or " +
+                "hideout isn't considered a new Map. So basically you can find important preloads " +
+                "even after you have completed the whole map/gone to town/hideouts and " +
+                "entered the same Map again.");
+
             ImGui.Text("File Name: ");
             ImGui.SameLine();
             ImGui.InputText("##filename", ref this.filename, 100);
