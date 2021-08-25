@@ -457,7 +457,8 @@ namespace Radar
                             continue;
                         }
                     }
-                    else if (hasBuffs && buffsComp.StatusEffects.ContainsKey("hidden_monster"))
+
+                    if (hasBuffs && buffsComp.StatusEffects.ContainsKey("hidden_monster"))
                     {
                         if (this.frozenInTimeEntities.ContainsKey(entity.Key.id))
                         {

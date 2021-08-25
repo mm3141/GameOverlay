@@ -156,7 +156,7 @@ namespace Radar
 
         private void AddDefaultLegionIcons(string iconPathName)
         {
-            this.LegionIcons.TryAdd("Legion Monster Chest", new IconPicker(iconPathName, IconsPngCols, IconsPngRows, 1, 13, 50));
+            this.LegionIcons.TryAdd("Legion Monster Chest", new IconPicker(iconPathName, IconsPngCols, IconsPngRows, 4, 41, 30));
         }
 
         private void AddDefaultDeliriumIcons(string iconPathName)
