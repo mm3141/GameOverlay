@@ -26,10 +26,14 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
         internal ServerData(IntPtr address)
             : base(address)
         {
-            // No usecase (plugin) for doing this.
-            // Core.CoroutinesRegistrar.Add(CoroutineHandler.Start(
-            //    this.OnTimeTick(), "[ServerData] Update ServerData", int.MaxValue - 3));
+            Core.CoroutinesRegistrar.Add(CoroutineHandler.Start(
+                this.OnTimeTick(), "[ServerData] Update ServerData", int.MaxValue - 3));
         }
+
+        /// <summary>
+        /// Gets the game latency.
+        /// </summary>
+        public int Latency { get; private set; } = 0x00;
 
         /// <summary>
         /// Gets an object that points to the flask inventory.
@@ -40,7 +44,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             private set;
         }
 
-        = new Inventory(IntPtr.Zero);
+        = new Inventory(IntPtr.Zero, "Flask");
 
         /// <summary>
         /// Gets the inventory to debug.
@@ -51,7 +55,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             private set;
         }
 
-        = new Inventory(IntPtr.Zero);
+        = new Inventory(IntPtr.Zero, "CurrentlySelected");
 
         /// <summary>
         /// Gets the inventories associated with the player.
@@ -73,6 +77,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             }
 
             UiHelper.IntPtrToImGui("Address", this.Address);
+            ImGui.Text($"Latency {this.Latency}");
             if (ImGui.TreeNode("FlaskInventory"))
             {
                 this.FlaskInventory.ToImGui();
@@ -122,6 +127,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             this.ClearCurrentlySelectedInventory();
             this.PlayerInventories.Clear();
             this.FlaskInventory.Address = IntPtr.Zero;
+            this.Latency = 0x00;
         }
 
         /// <inheritdoc/>
@@ -135,6 +141,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
 
             var reader = Core.Process.Handle;
             var data = reader.ReadMemory<ServerDataStructure>(this.Address);
+            this.Latency = data.Latency;
             var inventoryData = reader.ReadStdVector<InventoryArrayStruct>(data.PlayerInventories);
             this.PlayerInventories.Clear();
             for (int i = 0; i < inventoryData.Length; i++)
@@ -163,7 +170,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
         {
             while (true)
             {
-                yield return new Wait(0.1);
+                yield return new Wait(0.2d);
                 if (this.Address != IntPtr.Zero)
                 {
                     this.UpdateData(false);

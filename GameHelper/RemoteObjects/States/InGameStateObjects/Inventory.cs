@@ -31,11 +31,12 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
         /// Initializes a new instance of the <see cref="Inventory"/> class.
         /// </summary>
         /// <param name="address">address of the remote memory object.</param>
-        internal Inventory(IntPtr address)
+        /// <param name="name">name of the inventory for displaying purposes.</param>
+        internal Inventory(IntPtr address, string name)
             : base(address)
         {
             Core.CoroutinesRegistrar.Add(CoroutineHandler.Start(
-                this.OnTimeTick(), "[Inventory] Update ServerData Inventory", int.MaxValue - 4));
+                this.OnTimeTick(), $"[Inventory] Update {name}", int.MaxValue - 4));
         }
 
         /// <summary>
@@ -136,6 +137,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             this.TotalBoxes = default;
             this.ServerRequestCounter = default;
             this.itemsToInventorySlotMapping = null;
+            this.Items.Clear();
         }
 
         /// <inheritdoc/>

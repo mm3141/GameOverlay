@@ -211,6 +211,11 @@ namespace GameHelper.RemoteObjects.UiElement
         {
             this.Parent = null;
             this.childrenAddresses = new IntPtr[0];
+            this.flags = 0x00;
+            this.localScaleMultiplier = 0x00;
+            this.relativePosition = Vector2.Zero;
+            this.unScaledSize = Vector2.Zero;
+            this.scaleIndex = 0x00;
         }
 
         /// <inheritdoc/>

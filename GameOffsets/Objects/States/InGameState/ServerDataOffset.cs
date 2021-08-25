@@ -7,6 +7,7 @@ namespace GameOffsets.Objects.States.InGameState
     [StructLayout(LayoutKind.Explicit, Pack = 1)]
     public struct ServerDataStructure
     {
+        [FieldOffset(0x8368)] public int Latency;
         [FieldOffset(0x8758)] public StdVector PlayerInventories; // InventoryArrayStruct
     }
 
