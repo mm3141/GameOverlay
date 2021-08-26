@@ -85,12 +85,6 @@ namespace Radar
                 "It will fix the issue.");
             ImGui.Separator();
             ImGui.Checkbox("(Incomplete Feature) Draw Area/Zone Map", ref this.Settings.DrawWalkableMap);
-            if (this.Settings.DrawWalkableMap)
-            {
-                ImGui.Text("Map Position On the Screen");
-                ImGui.DragFloat2("##MapPositionOnScreen", ref this.Settings.WalkableMapPosition);
-            }
-
             ImGui.Checkbox("Modify Large Map Culling Window", ref this.Settings.ModifyCullWindow);
             ImGui.Checkbox("Hide Entities without Life/Chest component", ref this.Settings.HideUseless);
             ImGui.Checkbox("Show Player Names", ref this.Settings.ShowPlayersNames);
@@ -124,10 +118,11 @@ namespace Radar
         /// <inheritdoc/>
         public override void DrawUI()
         {
+            var largeMap = Core.States.InGameStateObject.GameUi.LargeMap;
+            var miniMap = Core.States.InGameStateObject.GameUi.MiniMap;
             if (this.Settings.ModifyCullWindow)
             {
-                var lMap = Core.States.InGameStateObject.GameUi.LargeMap;
-                ImGui.SetNextWindowPos(lMap.Center, ImGuiCond.Appearing);
+                ImGui.SetNextWindowPos(largeMap.Center, ImGuiCond.Appearing);
                 ImGui.SetNextWindowSize(new Vector2(400f), ImGuiCond.Appearing);
                 ImGui.Begin("Large Map Culling Window");
                 ImGui.TextWrapped("This is a culling window for the large map icons. " +
@@ -145,18 +140,31 @@ namespace Radar
                 ImGui.End();
             }
 
-            if (this.Settings.DrawWalkableMap && this.walkableMapTexture != IntPtr.Zero)
+            if (this.Settings.DrawWalkableMap &&
+                this.walkableMapTexture != IntPtr.Zero &&
+                Core.States.InGameStateObject.CurrentAreaInstance.Player.TryGetComponent<Positioned>(out var pPos) &&
+                Core.States.InGameStateObject.CurrentAreaInstance.Player.TryGetComponent<Render>(out var pRender))
             {
+                Helper.Scale = largeMap.Zoom * this.Settings.LargeMapScaleMultiplier;
+                var largemapRealCenter = largeMap.Center + largeMap.Shift + largeMap.DefaultShift;
                 var rectf = new RectangleF(
-                    this.Settings.WalkableMapPosition.X,
-                    this.Settings.WalkableMapPosition.Y,
+                    -pPos.GridPosition.X,
+                    -pPos.GridPosition.Y,
                     this.walkableMapDimension.X,
                     this.walkableMapDimension.Y);
 
-                var p1 = Helper.DeltaInWorldToMapDelta(new Vector2(rectf.Left, rectf.Top), 0);
-                var p2 = Helper.DeltaInWorldToMapDelta(new Vector2(rectf.Right, rectf.Top), 0);
-                var p3 = Helper.DeltaInWorldToMapDelta(new Vector2(rectf.Right, rectf.Bottom), 0);
-                var p4 = Helper.DeltaInWorldToMapDelta(new Vector2(rectf.Left, rectf.Bottom), 0);
+                var p1 = Helper.DeltaInWorldToMapDelta(new Vector2(rectf.Left, rectf.Top), -pRender.TerrainHeight);
+                var p2 = Helper.DeltaInWorldToMapDelta(new Vector2(rectf.Right, rectf.Top), -pRender.TerrainHeight);
+                var p3 = Helper.DeltaInWorldToMapDelta(new Vector2(rectf.Right, rectf.Bottom), -pRender.TerrainHeight);
+                var p4 = Helper.DeltaInWorldToMapDelta(new Vector2(rectf.Left, rectf.Bottom), -pRender.TerrainHeight);
+                p1.X += largemapRealCenter.X;
+                p1.Y += largemapRealCenter.Y;
+                p2.X += largemapRealCenter.X;
+                p2.Y += largemapRealCenter.Y;
+                p3.X += largemapRealCenter.X;
+                p3.Y += largemapRealCenter.Y;
+                p4.X += largemapRealCenter.X;
+                p4.Y += largemapRealCenter.Y;
                 ImGui.GetBackgroundDrawList().AddImageQuad(
                     this.walkableMapTexture,
                     p1,
@@ -175,7 +183,6 @@ namespace Radar
                 return;
             }
 
-            var largeMap = Core.States.InGameStateObject.GameUi.LargeMap;
             if (largeMap.IsVisible)
             {
                 ImGui.SetNextWindowPos(this.Settings.CullWindowPos);
@@ -193,7 +200,6 @@ namespace Radar
                 ImGui.End();
             }
 
-            var miniMap = Core.States.InGameStateObject.GameUi.MiniMap;
             if (miniMap.IsVisible)
             {
                 ImGui.SetNextWindowPos(miniMap.Postion);
@@ -519,7 +525,7 @@ namespace Radar
                 this.deliriumHiddenMonster.Clear();
                 this.delveChestCache.Clear();
                 this.isAzuriteMine = Core.States.AreaLoading.CurrentAreaName == "Azurite Mine";
-                if (this.Settings.DrawWalkableMap)
+                if (this.Settings.DrawWalkableMap && Core.States.GameCurrentState == GameStateTypes.InGameState)
                 {
                     this.GenerateMapTexture();
                 }
@@ -585,7 +591,7 @@ namespace Radar
         {
             Core.Overlay.RemoveImage("walkable_map");
             var instance = Core.States.InGameStateObject.CurrentAreaInstance;
-            var mapTextureData = instance.WalkableData;
+            var mapTextureData = instance.GridWalkableData;
             var bytesPerRow = instance.TerrainMetadata.BytesPerRow;
             var totalRows = mapTextureData.Length / bytesPerRow;
             using Image<Rgba32> image = new Image<Rgba32>(bytesPerRow * 2, totalRows);
@@ -593,7 +599,22 @@ namespace Radar
             {
                 for (int x = 0; x < row.Length - 1; x += 2)
                 {
-                    byte data = mapTextureData[(i.Y * bytesPerRow) + (x / 2)];
+                    var terrainHeight = Core.States.InGameStateObject.CurrentAreaInstance.GridHeightData[i.Y][x];
+                    var yAxis = i.Y;
+                    int yAxisChanges = terrainHeight / 21;
+                    if (yAxis - yAxisChanges >= 0)
+                    {
+                        yAxis -= yAxisChanges;
+                    }
+
+                    var index = (yAxis * bytesPerRow) + (x / 2);
+                    int xAxisChanges = terrainHeight / 41;
+                    if (index - xAxisChanges >= 0)
+                    {
+                        index -= xAxisChanges;
+                    }
+
+                    byte data = mapTextureData[index];
 
                     // each byte contains 2 data points of size 4 bit.
                     // I know this because if we don't do this, the whole map texture (final output)
@@ -604,13 +625,13 @@ namespace Radar
                     {
                         switch ((data >> (0x04 * k)) & 0x0F)
                         {
+                            case 2:
                             case 1: // walkable
                                 row[x + k] = Vector4.One;
                                 break;
                             case 5: // walkable
                             case 4: // walkable
-                            case 3: // walkable
-                            case 2: // walkable
+                            case 3:
                             case 0: // non-walable
                                 row[x + k] = Vector4.Zero;
                                 break;
@@ -620,7 +641,9 @@ namespace Radar
                     }
                 }
             }));
-
+#if DEBUG
+            image.Save(this.DllDirectory + @"/current_map.jpeg");
+#endif
             Core.Overlay.AddOrGetImagePointer("walkable_map", image, false, false, out var t, out var w, out var h);
             this.walkableMapTexture = t;
             this.walkableMapDimension = new Vector2(w, h);

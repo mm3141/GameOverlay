@@ -38,11 +38,6 @@ namespace Radar
         public bool DrawWalkableMap = false;
 
         /// <summary>
-        /// Gets a value indicating the walkable map position on the screen.
-        /// </summary>
-        public Vector2 WalkableMapPosition = Vector2.Zero;
-
-        /// <summary>
         /// Gets the position of the cull window that the user wants.
         /// </summary>
         public Vector2 CullWindowPos = Vector2.Zero;

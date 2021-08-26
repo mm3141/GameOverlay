@@ -65,6 +65,7 @@ namespace GameHelper.RemoteObjects.UiElement
         internal override void ToImGui()
         {
             base.ToImGui();
+            ImGui.Text($"Center (without shift/default-shift) {this.Center}");
             ImGui.Text($"Shift {this.shift}");
             ImGui.Text($"Default Shift {this.defaultShift}");
             ImGui.Text($"Zoom {this.Zoom}");

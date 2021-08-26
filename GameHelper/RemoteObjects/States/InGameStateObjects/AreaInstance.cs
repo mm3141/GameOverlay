@@ -78,18 +78,23 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
         public TerrainStruct TerrainMetadata { get; private set; } = default;
 
         /// <summary>
-        /// Gets the terrain data of the current Area/Zone instance.
-        /// WARNING: This should only be used together with AreaChange event!.
+        /// Gets the terrain height data.
         /// </summary>
-        public byte[] WalkableData =>
-            Core.Process.Handle.ReadStdVector<byte>(this.TerrainMetadata.WalkableData);
+        public int[][] GridHeightData { get; private set; } = new int[0][];
 
         /// <summary>
         /// Gets the terrain data of the current Area/Zone instance.
         /// WARNING: This should only be used together with AreaChange event!.
         /// </summary>
-        public byte[] LandscapeData =>
-            Core.Process.Handle.ReadStdVector<byte>(this.TerrainMetadata.LandscapeData);
+        public byte[] GridWalkableData =>
+            Core.Process.Handle.ReadStdVector<byte>(this.TerrainMetadata.GridWalkableData);
+
+        /// <summary>
+        /// Gets the terrain data of the current Area/Zone instance.
+        /// WARNING: This should only be used together with AreaChange event!.
+        /// </summary>
+        public byte[] GridLandscapeData =>
+            Core.Process.Handle.ReadStdVector<byte>(this.TerrainMetadata.GridLandscapeData);
 
         /// <summary>
         /// Converts the <see cref="AreaInstance"/> class data to ImGui.
@@ -99,9 +104,30 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             base.ToImGui();
             ImGui.Text($"Area Hash: {this.AreaHash}");
             ImGui.Text($"Monster Level: {this.MonsterLevel}");
-            ImGui.Text($"Terrain Metadata: {this.TerrainMetadata}");
-            ImGui.Text($"Entities in network bubble: {this.NetworkBubbleEntityCount}");
+            if (ImGui.TreeNode("Terrain Metadata"))
+            {
+                ImGui.Text($"Total Tiles: {this.TerrainMetadata.TotalTiles}");
+                ImGui.Text($"Tiles Data Pointer: {this.TerrainMetadata.TileDetailsPtr}");
+                ImGui.Text($"Tiles Height Multiplier: {this.TerrainMetadata.TileHeightMultiplier}");
+                ImGui.Text($"Grid Walkable Data: {this.TerrainMetadata.GridWalkableData}");
+                ImGui.Text($"Grid Landscape Data: {this.TerrainMetadata.GridLandscapeData}");
+                ImGui.Text($"Data Bytes Per Row (for Walkable/Landscape Data): {this.TerrainMetadata.BytesPerRow}");
+                ImGui.TreePop();
+            }
 
+            if (this.Player.TryGetComponent<Positioned>(out var pPos))
+            {
+                if (pPos.GridPosition.Y < this.GridHeightData.Length)
+                {
+                    if (pPos.GridPosition.X < this.GridHeightData[0].Length)
+                    {
+                        ImGui.Text("Player Pos to Terrain Height: " +
+                            $"{this.GridHeightData[pPos.GridPosition.Y][pPos.GridPosition.X]}");
+                    }
+                }
+            }
+
+            ImGui.Text($"Entities in network bubble: {this.NetworkBubbleEntityCount}");
             if (ImGui.TreeNode($"Awake Entities ({this.AwakeEntities.Count})###Awake Entities"))
             {
                 if (ImGui.RadioButton("Filter by Id           ", this.filterByPath == false))
@@ -240,6 +266,80 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
                     }
                 }
             });
+
+            if (hasAddressChanged)
+            {
+                this.GridHeightData = this.GetTerrainHeight();
+            }
+        }
+
+        private int[][] GetTerrainHeight()
+        {
+            int[] rotationHelper = new int[8] { 0, 3, 2, 1, 4, 5, 6, 7 };
+            int[] rotatorMetrixHelper = new int[24] { 0, 1, 1, 1, 0, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 1, 1, 1 };
+            var reader = Core.Process.Handle;
+            var tileData = reader.ReadStdVector<TileStructure>(this.TerrainMetadata.TileDetailsPtr);
+            var tileHeightCache = new ConcurrentDictionary<IntPtr, sbyte[]>();
+            Parallel.For(0, tileData.Length, (index) =>
+            {
+                tileHeightCache.AddOrUpdate(
+                    tileData[index].SubTileDetailsStart,
+                    (addr) =>
+                    {
+                        var subTileData = reader.ReadMemory<SubTileStruct>(addr);
+                        return reader.ReadStdVector<sbyte>(subTileData.SubTileHeight);
+                    },
+                    (addr, data) => data);
+            });
+
+            int gridSizeX = (int)this.TerrainMetadata.TotalTiles.X * TileStructure.TileToGridConversion;
+            int gridSizeY = (int)this.TerrainMetadata.TotalTiles.Y * TileStructure.TileToGridConversion;
+            int[][] result = new int[gridSizeY][];
+            Parallel.For(0, gridSizeY, (y) =>
+            {
+                result[y] = new int[gridSizeX];
+                for (int x = 0; x < gridSizeX; x++)
+                {
+                    int tileDataIndex = (y / TileStructure.TileToGridConversion *
+                    (int)this.TerrainMetadata.TotalTiles.X) + (x / TileStructure.TileToGridConversion);
+                    var mytiledata = tileData[tileDataIndex];
+                    var mytileHeight = tileHeightCache[mytiledata.SubTileDetailsStart];
+                    int exactHeight = 0;
+                    if (mytileHeight.Length > 0)
+                    {
+                        int gridXremaining = x % TileStructure.TileToGridConversion;
+                        int gridYremaining = y % TileStructure.TileToGridConversion;
+                        int tmp = TileStructure.TileToGridConversion - 1;
+                        int[] rotatorMetrix = new int[4]
+                        {
+                            tmp - gridXremaining,
+                            gridXremaining,
+                            tmp - gridYremaining,
+                            gridYremaining,
+                        };
+
+                        int rotationSelected = rotationHelper[mytiledata.RotationSelector] * 3;
+                        int rotatedX0 = rotatorMetrixHelper[rotationSelected];
+                        int rotatedX1 = rotatorMetrixHelper[rotationSelected + 1];
+                        int rotatedY0 = rotatorMetrixHelper[rotationSelected + 2];
+                        int rotatedY1 = 0;
+                        if (rotatedX0 == 0)
+                        {
+                            rotatedY1 = 2;
+                        }
+
+                        int finalRotatedX = rotatorMetrix[(rotatedX0 * 2) + rotatedX1];
+                        int finalRotatedY = rotatorMetrix[rotatedY0 + rotatedY1];
+                        int mytileHeightIndex = (finalRotatedY * TileStructure.TileToGridConversion) + finalRotatedX;
+                        exactHeight = mytileHeight[mytileHeightIndex];
+                    }
+
+                    result[y][x] = (mytiledata.TileHeight * (int)this.TerrainMetadata.TileHeightMultiplier) + exactHeight;
+                    result[y][x] = (int)Math.Round(result[y][x] * 7.81f);
+                }
+            });
+
+            return result;
         }
 
         private IEnumerator<Wait> OnPerFrame()

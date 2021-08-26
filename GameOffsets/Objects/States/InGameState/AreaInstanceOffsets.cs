@@ -84,16 +84,37 @@ namespace GameOffsets.Objects.States.InGameState
     [StructLayout(LayoutKind.Explicit, Pack = 1)]
     public struct TerrainStruct
     {
-        [FieldOffset(0xD8)] public StdVector WalkableData;
-        [FieldOffset(0xF0)] public StdVector LandscapeData;
-        [FieldOffset(0x108)] public int BytesPerRow;
+        //[FieldOffset(0x08)] public IntPtr Unknown0;
+        [FieldOffset(0x18)] public StdTuple2D<long> TotalTiles;
+        [FieldOffset(0x28)] public StdVector TileDetailsPtr;
+        //[FieldOffset(0x40)] public StdTuple2D<long> TotalTilesPlusOne;
+        //[FieldOffset(0x50)] public StdVector Unknown1;
+        //[FieldOffset(0x68)] public StdVector Unknown2;
+        [FieldOffset(0x80)] public long TileHeightMultiplier;
+        //[FieldOffset(0x8C)] public StdTuple2D<int> TotalTilesAgain;
+        [FieldOffset(0xD8)] public StdVector GridWalkableData;
+        [FieldOffset(0xF0)] public StdVector GridLandscapeData;
+        [FieldOffset(0x108)] public int BytesPerRow; // for walkable/landscape data.
+    }
 
-        public override string ToString()
-        {
-            return
-                $"Walkable Data: {this.WalkableData.TotalElements(1)}, " +
-                $"Landscape Data: {this.LandscapeData.TotalElements(1)}, " +
-                $"Bytes Per Row: {this.BytesPerRow}";
-        }
+    [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 0x38)]
+    public struct TileStructure // size 0x38
+    {
+        public IntPtr SubTileDetailsStart; // tile has 23x23 subtiles.
+        public IntPtr TgtFilesData;
+        public StdVector EntitiesList;
+        public IntPtr PAD_0x28;
+        public short TileHeight;
+        public ushort PAD_0x32;
+        public ushort PAD_0x34;
+        public byte RotationSelector;
+        public byte PAD_0x37;
+        public static int TileToGridConversion = 0x17;
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct SubTileStruct
+    {
+        public StdVector SubTileHeight;
     }
 }
