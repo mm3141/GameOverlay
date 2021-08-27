@@ -602,14 +602,14 @@ namespace Radar
                     var terrainHeight = Core.States.InGameStateObject.CurrentAreaInstance.GridHeightData[i.Y][x];
                     var yAxis = i.Y;
                     int yAxisChanges = terrainHeight / 21;
-                    if (yAxis - yAxisChanges >= 0)
+                    if (yAxis - yAxisChanges >= 0 && yAxis - yAxisChanges < totalRows)
                     {
                         yAxis -= yAxisChanges;
                     }
 
                     var index = (yAxis * bytesPerRow) + (x / 2);
                     int xAxisChanges = terrainHeight / 41;
-                    if (index - xAxisChanges >= 0)
+                    if (index - xAxisChanges >= 0 && index - xAxisChanges < row.Length)
                     {
                         index -= xAxisChanges;
                     }
@@ -642,7 +642,7 @@ namespace Radar
                 }
             }));
 #if DEBUG
-            image.Save(this.DllDirectory + @"/current_map.jpeg");
+            image.Save(this.DllDirectory + @$"/current_map{Core.States.InGameStateObject.CurrentAreaInstance.AreaHash}.jpeg");
 #endif
             Core.Overlay.AddOrGetImagePointer("walkable_map", image, false, false, out var t, out var w, out var h);
             this.walkableMapTexture = t;
