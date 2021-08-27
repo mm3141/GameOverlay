@@ -84,7 +84,7 @@ namespace Radar
                 "click anywhere on it and then hide this Overlay setting window. " +
                 "It will fix the issue.");
             ImGui.Separator();
-            ImGui.Checkbox("(Incomplete Feature) Draw Area/Zone Map", ref this.Settings.DrawWalkableMap);
+            ImGui.Checkbox("Draw Area/Zone Map and WayPoints/Stuff", ref this.Settings.DrawWalkableMap);
             ImGui.Checkbox("Modify Large Map Culling Window", ref this.Settings.ModifyCullWindow);
             ImGui.Checkbox("Hide Entities without Life/Chest component", ref this.Settings.HideUseless);
             ImGui.Checkbox("Show Player Names", ref this.Settings.ShowPlayersNames);
