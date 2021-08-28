@@ -327,7 +327,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
                     }
 
                     result[y][x] = (mytiledata.TileHeight * (int)this.TerrainMetadata.TileHeightMultiplier) + exactHeight;
-                    result[y][x] = (int)Math.Round(result[y][x] * 7.81f);
+                    result[y][x] = (int)Math.Round(result[y][x] * TerrainStruct.TileHeightFinalMultiplier);
                 }
             });
 
