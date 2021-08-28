@@ -4,6 +4,7 @@
 
 namespace GameHelper.Ui
 {
+    using System;
     using System.Collections.Generic;
     using System.Numerics;
     using Coroutine;
@@ -67,6 +68,7 @@ namespace GameHelper.Ui
                     }
 
                     ImGui.Text($"Performance Related Stats");
+                    ImGui.Text($"Total Used Memory: {GC.GetTotalMemory(false) / (1024 * 1024)} (MB)");
                     ImGui.Text($"Total Event Coroutines: {CoroutineHandler.EventCount}");
                     ImGui.Text($"Total Tick Coroutines: {CoroutineHandler.TickingCount}");
                     var cAI = Core.States.InGameStateObject.CurrentAreaInstance;

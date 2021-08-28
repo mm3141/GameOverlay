@@ -48,7 +48,7 @@ namespace GameHelper.Plugin
             CoroutineHandler.Start(SavePluginSettings());
             CoroutineHandler.Start(SavePluginMetadata());
             Core.CoroutinesRegistrar.Add(CoroutineHandler.Start(
-                DrawPluginUi(), "[PManager] Draw Plugins UI"));
+                DrawPluginUiRenderCoroutine(), "[PManager] Draw Plugins UI"));
         }
 
         private static List<DirectoryInfo> GetPluginsDirectories()
@@ -188,7 +188,7 @@ namespace GameHelper.Plugin
             }
         }
 
-        private static IEnumerator<Wait> DrawPluginUi()
+        private static IEnumerator<Wait> DrawPluginUiRenderCoroutine()
         {
             while (true)
             {

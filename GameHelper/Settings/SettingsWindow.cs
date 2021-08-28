@@ -30,7 +30,11 @@ namespace GameHelper.Settings
         internal static void InitializeCoroutines()
         {
             CoroutineHandler.Start(SaveGameHelperSettings());
-            CoroutineHandler.Start(DrawSettingsWindow());
+            Core.CoroutinesRegistrar.Add(
+                CoroutineHandler.Start(
+                    DrawSettingsWindowRenderCoroutine(),
+                    "[Settings] Draw Core/Plugin settings",
+                    int.MaxValue));
         }
 
         /// <summary>
@@ -140,7 +144,7 @@ namespace GameHelper.Settings
         /// Draws the Settings Window.
         /// </summary>
         /// <returns>co-routine IWait.</returns>
-        private static IEnumerator<Wait> DrawSettingsWindow()
+        private static IEnumerator<Wait> DrawSettingsWindowRenderCoroutine()
         {
             while (true)
             {

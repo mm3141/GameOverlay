@@ -84,7 +84,18 @@ namespace Radar
                 "click anywhere on it and then hide this Overlay setting window. " +
                 "It will fix the issue.");
             ImGui.Separator();
-            ImGui.Checkbox("Draw Area/Zone Map and WayPoints/Stuff", ref this.Settings.DrawWalkableMap);
+            if (ImGui.Checkbox("Draw Area/Zone Map and WayPoints/Stuff", ref this.Settings.DrawWalkableMap))
+            {
+                if (this.Settings.DrawWalkableMap && this.walkableMapTexture == IntPtr.Zero)
+                {
+                    this.GenerateMapTexture();
+                }
+                else
+                {
+                    this.RemoveMapTexture();
+                }
+            }
+
             ImGui.Checkbox("Modify Large Map Culling Window", ref this.Settings.ModifyCullWindow);
             ImGui.Checkbox("Hide Entities without Life/Chest component", ref this.Settings.HideUseless);
             ImGui.Checkbox("Show Player Names", ref this.Settings.ShowPlayersNames);
@@ -525,10 +536,7 @@ namespace Radar
                 this.deliriumHiddenMonster.Clear();
                 this.delveChestCache.Clear();
                 this.isAzuriteMine = Core.States.AreaLoading.CurrentAreaName == "Azurite Mine";
-                if (this.Settings.DrawWalkableMap && Core.States.GameCurrentState == GameStateTypes.InGameState)
-                {
-                    this.GenerateMapTexture();
-                }
+                this.GenerateMapTexture();
             }
         }
 
@@ -587,10 +595,24 @@ namespace Radar
             this.largeMapDiagonalLength = Math.Sqrt(widthSq + heightSq);
         }
 
+        private void RemoveMapTexture()
+        {
+            this.walkableMapTexture = IntPtr.Zero;
+            this.walkableMapDimension = Vector2.Zero;
+            Core.Overlay.RemoveImage("walkable_map");
+        }
+
         private void GenerateMapTexture()
         {
-            Core.Overlay.RemoveImage("walkable_map");
+            this.RemoveMapTexture();
+            if (Core.States.GameCurrentState != GameStateTypes.InGameState &&
+                Core.States.GameCurrentState != GameStateTypes.EscapeState)
+            {
+                return;
+            }
+
             var instance = Core.States.InGameStateObject.CurrentAreaInstance;
+            var gridHeightData = instance.GridHeightData;
             var mapTextureData = instance.GridWalkableData;
             var bytesPerRow = instance.TerrainMetadata.BytesPerRow;
             var totalRows = mapTextureData.Length / bytesPerRow;
@@ -599,19 +621,19 @@ namespace Radar
             {
                 for (int x = 0; x < row.Length - 1; x += 2)
                 {
-                    var terrainHeight = Core.States.InGameStateObject.CurrentAreaInstance.GridHeightData[i.Y][x];
+                    var terrainHeight = gridHeightData[i.Y][x];
                     var yAxis = i.Y;
-                    int yAxisChanges = terrainHeight / 21;
-                    if (yAxis - yAxisChanges >= 0 && yAxis - yAxisChanges < totalRows)
+                    int yAxisChanges = yAxis - (terrainHeight / 21);
+                    if (yAxisChanges >= 0 && yAxisChanges < totalRows)
                     {
-                        yAxis -= yAxisChanges;
+                        yAxis = yAxisChanges;
                     }
 
                     var index = (yAxis * bytesPerRow) + (x / 2);
-                    int xAxisChanges = terrainHeight / 41;
-                    if (index - xAxisChanges >= 0 && index - xAxisChanges < row.Length)
+                    int xAxisChanges = index - (terrainHeight / 41);
+                    if (xAxisChanges >= 0 && xAxisChanges < mapTextureData.Length)
                     {
-                        index -= xAxisChanges;
+                        index = xAxisChanges;
                     }
 
                     byte data = mapTextureData[index];
@@ -642,7 +664,7 @@ namespace Radar
                 }
             }));
 #if DEBUG
-            image.Save(this.DllDirectory + @$"/current_map{Core.States.InGameStateObject.CurrentAreaInstance.AreaHash}.jpeg");
+            image.Save(this.DllDirectory + @$"/current_map_{Core.States.InGameStateObject.CurrentAreaInstance.AreaHash}.jpeg");
 #endif
             Core.Overlay.AddOrGetImagePointer("walkable_map", image, false, false, out var t, out var w, out var h);
             this.walkableMapTexture = t;

@@ -84,17 +84,8 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
 
         /// <summary>
         /// Gets the terrain data of the current Area/Zone instance.
-        /// WARNING: This should only be used together with AreaChange event!.
         /// </summary>
-        public byte[] GridWalkableData =>
-            Core.Process.Handle.ReadStdVector<byte>(this.TerrainMetadata.GridWalkableData);
-
-        /// <summary>
-        /// Gets the terrain data of the current Area/Zone instance.
-        /// WARNING: This should only be used together with AreaChange event!.
-        /// </summary>
-        public byte[] GridLandscapeData =>
-            Core.Process.Handle.ReadStdVector<byte>(this.TerrainMetadata.GridLandscapeData);
+        public byte[] GridWalkableData { get; private set; } = new byte[0];
 
         /// <summary>
         /// Converts the <see cref="AreaInstance"/> class data to ImGui.
@@ -269,6 +260,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
 
             if (hasAddressChanged)
             {
+                this.GridWalkableData = reader.ReadStdVector<byte>(this.TerrainMetadata.GridWalkableData);
                 this.GridHeightData = this.GetTerrainHeight();
             }
         }
