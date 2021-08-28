@@ -267,8 +267,8 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
 
         private int[][] GetTerrainHeight()
         {
-            int[] rotationHelper = new int[8] { 0, 3, 2, 1, 4, 5, 6, 7 };
-            int[] rotatorMetrixHelper = new int[24] { 0, 1, 1, 1, 0, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 1, 1, 1 };
+            var rotationHelper = Core.RotationSelector.Values;
+            var rotatorMetrixHelper = Core.RotatorHelper.Values;
             var reader = Core.Process.Handle;
             var tileData = reader.ReadStdVector<TileStructure>(this.TerrainMetadata.TileDetailsPtr);
             var tileHeightCache = new ConcurrentDictionary<IntPtr, sbyte[]>();

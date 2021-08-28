@@ -89,7 +89,34 @@
             (
                 "GameWindowScaleValues",
                 "C7 ?? 00 00 80 3F C7 ?? 04 00 00 80 3F C3 ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? C3 ?? ?? ?? ?? ^ ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? C3 ?? ?? ?? ??"
-            )
+            ),
+
+            // <HowToFindIt>
+            // Find player -> Render component -> TerrainHeight.
+            // Do "What writes to this address" on terrainheight.
+            // This instruction which writes to terrainheight, also writes to 200 different address
+            // So let's narrow down the invalid result by putting the following Start Condition to it.
+            //      if instruction in step-2 is as following
+            //      mov [RAX+C8], xmmm0;
+            //      then Start Condition will be (RAX==0xRenderCompAddress+(TerrainheightOffset - C8))
+            //      CE can't do +, - on Start condition so calculate it via a calculator. Final condition e.g. (RAX==0x123123123)
+            // Go to the top of the function you found in step - 2 (u can right click on the statement and select "select current func" and repeat the last step with exact same condition.
+            // In your "Trace and break" window that u got from the last step, 3rd or 4th function from the top will be the function from which this pattern is created.
+            //          that function will be the first function in that whole window that has more than 10 instructions, every function before this function will have
+            //          2 or 3 or 4 instructions max.
+            // </HowToFindIt>
+            new Pattern
+            (
+                "Terrain Rotator Helper",
+                "4c ?? ?? ?? 48 ?? ?? ^ ?? ?? ?? ?? 4c ?? ?? 8b ?? 2b ?? 33 ??"
+            ),
+
+            // Same as above pattern, just added 23 ?? because the data is actually before the pattern.
+            new Pattern
+            (
+                "Terrain Rotation Selector",
+                "^ ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? 4c ?? ?? ?? 48 ?? ?? ?? ?? ?? ?? 4c ?? ?? 8b ?? 2b ?? 33 ??"
+            ),
         };
     }
 }
