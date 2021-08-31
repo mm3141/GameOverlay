@@ -274,8 +274,9 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             var tileHeightCache = new ConcurrentDictionary<IntPtr, sbyte[]>();
             Parallel.For(0, tileData.Length, (index) =>
             {
+                var val = tileData[index];
                 tileHeightCache.AddOrUpdate(
-                    tileData[index].SubTileDetailsStart,
+                    val.SubTileDetailsStart,
                     (addr) =>
                     {
                         var subTileData = reader.ReadMemory<SubTileStruct>(addr);
