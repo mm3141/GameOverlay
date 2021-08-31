@@ -118,4 +118,11 @@ namespace GameOffsets.Objects.States.InGameState
     {
         public StdVector SubTileHeight;
     }
+
+    [StructLayout(LayoutKind.Explicit, Pack = 1)]
+    public struct TgtFileStruct
+    {
+        [FieldOffset(0x08)] public StdWString TgtFileName;
+        [FieldOffset(0x30)] public IntPtr TgtNamePtr;
+    }
 }
