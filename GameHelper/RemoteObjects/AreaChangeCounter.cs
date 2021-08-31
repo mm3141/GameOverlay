@@ -8,7 +8,6 @@ namespace GameHelper.RemoteObjects
     using System.Collections.Generic;
     using Coroutine;
     using GameHelper.CoroutineEvents;
-    using GameHelper.RemoteEnums;
     using GameOffsets.Objects;
     using ImGuiNET;
 
