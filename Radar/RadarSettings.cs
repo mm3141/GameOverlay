@@ -53,6 +53,11 @@ namespace Radar
         public bool ShowPlayersNames = false;
 
         /// <summary>
+        /// Gets a value indicating wether user wants to show all Tgt names or not.
+        /// </summary>
+        public bool ShowAllTgtNames = false;
+
+        /// <summary>
         /// Icons to display on the map. Base game includes normal chests, strongboxes, monsters etc.
         /// </summary>
         public Dictionary<string, IconPicker> BaseIcons = new Dictionary<string, IconPicker>();

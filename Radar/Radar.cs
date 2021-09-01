@@ -102,7 +102,7 @@ namespace Radar
             ImGui.Checkbox("Modify Large Map Culling Window", ref this.Settings.ModifyCullWindow);
             ImGui.Checkbox("Hide Entities without Life/Chest component", ref this.Settings.HideUseless);
             ImGui.Checkbox("Show Player Names", ref this.Settings.ShowPlayersNames);
-
+            ImGui.Checkbox("Show All Tgt Names", ref this.Settings.ShowAllTgtNames);
             this.Settings.DrawIconsSettingToImGui(
                 "BaseGame Icons",
                 this.Settings.BaseIcons,
@@ -526,6 +526,20 @@ namespace Radar
                 else
                 {
                     fgDraw.AddCircleFilled(mapCenter + fpos, 5f, UiHelper.Color(255, 0, 255, 255));
+                }
+            }
+
+            for (int i = 0; i < currentAreaInstance.TgtFiles.Count; i++)
+            {
+                var val = currentAreaInstance.TgtFiles[i];
+                if (this.Settings.ShowAllTgtNames)
+                {
+                    var pNameSizeH = ImGui.CalcTextSize(val.TgtName) / 2;
+                    var ePos = new Vector2(val.X, val.Y);
+                    var fpos = Helper.DeltaInWorldToMapDelta(
+                        ePos - pPos, -currentAreaInstance.GridHeightData[val.Y][val.X]);
+                    fgDraw.AddRectFilled(mapCenter + fpos - pNameSizeH, mapCenter + fpos + pNameSizeH, UiHelper.Color(0, 0, 0, 200));
+                    fgDraw.AddText(ImGui.GetFont(), ImGui.GetFontSize(), mapCenter + fpos - pNameSizeH, UiHelper.Color(255, 128, 128, 255), val.TgtName);
                 }
             }
         }
