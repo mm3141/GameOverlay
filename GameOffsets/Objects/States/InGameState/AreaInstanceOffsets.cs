@@ -86,7 +86,7 @@ namespace GameOffsets.Objects.States.InGameState
     {
         //[FieldOffset(0x08)] public IntPtr Unknown0;
         [FieldOffset(0x18)] public StdTuple2D<long> TotalTiles;
-        [FieldOffset(0x28)] public StdVector TileDetailsPtr;
+        [FieldOffset(0x28)] public StdVector TileDetailsPtr; // TileStructure
         //[FieldOffset(0x40)] public StdTuple2D<long> TotalTilesPlusOne;
         //[FieldOffset(0x50)] public StdVector Unknown1;
         //[FieldOffset(0x68)] public StdVector Unknown2;
@@ -101,8 +101,8 @@ namespace GameOffsets.Objects.States.InGameState
     [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 0x38)]
     public struct TileStructure // size 0x38
     {
-        public IntPtr SubTileDetailsStart; // tile has 23x23 subtiles.
-        public IntPtr TgtFilesData;
+        public IntPtr SubTileDetailsPtr; // SubTileStruct
+        public IntPtr TgtFilePtr; // TgtFileStruct
         public StdVector EntitiesList;
         public IntPtr PAD_0x28;
         public short TileHeight;
@@ -116,13 +116,19 @@ namespace GameOffsets.Objects.States.InGameState
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct SubTileStruct
     {
-        public StdVector SubTileHeight;
+        public StdVector SubTileHeight; // tile has 23x23 subtiles.
     }
 
     [StructLayout(LayoutKind.Explicit, Pack = 1)]
     public struct TgtFileStruct
     {
-        [FieldOffset(0x08)] public StdWString TgtFileName;
-        [FieldOffset(0x30)] public IntPtr TgtNamePtr;
+        [FieldOffset(0x08)] public StdWString TgtPath;
+        [FieldOffset(0x30)] public IntPtr TgtDetailPtr; // TgtDetailStruct
+    }
+
+    [StructLayout(LayoutKind.Explicit, Pack = 1)]
+    public struct TgtDetailStruct
+    {
+        [FieldOffset(0x00)] public StdWString name;
     }
 }

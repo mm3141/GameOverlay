@@ -88,6 +88,11 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
         public byte[] GridWalkableData { get; private set; } = new byte[0];
 
         /// <summary>
+        /// Gets the terrain tgt file data of the current Area/Zone.
+        /// </summary>
+        public List<TgtFile> TgtFiles { get; private set; } = new List<TgtFile>();
+
+        /// <summary>
         /// Converts the <see cref="AreaInstance"/> class data to ImGui.
         /// </summary>
         internal override void ToImGui()
@@ -262,7 +267,45 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             {
                 this.GridWalkableData = reader.ReadStdVector<byte>(this.TerrainMetadata.GridWalkableData);
                 this.GridHeightData = this.GetTerrainHeight();
+                this.TgtFiles = this.GetTgtFileData();
             }
+        }
+
+        private List<TgtFile> GetTgtFileData()
+        {
+            var reader = Core.Process.Handle;
+            var tileData = reader.ReadStdVector<TileStructure>(this.TerrainMetadata.TileDetailsPtr);
+            List<TgtFile> ret = new List<TgtFile>(tileData.Length);
+            object localLockObject = new object();
+            Parallel.For(
+                0,
+                tileData.Length,
+                () => new List<TgtFile>(), // happens on every thread, rather than every iteration.
+                (index, state, localstate) => // happens on every iteration.
+                {
+                    var val = tileData[index];
+                    var tgtFile = reader.ReadMemory<TgtFileStruct>(val.TgtFilePtr);
+                    var tgtPath = reader.ReadStdWString(tgtFile.TgtPath);
+                    var tgtDetail = reader.ReadMemory<TgtDetailStruct>(tgtFile.TgtDetailPtr);
+                    var tgtName = reader.ReadStdWString(tgtDetail.name);
+                    if (string.IsNullOrEmpty(tgtName))
+                    {
+                        return localstate;
+                    }
+
+                    int y = ((int)(index / this.TerrainMetadata.TotalTiles.X)) * TileStructure.TileToGridConversion;
+                    int x = ((int)(index % this.TerrainMetadata.TotalTiles.X)) * TileStructure.TileToGridConversion;
+                    localstate.Add(new TgtFile() { TgtName = tgtName.ToLower(), FilePath = tgtPath.ToLower(), X = x, Y = y });
+                    return localstate;
+                },
+                (finalresult) => // happens on every thread, rather than every iteration.
+                {
+                    lock (localLockObject)
+                    {
+                        ret.AddRange(finalresult);
+                    }
+                });
+            return ret;
         }
 
         private int[][] GetTerrainHeight()
@@ -276,7 +319,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             {
                 var val = tileData[index];
                 tileHeightCache.AddOrUpdate(
-                    val.SubTileDetailsStart,
+                    val.SubTileDetailsPtr,
                     (addr) =>
                     {
                         var subTileData = reader.ReadMemory<SubTileStruct>(addr);
@@ -296,7 +339,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
                     int tileDataIndex = (y / TileStructure.TileToGridConversion *
                     (int)this.TerrainMetadata.TotalTiles.X) + (x / TileStructure.TileToGridConversion);
                     var mytiledata = tileData[tileDataIndex];
-                    var mytileHeight = tileHeightCache[mytiledata.SubTileDetailsStart];
+                    var mytileHeight = tileHeightCache[mytiledata.SubTileDetailsPtr];
                     int exactHeight = 0;
                     if (mytileHeight.Length > 0)
                     {
@@ -345,6 +388,32 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
                     this.UpdateData(false);
                 }
             }
+        }
+
+        /// <summary>
+        /// A structure for storing Tgt File Data.
+        /// </summary>
+        public struct TgtFile
+        {
+            /// <summary>
+            /// Pathname of the file e.g. Metadata/foo/bar/abc.tgt.
+            /// </summary>
+            public string FilePath;
+
+            /// <summary>
+            /// User friendly name given to the Tgt file by the game Devs.
+            /// </summary>
+            public string TgtName;
+
+            /// <summary>
+            /// X cordinate on the grid.
+            /// </summary>
+            public int X;
+
+            /// <summary>
+            /// Y cordinate on the grid.
+            /// </summary>
+            public int Y;
         }
     }
 }

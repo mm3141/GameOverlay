@@ -86,9 +86,12 @@ namespace Radar
             ImGui.Separator();
             if (ImGui.Checkbox("Draw Area/Zone Map and WayPoints/Stuff", ref this.Settings.DrawWalkableMap))
             {
-                if (this.Settings.DrawWalkableMap && this.walkableMapTexture == IntPtr.Zero)
+                if (this.Settings.DrawWalkableMap)
                 {
-                    this.GenerateMapTexture();
+                    if (this.walkableMapTexture == IntPtr.Zero)
+                    {
+                        this.GenerateMapTexture();
+                    }
                 }
                 else
                 {
@@ -286,7 +289,8 @@ namespace Radar
             }
 
             var pPos = new Vector2(playerPos.GridPosition.X, playerPos.GridPosition.Y);
-            foreach (var entity in Core.States.InGameStateObject.CurrentAreaInstance.AwakeEntities)
+            var currentAreaInstance = Core.States.InGameStateObject.CurrentAreaInstance;
+            foreach (var entity in currentAreaInstance.AwakeEntities)
             {
                 var hasVital = entity.Value.TryGetComponent<Life>(out var lifeComp);
                 var hasBuffs = entity.Value.TryGetComponent<Buffs>(out var buffsComp);
