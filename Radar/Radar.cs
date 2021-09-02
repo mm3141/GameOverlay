@@ -102,7 +102,26 @@ namespace Radar
             ImGui.Checkbox("Modify Large Map Culling Window", ref this.Settings.ModifyCullWindow);
             ImGui.Checkbox("Hide Entities without Life/Chest component", ref this.Settings.HideUseless);
             ImGui.Checkbox("Show Player Names", ref this.Settings.ShowPlayersNames);
-            ImGui.Checkbox("Show All Tgt Names", ref this.Settings.ShowAllTgtNames);
+            if (ImGui.RadioButton("Show all tile names", this.Settings.ShowAllTgtNames))
+            {
+                this.Settings.ShowAllTgtNames = true;
+                this.Settings.ShowImportantTgtNames = false;
+            }
+
+            ImGui.SameLine();
+            if (ImGui.RadioButton("Show important tile names", this.Settings.ShowImportantTgtNames))
+            {
+                this.Settings.ShowAllTgtNames = false;
+                this.Settings.ShowImportantTgtNames = true;
+            }
+
+            ImGui.SameLine();
+            if (ImGui.RadioButton("Don't Show any tile name", !this.Settings.ShowAllTgtNames && !this.Settings.ShowImportantTgtNames))
+            {
+                this.Settings.ShowAllTgtNames = false;
+                this.Settings.ShowImportantTgtNames = false;
+            }
+
             this.Settings.DrawIconsSettingToImGui(
                 "BaseGame Icons",
                 this.Settings.BaseIcons,
@@ -154,39 +173,6 @@ namespace Radar
                 ImGui.End();
             }
 
-            if (this.Settings.DrawWalkableMap &&
-                this.walkableMapTexture != IntPtr.Zero &&
-                Core.States.InGameStateObject.CurrentAreaInstance.Player.TryGetComponent<Positioned>(out var pPos) &&
-                Core.States.InGameStateObject.CurrentAreaInstance.Player.TryGetComponent<Render>(out var pRender))
-            {
-                Helper.Scale = largeMap.Zoom * this.Settings.LargeMapScaleMultiplier;
-                var largemapRealCenter = largeMap.Center + largeMap.Shift + largeMap.DefaultShift;
-                var rectf = new RectangleF(
-                    -pPos.GridPosition.X,
-                    -pPos.GridPosition.Y,
-                    this.walkableMapDimension.X,
-                    this.walkableMapDimension.Y);
-
-                var p1 = Helper.DeltaInWorldToMapDelta(new Vector2(rectf.Left, rectf.Top), -pRender.TerrainHeight);
-                var p2 = Helper.DeltaInWorldToMapDelta(new Vector2(rectf.Right, rectf.Top), -pRender.TerrainHeight);
-                var p3 = Helper.DeltaInWorldToMapDelta(new Vector2(rectf.Right, rectf.Bottom), -pRender.TerrainHeight);
-                var p4 = Helper.DeltaInWorldToMapDelta(new Vector2(rectf.Left, rectf.Bottom), -pRender.TerrainHeight);
-                p1.X += largemapRealCenter.X;
-                p1.Y += largemapRealCenter.Y;
-                p2.X += largemapRealCenter.X;
-                p2.Y += largemapRealCenter.Y;
-                p3.X += largemapRealCenter.X;
-                p3.Y += largemapRealCenter.Y;
-                p4.X += largemapRealCenter.X;
-                p4.Y += largemapRealCenter.Y;
-                ImGui.GetBackgroundDrawList().AddImageQuad(
-                    this.walkableMapTexture,
-                    p1,
-                    p2,
-                    p3,
-                    p4);
-            }
-
             if (Core.States.GameCurrentState != GameStateTypes.InGameState)
             {
                 return;
@@ -199,35 +185,34 @@ namespace Radar
 
             if (largeMap.IsVisible)
             {
+                var largeMapRealCenter = largeMap.Center + largeMap.Shift + largeMap.DefaultShift;
+                var largeMapModifiedZoom = largeMap.Zoom * this.Settings.LargeMapScaleMultiplier;
+                Helper.DiagonalLength = this.largeMapDiagonalLength;
+                Helper.Scale = largeMapModifiedZoom;
                 ImGui.SetNextWindowPos(this.Settings.CullWindowPos);
                 ImGui.SetNextWindowSize(this.Settings.CullWindowSize);
                 ImGui.SetNextWindowBgAlpha(0f);
                 ImGui.PushStyleVar(ImGuiStyleVar.WindowBorderSize, 0f);
                 ImGui.Begin("Large Map Culling Window", UiHelper.TransparentWindowFlags);
                 ImGui.PopStyleVar();
-                this.DrawOnMap(
-                    ImGui.GetWindowDrawList(),
-                    largeMap.Center + largeMap.Shift + largeMap.DefaultShift,
-                    this.largeMapDiagonalLength,
-                    largeMap.Zoom * this.Settings.LargeMapScaleMultiplier,
-                    false);
+                this.DrawLargeMap(largeMapRealCenter);
+                this.DrawTgtFiles(largeMapRealCenter);
+                this.DrawMapIcons(largeMapRealCenter, largeMapModifiedZoom * 5f);
                 ImGui.End();
             }
 
             if (miniMap.IsVisible)
             {
+                Helper.DiagonalLength = this.miniMapDiagonalLength;
+                Helper.Scale = miniMap.Zoom;
+                var miniMapRealCenter = this.miniMapCenterWithDefaultShift + miniMap.Shift;
                 ImGui.SetNextWindowPos(miniMap.Postion);
                 ImGui.SetNextWindowSize(miniMap.Size);
                 ImGui.SetNextWindowBgAlpha(0f);
                 ImGui.PushStyleVar(ImGuiStyleVar.WindowBorderSize, 0f);
                 ImGui.Begin("###minimapRadar", UiHelper.TransparentWindowFlags);
                 ImGui.PopStyleVar();
-                this.DrawOnMap(
-                    ImGui.GetWindowDrawList(),
-                    this.miniMapCenterWithDefaultShift + miniMap.Shift,
-                    this.miniMapDiagonalLength,
-                    miniMap.Zoom,
-                    true);
+                this.DrawMapIcons(miniMapRealCenter, miniMap.Zoom);
                 ImGui.End();
             }
         }
@@ -275,21 +260,93 @@ namespace Radar
             File.WriteAllText(this.SettingPathname, settingsData);
         }
 
-        private void DrawOnMap(ImDrawListPtr fgDraw, Vector2 mapCenter, double diagonalLength, float scale, bool isMiniMap)
+        private void DrawLargeMap(Vector2 mapCenter)
         {
-            Helper.DiagonalLength = diagonalLength;
-            Helper.Scale = scale;
-            Core.States.InGameStateObject.CurrentAreaInstance.
-                Player.TryGetComponent<Positioned>(out var playerPos);
-            Core.States.InGameStateObject.CurrentAreaInstance.
-                Player.TryGetComponent<Render>(out var playerRender);
-            if (playerPos == null || playerRender == null)
+            if (!this.Settings.DrawWalkableMap)
+            {
+                return;
+            }
+
+            if (this.walkableMapTexture == IntPtr.Zero)
+            {
+                return;
+            }
+
+            var player = Core.States.InGameStateObject.CurrentAreaInstance.Player;
+            if (!player.TryGetComponent<Positioned>(out var pPos))
+            {
+                return;
+            }
+
+            if (!player.TryGetComponent<Render>(out var pRender))
+            {
+                return;
+            }
+
+            var rectf = new RectangleF(
+                -pPos.GridPosition.X,
+                -pPos.GridPosition.Y,
+                this.walkableMapDimension.X,
+                this.walkableMapDimension.Y);
+
+            var p1 = Helper.DeltaInWorldToMapDelta(
+                new Vector2(rectf.Left, rectf.Top), -pRender.TerrainHeight);
+            var p2 = Helper.DeltaInWorldToMapDelta(
+                new Vector2(rectf.Right, rectf.Top), -pRender.TerrainHeight);
+            var p3 = Helper.DeltaInWorldToMapDelta(
+                new Vector2(rectf.Right, rectf.Bottom), -pRender.TerrainHeight);
+            var p4 = Helper.DeltaInWorldToMapDelta(
+                new Vector2(rectf.Left, rectf.Bottom), -pRender.TerrainHeight);
+            p1 += mapCenter;
+            p2 += mapCenter;
+            p3 += mapCenter;
+            p4 += mapCenter;
+            ImGui.GetWindowDrawList().AddImageQuad(this.walkableMapTexture, p1, p2, p3, p4);
+        }
+
+        private void DrawTgtFiles(Vector2 mapCenter)
+        {
+            if (this.Settings.ShowAllTgtNames)
+            {
+                var fgDraw = ImGui.GetWindowDrawList();
+                var currentAreaInstance = Core.States.InGameStateObject.CurrentAreaInstance;
+                if (!currentAreaInstance.Player.TryGetComponent<Positioned>(out var playerPos))
+                {
+                    return;
+                }
+
+                var pPos = new Vector2(playerPos.GridPosition.X, playerPos.GridPosition.Y);
+                for (int i = 0; i < currentAreaInstance.TgtFiles.Count; i++)
+                {
+                    var val = currentAreaInstance.TgtFiles[i];
+                    var pNameSizeH = ImGui.CalcTextSize(val.TgtName) / 2;
+                    var ePos = new Vector2(val.X, val.Y);
+                    var fpos = Helper.DeltaInWorldToMapDelta(
+                        ePos - pPos, -currentAreaInstance.GridHeightData[val.Y][val.X]);
+                    fgDraw.AddRectFilled(mapCenter + fpos - pNameSizeH, mapCenter + fpos + pNameSizeH, UiHelper.Color(0, 0, 0, 200));
+                    fgDraw.AddText(ImGui.GetFont(), ImGui.GetFontSize(), mapCenter + fpos - pNameSizeH, UiHelper.Color(255, 128, 128, 255), val.TgtName);
+                }
+            }
+            else if (this.Settings.ShowImportantTgtNames)
+            {
+            }
+        }
+
+        private void DrawMapIcons(Vector2 mapCenter, float iconSizeMultiplier)
+        {
+            var fgDraw = ImGui.GetWindowDrawList();
+            var currentAreaInstance = Core.States.InGameStateObject.CurrentAreaInstance;
+            if (!currentAreaInstance.Player.TryGetComponent<Positioned>(out var playerPos))
+            {
+                return;
+            }
+
+            if (!currentAreaInstance.Player.TryGetComponent<Render>(out var playerRender))
             {
                 return;
             }
 
             var pPos = new Vector2(playerPos.GridPosition.X, playerPos.GridPosition.Y);
-            var currentAreaInstance = Core.States.InGameStateObject.CurrentAreaInstance;
             foreach (var entity in currentAreaInstance.AwakeEntities)
             {
                 var hasVital = entity.Value.TryGetComponent<Life>(out var lifeComp);
@@ -346,7 +403,7 @@ namespace Radar
                 var ePos = new Vector2(entityPos.GridPosition.X, entityPos.GridPosition.Y);
                 var fpos = Helper.DeltaInWorldToMapDelta(
                     ePos - pPos, entityZ.TerrainHeight - playerRender.TerrainHeight);
-                var finalSize = Vector2.One * scale * (isMiniMap ? 1f : 5f);
+                var iconSizeMultiplierVector = Vector2.One * iconSizeMultiplier;
                 if (isPlayer)
                 {
                     if (this.Settings.ShowPlayersNames)
@@ -358,11 +415,11 @@ namespace Radar
                     else
                     {
                         var playerIcon = this.Settings.BaseIcons["Player"];
-                        finalSize *= playerIcon.IconScale;
+                        iconSizeMultiplierVector *= playerIcon.IconScale;
                         fgDraw.AddImage(
                             playerIcon.TexturePtr,
-                            mapCenter + fpos - finalSize,
-                            mapCenter + fpos + finalSize,
+                            mapCenter + fpos - iconSizeMultiplierVector,
+                            mapCenter + fpos + iconSizeMultiplierVector,
                             playerIcon.UV0,
                             playerIcon.UV1);
                     }
@@ -370,11 +427,11 @@ namespace Radar
                 else if (isBlockage)
                 {
                     var blockageIcon = this.Settings.DelveIcons["Blockage OR DelveWall"];
-                    finalSize *= blockageIcon.IconScale;
+                    iconSizeMultiplierVector *= blockageIcon.IconScale;
                     fgDraw.AddImage(
                         blockageIcon.TexturePtr,
-                        mapCenter + fpos - finalSize,
-                        mapCenter + fpos + finalSize,
+                        mapCenter + fpos - iconSizeMultiplierVector,
+                        mapCenter + fpos + iconSizeMultiplierVector,
                         blockageIcon.UV0,
                         blockageIcon.UV1);
                 }
@@ -389,11 +446,11 @@ namespace Radar
                                 // Have to force keep the Delve Chest since GGG changed
                                 // network bubble radius for them.
                                 entity.Value.ForceKeepEntity();
-                                finalSize *= delveChestIcon.IconScale;
+                                iconSizeMultiplierVector *= delveChestIcon.IconScale;
                                 fgDraw.AddImage(
                                     delveChestIcon.TexturePtr,
-                                    mapCenter + fpos - finalSize,
-                                    mapCenter + fpos + finalSize,
+                                    mapCenter + fpos - iconSizeMultiplierVector,
+                                    mapCenter + fpos + iconSizeMultiplierVector,
                                     delveChestIcon.UV0,
                                     delveChestIcon.UV1);
                             }
@@ -413,11 +470,11 @@ namespace Radar
                         {
                             if (this.Settings.HeistIcons.TryGetValue(iconFinder, out var heistChestIcon))
                             {
-                                finalSize *= heistChestIcon.IconScale;
+                                iconSizeMultiplierVector *= heistChestIcon.IconScale;
                                 fgDraw.AddImage(
                                     heistChestIcon.TexturePtr,
-                                    mapCenter + fpos - finalSize,
-                                    mapCenter + fpos + finalSize,
+                                    mapCenter + fpos - iconSizeMultiplierVector,
+                                    mapCenter + fpos + iconSizeMultiplierVector,
                                     heistChestIcon.UV0,
                                     heistChestIcon.UV1);
                             }
@@ -435,11 +492,11 @@ namespace Radar
                     }
 
                     var chestIcon = this.Settings.BaseIcons["Chest"];
-                    finalSize *= chestIcon.IconScale;
+                    iconSizeMultiplierVector *= chestIcon.IconScale;
                     fgDraw.AddImage(
                         chestIcon.TexturePtr,
-                        mapCenter + fpos - finalSize,
-                        mapCenter + fpos + finalSize,
+                        mapCenter + fpos - iconSizeMultiplierVector,
+                        mapCenter + fpos + iconSizeMultiplierVector,
                         chestIcon.UV0,
                         chestIcon.UV1);
                 }
@@ -448,11 +505,11 @@ namespace Radar
                     if (!shrineComp.IsUsed)
                     {
                         var shrineIcon = this.Settings.BaseIcons["Shrine"];
-                        finalSize *= shrineIcon.IconScale;
+                        iconSizeMultiplierVector *= shrineIcon.IconScale;
                         fgDraw.AddImage(
                             shrineIcon.TexturePtr,
-                            mapCenter + fpos - finalSize,
-                            mapCenter + fpos + finalSize,
+                            mapCenter + fpos - iconSizeMultiplierVector,
+                            mapCenter + fpos + iconSizeMultiplierVector,
                             shrineIcon.UV0,
                             shrineIcon.UV1);
                     }
@@ -468,11 +525,11 @@ namespace Radar
                             entity.Value.Path.Contains("Chest"))
                         {
                             var monsterChestIcon = this.Settings.LegionIcons["Legion Monster Chest"];
-                            finalSize *= monsterChestIcon.IconScale;
+                            iconSizeMultiplierVector *= monsterChestIcon.IconScale;
                             fgDraw.AddImage(
                                 monsterChestIcon.TexturePtr,
-                                mapCenter + fpos - finalSize,
-                                mapCenter + fpos + finalSize,
+                                mapCenter + fpos - iconSizeMultiplierVector,
+                                mapCenter + fpos + iconSizeMultiplierVector,
                                 monsterChestIcon.UV0,
                                 monsterChestIcon.UV1);
                             continue;
@@ -490,11 +547,11 @@ namespace Radar
                         {
                             if (this.Settings.DeliriumIcons.TryGetValue(iconFinder, out var dHiddenMIcon))
                             {
-                                finalSize *= dHiddenMIcon.IconScale;
+                                iconSizeMultiplierVector *= dHiddenMIcon.IconScale;
                                 fgDraw.AddImage(
                                     dHiddenMIcon.TexturePtr,
-                                    mapCenter + fpos - finalSize,
-                                    mapCenter + fpos + finalSize,
+                                    mapCenter + fpos - iconSizeMultiplierVector,
+                                    mapCenter + fpos + iconSizeMultiplierVector,
                                     dHiddenMIcon.UV0,
                                     dHiddenMIcon.UV1);
                             }
@@ -515,31 +572,17 @@ namespace Radar
                     var monsterIcon = entityPos.IsFriendly ?
                         this.Settings.BaseIcons["Friendly"] :
                         this.RarityToIconMapping(omp.Rarity);
-                    finalSize *= monsterIcon.IconScale;
+                    iconSizeMultiplierVector *= monsterIcon.IconScale;
                     fgDraw.AddImage(
                         monsterIcon.TexturePtr,
-                        mapCenter + fpos - finalSize,
-                        mapCenter + fpos + finalSize,
+                        mapCenter + fpos - iconSizeMultiplierVector,
+                        mapCenter + fpos + iconSizeMultiplierVector,
                         monsterIcon.UV0,
                         monsterIcon.UV1);
                 }
                 else
                 {
                     fgDraw.AddCircleFilled(mapCenter + fpos, 5f, UiHelper.Color(255, 0, 255, 255));
-                }
-            }
-
-            for (int i = 0; i < currentAreaInstance.TgtFiles.Count; i++)
-            {
-                var val = currentAreaInstance.TgtFiles[i];
-                if (this.Settings.ShowAllTgtNames)
-                {
-                    var pNameSizeH = ImGui.CalcTextSize(val.TgtName) / 2;
-                    var ePos = new Vector2(val.X, val.Y);
-                    var fpos = Helper.DeltaInWorldToMapDelta(
-                        ePos - pPos, -currentAreaInstance.GridHeightData[val.Y][val.X]);
-                    fgDraw.AddRectFilled(mapCenter + fpos - pNameSizeH, mapCenter + fpos + pNameSizeH, UiHelper.Color(0, 0, 0, 200));
-                    fgDraw.AddText(ImGui.GetFont(), ImGui.GetFontSize(), mapCenter + fpos - pNameSizeH, UiHelper.Color(255, 128, 128, 255), val.TgtName);
                 }
             }
         }
