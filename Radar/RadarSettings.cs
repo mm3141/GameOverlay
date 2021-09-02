@@ -35,7 +35,7 @@ namespace Radar
         /// <summary>
         /// Gets a value indicating whether user wants to draw walkable map or not.
         /// </summary>
-        public bool DrawWalkableMap = false;
+        public bool DrawWalkableMap = true;
 
         /// <summary>
         /// Gets the position of the cull window that the user wants.
