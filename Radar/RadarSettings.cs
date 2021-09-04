@@ -63,6 +63,12 @@ namespace Radar
         public bool ShowImportantTgtNames = true;
 
         /// <summary>
+        /// Gets the Tgts and their expected clusters per area/zone/map.
+        /// </summary>
+        public Dictionary<string, Dictionary<string, TgtClusters>> ImportantTgts =
+            new Dictionary<string, Dictionary<string, TgtClusters>>();
+
+        /// <summary>
         /// Icons to display on the map. Base game includes normal chests, strongboxes, monsters etc.
         /// </summary>
         public Dictionary<string, IconPicker> BaseIcons = new Dictionary<string, IconPicker>();

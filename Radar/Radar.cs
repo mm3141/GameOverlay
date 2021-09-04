@@ -8,6 +8,7 @@ namespace Radar
     using System.Collections.Generic;
     using System.IO;
     using System.Numerics;
+    using System.Threading.Tasks;
     using Coroutine;
     using GameHelper;
     using GameHelper.CoroutineEvents;
@@ -37,6 +38,11 @@ namespace Radar
         private ActiveCoroutine onGameClose;
         private ActiveCoroutine onAreaChange;
 
+        private string currentAreaName = string.Empty;
+        private string tmpTileName = string.Empty;
+        private string tmpDisplayName = string.Empty;
+        private int tmpExpectedClusters = 1;
+
         private Vector2 miniMapCenterWithDefaultShift = Vector2.Zero;
         private double miniMapDiagonalLength = 0x00;
 
@@ -60,6 +66,8 @@ namespace Radar
         private IntPtr walkableMapTexture = IntPtr.Zero;
         private Vector2 walkableMapDimension = Vector2.Zero;
 
+        private Dictionary<string, TgtClusters> currentAreaImportantTiles = new Dictionary<string, TgtClusters>();
+
         private string SettingPathname => Path.Join(this.DllDirectory, "config", "settings.txt");
 
         /// <inheritdoc/>
@@ -72,7 +80,8 @@ namespace Radar
                 "Basically, you don't have to change it unless you change your " +
                 "game window resolution. Also, please contribute back, let me know " +
                 "what resolution you use and what value works best for you. " +
-                "This slider has no impact on mini-map icons.");
+                "This slider has no impact on mini-map icons. For windowed-full-screen " +
+                "default value should be good enough.");
             ImGui.DragFloat(
                 "Large Map Fix",
                 ref this.Settings.LargeMapScaleMultiplier,
@@ -116,36 +125,88 @@ namespace Radar
             }
 
             ImGui.SameLine();
-            if (ImGui.RadioButton("Don't Show any tile name", !this.Settings.ShowAllTgtNames && !this.Settings.ShowImportantTgtNames))
+            if (ImGui.RadioButton("Don't show tile name", !this.Settings.ShowAllTgtNames && !this.Settings.ShowImportantTgtNames))
             {
                 this.Settings.ShowAllTgtNames = false;
                 this.Settings.ShowImportantTgtNames = false;
             }
 
-            this.Settings.DrawIconsSettingToImGui(
-                "BaseGame Icons",
-                this.Settings.BaseIcons,
-                "Blockages icon can be set from Delve Icons category i.e. 'Blockage OR DelveWall'");
+            if (ImGui.CollapsingHeader("Important Tile Setting"))
+            {
+                ImGui.PushItemWidth(ImGui.GetContentRegionAvail().X / 1.3f);
+                ImGui.InputText("Area Name", ref this.currentAreaName, 200, ImGuiInputTextFlags.ReadOnly);
+                ImGui.InputText("Tile Name", ref this.tmpTileName, 200);
+                ImGui.InputText("Display Name", ref this.tmpDisplayName, 200);
+                ImGui.DragInt("Clusters Expected", ref this.tmpExpectedClusters, 0.01f, 1, 10);
+                ImGui.PopItemWidth();
+                if (ImGui.Button("Add Tile Name"))
+                {
+                    if (!string.IsNullOrEmpty(this.currentAreaName) && !string.IsNullOrEmpty(this.tmpTileName))
+                    {
+                        if (string.IsNullOrEmpty(this.tmpDisplayName))
+                        {
+                            this.tmpDisplayName = this.tmpTileName;
+                        }
 
-            this.Settings.DrawIconsSettingToImGui(
-                "Legion Icons",
-                this.Settings.LegionIcons,
-                "Legion bosses are same as BaseGame Icons -> Unique Monsters.");
+                        if (!this.Settings.ImportantTgts.ContainsKey(this.currentAreaName))
+                        {
+                            this.Settings.ImportantTgts[this.currentAreaName] = new Dictionary<string, TgtClusters>();
+                        }
 
-            this.Settings.DrawIconsSettingToImGui(
-                "Delirium Icons",
-                this.Settings.DeliriumIcons,
-                string.Empty);
+                        this.Settings.ImportantTgts[this.currentAreaName][this.tmpTileName] = new TgtClusters()
+                        {
+                            Display = this.tmpDisplayName,
+                            ClustersCount = this.tmpExpectedClusters,
+                            Clusters = new Vector2[this.tmpExpectedClusters],
+                        };
 
-            this.Settings.DrawIconsSettingToImGui(
-                "Heist Icons",
-                this.Settings.HeistIcons,
-                string.Empty);
+                        this.tmpTileName = string.Empty;
+                        this.tmpDisplayName = string.Empty;
+                        this.tmpExpectedClusters = 1;
+                    }
+                }
 
-            this.Settings.DrawIconsSettingToImGui(
-                "Delve Icons",
-                this.Settings.DelveIcons,
-                string.Empty);
+                if (ImGui.TreeNode($"Important Tiles in Area: {this.currentAreaName}##import_time_in_area"))
+                {
+                    if (this.Settings.ImportantTgts.ContainsKey(this.currentAreaName))
+                    {
+                        foreach (var tgt in this.Settings.ImportantTgts[this.currentAreaName])
+                        {
+                            ImGui.Text($"Tgt Name: {tgt.Key}, Expected Clusters: {tgt.Value.ClustersCount}, Display: {tgt.Value.Display}");
+                        }
+                    }
+
+                    ImGui.TreePop();
+                }
+            }
+
+            if (ImGui.CollapsingHeader("Icons Setting"))
+            {
+                this.Settings.DrawIconsSettingToImGui(
+                    "BaseGame Icons",
+                    this.Settings.BaseIcons,
+                    "Blockages icon can be set from Delve Icons category i.e. 'Blockage OR DelveWall'");
+
+                this.Settings.DrawIconsSettingToImGui(
+                    "Legion Icons",
+                    this.Settings.LegionIcons,
+                    "Legion bosses are same as BaseGame Icons -> Unique Monsters.");
+
+                this.Settings.DrawIconsSettingToImGui(
+                    "Delirium Icons",
+                    this.Settings.DeliriumIcons,
+                    string.Empty);
+
+                this.Settings.DrawIconsSettingToImGui(
+                    "Heist Icons",
+                    this.Settings.HeistIcons,
+                    string.Empty);
+
+                this.Settings.DrawIconsSettingToImGui(
+                    "Delve Icons",
+                    this.Settings.DelveIcons,
+                    string.Empty);
+            }
         }
 
         /// <inheritdoc/>
@@ -306,29 +367,51 @@ namespace Radar
 
         private void DrawTgtFiles(Vector2 mapCenter)
         {
+            var fgDraw = ImGui.GetWindowDrawList();
+            var currentAreaInstance = Core.States.InGameStateObject.CurrentAreaInstance;
+            if (!currentAreaInstance.Player.TryGetComponent<Positioned>(out var playerPos))
+            {
+                return;
+            }
+
+            var pPos = new Vector2(playerPos.GridPosition.X, playerPos.GridPosition.Y);
             if (this.Settings.ShowAllTgtNames)
             {
-                var fgDraw = ImGui.GetWindowDrawList();
-                var currentAreaInstance = Core.States.InGameStateObject.CurrentAreaInstance;
-                if (!currentAreaInstance.Player.TryGetComponent<Positioned>(out var playerPos))
+                foreach (var tgtKV in currentAreaInstance.TgtFiles)
                 {
-                    return;
-                }
-
-                var pPos = new Vector2(playerPos.GridPosition.X, playerPos.GridPosition.Y);
-                for (int i = 0; i < currentAreaInstance.TgtFiles.Count; i++)
-                {
-                    var val = currentAreaInstance.TgtFiles[i];
-                    var pNameSizeH = ImGui.CalcTextSize(val.TgtName) / 2;
-                    var ePos = new Vector2(val.X, val.Y);
-                    var fpos = Helper.DeltaInWorldToMapDelta(
-                        ePos - pPos, -currentAreaInstance.GridHeightData[val.Y][val.X]);
-                    fgDraw.AddRectFilled(mapCenter + fpos - pNameSizeH, mapCenter + fpos + pNameSizeH, UiHelper.Color(0, 0, 0, 200));
-                    fgDraw.AddText(ImGui.GetFont(), ImGui.GetFontSize(), mapCenter + fpos - pNameSizeH, UiHelper.Color(255, 128, 128, 255), val.TgtName);
+                    var pNameSizeH = ImGui.CalcTextSize(tgtKV.Key) / 2;
+                    for (int i = 0; i < tgtKV.Value.Count; i++)
+                    {
+                        var val = tgtKV.Value[i];
+                        var ePos = new Vector2(val.X, val.Y);
+                        var fpos = Helper.DeltaInWorldToMapDelta(
+                            ePos - pPos, -currentAreaInstance.GridHeightData[val.Y][val.X]);
+                        fgDraw.AddRectFilled(mapCenter + fpos - pNameSizeH, mapCenter + fpos + pNameSizeH, UiHelper.Color(0, 0, 0, 200));
+                        fgDraw.AddText(ImGui.GetFont(), ImGui.GetFontSize(), mapCenter + fpos - pNameSizeH, UiHelper.Color(255, 128, 128, 255), tgtKV.Key);
+                    }
                 }
             }
             else if (this.Settings.ShowImportantTgtNames)
             {
+                foreach (var tile in this.currentAreaImportantTiles)
+                {
+                    for (int i = 0; i < tile.Value.ClustersCount; i++)
+                    {
+                        var height = 0;
+                        var loc = tile.Value.Clusters[i];
+                        if (loc.X < currentAreaInstance.GridHeightData[0].Length && loc.Y < currentAreaInstance.GridHeightData.Length)
+                        {
+                            height = -currentAreaInstance.GridHeightData[(int)loc.Y][(int)loc.X];
+                        }
+
+                        var display = tile.Value.Display;
+                        var pNameSizeH = ImGui.CalcTextSize(display) / 2;
+                        var fpos = Helper.DeltaInWorldToMapDelta(
+                            loc - pPos, height);
+                        fgDraw.AddRectFilled(mapCenter + fpos - pNameSizeH, mapCenter + fpos + pNameSizeH, UiHelper.Color(0, 0, 0, 200));
+                        fgDraw.AddText(ImGui.GetFont(), ImGui.GetFontSize(), mapCenter + fpos - pNameSizeH, UiHelper.Color(255, 128, 128, 255), display);
+                    }
+                }
             }
         }
 
@@ -596,8 +679,10 @@ namespace Radar
                 this.heistChestCache.Clear();
                 this.deliriumHiddenMonster.Clear();
                 this.delveChestCache.Clear();
-                this.isAzuriteMine = Core.States.AreaLoading.CurrentAreaName == "Azurite Mine";
+                this.currentAreaName = Core.States.AreaLoading.CurrentAreaName;
+                this.isAzuriteMine = this.currentAreaName == "Azurite Mine";
                 this.GenerateMapTexture();
+                this.ClusterImportantTgtName();
             }
         }
 
@@ -625,6 +710,7 @@ namespace Radar
             {
                 yield return new Wait(GameHelperEvents.OnClose);
                 this.skipOneSettingChange = true;
+                this.currentAreaName = string.Empty;
             }
         }
 
@@ -730,6 +816,49 @@ namespace Radar
             Core.Overlay.AddOrGetImagePointer("walkable_map", image, false, false, out var t, out var w, out var h);
             this.walkableMapTexture = t;
             this.walkableMapDimension = new Vector2(w, h);
+        }
+
+        private void ClusterImportantTgtName()
+        {
+            if (!this.Settings.ImportantTgts.ContainsKey(this.currentAreaName))
+            {
+                this.currentAreaImportantTiles = new Dictionary<string, TgtClusters>();
+                return;
+            }
+
+            this.currentAreaImportantTiles = this.Settings.ImportantTgts[this.currentAreaName];
+            Parallel.ForEach(this.currentAreaImportantTiles, (kv) =>
+            {
+                var filteredData = Core.States.InGameStateObject.CurrentAreaInstance.TgtFiles[kv.Key];
+                double[][] rawData = new double[filteredData.Count][];
+                double[][] result = new double[kv.Value.ClustersCount][];
+                for (int i = 0; i < kv.Value.ClustersCount; i++)
+                {
+                    result[i] = new double[3] { 0, 0, 0 };
+                }
+
+                for (int i = 0; i < filteredData.Count; i++)
+                {
+                    rawData[i] = new double[2];
+                    rawData[i][0] = filteredData[i].X;
+                    rawData[i][1] = filteredData[i].Y;
+                }
+
+                var cluster = KMean.Cluster(rawData, kv.Value.ClustersCount);
+                for (int i = 0; i < filteredData.Count; i++)
+                {
+                    int result_index = cluster[i];
+                    result[result_index][0] += rawData[i][0];
+                    result[result_index][1] += rawData[i][1];
+                    result[result_index][2] += 1;
+                }
+
+                for (int i = 0; i < result.Length; i++)
+                {
+                    kv.Value.Clusters[i].X = (float)(result[i][0] / result[i][2]);
+                    kv.Value.Clusters[i].Y = (float)(result[i][1] / result[i][2]);
+                }
+            });
         }
 
         private IconPicker RarityToIconMapping(Rarity rarity)

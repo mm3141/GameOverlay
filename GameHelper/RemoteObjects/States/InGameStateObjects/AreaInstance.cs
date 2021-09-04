@@ -13,6 +13,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
     using GameHelper.RemoteObjects.Components;
     using GameHelper.RemoteObjects.FilesStructures;
     using GameHelper.Utils;
+    using GameOffsets.Natives;
     using GameOffsets.Objects.States.InGameState;
     using ImGuiNET;
 
@@ -90,7 +91,8 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
         /// <summary>
         /// Gets the terrain tgt file data of the current Area/Zone.
         /// </summary>
-        public List<TgtFile> TgtFiles { get; private set; } = new List<TgtFile>();
+        public Dictionary<string, List<StdTuple2D<int>>> TgtFiles { get; private set; } =
+            new Dictionary<string, List<StdTuple2D<int>>>();
 
         /// <summary>
         /// Converts the <see cref="AreaInstance"/> class data to ImGui.
@@ -271,21 +273,20 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             }
         }
 
-        private List<TgtFile> GetTgtFileData()
+        private Dictionary<string, List<StdTuple2D<int>>> GetTgtFileData()
         {
             var reader = Core.Process.Handle;
             var tileData = reader.ReadStdVector<TileStructure>(this.TerrainMetadata.TileDetailsPtr);
-            List<TgtFile> ret = new List<TgtFile>(tileData.Length);
-            object localLockObject = new object();
+            var ret = new Dictionary<string, List<StdTuple2D<int>>>();
+            object mylock = new object();
             Parallel.For(
                 0,
                 tileData.Length,
-                () => new List<TgtFile>(), // happens on every thread, rather than every iteration.
-                (index, state, localstate) => // happens on every iteration.
+                () => new Dictionary<string, List<StdTuple2D<int>>>(), // happens on every thread, rather than every iteration.
+                (tileNumber, _, localstate) => // happens on every iteration.
                 {
-                    var val = tileData[index];
-                    var tgtFile = reader.ReadMemory<TgtFileStruct>(val.TgtFilePtr);
-                    var tgtPath = reader.ReadStdWString(tgtFile.TgtPath);
+                    var tile = tileData[tileNumber];
+                    var tgtFile = reader.ReadMemory<TgtFileStruct>(tile.TgtFilePtr);
                     var tgtDetail = reader.ReadMemory<TgtDetailStruct>(tgtFile.TgtDetailPtr);
                     var tgtName = reader.ReadStdWString(tgtDetail.name);
                     if (string.IsNullOrEmpty(tgtName))
@@ -293,16 +294,36 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
                         return localstate;
                     }
 
-                    int y = ((int)(index / this.TerrainMetadata.TotalTiles.X)) * TileStructure.TileToGridConversion;
-                    int x = ((int)(index % this.TerrainMetadata.TotalTiles.X)) * TileStructure.TileToGridConversion;
-                    localstate.Add(new TgtFile() { TgtName = tgtName.ToLower(), FilePath = tgtPath.ToLower(), X = x, Y = y });
+                    var loc = new StdTuple2D<int>()
+                    {
+                        Y = (int)(tileNumber / this.TerrainMetadata.TotalTiles.X) * TileStructure.TileToGridConversion,
+                        X = (int)(tileNumber % this.TerrainMetadata.TotalTiles.X) * TileStructure.TileToGridConversion,
+                    };
+
+                    if (localstate.ContainsKey(tgtName))
+                    {
+                        localstate[tgtName].Add(loc);
+                    }
+                    else
+                    {
+                        localstate[tgtName] = new List<StdTuple2D<int>>() { loc };
+                    }
+
                     return localstate;
                 },
                 (finalresult) => // happens on every thread, rather than every iteration.
                 {
-                    lock (localLockObject)
+                    lock (mylock)
                     {
-                        ret.AddRange(finalresult);
+                        foreach (var kv in finalresult)
+                        {
+                            if (!ret.ContainsKey(kv.Key))
+                            {
+                                ret[kv.Key] = new List<StdTuple2D<int>>();
+                            }
+
+                            ret[kv.Key].AddRange(kv.Value);
+                        }
                     }
                 });
             return ret;
@@ -388,32 +409,6 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
                     this.UpdateData(false);
                 }
             }
-        }
-
-        /// <summary>
-        /// A structure for storing Tgt File Data.
-        /// </summary>
-        public struct TgtFile
-        {
-            /// <summary>
-            /// Pathname of the file e.g. Metadata/foo/bar/abc.tgt.
-            /// </summary>
-            public string FilePath;
-
-            /// <summary>
-            /// User friendly name given to the Tgt file by the game Devs.
-            /// </summary>
-            public string TgtName;
-
-            /// <summary>
-            /// X cordinate on the grid.
-            /// </summary>
-            public int X;
-
-            /// <summary>
-            /// Y cordinate on the grid.
-            /// </summary>
-            public int Y;
         }
     }
 }
