@@ -36,7 +36,7 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="mkdir &quot;..\GameHelper\bin\$(ConfigurationName)\netcoreapp3.1\Plugins\$(ProjectName)&quot;&#xD;&#xA;copy &quot;$(OutDir)$(TargetName)$(TargetExt)&quot; &quot;..\GameHelper\bin\$(ConfigurationName)\netcoreapp3.1\Plugins\$(ProjectName)&quot;&#xD;&#xA;copy &quot;$(OutDir)FlaskNameToBuff.json&quot; &quot;..\GameHelper\bin\$(ConfigurationName)\netcoreapp3.1\Plugins\$(ProjectName)&quot;" />
+    <Exec Command="mkdir &quot;..\GameHelper\bin\$(ConfigurationName)\netcoreapp3.1\Plugins\$(ProjectName)&quot;&#xD;&#xA;cp &quot;$(OutDir)$(TargetName)$(TargetExt)&quot; &quot;..\GameHelper\bin\$(ConfigurationName)\netcoreapp3.1\Plugins\$(ProjectName)&quot;&#xD;&#xA;cp &quot;$(OutDir)FlaskNameToBuff.json&quot; &quot;..\GameHelper\bin\$(ConfigurationName)\netcoreapp3.1\Plugins\$(ProjectName)&quot;" />
   </Target>
 
 </Project>
