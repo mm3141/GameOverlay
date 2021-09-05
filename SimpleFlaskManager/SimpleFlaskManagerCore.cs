@@ -22,6 +22,8 @@ namespace SimpleFlaskManager
     {
         private string newProfileName = string.Empty;
 
+        private string SettingPathname => Path.Join(this.DllDirectory, "config", "settings.txt");
+
         /// <inheritdoc/>
         public override void DrawSettings()
         {
@@ -111,13 +113,32 @@ namespace SimpleFlaskManager
         public override void OnEnable(bool isGameOpened)
         {
             var jsonData = File.ReadAllText(this.DllDirectory + @"/FlaskNameToBuff.json");
-            JsonDataHelper.FlaskNameToBuff =
-                JsonConvert.DeserializeObject<Dictionary<string, string>>(jsonData);
+            JsonDataHelper.FlaskNameToBuff = JsonConvert.DeserializeObject<Dictionary<string, string>>(jsonData);
+
+            if (File.Exists(this.SettingPathname))
+            {
+                var content = File.ReadAllText(this.SettingPathname);
+                this.Settings = JsonConvert.DeserializeObject<SimpleFlaskManagerSettings>(
+                    content,
+                    new JsonSerializerSettings()
+                    {
+                        TypeNameHandling = TypeNameHandling.Auto,
+                    });
+            }
         }
 
         /// <inheritdoc/>
         public override void SaveSettings()
         {
+            Directory.CreateDirectory(Path.GetDirectoryName(this.SettingPathname));
+            var settingsData = JsonConvert.SerializeObject(
+                this.Settings,
+                Formatting.Indented,
+                new JsonSerializerSettings()
+                {
+                    TypeNameHandling = TypeNameHandling.Auto,
+                });
+            File.WriteAllText(this.SettingPathname, settingsData);
         }
 
         private void PrintDebugMessage(string debugMessage)

@@ -11,6 +11,7 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
     using GameHelper.RemoteObjects.Components;
     using GameHelper.Utils;
     using ImGuiNET;
+    using Newtonsoft.Json;
 
     /// <summary>
     /// For triggering a flask on player animation changes.
@@ -22,6 +23,7 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
         private static Animation selectedStatic = 0;
         private static int durationMsStatic = 0;
 
+        [JsonProperty]
         private int durationMs;
         private Stopwatch sw;
 

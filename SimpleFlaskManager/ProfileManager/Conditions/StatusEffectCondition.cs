@@ -9,6 +9,7 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
     using GameHelper.RemoteObjects.Components;
     using GameHelper.Utils;
     using ImGuiNET;
+    using Newtonsoft.Json;
 
     /// <summary>
     /// For triggering a flask on player Status Effect changes.
@@ -20,6 +21,7 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
         private static string buffIdStatic = string.Empty;
         private static int buffChargesStatic = 0;
 
+        [JsonProperty]
         private int charges = 0;
 
         /// <summary>

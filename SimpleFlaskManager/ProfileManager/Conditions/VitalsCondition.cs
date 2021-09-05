@@ -9,6 +9,7 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
     using GameHelper.RemoteObjects.Components;
     using GameHelper.Utils;
     using ImGuiNET;
+    using Newtonsoft.Json;
 
     /// <summary>
     /// For triggering a flask on player vitals changes.
@@ -19,6 +20,8 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
         private static OperatorEnum operatorStatic = OperatorEnum.BIGGER_THAN;
         private static VitalsEnum vitalTypeStatic = VitalsEnum.MANA;
         private static int thresholdStatic = 0;
+
+        [JsonProperty]
         private VitalsEnum vitalType;
 
         /// <summary>

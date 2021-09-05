@@ -6,6 +6,7 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
 {
     using System;
     using ImGuiNET;
+    using Newtonsoft.Json;
 
     /// <summary>
     /// Abstract class for creating conditions on which flasks can trigger.
@@ -20,14 +21,17 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
         /// <summary>
         /// Right hand side operand of the condition.
         /// </summary>
+        [JsonProperty]
         protected T rightHandOperand;
 
         /// <summary>
         /// The operator to use for the condition.
         /// </summary>
+        [JsonProperty]
         protected OperatorEnum conditionOperator;
 #pragma warning restore SA1401 // Fields should be private
 
+        [JsonProperty]
         private ICondition next;
 
         /// <summary>
@@ -76,13 +80,14 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
         /// <inheritdoc/>
         public void Append(ICondition condition)
         {
-            var nxt = this.next;
-            while (nxt != null)
+            if (this.next == null)
             {
-                nxt = nxt.Next();
+                this.next = condition;
             }
-
-            nxt = condition;
+            else
+            {
+                this.next.Append(condition);
+            }
         }
 
         /// <summary>

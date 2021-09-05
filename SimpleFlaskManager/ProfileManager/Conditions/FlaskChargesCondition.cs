@@ -9,6 +9,7 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
     using GameHelper.RemoteObjects.Components;
     using GameHelper.Utils;
     using ImGuiNET;
+    using Newtonsoft.Json;
 
     /// <summary>
     /// For triggering a flask on number of flask charges the flask got.
@@ -20,6 +21,7 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
         private static int flaskSlotStatic = 1;
         private static int chargesStatic = 10;
 
+        [JsonProperty]
         private int slot = 1;
 
         /// <summary>
