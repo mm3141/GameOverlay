@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Library</OutputType>
@@ -43,8 +43,10 @@
     </None>
   </ItemGroup>
 
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="mkdir &quot;..\GameHelper\bin\$(ConfigurationName)\netcoreapp3.1\Plugins\$(ProjectName)&quot;&#xD;&#xA;cp &quot;$(OutDir)$(TargetName)$(TargetExt)&quot; &quot;..\GameHelper\bin\$(ConfigurationName)\netcoreapp3.1\Plugins\$(ProjectName)&quot;&#xD;&#xA;cp &quot;$(OutDir)icons.png&quot; &quot;..\GameHelper\bin\$(ConfigurationName)\netcoreapp3.1\Plugins\$(ProjectName)&quot;&#xD;&#xA;cp &quot;$(OutDir)delve.png&quot; &quot;..\GameHelper\bin\$(ConfigurationName)\netcoreapp3.1\Plugins\$(ProjectName)&quot;" />
+  <Target Name="CopyFiles" AfterTargets="Build">
+    <Copy SourceFiles="$(OutDir)$(TargetName)$(TargetExt);$(OutDir)icons.png;$(OutDir)delve.png;"
+          DestinationFolder="..\GameHelper\$(OutDir)Plugins\$(ProjectName)"
+          SkipUnchangedFiles="true"/>
   </Target>
 
 </Project>
