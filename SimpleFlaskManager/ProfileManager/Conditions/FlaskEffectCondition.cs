@@ -86,7 +86,7 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
             {
                 if (!buffComponent.StatusEffects.ContainsKey(this.flaskBuffCache))
                 {
-                    return true;
+                    return true && this.EvaluateNext();
                 }
             }
 

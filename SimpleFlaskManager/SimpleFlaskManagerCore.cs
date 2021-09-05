@@ -4,8 +4,10 @@
 
 namespace SimpleFlaskManager
 {
+    using System;
     using System.Collections.Generic;
     using System.IO;
+    using System.Numerics;
     using GameHelper;
     using GameHelper.Plugin;
     using GameHelper.RemoteEnums;
@@ -20,19 +22,30 @@ namespace SimpleFlaskManager
     /// </summary>
     public sealed class SimpleFlaskManagerCore : PCore<SimpleFlaskManagerSettings>
     {
+        private Vector2 size = new Vector2(400, 200);
+        private string debugMessage = "None";
         private string newProfileName = string.Empty;
+        private List<string> keyPressInfo = new List<string>();
 
         private string SettingPathname => Path.Join(this.DllDirectory, "config", "settings.txt");
 
         /// <inheritdoc/>
         public override void DrawSettings()
         {
-            ImGui.TextWrapped($"Do not trust FlaskManager Settings.txt file from unknown source. " +
+            ImGui.TextWrapped($"WARNING: Do not trust FlaskManager Settings.txt file from unknown source. " +
                 $"Bad profiles may get your account banned. Also, they can contain malicious code. " +
                 $"Google SCS0028 and CA2328 for more information.");
 
             ImGui.NewLine();
             ImGui.NewLine();
+            ImGui.TextWrapped("WARNING: All the flask rules in all the profiles must have " +
+                "FLASK_EFFECT and FLASK_CHARGES condition, otherwise Flask Manager will spam " +
+                "the flask and you might get kicked or banned.");
+            ImGui.NewLine();
+            ImGui.NewLine();
+            ImGui.TextWrapped("Debug mode will help you figure out why flask manager is not drinking the flask. " +
+                "It will also help you figure out if flask manager is spamming the flask or not. So create all new " +
+                "profiles with debug mode turned on.");
             ImGui.Checkbox("Debug Mode", ref this.Settings.DebugMode);
             ImGui.Checkbox("Should Run In Hideout", ref this.Settings.ShouldRunInHideout);
             if (ImGui.BeginCombo("Profile", this.Settings.CurrentProfile))
@@ -95,9 +108,29 @@ namespace SimpleFlaskManager
         /// <inheritdoc/>
         public override void DrawUI()
         {
-            if (!this.ShouldExecutePlugin(out var debugMessage))
+            if (this.Settings.DebugMode)
             {
-                this.PrintDebugMessage(debugMessage);
+                ImGui.SetNextWindowSizeConstraints(this.size, this.size * 2);
+                ImGui.Begin("Debug Mode Window");
+                ImGui.TextWrapped($"Current Issue: {this.debugMessage}");
+                if (ImGui.Button("Clear History"))
+                {
+                    this.keyPressInfo.Clear();
+                }
+
+                ImGui.BeginChild("KeyPressesInfo");
+                for (int i = 0; i < this.keyPressInfo.Count; i++)
+                {
+                    ImGui.Text($"{i}-{this.keyPressInfo[i]}");
+                }
+
+                ImGui.SetScrollHereY();
+                ImGui.EndChild();
+                ImGui.End();
+            }
+
+            if (!this.ShouldExecutePlugin())
+            {
                 return;
             }
 
@@ -105,7 +138,10 @@ namespace SimpleFlaskManager
             {
                 if (rule.Condition.Evaluate())
                 {
-                    MiscHelper.KeyUp(rule.Key);
+                    if (MiscHelper.KeyUp(rule.Key) && this.Settings.DebugMode)
+                    {
+                        this.keyPressInfo.Add($"{DateTime.Now.TimeOfDay}: I pressed {rule.Key} key.");
+                    }
                 }
             }
         }
@@ -147,56 +183,43 @@ namespace SimpleFlaskManager
             File.WriteAllText(this.SettingPathname, settingsData);
         }
 
-        private void PrintDebugMessage(string debugMessage)
+        private bool ShouldExecutePlugin()
         {
-            if (this.Settings.DebugMode)
-            {
-                ImGui.Begin(
-                    "SimpleFlaskManager Debug Mode",
-                    ImGuiWindowFlags.AlwaysAutoResize);
-                ImGui.Text($"Debug Message: {debugMessage}");
-                ImGui.End();
-            }
-        }
-
-        private bool ShouldExecutePlugin(out string debugMessage)
-        {
-            debugMessage = string.Empty;
             var cgs = Core.States.GameCurrentState;
             if (cgs != GameStateTypes.InGameState)
             {
-                debugMessage = $"Current game state isn't InGameState, it's {cgs}.";
+                this.debugMessage = $"Current game state isn't InGameState, it's {cgs}.";
                 return false;
             }
 
             if (!Core.Process.Foreground)
             {
-                debugMessage = $"Game is minimized.";
+                this.debugMessage = $"Game is minimized.";
                 return false;
             }
 
             var areaDetails = Core.States.InGameStateObject.CurrentAreaInstance.AreaDetails;
             if (areaDetails.IsTown)
             {
-                debugMessage = $"Player is in town.";
+                this.debugMessage = $"Player is in town.";
                 return false;
             }
 
             if (!this.Settings.ShouldRunInHideout && areaDetails.IsHideout)
             {
-                debugMessage = $"Player is in hideout.";
+                this.debugMessage = $"Player is in hideout.";
                 return false;
             }
 
             if (string.IsNullOrEmpty(this.Settings.CurrentProfile))
             {
-                debugMessage = $"No Profile Selected.";
+                this.debugMessage = $"No Profile Selected.";
                 return false;
             }
 
             if (!this.Settings.Profiles.ContainsKey(this.Settings.CurrentProfile))
             {
-                debugMessage = $"{this.Settings.CurrentProfile} not found.";
+                this.debugMessage = $"{this.Settings.CurrentProfile} not found.";
                 return false;
             }
 
@@ -204,11 +227,16 @@ namespace SimpleFlaskManager
             {
                 if (lifeComp.Health.Current <= 0)
                 {
-                    debugMessage = $"Player is dead.";
+                    this.debugMessage = $"Player is dead.";
                     return false;
                 }
             }
+            else
+            {
+                this.debugMessage = $"Can not find player Life component.";
+            }
 
+            this.debugMessage = "None";
             return true;
         }
     }
