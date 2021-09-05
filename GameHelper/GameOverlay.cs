@@ -27,6 +27,7 @@ namespace GameHelper
             PerformanceStats.InitializeCoroutines();
             DataVisualization.InitializeCoroutines();
             GameUiExplorer.InitializeCoroutines();
+            OverlayKiller.InitializeCoroutines();
         }
 
         /// <inheritdoc/>
