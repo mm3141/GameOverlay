@@ -135,7 +135,25 @@ namespace Radar
             {
                 ImGui.PushItemWidth(ImGui.GetContentRegionAvail().X / 1.3f);
                 ImGui.InputText("Area Name", ref this.currentAreaName, 200, ImGuiInputTextFlags.ReadOnly);
-                ImGui.InputText("Tile Name", ref this.tmpTileName, 200);
+                if (ImGui.BeginCombo("Tile Name", this.tmpTileName))
+                {
+                    foreach (var tgtTile in Core.States.InGameStateObject.CurrentAreaInstance.TgtTilesLocations)
+                    {
+                        var isSelected = tgtTile.Key == this.tmpTileName;
+                        if (ImGui.Selectable(tgtTile.Key, isSelected))
+                        {
+                            this.tmpTileName = tgtTile.Key;
+                        }
+
+                        if (ImGui.IsWindowAppearing() && isSelected)
+                        {
+                            ImGui.SetScrollHereY();
+                        }
+                    }
+
+                    ImGui.EndCombo();
+                }
+
                 ImGui.InputText("Display Name", ref this.tmpDisplayName, 200);
                 ImGui.DragInt("Clusters Expected", ref this.tmpExpectedClusters, 0.01f, 1, 10);
                 ImGui.PopItemWidth();
@@ -377,7 +395,7 @@ namespace Radar
             var pPos = new Vector2(playerPos.GridPosition.X, playerPos.GridPosition.Y);
             if (this.Settings.ShowAllTgtNames)
             {
-                foreach (var tgtKV in currentAreaInstance.TgtFiles)
+                foreach (var tgtKV in currentAreaInstance.TgtTilesLocations)
                 {
                     var pNameSizeH = ImGui.CalcTextSize(tgtKV.Key) / 2;
                     for (int i = 0; i < tgtKV.Value.Count; i++)
@@ -829,23 +847,23 @@ namespace Radar
             this.currentAreaImportantTiles = this.Settings.ImportantTgts[this.currentAreaName];
             Parallel.ForEach(this.currentAreaImportantTiles, (kv) =>
             {
-                var filteredData = Core.States.InGameStateObject.CurrentAreaInstance.TgtFiles[kv.Key];
-                double[][] rawData = new double[filteredData.Count][];
+                var tgttile = Core.States.InGameStateObject.CurrentAreaInstance.TgtTilesLocations[kv.Key];
+                double[][] rawData = new double[tgttile.Count][];
                 double[][] result = new double[kv.Value.ClustersCount][];
                 for (int i = 0; i < kv.Value.ClustersCount; i++)
                 {
                     result[i] = new double[3] { 0, 0, 0 };
                 }
 
-                for (int i = 0; i < filteredData.Count; i++)
+                for (int i = 0; i < tgttile.Count; i++)
                 {
                     rawData[i] = new double[2];
-                    rawData[i][0] = filteredData[i].X;
-                    rawData[i][1] = filteredData[i].Y;
+                    rawData[i][0] = tgttile[i].X;
+                    rawData[i][1] = tgttile[i].Y;
                 }
 
                 var cluster = KMean.Cluster(rawData, kv.Value.ClustersCount);
-                for (int i = 0; i < filteredData.Count; i++)
+                for (int i = 0; i < tgttile.Count; i++)
                 {
                     int result_index = cluster[i];
                     result[result_index][0] += rawData[i][0];

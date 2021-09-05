@@ -89,9 +89,9 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
         public byte[] GridWalkableData { get; private set; } = new byte[0];
 
         /// <summary>
-        /// Gets the terrain tgt file data of the current Area/Zone.
+        /// Gets the Disctionary of Lists containing only the named tgt tiles locations.
         /// </summary>
-        public Dictionary<string, List<StdTuple2D<int>>> TgtFiles { get; private set; } =
+        public Dictionary<string, List<StdTuple2D<int>>> TgtTilesLocations { get; private set; } =
             new Dictionary<string, List<StdTuple2D<int>>>();
 
         /// <summary>
@@ -269,7 +269,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             {
                 this.GridWalkableData = reader.ReadStdVector<byte>(this.TerrainMetadata.GridWalkableData);
                 this.GridHeightData = this.GetTerrainHeight();
-                this.TgtFiles = this.GetTgtFileData();
+                this.TgtTilesLocations = this.GetTgtFileData();
             }
         }
 
