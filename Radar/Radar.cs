@@ -844,10 +844,17 @@ namespace Radar
                 return;
             }
 
+            var currentArea = Core.States.InGameStateObject.CurrentAreaInstance;
             this.currentAreaImportantTiles = this.Settings.ImportantTgts[this.currentAreaName];
             Parallel.ForEach(this.currentAreaImportantTiles, (kv) =>
             {
-                var tgttile = Core.States.InGameStateObject.CurrentAreaInstance.TgtTilesLocations[kv.Key];
+                if (!currentArea.TgtTilesLocations.ContainsKey(kv.Key))
+                {
+                    throw new Exception($"Couldn't find tile name {kv.Key} in area {this.currentAreaName}." +
+                        " Please delete/fix Radar plugin config file.");
+                }
+
+                var tgttile = currentArea.TgtTilesLocations[kv.Key];
                 double[][] rawData = new double[tgttile.Count][];
                 double[][] result = new double[kv.Value.ClustersCount][];
                 for (int i = 0; i < kv.Value.ClustersCount; i++)

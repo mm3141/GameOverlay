@@ -46,4 +46,13 @@
   <ItemGroup>
     <ProjectReference Include="..\GameOffsets\GameOffsets.csproj" />
   </ItemGroup>
+
+  <Target Name="DeleteDebugSymbolFiles" AfterTargets="Build" Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <Delete Files="$(OutDir)GameHelper.pdb;$(OutDir)GameOffsets.pdb;$(OutDir)GameHelper.xml;$(OutDir)GameHelper.runtimeconfig.dev.json;" />
+  </Target>
+
+  <Target Name="RemoveDirectories" AfterTargets="Build">
+    <RemoveDir Directories="$(OutDir)runtimes\win-x86;$(OutDir)runtimes\osx-x64;$(OutDir)runtimes\linux-x64;" />
+  </Target>
+
 </Project>
