@@ -94,6 +94,11 @@ namespace GameHelper.Settings
             {
                 case "Core":
                     ImGui.BeginGroup();
+                    ImGui.TextWrapped("Developer of this software is not responsible for " +
+                        "any loss that may happen due to the usage of this software. Use this " +
+                        "software at your own risk.");
+                    ImGui.NewLine();
+                    ImGui.NewLine();
                     ImGui.TextWrapped($"!!!!IMPORTANT!!!! Please provide below the " +
                         $"Window Settings -> Display Settings -> Scale value. Restart the " +
                         $"Overlay after setting this value.\nExample Values:\n\t100%% -> 1\n\t" +

@@ -27,6 +27,12 @@ namespace SimpleFlaskManager
         /// <inheritdoc/>
         public override void DrawSettings()
         {
+            ImGui.TextWrapped($"Do not trust FlaskManager Settings.txt file from unknown source. " +
+                $"Bad profiles may get your account banned. Also, they can contain malicious code. " +
+                $"Google SCS0028 and CA2328 for more information.");
+
+            ImGui.NewLine();
+            ImGui.NewLine();
             ImGui.Checkbox("Debug Mode", ref this.Settings.DebugMode);
             ImGui.Checkbox("Should Run In Hideout", ref this.Settings.ShouldRunInHideout);
             if (ImGui.BeginCombo("Profile", this.Settings.CurrentProfile))
