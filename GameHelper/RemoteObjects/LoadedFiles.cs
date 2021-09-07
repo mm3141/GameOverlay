@@ -98,12 +98,12 @@ namespace GameHelper.RemoteObjects
             {
                 ImGui.BeginChild("Result##loadedfiles", Vector2.Zero, true);
                 ImGui.PushStyleColor(ImGuiCol.Button, new Vector4(0, 0, 0, 0));
-                foreach (var pathname in this.PathNames.Keys)
+                foreach (var kv in this.PathNames)
                 {
                     bool containsAll = true;
                     for (int i = 0; i < this.searchTextSplit.Length; i++)
                     {
-                        if (!pathname.ToLower().Contains(this.searchTextSplit[i]))
+                        if (!kv.Key.ToLower().Contains(this.searchTextSplit[i]))
                         {
                             containsAll = false;
                         }
@@ -111,9 +111,9 @@ namespace GameHelper.RemoteObjects
 
                     if (containsAll)
                     {
-                        if (ImGui.SmallButton(pathname))
+                        if (ImGui.SmallButton($"AreaId: {kv.Value} Path: {kv.Key}"))
                         {
-                            ImGui.SetClipboardText(pathname);
+                            ImGui.SetClipboardText(kv.Key);
                         }
                     }
                 }
@@ -130,7 +130,6 @@ namespace GameHelper.RemoteObjects
             this.areaHashCache = string.Empty;
             this.areaAlreadyDone = false;
             this.filename = string.Empty;
-            this.searchText = string.Empty;
         }
 
         /// <summary>
