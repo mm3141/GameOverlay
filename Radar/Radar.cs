@@ -88,11 +88,12 @@ namespace Radar
                 0.001f,
                 0.01f,
                 0.3f);
-            ImGui.TextWrapped("If, after changing the game/monitor resolution, your " +
-                "mini/large map icon gets invisible. Open this Overlay setting window, " +
-                "click anywhere on it and then hide this Overlay setting window. " +
-                "It will fix the issue.");
+            ImGui.TextWrapped("If your mini/large map icon are not working/visible. Open this " +
+                "Overlay setting window, click anywhere on it and then hide this Overlay " +
+                "setting window. It will fix the issue.");
+            ImGui.Checkbox("Modify Large Map Culling Window", ref this.Settings.ModifyCullWindow);
             ImGui.Separator();
+            ImGui.NewLine();
             if (ImGui.Checkbox("Draw Area/Zone Map and WayPoints/Stuff", ref this.Settings.DrawWalkableMap))
             {
                 if (this.Settings.DrawWalkableMap)
@@ -108,9 +109,16 @@ namespace Radar
                 }
             }
 
-            ImGui.Checkbox("Modify Large Map Culling Window", ref this.Settings.ModifyCullWindow);
-            ImGui.Checkbox("Hide Entities without Life/Chest component", ref this.Settings.HideUseless);
-            ImGui.Checkbox("Show Player Names", ref this.Settings.ShowPlayersNames);
+            if (ImGui.ColorEdit4("Drawn Map Color", ref this.Settings.WalkableMapColor))
+            {
+                if (this.walkableMapTexture != IntPtr.Zero)
+                {
+                    this.GenerateMapTexture();
+                }
+            }
+
+            ImGui.Separator();
+            ImGui.NewLine();
             if (ImGui.RadioButton("Show all tile names", this.Settings.ShowAllTgtNames))
             {
                 this.Settings.ShowAllTgtNames = true;
@@ -131,6 +139,8 @@ namespace Radar
                 this.Settings.ShowImportantTgtNames = false;
             }
 
+            ImGui.ColorEdit4("Tile text color", ref this.Settings.TgtNameColor);
+            ImGui.Checkbox("Put black box around tile text", ref this.Settings.TgtNameBackground);
             if (ImGui.CollapsingHeader("Important Tile Setting"))
             {
                 ImGui.PushItemWidth(ImGui.GetContentRegionAvail().X / 1.3f);
@@ -198,6 +208,10 @@ namespace Radar
                 }
             }
 
+            ImGui.Separator();
+            ImGui.NewLine();
+            ImGui.Checkbox("Hide Entities without Life/Chest component", ref this.Settings.HideUseless);
+            ImGui.Checkbox("Show Player Names", ref this.Settings.ShowPlayersNames);
             if (ImGui.CollapsingHeader("Icons Setting"))
             {
                 this.Settings.DrawIconsSettingToImGui(
@@ -385,6 +399,12 @@ namespace Radar
 
         private void DrawTgtFiles(Vector2 mapCenter)
         {
+            var col = UiHelper.Color(
+                (uint)(this.Settings.TgtNameColor.X * 255),
+                (uint)(this.Settings.TgtNameColor.Y * 255),
+                (uint)(this.Settings.TgtNameColor.Z * 255),
+                (uint)(this.Settings.TgtNameColor.W * 255));
+
             var fgDraw = ImGui.GetWindowDrawList();
             var currentAreaInstance = Core.States.InGameStateObject.CurrentAreaInstance;
             if (!currentAreaInstance.Player.TryGetComponent<Positioned>(out var playerPos))
@@ -404,8 +424,12 @@ namespace Radar
                         var ePos = new Vector2(val.X, val.Y);
                         var fpos = Helper.DeltaInWorldToMapDelta(
                             ePos - pPos, -currentAreaInstance.GridHeightData[val.Y][val.X]);
-                        fgDraw.AddRectFilled(mapCenter + fpos - pNameSizeH, mapCenter + fpos + pNameSizeH, UiHelper.Color(0, 0, 0, 200));
-                        fgDraw.AddText(ImGui.GetFont(), ImGui.GetFontSize(), mapCenter + fpos - pNameSizeH, UiHelper.Color(255, 128, 128, 255), tgtKV.Key);
+                        if (this.Settings.TgtNameBackground)
+                        {
+                            fgDraw.AddRectFilled(mapCenter + fpos - pNameSizeH, mapCenter + fpos + pNameSizeH, UiHelper.Color(0, 0, 0, 200));
+                        }
+
+                        fgDraw.AddText(ImGui.GetFont(), ImGui.GetFontSize(), mapCenter + fpos - pNameSizeH, col, tgtKV.Key);
                     }
                 }
             }
@@ -814,7 +838,7 @@ namespace Radar
                         {
                             case 2:
                             case 1: // walkable
-                                row[x + k] = Vector4.One;
+                                row[x + k] = this.Settings.WalkableMapColor;
                                 break;
                             case 5: // walkable
                             case 4: // walkable

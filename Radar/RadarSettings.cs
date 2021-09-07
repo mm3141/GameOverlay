@@ -38,6 +38,11 @@ namespace Radar
         public bool DrawWalkableMap = true;
 
         /// <summary>
+        /// Gets a value indicating what color to use for drawing walkable map.
+        /// </summary>
+        public Vector4 WalkableMapColor = Vector4.One;
+
+        /// <summary>
         /// Gets the position of the cull window that the user wants.
         /// </summary>
         public Vector2 CullWindowPos = Vector2.Zero;
@@ -61,6 +66,16 @@ namespace Radar
         /// Gets a value indicating wether user want to show important tgt names or not.
         /// </summary>
         public bool ShowImportantTgtNames = true;
+
+        /// <summary>
+        /// Gets a value indicating what color to use for drawing tile name.
+        /// </summary>
+        public Vector4 TgtNameColor = Vector4.One;
+
+        /// <summary>
+        /// Gets a value indicating wether user want to draw a background when writing tile name.
+        /// </summary>
+        public bool TgtNameBackground = false;
 
         /// <summary>
         /// Gets the Tgts and their expected clusters per area/zone/map.
