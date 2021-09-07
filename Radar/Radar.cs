@@ -140,7 +140,7 @@ namespace Radar
             }
 
             ImGui.ColorEdit4("Tile text color", ref this.Settings.TgtNameColor);
-            ImGui.Checkbox("Put black box around tile text", ref this.Settings.TgtNameBackground);
+            ImGui.Checkbox("Put black box around tile text, makes easier to read.", ref this.Settings.TgtNameBackground);
             if (ImGui.CollapsingHeader("Important Tile Setting"))
             {
                 ImGui.PushItemWidth(ImGui.GetContentRegionAvail().X / 1.3f);
