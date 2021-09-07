@@ -71,6 +71,11 @@ namespace GameHelper.Settings
         /// Gets the Window scale value.
         /// </summary>
         public float WindowScale = 1f;
+
+        /// <summary>
+        /// Gets a value indicating how much time to wait between key presses.
+        /// </summary>
+        public int KeyPressTimeout = 50;
     }
 
 #pragma warning restore SA1401 // Fields should be private

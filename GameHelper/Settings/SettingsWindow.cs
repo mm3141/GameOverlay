@@ -104,6 +104,13 @@ namespace GameHelper.Settings
                         $"Overlay after setting this value.\nExample Values:\n\t100%% -> 1\n\t" +
                         $"125%% -> 1.25\n\t150%% -> 1.50 etc");
                     ImGui.DragFloat("Window Scale", ref Core.GHSettings.WindowScale, 0.25f, 1f, 5f);
+                    ImGui.TextWrapped("When GameOverlay press a key in the game, the key " +
+                        "has to go to the GGG server for it to work. This process takes " +
+                        "time equal to your latency. During this time GameOverlay might " +
+                        "press that key again. Set the following timeout value to " +
+                        "latency x 2 so this doesn't happen. e.g. for 30ms latency, " +
+                        "set it to 60ms.");
+                    ImGui.DragInt("Key Timeout", ref Core.GHSettings.KeyPressTimeout, 0.2f, 30, 300);
                     ImGui.TextWrapped("NOTE: (Plugins/Core) Settings are saved automatically " +
                         "when you close the overlay or hide it via F12 button.");
                     ImGui.NewLine();

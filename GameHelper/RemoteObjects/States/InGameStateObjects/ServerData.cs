@@ -31,11 +31,6 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
         }
 
         /// <summary>
-        /// Gets the game latency.
-        /// </summary>
-        public int Latency { get; private set; } = 0x00;
-
-        /// <summary>
         /// Gets an object that points to the flask inventory.
         /// </summary>
         public Inventory FlaskInventory
@@ -77,7 +72,6 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             }
 
             UiHelper.IntPtrToImGui("Address", this.Address);
-            ImGui.Text($"Latency {this.Latency}");
             if (ImGui.TreeNode("FlaskInventory"))
             {
                 this.FlaskInventory.ToImGui();
@@ -127,7 +121,6 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             this.ClearCurrentlySelectedInventory();
             this.PlayerInventories.Clear();
             this.FlaskInventory.Address = IntPtr.Zero;
-            this.Latency = 0x00;
         }
 
         /// <inheritdoc/>
@@ -141,7 +134,6 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
 
             var reader = Core.Process.Handle;
             var data = reader.ReadMemory<ServerDataStructure>(this.Address + ServerDataStructure.SKIP);
-            this.Latency = data.Latency;
             var inventoryData = reader.ReadStdVector<InventoryArrayStruct>(data.PlayerInventories);
             this.PlayerInventories.Clear();
             for (int i = 0; i < inventoryData.Length; i++)
