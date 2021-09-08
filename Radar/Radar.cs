@@ -721,8 +721,8 @@ namespace Radar
                 this.heistChestCache.Clear();
                 this.deliriumHiddenMonster.Clear();
                 this.delveChestCache.Clear();
-                this.currentAreaName = Core.States.AreaLoading.CurrentAreaName;
-                this.isAzuriteMine = this.currentAreaName == "Azurite Mine";
+                this.currentAreaName = Core.States.InGameStateObject.CurrentAreaInstance.AreaDetails.Id;
+                this.isAzuriteMine = this.currentAreaName == "Delve_Main";
                 this.GenerateMapTexture();
                 this.ClusterImportantTgtName();
             }
