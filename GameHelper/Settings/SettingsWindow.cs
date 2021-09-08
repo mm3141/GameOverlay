@@ -20,6 +20,7 @@ namespace GameHelper.Settings
     /// </summary>
     internal static class SettingsWindow
     {
+        private static bool isOverlayRunningLocal = true;
         private static bool isSettingsWindowVisible = true;
         private static string currentlySelectedPlugin = "Core";
         private static bool showImGuiStyleEditor = false;
@@ -153,6 +154,34 @@ namespace GameHelper.Settings
         }
 
         /// <summary>
+        /// Draws the closing confirmation popup on ImGui.
+        /// </summary>
+        private static void DrawConfirmationPopup()
+        {
+            ImGui.SetNextWindowPos(new Vector2(Core.Overlay.Size.X / 3f, Core.Overlay.Size.Y / 3f));
+            if (ImGui.BeginPopup("Confirmation"))
+            {
+                ImGui.Text("Do you want to quit the GameHelper overlay?");
+                ImGui.Separator();
+                if (ImGui.Button("Yes", new Vector2(ImGui.GetContentRegionAvail().X / 2f, ImGui.GetTextLineHeight() * 2)))
+                {
+                    Core.GHSettings.IsOverlayRunning = false;
+                    ImGui.CloseCurrentPopup();
+                    isOverlayRunningLocal = true;
+                }
+
+                ImGui.SameLine();
+                if (ImGui.Button("No", new Vector2(ImGui.GetContentRegionAvail().X, ImGui.GetTextLineHeight() * 2)))
+                {
+                    ImGui.CloseCurrentPopup();
+                    isOverlayRunningLocal = true;
+                }
+
+                ImGui.EndPopup();
+            }
+        }
+
+        /// <summary>
         /// Draws the Settings Window.
         /// </summary>
         /// <returns>co-routine IWait.</returns>
@@ -175,10 +204,17 @@ namespace GameHelper.Settings
                     continue;
                 }
 
-                ImGui.SetNextWindowSize(new Vector2(800, 600), ImGuiCond.Appearing);
+                ImGui.SetNextWindowSizeConstraints(new Vector2(800, 600), Vector2.One * float.MaxValue);
                 var isMainMenuExpanded = ImGui.Begin(
                     "Game Overlay Settings Menu",
-                    ref Core.GHSettings.IsOverlayRunning);
+                    ref isOverlayRunningLocal);
+
+                if (!isOverlayRunningLocal)
+                {
+                    ImGui.OpenPopup("Confirmation");
+                }
+
+                DrawConfirmationPopup();
                 if (!Core.GHSettings.IsOverlayRunning)
                 {
                     CoroutineHandler.RaiseEvent(GameHelperEvents.TimeToSaveAllSettings);
