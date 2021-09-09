@@ -40,7 +40,7 @@ namespace Radar
         /// <summary>
         /// Gets a value indicating what color to use for drawing walkable map.
         /// </summary>
-        public Vector4 WalkableMapColor = Vector4.One;
+        public Vector4 WalkableMapColor = new Vector4(150f) / 255f;
 
         /// <summary>
         /// Gets the position of the cull window that the user wants.
@@ -70,7 +70,7 @@ namespace Radar
         /// <summary>
         /// Gets a value indicating what color to use for drawing tile name.
         /// </summary>
-        public Vector4 TgtNameColor = Vector4.One;
+        public Vector4 TgtNameColor = new Vector4(1f, 0.5f, 0.5f, 1f);
 
         /// <summary>
         /// Gets a value indicating wether user want to draw a background when writing tile name.

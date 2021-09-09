@@ -133,7 +133,7 @@ namespace PreloadAlert
             else
             {
                 ImGui.Begin(windowName, ImGuiWindowFlags.NoSavedSettings);
-                ImGui.TextColored(new Vector4(.86f, .71f, .36f, 1), "Edit Color: ");
+                ImGui.TextColored(new Vector4(.86f, .71f, .36f, 1), "Edit Background Color: ");
                 ImGui.SameLine();
                 ImGui.ColorEdit4(
                     "Background Color##PreloadAlertBackground",

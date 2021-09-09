@@ -94,7 +94,7 @@ namespace Radar
             ImGui.Checkbox("Modify Large Map Culling Window", ref this.Settings.ModifyCullWindow);
             ImGui.Separator();
             ImGui.NewLine();
-            if (ImGui.Checkbox("Draw Area/Zone Map and WayPoints/Stuff", ref this.Settings.DrawWalkableMap))
+            if (ImGui.Checkbox("Draw Area/Zone Map (maphack)", ref this.Settings.DrawWalkableMap))
             {
                 if (this.Settings.DrawWalkableMap)
                 {
@@ -143,69 +143,8 @@ namespace Radar
             ImGui.Checkbox("Put black box around tile text, makes easier to read.", ref this.Settings.TgtNameBackground);
             if (ImGui.CollapsingHeader("Important Tile Setting"))
             {
-                ImGui.PushItemWidth(ImGui.GetContentRegionAvail().X / 1.3f);
-                ImGui.InputText("Area Name", ref this.currentAreaName, 200, ImGuiInputTextFlags.ReadOnly);
-                if (ImGui.BeginCombo("Tile Name", this.tmpTileName))
-                {
-                    foreach (var tgtTile in Core.States.InGameStateObject.CurrentAreaInstance.TgtTilesLocations)
-                    {
-                        var isSelected = tgtTile.Key == this.tmpTileName;
-                        if (ImGui.Selectable(tgtTile.Key, isSelected))
-                        {
-                            this.tmpTileName = tgtTile.Key;
-                        }
-
-                        if (ImGui.IsWindowAppearing() && isSelected)
-                        {
-                            ImGui.SetScrollHereY();
-                        }
-                    }
-
-                    ImGui.EndCombo();
-                }
-
-                ImGui.InputText("Display Name", ref this.tmpDisplayName, 200);
-                ImGui.DragInt("Clusters Expected", ref this.tmpExpectedClusters, 0.01f, 1, 10);
-                ImGui.PopItemWidth();
-                if (ImGui.Button("Add Tile Name"))
-                {
-                    if (!string.IsNullOrEmpty(this.currentAreaName) && !string.IsNullOrEmpty(this.tmpTileName))
-                    {
-                        if (string.IsNullOrEmpty(this.tmpDisplayName))
-                        {
-                            this.tmpDisplayName = this.tmpTileName;
-                        }
-
-                        if (!this.Settings.ImportantTgts.ContainsKey(this.currentAreaName))
-                        {
-                            this.Settings.ImportantTgts[this.currentAreaName] = new Dictionary<string, TgtClusters>();
-                        }
-
-                        this.Settings.ImportantTgts[this.currentAreaName][this.tmpTileName] = new TgtClusters()
-                        {
-                            Display = this.tmpDisplayName,
-                            ClustersCount = this.tmpExpectedClusters,
-                            Clusters = new Vector2[this.tmpExpectedClusters],
-                        };
-
-                        this.tmpTileName = string.Empty;
-                        this.tmpDisplayName = string.Empty;
-                        this.tmpExpectedClusters = 1;
-                    }
-                }
-
-                if (ImGui.TreeNode($"Important Tiles in Area: {this.currentAreaName}##import_time_in_area"))
-                {
-                    if (this.Settings.ImportantTgts.ContainsKey(this.currentAreaName))
-                    {
-                        foreach (var tgt in this.Settings.ImportantTgts[this.currentAreaName])
-                        {
-                            ImGui.Text($"Tgt Name: {tgt.Key}, Expected Clusters: {tgt.Value.ClustersCount}, Display: {tgt.Value.Display}");
-                        }
-                    }
-
-                    ImGui.TreePop();
-                }
+                this.AddNewTileBox();
+                this.DisplayAllImportantTile();
             }
 
             ImGui.Separator();
@@ -450,8 +389,12 @@ namespace Radar
                         var pNameSizeH = ImGui.CalcTextSize(display) / 2;
                         var fpos = Helper.DeltaInWorldToMapDelta(
                             loc - pPos, height);
-                        fgDraw.AddRectFilled(mapCenter + fpos - pNameSizeH, mapCenter + fpos + pNameSizeH, UiHelper.Color(0, 0, 0, 200));
-                        fgDraw.AddText(ImGui.GetFont(), ImGui.GetFontSize(), mapCenter + fpos - pNameSizeH, UiHelper.Color(255, 128, 128, 255), display);
+                        if (this.Settings.TgtNameBackground)
+                        {
+                            fgDraw.AddRectFilled(mapCenter + fpos - pNameSizeH, mapCenter + fpos + pNameSizeH, UiHelper.Color(0, 0, 0, 200));
+                        }
+
+                        fgDraw.AddText(ImGui.GetFont(), ImGui.GetFontSize(), mapCenter + fpos - pNameSizeH, col, display);
                     }
                 }
             }
@@ -969,6 +912,85 @@ namespace Radar
             }
 
             return "Delve Ignore";
+        }
+
+        private void AddNewTileBox()
+        {
+            ImGui.Text("Leave display name empty if you want to use tile name as display name.");
+            ImGui.PushItemWidth(ImGui.GetContentRegionAvail().X / 1.3f);
+            ImGui.InputText("Area Name", ref this.currentAreaName, 200, ImGuiInputTextFlags.ReadOnly);
+            if (ImGui.BeginCombo("Tile Name", this.tmpTileName))
+            {
+                foreach (var tgtTile in Core.States.InGameStateObject.CurrentAreaInstance.TgtTilesLocations)
+                {
+                    var isSelected = tgtTile.Key == this.tmpTileName;
+                    if (ImGui.Selectable(tgtTile.Key, isSelected))
+                    {
+                        this.tmpTileName = tgtTile.Key;
+                    }
+
+                    if (ImGui.IsWindowAppearing() && isSelected)
+                    {
+                        ImGui.SetScrollHereY();
+                    }
+                }
+
+                ImGui.EndCombo();
+            }
+
+            ImGui.InputText("Display Name", ref this.tmpDisplayName, 200);
+            ImGui.DragInt("Expected Tile Count", ref this.tmpExpectedClusters, 0.01f, 1, 10);
+            ImGui.PopItemWidth();
+            if (ImGui.Button("Add Tile Name"))
+            {
+                if (!string.IsNullOrEmpty(this.currentAreaName) &&
+                    !string.IsNullOrEmpty(this.tmpTileName) &&
+                    this.tmpExpectedClusters > 0)
+                {
+                    if (string.IsNullOrEmpty(this.tmpDisplayName))
+                    {
+                        this.tmpDisplayName = this.tmpTileName;
+                    }
+
+                    if (!this.Settings.ImportantTgts.ContainsKey(this.currentAreaName))
+                    {
+                        this.Settings.ImportantTgts[this.currentAreaName] = new Dictionary<string, TgtClusters>();
+                    }
+
+                    this.Settings.ImportantTgts[this.currentAreaName][this.tmpTileName] = new TgtClusters()
+                    {
+                        Display = this.tmpDisplayName,
+                        ClustersCount = this.tmpExpectedClusters,
+                        Clusters = new Vector2[this.tmpExpectedClusters],
+                    };
+
+                    this.tmpTileName = string.Empty;
+                    this.tmpDisplayName = string.Empty;
+                    this.tmpExpectedClusters = 1;
+                }
+            }
+        }
+
+        private void DisplayAllImportantTile()
+        {
+            if (ImGui.TreeNode($"Important Tiles in Area: {this.currentAreaName}##import_time_in_area"))
+            {
+                if (this.Settings.ImportantTgts.ContainsKey(this.currentAreaName))
+                {
+                    foreach (var tgt in this.Settings.ImportantTgts[this.currentAreaName])
+                    {
+                        if (ImGui.SmallButton($"Delete##{tgt.Key}"))
+                        {
+                            this.Settings.ImportantTgts[this.currentAreaName].Remove(tgt.Key);
+                        }
+
+                        ImGui.SameLine();
+                        ImGui.Text($"Tile Name: {tgt.Key}, Expected Clusters: {tgt.Value.ClustersCount}, Display: {tgt.Value.Display}");
+                    }
+                }
+
+                ImGui.TreePop();
+            }
         }
     }
 }
