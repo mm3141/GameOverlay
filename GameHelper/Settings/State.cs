@@ -4,6 +4,7 @@
 
 namespace GameHelper.Settings
 {
+    using System;
     using System.IO;
     using Newtonsoft.Json;
 
@@ -41,7 +42,7 @@ namespace GameHelper.Settings
         /// <summary>
         /// Gets or sets hotKey to show/hide the main menu.
         /// </summary>
-        public int MainMenuHotKey = 0x7B;
+        public ConsoleKey MainMenuHotKey = ConsoleKey.F12;
 
         /// <summary>
         /// Gets or sets a value indicating whether to show

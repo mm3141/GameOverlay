@@ -113,7 +113,7 @@ namespace GameHelper.Settings
                         "set it to 60ms.");
                     ImGui.DragInt("Key Timeout", ref Core.GHSettings.KeyPressTimeout, 0.2f, 30, 300);
                     ImGui.TextWrapped("NOTE: (Plugins/Core) Settings are saved automatically " +
-                        "when you close the overlay or hide it via F12 button.");
+                        $"when you close the overlay or hide it via {Core.GHSettings.MainMenuHotKey} button.");
                     ImGui.NewLine();
                     ImGui.Text($"Current Game State: {Core.States.GameCurrentState}");
                     ImGui.NewLine();
@@ -190,7 +190,7 @@ namespace GameHelper.Settings
             while (true)
             {
                 yield return new Wait(GameHelperEvents.OnRender);
-                if (NativeMethods.IsKeyPressedAndNotTimeout(Core.GHSettings.MainMenuHotKey))
+                if (NativeMethods.IsKeyPressedAndNotTimeout((int)Core.GHSettings.MainMenuHotKey))
                 {
                     isSettingsWindowVisible = !isSettingsWindowVisible;
                     if (!isSettingsWindowVisible)
