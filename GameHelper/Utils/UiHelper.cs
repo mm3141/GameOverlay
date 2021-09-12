@@ -134,6 +134,58 @@ namespace GameHelper.Utils
         }
 
         /// <summary>
+        /// Creates a ImGui ComboBox for C# Enums whos values are not continous.
+        /// </summary>
+        /// <typeparam name="T">Enum type to display in the ComboBox.</typeparam>
+        /// <param name="displayText">Text to display along the ComboBox.</param>
+        /// <param name="selected">Selected enum value in the ComboBox.</param>
+        public static void NonContinuousEnumComboBox<T>(string displayText, ref T selected)
+            where T : Enum
+        {
+            Type enumType = typeof(T);
+            string[] enumNames = Enum.GetNames(enumType);
+            int selectedIndex = Array.IndexOf(enumNames, $"{selected}");
+            if (ImGui.Combo(displayText, ref selectedIndex, enumNames, enumNames.Length))
+            {
+                selected = (T)Enum.Parse(enumType, enumNames[selectedIndex]);
+            }
+        }
+
+        /// <summary>
+        /// Creates a ImGui ComboBox for C# IEnumerable.
+        /// </summary>
+        /// <typeparam name="T">The type of objects in the IEnumerable.</typeparam>
+        /// <param name="displayText">Text to display along the ComboBox.</param>
+        /// <param name="items">IEnumerable data to choose from in the ComboBox.</param>
+        /// <param name="current">Currently selected object of the IEnumerable data.</param>
+        /// <returns>Returns a value indicating whether user has selected an item or not.</returns>
+        public static bool IEnumerableComboBox<T>(string displayText, IEnumerable<T> items, ref T current)
+        {
+            bool ret = false;
+            if (ImGui.BeginCombo(displayText, $"{current}"))
+            {
+                foreach (var item in items)
+                {
+                    bool selected = item.Equals(current);
+                    if (ImGui.IsWindowAppearing() && selected)
+                    {
+                        ImGui.SetScrollHereY();
+                    }
+
+                    if (ImGui.Selectable($"{item}", selected))
+                    {
+                        current = item;
+                        ret = true;
+                    }
+                }
+
+                ImGui.EndCombo();
+            }
+
+            return ret;
+        }
+
+        /// <summary>
         /// Iterates over properties of the given class via reflection
         /// and yields the <see cref="RemoteObjectBase"/> property name and its
         /// <see cref="RemoteObjectBase.ToImGui"/> method. Any property

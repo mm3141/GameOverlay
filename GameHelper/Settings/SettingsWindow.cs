@@ -117,6 +117,8 @@ namespace GameHelper.Settings
                     ImGui.NewLine();
                     ImGui.Text($"Current Game State: {Core.States.GameCurrentState}");
                     ImGui.NewLine();
+                    ImGui.SetNextItemWidth(ImGui.GetContentRegionAvail().X / 3);
+                    UiHelper.NonContinuousEnumComboBox("Select Show/Hide Key", ref Core.GHSettings.MainMenuHotKey);
                     ImGui.Checkbox("Performance Stats", ref Core.GHSettings.ShowPerfStats);
                     ImGui.Spacing();
                     ImGui.SameLine();

@@ -44,7 +44,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
         /// <summary>
         /// Gets the inventory to debug.
         /// </summary>
-        internal Inventory CurrentlySelectedInventory
+        internal Inventory SelectedInv
         {
             get;
             private set;
@@ -79,24 +79,12 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             }
 
             ImGui.Text("please click Clear Selected before leaving this window.");
-            if (ImGui.BeginCombo("###Inventory Selector", this.selectedInvName.ToString()))
+            if (UiHelper.IEnumerableComboBox(
+                "###Inventory Selector",
+                this.PlayerInventories.Keys,
+                ref this.selectedInvName))
             {
-                foreach (var inv in this.PlayerInventories)
-                {
-                    bool selected = inv.Key == this.selectedInvName;
-                    if (ImGui.IsWindowAppearing() && selected)
-                    {
-                        ImGui.SetScrollHereY();
-                    }
-
-                    if (ImGui.Selectable(inv.Key.ToString(), selected))
-                    {
-                        this.selectedInvName = inv.Key;
-                        this.CurrentlySelectedInventory.Address = inv.Value;
-                    }
-                }
-
-                ImGui.EndCombo();
+                this.SelectedInv.Address = this.PlayerInventories[this.selectedInvName];
             }
 
             ImGui.SameLine();
@@ -107,9 +95,9 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
 
             if (this.selectedInvName != InventoryName.NoInvSelected)
             {
-                if (ImGui.TreeNode("CurrentlySelectedInventory"))
+                if (ImGui.TreeNode("Currently Selected Inventory"))
                 {
-                    this.CurrentlySelectedInventory.ToImGui();
+                    this.SelectedInv.ToImGui();
                     ImGui.TreePop();
                 }
             }
@@ -155,7 +143,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
         private void ClearCurrentlySelectedInventory()
         {
             this.selectedInvName = InventoryName.NoInvSelected;
-            this.CurrentlySelectedInventory.Address = IntPtr.Zero;
+            this.SelectedInv.Address = IntPtr.Zero;
         }
 
         private IEnumerable<Wait> OnTimeTick()

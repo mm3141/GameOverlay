@@ -48,25 +48,7 @@ namespace SimpleFlaskManager
                 "profiles with debug mode turned on.");
             ImGui.Checkbox("Debug Mode", ref this.Settings.DebugMode);
             ImGui.Checkbox("Should Run In Hideout", ref this.Settings.ShouldRunInHideout);
-            if (ImGui.BeginCombo("Profile", this.Settings.CurrentProfile))
-            {
-                foreach (var profile in this.Settings.Profiles)
-                {
-                    bool selected = profile.Key == this.Settings.CurrentProfile;
-                    if (ImGui.IsWindowAppearing() && selected)
-                    {
-                        ImGui.SetScrollHereY();
-                    }
-
-                    if (ImGui.Selectable(profile.Key, selected))
-                    {
-                        this.Settings.CurrentProfile = profile.Key;
-                    }
-                }
-
-                ImGui.EndCombo();
-            }
-
+            UiHelper.IEnumerableComboBox("Profile", this.Settings.Profiles.Keys, ref this.Settings.CurrentProfile);
             ImGui.NewLine();
             if (ImGui.CollapsingHeader("Add New Profile"))
             {

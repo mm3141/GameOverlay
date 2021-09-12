@@ -919,25 +919,10 @@ namespace Radar
             ImGui.Text("Leave display name empty if you want to use tile name as display name.");
             ImGui.PushItemWidth(ImGui.GetContentRegionAvail().X / 1.3f);
             ImGui.InputText("Area Name", ref this.currentAreaName, 200, ImGuiInputTextFlags.ReadOnly);
-            if (ImGui.BeginCombo("Tile Name", this.tmpTileName))
-            {
-                foreach (var tgtTile in Core.States.InGameStateObject.CurrentAreaInstance.TgtTilesLocations)
-                {
-                    var isSelected = tgtTile.Key == this.tmpTileName;
-                    if (ImGui.Selectable(tgtTile.Key, isSelected))
-                    {
-                        this.tmpTileName = tgtTile.Key;
-                    }
-
-                    if (ImGui.IsWindowAppearing() && isSelected)
-                    {
-                        ImGui.SetScrollHereY();
-                    }
-                }
-
-                ImGui.EndCombo();
-            }
-
+            UiHelper.IEnumerableComboBox(
+                "Tile Name",
+                Core.States.InGameStateObject.CurrentAreaInstance.TgtTilesLocations.Keys,
+                ref this.tmpTileName);
             ImGui.InputText("Display Name", ref this.tmpDisplayName, 200);
             ImGui.DragInt("Expected Tile Count", ref this.tmpExpectedClusters, 0.01f, 1, 10);
             ImGui.PopItemWidth();

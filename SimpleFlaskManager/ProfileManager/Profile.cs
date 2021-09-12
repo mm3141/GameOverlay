@@ -6,6 +6,7 @@ namespace SimpleFlaskManager.ProfileManager
 {
     using System;
     using System.Collections.Generic;
+    using GameHelper.Utils;
     using ImGuiNET;
     using SimpleFlaskManager.ProfileManager.Conditions;
 
@@ -34,45 +35,8 @@ namespace SimpleFlaskManager.ProfileManager
             ImGui.TextWrapped("Index -1 means add condition as a new Rule. " +
                 "Index greater than -1 means append condition to the existing rule.");
             ImGui.InputInt("Index", ref this.index, 1, 1);
-            if (ImGui.BeginCombo("Key", $"{this.newKey}"))
-            {
-                foreach (var keyName in Enum.GetNames(typeof(ConsoleKey)))
-                {
-                    bool selected = $"{this.newKey}" == keyName;
-                    if (ImGui.IsWindowAppearing() && selected)
-                    {
-                        ImGui.SetScrollHereY();
-                    }
-
-                    if (ImGui.Selectable($"{keyName}", selected))
-                    {
-                        this.newKey = (ConsoleKey)Enum.Parse(typeof(ConsoleKey), keyName);
-                    }
-                }
-
-                ImGui.EndCombo();
-            }
-
-            if (ImGui.BeginCombo("Condition", $"{this.newConditionType}"))
-            {
-                foreach (var conditionName in Enum.GetNames(typeof(ConditionHelper.ConditionEnum)))
-                {
-                    bool selected = $"{this.newConditionType}" == conditionName;
-                    if (ImGui.IsWindowAppearing() && selected)
-                    {
-                        ImGui.SetScrollHereY();
-                    }
-
-                    if (ImGui.Selectable($"{conditionName}", selected))
-                    {
-                        this.newConditionType = (ConditionHelper.ConditionEnum)Enum.Parse(
-                            typeof(ConditionHelper.ConditionEnum), conditionName);
-                    }
-                }
-
-                ImGui.EndCombo();
-            }
-
+            UiHelper.NonContinuousEnumComboBox("Key", ref this.newKey);
+            UiHelper.EnumComboBox("Condition", ref this.newConditionType);
             ImGui.Separator();
             var newCondition = ConditionHelper.EnumToObject(this.newConditionType);
             ImGui.Separator();
