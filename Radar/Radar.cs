@@ -91,6 +91,8 @@ namespace Radar
             ImGui.TextWrapped("If your mini/large map icon are not working/visible. Open this " +
                 "Overlay setting window, click anywhere on it and then hide this Overlay " +
                 "setting window. It will fix the issue.");
+
+            ImGui.Checkbox("Draw Radar when game in foreground", ref this.Settings.DrawWhenForeground);
             ImGui.Checkbox("Modify Large Map Culling Window", ref this.Settings.ModifyCullWindow);
             ImGui.Separator();
             ImGui.NewLine();
@@ -210,7 +212,7 @@ namespace Radar
                 return;
             }
 
-            if (!Core.Process.Foreground)
+            if (this.Settings.DrawWhenForeground && !Core.Process.Foreground)
             {
                 return;
             }
@@ -821,34 +823,45 @@ namespace Radar
                         " Please delete/fix Radar plugin config file.");
                 }
 
-                var tgttile = currentArea.TgtTilesLocations[kv.Key];
-                double[][] rawData = new double[tgttile.Count][];
-                double[][] result = new double[kv.Value.ClustersCount][];
-                for (int i = 0; i < kv.Value.ClustersCount; i++)
+                if (kv.Value.ClustersCount == currentArea.TgtTilesLocations[kv.Key].Count)
                 {
-                    result[i] = new double[3] { 0, 0, 0 };
+                    for (int i = 0; i < kv.Value.ClustersCount; i++)
+                    {
+                        kv.Value.Clusters[i].X = currentArea.TgtTilesLocations[kv.Key][i].X;
+                        kv.Value.Clusters[i].Y = currentArea.TgtTilesLocations[kv.Key][i].Y;
+                    }
                 }
-
-                for (int i = 0; i < tgttile.Count; i++)
+                else
                 {
-                    rawData[i] = new double[2];
-                    rawData[i][0] = tgttile[i].X;
-                    rawData[i][1] = tgttile[i].Y;
-                }
+                    var tgttile = currentArea.TgtTilesLocations[kv.Key];
+                    double[][] rawData = new double[tgttile.Count][];
+                    double[][] result = new double[kv.Value.ClustersCount][];
+                    for (int i = 0; i < kv.Value.ClustersCount; i++)
+                    {
+                        result[i] = new double[3] { 0, 0, 0 }; // x-sum, y-sum, total-count.
+                    }
 
-                var cluster = KMean.Cluster(rawData, kv.Value.ClustersCount);
-                for (int i = 0; i < tgttile.Count; i++)
-                {
-                    int result_index = cluster[i];
-                    result[result_index][0] += rawData[i][0];
-                    result[result_index][1] += rawData[i][1];
-                    result[result_index][2] += 1;
-                }
+                    for (int i = 0; i < tgttile.Count; i++)
+                    {
+                        rawData[i] = new double[2];
+                        rawData[i][0] = tgttile[i].X;
+                        rawData[i][1] = tgttile[i].Y;
+                    }
 
-                for (int i = 0; i < result.Length; i++)
-                {
-                    kv.Value.Clusters[i].X = (float)(result[i][0] / result[i][2]);
-                    kv.Value.Clusters[i].Y = (float)(result[i][1] / result[i][2]);
+                    var cluster = KMean.Cluster(rawData, kv.Value.ClustersCount);
+                    for (int i = 0; i < tgttile.Count; i++)
+                    {
+                        int result_index = cluster[i];
+                        result[result_index][0] += rawData[i][0];
+                        result[result_index][1] += rawData[i][1];
+                        result[result_index][2] += 1;
+                    }
+
+                    for (int i = 0; i < result.Length; i++)
+                    {
+                        kv.Value.Clusters[i].X = (float)(result[i][0] / result[i][2]);
+                        kv.Value.Clusters[i].Y = (float)(result[i][1] / result[i][2]);
+                    }
                 }
             });
         }
@@ -916,22 +929,25 @@ namespace Radar
 
         private void AddNewTileBox()
         {
+            var tgttilesInArea = Core.States.InGameStateObject.CurrentAreaInstance.TgtTilesLocations;
             ImGui.Text("Leave display name empty if you want to use tile name as display name.");
             ImGui.PushItemWidth(ImGui.GetContentRegionAvail().X / 1.3f);
             ImGui.InputText("Area Name", ref this.currentAreaName, 200, ImGuiInputTextFlags.ReadOnly);
-            UiHelper.IEnumerableComboBox(
-                "Tile Name",
-                Core.States.InGameStateObject.CurrentAreaInstance.TgtTilesLocations.Keys,
-                ref this.tmpTileName);
+            UiHelper.IEnumerableComboBox("Tile Name", tgttilesInArea.Keys, ref this.tmpTileName);
             ImGui.InputText("Display Name", ref this.tmpDisplayName, 200);
-            ImGui.DragInt("Expected Tile Count", ref this.tmpExpectedClusters, 0.01f, 1, 10);
+            ImGui.Text("Set expected tile count to zero to show all tiles of that name.");
+            ImGui.DragInt("Expected Tile Count", ref this.tmpExpectedClusters, 0.01f, 0, 10);
             ImGui.PopItemWidth();
             if (ImGui.Button("Add Tile Name"))
             {
                 if (!string.IsNullOrEmpty(this.currentAreaName) &&
-                    !string.IsNullOrEmpty(this.tmpTileName) &&
-                    this.tmpExpectedClusters > 0)
+                    !string.IsNullOrEmpty(this.tmpTileName))
                 {
+                    if (this.tmpExpectedClusters == 0)
+                    {
+                        this.tmpExpectedClusters = tgttilesInArea[this.tmpTileName].Count;
+                    }
+
                     if (string.IsNullOrEmpty(this.tmpDisplayName))
                     {
                         this.tmpDisplayName = this.tmpTileName;

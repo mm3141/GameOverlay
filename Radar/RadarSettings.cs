@@ -23,6 +23,11 @@ namespace Radar
         public float LargeMapScaleMultiplier = 0.174f;
 
         /// <summary>
+        /// Do not draw the Radar plugin stuff when game is in the background.
+        /// </summary>
+        public bool DrawWhenForeground = true;
+
+        /// <summary>
         /// Hides all the entities that doesn't have life or chest component.
         /// </summary>
         public bool HideUseless = true;
