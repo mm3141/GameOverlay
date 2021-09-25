@@ -67,8 +67,8 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
         /// </returns>
         public int DistanceFrom(Entity other)
         {
-            if (this.TryGetComponent<Positioned>(out var myPosComp) &&
-                other.TryGetComponent<Positioned>(out var otherPosComp))
+            if (this.TryGetComponent<Render>(out var myPosComp) &&
+                other.TryGetComponent<Render>(out var otherPosComp))
             {
                 var dx = myPosComp.WorldPosition.X - otherPosComp.WorldPosition.X;
                 var dy = myPosComp.WorldPosition.Y - otherPosComp.WorldPosition.Y;

@@ -318,8 +318,8 @@ namespace Radar
             }
 
             var rectf = new RectangleF(
-                -pPos.GridPosition.X,
-                -pPos.GridPosition.Y,
+                -pRender.GridPosition.X,
+                -pRender.GridPosition.Y,
                 this.walkableMapDimension.X,
                 this.walkableMapDimension.Y);
 
@@ -348,12 +348,12 @@ namespace Radar
 
             var fgDraw = ImGui.GetWindowDrawList();
             var currentAreaInstance = Core.States.InGameStateObject.CurrentAreaInstance;
-            if (!currentAreaInstance.Player.TryGetComponent<Positioned>(out var playerPos))
+            if (!currentAreaInstance.Player.TryGetComponent<Render>(out var playerRender))
             {
                 return;
             }
 
-            var pPos = new Vector2(playerPos.GridPosition.X, playerPos.GridPosition.Y);
+            var pPos = new Vector2(playerRender.GridPosition.X, playerRender.GridPosition.Y);
             if (this.Settings.ShowAllTgtNames)
             {
                 foreach (var tgtKV in currentAreaInstance.TgtTilesLocations)
@@ -364,7 +364,7 @@ namespace Radar
                         var val = tgtKV.Value[i];
                         var ePos = new Vector2(val.X, val.Y);
                         var fpos = Helper.DeltaInWorldToMapDelta(
-                            ePos - pPos, -currentAreaInstance.GridHeightData[val.Y][val.X]);
+                            ePos - pPos, -playerRender.TerrainHeight + currentAreaInstance.GridHeightData[val.Y][val.X]);
                         if (this.Settings.TgtNameBackground)
                         {
                             fgDraw.AddRectFilled(mapCenter + fpos - pNameSizeH, mapCenter + fpos + pNameSizeH, UiHelper.Color(0, 0, 0, 200));
@@ -378,6 +378,11 @@ namespace Radar
             {
                 foreach (var tile in this.currentAreaImportantTiles)
                 {
+                    if (!tile.Value.IsValid())
+                    {
+                        continue;
+                    }
+
                     for (int i = 0; i < tile.Value.ClustersCount; i++)
                     {
                         var height = 0;
@@ -390,7 +395,7 @@ namespace Radar
                         var display = tile.Value.Display;
                         var pNameSizeH = ImGui.CalcTextSize(display) / 2;
                         var fpos = Helper.DeltaInWorldToMapDelta(
-                            loc - pPos, height);
+                            loc - pPos, -playerRender.TerrainHeight + height);
                         if (this.Settings.TgtNameBackground)
                         {
                             fgDraw.AddRectFilled(mapCenter + fpos - pNameSizeH, mapCenter + fpos + pNameSizeH, UiHelper.Color(0, 0, 0, 200));
@@ -406,17 +411,12 @@ namespace Radar
         {
             var fgDraw = ImGui.GetWindowDrawList();
             var currentAreaInstance = Core.States.InGameStateObject.CurrentAreaInstance;
-            if (!currentAreaInstance.Player.TryGetComponent<Positioned>(out var playerPos))
-            {
-                return;
-            }
-
             if (!currentAreaInstance.Player.TryGetComponent<Render>(out var playerRender))
             {
                 return;
             }
 
-            var pPos = new Vector2(playerPos.GridPosition.X, playerPos.GridPosition.Y);
+            var pPos = new Vector2(playerRender.GridPosition.X, playerRender.GridPosition.Y);
             foreach (var entity in currentAreaInstance.AwakeEntities)
             {
                 var hasVital = entity.Value.TryGetComponent<Life>(out var lifeComp);
@@ -465,14 +465,14 @@ namespace Radar
                     continue;
                 }
 
-                if (!entity.Value.TryGetComponent<Render>(out var entityZ))
+                if (!entity.Value.TryGetComponent<Render>(out var entityRender))
                 {
                     continue;
                 }
 
-                var ePos = new Vector2(entityPos.GridPosition.X, entityPos.GridPosition.Y);
+                var ePos = new Vector2(entityRender.GridPosition.X, entityRender.GridPosition.Y);
                 var fpos = Helper.DeltaInWorldToMapDelta(
-                    ePos - pPos, entityZ.TerrainHeight - playerRender.TerrainHeight);
+                    ePos - pPos, entityRender.TerrainHeight - playerRender.TerrainHeight);
                 var iconSizeMultiplierVector = Vector2.One * iconSizeMultiplier;
                 if (isPlayer)
                 {
@@ -819,48 +819,54 @@ namespace Radar
             {
                 if (!currentArea.TgtTilesLocations.ContainsKey(kv.Key))
                 {
-                    throw new Exception($"Couldn't find tile name {kv.Key} in area {this.currentAreaName}." +
+#if DEBUG
+                    Console.WriteLine($"Couldn't find tile name {kv.Key} in area {this.currentAreaName}." +
                         " Please delete/fix Radar plugin config file.");
-                }
-
-                if (kv.Value.ClustersCount == currentArea.TgtTilesLocations[kv.Key].Count)
-                {
-                    for (int i = 0; i < kv.Value.ClustersCount; i++)
-                    {
-                        kv.Value.Clusters[i].X = currentArea.TgtTilesLocations[kv.Key][i].X;
-                        kv.Value.Clusters[i].Y = currentArea.TgtTilesLocations[kv.Key][i].Y;
-                    }
+#endif
+                    kv.Value.MakeInvalid();
                 }
                 else
                 {
-                    var tgttile = currentArea.TgtTilesLocations[kv.Key];
-                    double[][] rawData = new double[tgttile.Count][];
-                    double[][] result = new double[kv.Value.ClustersCount][];
-                    for (int i = 0; i < kv.Value.ClustersCount; i++)
+                    kv.Value.MakeValid();
+                    if (kv.Value.ClustersCount == currentArea.TgtTilesLocations[kv.Key].Count)
                     {
-                        result[i] = new double[3] { 0, 0, 0 }; // x-sum, y-sum, total-count.
+                        for (int i = 0; i < kv.Value.ClustersCount; i++)
+                        {
+                            kv.Value.Clusters[i].X = currentArea.TgtTilesLocations[kv.Key][i].X;
+                            kv.Value.Clusters[i].Y = currentArea.TgtTilesLocations[kv.Key][i].Y;
+                        }
                     }
-
-                    for (int i = 0; i < tgttile.Count; i++)
+                    else
                     {
-                        rawData[i] = new double[2];
-                        rawData[i][0] = tgttile[i].X;
-                        rawData[i][1] = tgttile[i].Y;
-                    }
+                        var tgttile = currentArea.TgtTilesLocations[kv.Key];
+                        double[][] rawData = new double[tgttile.Count][];
+                        double[][] result = new double[kv.Value.ClustersCount][];
+                        for (int i = 0; i < kv.Value.ClustersCount; i++)
+                        {
+                            result[i] = new double[3] { 0, 0, 0 }; // x-sum, y-sum, total-count.
+                        }
 
-                    var cluster = KMean.Cluster(rawData, kv.Value.ClustersCount);
-                    for (int i = 0; i < tgttile.Count; i++)
-                    {
-                        int result_index = cluster[i];
-                        result[result_index][0] += rawData[i][0];
-                        result[result_index][1] += rawData[i][1];
-                        result[result_index][2] += 1;
-                    }
+                        for (int i = 0; i < tgttile.Count; i++)
+                        {
+                            rawData[i] = new double[2];
+                            rawData[i][0] = tgttile[i].X;
+                            rawData[i][1] = tgttile[i].Y;
+                        }
 
-                    for (int i = 0; i < result.Length; i++)
-                    {
-                        kv.Value.Clusters[i].X = (float)(result[i][0] / result[i][2]);
-                        kv.Value.Clusters[i].Y = (float)(result[i][1] / result[i][2]);
+                        var cluster = KMean.Cluster(rawData, kv.Value.ClustersCount);
+                        for (int i = 0; i < tgttile.Count; i++)
+                        {
+                            int result_index = cluster[i];
+                            result[result_index][0] += rawData[i][0];
+                            result[result_index][1] += rawData[i][1];
+                            result[result_index][2] += 1;
+                        }
+
+                        for (int i = 0; i < result.Length; i++)
+                        {
+                            kv.Value.Clusters[i].X = (float)(result[i][0] / result[i][2]);
+                            kv.Value.Clusters[i].Y = (float)(result[i][1] / result[i][2]);
+                        }
                     }
                 }
             });

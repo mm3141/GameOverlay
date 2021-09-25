@@ -36,23 +36,11 @@ namespace GameHelper.RemoteObjects.Components
         public bool IsFriendly { get; private set; } = false;
 
         /// <summary>
-        /// Gets the grid position of the entity.
-        /// </summary>
-        public StdTuple2D<int> GridPosition { get; private set; } = default;
-
-        /// <summary>
-        /// Gets the world position of the entity.
-        /// </summary>
-        public StdTuple2D<float> WorldPosition { get; private set; } = default;
-
-        /// <summary>
         /// Converts the <see cref="Positioned"/> class data to ImGui.
         /// </summary>
         internal override void ToImGui()
         {
             base.ToImGui();
-            ImGui.Text($"Grid Position: {this.GridPosition}");
-            ImGui.Text($"World Position: {this.WorldPosition}");
             ImGui.Text($"Flags: {this.Flags:X}");
             ImGui.Text($"IsFriendly: {this.IsFriendly}");
         }
@@ -64,8 +52,6 @@ namespace GameHelper.RemoteObjects.Components
             var data = reader.ReadMemory<PositionedOffsets>(this.Address);
             this.Flags = data.Reaction;
             this.IsFriendly = EntityHelper.IsFriendly(data.Reaction);
-            this.GridPosition = data.GridPosition;
-            this.WorldPosition = data.WorldPosition;
         }
 
         /// <inheritdoc/>

@@ -113,14 +113,16 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
                 ImGui.TreePop();
             }
 
-            if (this.Player.TryGetComponent<Positioned>(out var pPos))
+            if (this.Player.TryGetComponent<Render>(out var pPos))
             {
-                if (pPos.GridPosition.Y < this.GridHeightData.Length)
+                int y = (int)pPos.GridPosition.Y;
+                int x = (int)pPos.GridPosition.X;
+                if (y < this.GridHeightData.Length)
                 {
-                    if (pPos.GridPosition.X < this.GridHeightData[0].Length)
+                    if (x < this.GridHeightData[0].Length)
                     {
                         ImGui.Text("Player Pos to Terrain Height: " +
-                            $"{this.GridHeightData[pPos.GridPosition.Y][pPos.GridPosition.X]}");
+                            $"{this.GridHeightData[y][x]}");
                     }
                 }
             }
@@ -174,7 +176,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
                         awakeEntity.Value.TryGetComponent<Render>(out var eRender))
                     {
                         UiHelper.DrawText(
-                            eRender.WorldPosition3D,
+                            eRender.WorldPosition,
                             $"ID: {awakeEntity.Key.id}");
                     }
                 }
