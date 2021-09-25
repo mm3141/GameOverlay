@@ -307,11 +307,6 @@ namespace Radar
             }
 
             var player = Core.States.InGameStateObject.CurrentAreaInstance.Player;
-            if (!player.TryGetComponent<Positioned>(out var pPos))
-            {
-                return;
-            }
-
             if (!player.TryGetComponent<Render>(out var pRender))
             {
                 return;

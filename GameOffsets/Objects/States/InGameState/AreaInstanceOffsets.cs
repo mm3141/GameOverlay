@@ -111,7 +111,7 @@ namespace GameOffsets.Objects.States.InGameState
         public byte RotationSelector;
         public byte PAD_0x37;
         public static int TileToGridConversion = 0x17; // 23
-        public static int TileToWorldConversion = 0xFA; // 250
+        public static float TileToWorldConversion = 250f; // 250
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
