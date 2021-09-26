@@ -96,7 +96,24 @@ namespace Radar
                 "setting window. It will fix the issue.");
 
             ImGui.Checkbox("Draw Radar when game in foreground", ref this.Settings.DrawWhenForeground);
-            ImGui.Checkbox("Modify Large Map Culling Window", ref this.Settings.ModifyCullWindow);
+            if (ImGui.Checkbox("Modify Large Map Culling Window", ref this.Settings.ModifyCullWindow))
+            {
+                if (this.Settings.ModifyCullWindow)
+                {
+                    this.Settings.MakeCullWindowFullScreen = false;
+                }
+            }
+
+            ImGui.TreePush();
+            if (ImGui.Checkbox("Make Culling Window Cover Whole Game", ref this.Settings.MakeCullWindowFullScreen))
+            {
+                this.Settings.ModifyCullWindow = !this.Settings.MakeCullWindowFullScreen;
+                this.Settings.CullWindowPos = Vector2.Zero;
+                this.Settings.CullWindowSize.X = Core.Process.WindowArea.Width;
+                this.Settings.CullWindowSize.Y = Core.Process.WindowArea.Height;
+            }
+
+            ImGui.TreePop();
             ImGui.Separator();
             ImGui.NewLine();
             if (ImGui.Checkbox("Draw Area/Zone Map (maphack)", ref this.Settings.DrawWalkableMap))
@@ -687,7 +704,14 @@ namespace Radar
                 yield return new Wait(GameHelperEvents.OnMoved);
                 this.UpdateMiniMapDetails();
                 this.UpdateLargeMapDetails();
-                if (this.skipOneSettingChange)
+                if (this.Settings.MakeCullWindowFullScreen)
+                {
+                    this.Settings.CullWindowPos = Vector2.Zero;
+
+                    this.Settings.CullWindowSize.X = Core.Process.WindowArea.Size.Width;
+                    this.Settings.CullWindowSize.Y = Core.Process.WindowArea.Size.Height;
+                }
+                else if (this.skipOneSettingChange)
                 {
                     this.skipOneSettingChange = false;
                 }

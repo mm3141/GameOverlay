@@ -38,6 +38,12 @@ namespace Radar
         public bool ModifyCullWindow = true;
 
         /// <summary>
+        /// Gets a value indicating whether user wants culling window
+        /// to cover the full game or not.
+        /// </summary>
+        public bool MakeCullWindowFullScreen = false;
+
+        /// <summary>
         /// Gets a value indicating whether user wants to draw walkable map or not.
         /// </summary>
         public bool DrawWalkableMap = true;
