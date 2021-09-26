@@ -9,6 +9,7 @@ namespace Radar
     using System.Numerics;
     using GameHelper.Plugin;
     using ImGuiNET;
+    using Newtonsoft.Json;
 
     /// <summary>
     /// <see cref="Radar"/> plugin settings class.
@@ -91,6 +92,7 @@ namespace Radar
         /// <summary>
         /// Gets the Tgts and their expected clusters per area/zone/map.
         /// </summary>
+        [JsonIgnore]
         public Dictionary<string, Dictionary<string, TgtClusters>> ImportantTgts =
             new Dictionary<string, Dictionary<string, TgtClusters>>();
 

@@ -73,6 +73,8 @@ namespace Radar
 
         private string SettingPathname => Path.Join(this.DllDirectory, "config", "settings.txt");
 
+        private string ImportantTgtPathName => Path.Join(this.DllDirectory, "important_tgt_files.txt");
+
         /// <inheritdoc/>
         public override void DrawSettings()
         {
@@ -298,6 +300,13 @@ namespace Radar
                 this.Settings = JsonConvert.DeserializeObject<RadarSettings>(content);
             }
 
+            if (File.Exists(this.ImportantTgtPathName))
+            {
+                var tgtfiles = File.ReadAllText(this.ImportantTgtPathName);
+                this.Settings.ImportantTgts = JsonConvert.DeserializeObject<
+                    Dictionary<string, Dictionary<string, TgtClusters>>>(tgtfiles);
+            }
+
             this.Settings.AddDefaultIcons(this.DllDirectory);
 
             this.onMove = CoroutineHandler.Start(this.OnMove());
@@ -312,6 +321,10 @@ namespace Radar
             Directory.CreateDirectory(Path.GetDirectoryName(this.SettingPathname));
             var settingsData = JsonConvert.SerializeObject(this.Settings, Formatting.Indented);
             File.WriteAllText(this.SettingPathname, settingsData);
+
+            var tgtfiles = JsonConvert.SerializeObject(
+                this.Settings.ImportantTgts, Formatting.Indented);
+            File.WriteAllText(this.ImportantTgtPathName, tgtfiles);
         }
 
         private void DrawLargeMap(Vector2 mapCenter)
