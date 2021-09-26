@@ -441,48 +441,35 @@ namespace Radar
                 var isShrine = entity.Value.TryGetComponent<Shrine>(out var shrineComp);
                 var isBlockage = entity.Value.TryGetComponent<TriggerableBlockage>(out var blockageComp);
                 var isPlayer = entity.Value.TryGetComponent<Player>(out var playerComp);
+                var isPosAvailable = entity.Value.TryGetComponent<Positioned>(out var entityPos);
+                var isRenderAvailable = entity.Value.TryGetComponent<Render>(out var entityRender);
 
-                if (this.Settings.HideUseless && !(hasVital || isChest || isPlayer))
+                if (!isPosAvailable || !isRenderAvailable)
                 {
                     continue;
                 }
-
-                if (this.Settings.HideUseless && isChest && chestComp.IsOpened)
+                else if (this.Settings.HideUseless)
                 {
-                    continue;
-                }
-
-                if (this.Settings.HideUseless && hasVital)
-                {
-                    if (!lifeComp.IsAlive)
+                    if (!(hasVital || isChest || isPlayer))
                     {
                         continue;
                     }
-
-                    if (!hasOMP && !isBlockage && !isPlayer)
+                    else if (isChest && chestComp.IsOpened)
                     {
                         continue;
                     }
-                }
-
-                if (this.Settings.HideUseless && isBlockage && !blockageComp.IsBlocked)
-                {
-                    continue;
-                }
-
-                if (this.Settings.HideUseless && isPlayer && entity.Value.Address == Core.States.InGameStateObject.CurrentAreaInstance.Player.Address)
-                {
-                    continue;
-                }
-
-                if (!entity.Value.TryGetComponent<Positioned>(out var entityPos))
-                {
-                    continue;
-                }
-
-                if (!entity.Value.TryGetComponent<Render>(out var entityRender))
-                {
-                    continue;
+                    else if (hasVital && (!lifeComp.IsAlive || (!hasOMP && !isBlockage && !isPlayer)))
+                    {
+                        continue;
+                    }
+                    else if (isBlockage && !blockageComp.IsBlocked)
+                    {
+                        continue;
+                    }
+                    else if (isPlayer && entity.Value.Address == Core.States.InGameStateObject.CurrentAreaInstance.Player.Address)
+                    {
+                        continue;
+                    }
                 }
 
                 var ePos = new Vector2(entityRender.GridPosition.X, entityRender.GridPosition.Y);
