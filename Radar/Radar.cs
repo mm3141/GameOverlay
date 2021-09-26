@@ -51,6 +51,9 @@ namespace Radar
         // Legion Cache.
         private Dictionary<uint, byte> frozenInTimeEntities = new Dictionary<uint, byte>();
 
+        private string questChestStarting = "Metadata/Chests/QuestChests";
+        private HashSet<uint> questChests = new HashSet<uint>();
+
         private string heistUsefullChestContains = "HeistChestSecondary";
         private string heistAllChestStarting = "Metadata/Chests/LeagueHeist";
         private Dictionary<uint, string> heistChestCache = new Dictionary<uint, string>();
@@ -531,7 +534,11 @@ namespace Radar
 
                     if (entity.Value.TryGetComponent<MinimapIcon>(out var _))
                     {
-                        if (this.heistChestCache.TryGetValue(entity.Key.id, out var iconFinder))
+                        if (this.questChests.Contains(entity.Key.id))
+                        {
+                            continue;
+                        }
+                        else if (this.heistChestCache.TryGetValue(entity.Key.id, out var iconFinder))
                         {
                             if (this.Settings.HeistIcons.TryGetValue(iconFinder, out var heistChestIcon))
                             {
@@ -547,8 +554,13 @@ namespace Radar
                             continue;
                         }
                         else if (entity.Value.Path.StartsWith(
-                            this.heistAllChestStarting,
-                            StringComparison.Ordinal))
+                            this.questChestStarting, StringComparison.Ordinal))
+                        {
+                            this.questChests.Add(entity.Key.id);
+                            continue;
+                        }
+                        else if (entity.Value.Path.StartsWith(
+                            this.heistAllChestStarting, StringComparison.Ordinal))
                         {
                             this.heistChestCache[entity.Key.id] =
                                 this.HeistChestPathToIcon(entity.Value.Path);
