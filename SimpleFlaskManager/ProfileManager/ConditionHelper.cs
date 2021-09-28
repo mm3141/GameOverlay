@@ -41,6 +41,11 @@ namespace SimpleFlaskManager.ProfileManager
             /// Condition based on number of charges flask has.
             /// </summary>
             FLASK_CHARGES,
+
+            /// <summary>
+            /// Condition based on wait timer.
+            /// </summary>
+            COOLDOWN_TIMER,
         }
 
         /// <summary>
@@ -61,6 +66,7 @@ namespace SimpleFlaskManager.ProfileManager
                 ConditionEnum.STATUS_EFFECT => StatusEffectCondition.Add(),
                 ConditionEnum.FLASK_EFFECT => FlaskEffectCondition.Add(),
                 ConditionEnum.FLASK_CHARGES => FlaskChargesCondition.Add(),
+                ConditionEnum.COOLDOWN_TIMER => CooldownCondition.Add(),
                 _ => throw new Exception($"{conditionType} not implemented in ConditionHelper class"),
             };
         }
