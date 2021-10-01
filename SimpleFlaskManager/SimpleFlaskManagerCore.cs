@@ -71,7 +71,7 @@ namespace SimpleFlaskManager
                     if (ImGui.TreeNode($"{profile.Key}"))
                     {
                         ImGui.SameLine();
-                        if (ImGui.SmallButton("Delete Me"))
+                        if (ImGui.SmallButton("Delete Profile"))
                         {
                             this.Settings.Profiles.Remove(profile.Key);
                             if (this.Settings.CurrentProfile == profile.Key)

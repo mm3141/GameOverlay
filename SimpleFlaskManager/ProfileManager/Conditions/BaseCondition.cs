@@ -68,9 +68,8 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
         {
             if (this.next != null)
             {
-                ImGui.TreePush();
+                ImGui.Separator();
                 this.next.Display();
-                ImGui.TreePop();
             }
         }
 
@@ -88,6 +87,17 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
             {
                 this.next.Append(condition);
             }
+        }
+
+        /// <inheritdoc/>
+        public void Delete()
+        {
+            if (this.next != null)
+            {
+                this.next.Delete();
+            }
+
+            this.next = null;
         }
 
         /// <summary>

@@ -33,5 +33,10 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
         /// </summary>
         /// <returns><see cref="ICondition"/> if it exists, otherwise null.</returns>
         public ICondition Next();
+
+        /// <summary>
+        /// Deletes all the conditions in the rule.
+        /// </summary>
+        public void Delete();
     }
 }

@@ -57,8 +57,17 @@ namespace SimpleFlaskManager.ProfileManager
                 for (int i = 0; i < this.Rules.Count; i++)
                 {
                     ImGui.Text($"Rule: {i}, Key: {this.Rules[i].Key}");
-                    if (ImGui.TreeNode($"Conditions##{i}"))
+                    ImGui.SameLine();
+                    if (ImGui.SmallButton($"Delete Rule##{i}"))
                     {
+                        this.Rules[i].Condition.Delete();
+                        this.Rules.RemoveAt(i);
+                        continue;
+                    }
+
+                    if (ImGui.TreeNode($"Conditions (all of them have to be true)##{i}"))
+                    {
+                        ImGui.Separator();
                         this.Rules[i].Condition.Display();
                         ImGui.TreePop();
                     }
