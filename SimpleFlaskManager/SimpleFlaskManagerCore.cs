@@ -137,7 +137,12 @@ namespace SimpleFlaskManager
         public override void OnEnable(bool isGameOpened)
         {
             var jsonData = File.ReadAllText(this.DllDirectory + @"/FlaskNameToBuff.json");
-            JsonDataHelper.FlaskNameToBuff = JsonConvert.DeserializeObject<Dictionary<string, string>>(jsonData);
+            JsonDataHelper.FlaskNameToBuff = JsonConvert.DeserializeObject<
+                Dictionary<string, string>>(jsonData);
+
+            var jsonData2 = File.ReadAllText(this.DllDirectory + @"/StatusEffectGroup.json");
+            JsonDataHelper.StatusEffectGroups = JsonConvert.DeserializeObject<
+                Dictionary<string, List<string>>>(jsonData2);
 
             if (File.Exists(this.SettingPathname))
             {

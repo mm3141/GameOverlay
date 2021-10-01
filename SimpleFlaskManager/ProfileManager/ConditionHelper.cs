@@ -46,6 +46,11 @@ namespace SimpleFlaskManager.ProfileManager
             /// Condition based on wait timer.
             /// </summary>
             COOLDOWN_TIMER,
+
+            /// <summary>
+            /// Condition based on Ailment on the player.
+            /// </summary>
+            AILMENT,
         }
 
         /// <summary>
@@ -67,6 +72,7 @@ namespace SimpleFlaskManager.ProfileManager
                 ConditionEnum.FLASK_EFFECT => FlaskEffectCondition.Add(),
                 ConditionEnum.FLASK_CHARGES => FlaskChargesCondition.Add(),
                 ConditionEnum.COOLDOWN_TIMER => CooldownCondition.Add(),
+                ConditionEnum.AILMENT => AilmentCondition.Add(),
                 _ => throw new Exception($"{conditionType} not implemented in ConditionHelper class"),
             };
         }

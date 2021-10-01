@@ -14,6 +14,13 @@ namespace SimpleFlaskManager
         /// <summary>
         /// Gets or sets the flask buff name by looking at flask base name.
         /// </summary>
-        public static Dictionary<string, string> FlaskNameToBuff { get; set; } = null;
+        public static Dictionary<string, string> FlaskNameToBuff { get; set; } =
+            new Dictionary<string, string>();
+
+        /// <summary>
+        /// Gets or sets the status effects in a group and the group name.
+        /// </summary>
+        public static Dictionary<string, List<string>> StatusEffectGroups { get; set; } =
+            new Dictionary<string, List<string>>();
     }
 }
