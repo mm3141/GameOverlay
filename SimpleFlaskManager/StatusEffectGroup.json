@@ -1,3 +1,37 @@
 ﻿{
-  "Test": [ "0", "1", "2" ]
+  "Bleeding Or Corruption": [
+    "puncture",
+    "puncture_moving",
+    "physical_damage_and_bleed",
+    "corrupted_blood",
+    "corrupted_blood_rain"
+  ],
+  "Frozen Or Chilled": [
+    "frozen",
+    "cold_damage_and_freeze",
+    "chilled",
+    "ground_ice_chill",
+    "chilling_bond_in_beam"
+  ],
+  "Poisoned": [
+    "poison",
+    "viper_strike_orb",
+    "ground_desecration",
+    "caustic_cloud",
+    "chaos_bond_in_beam"
+  ],
+  "Burning": [
+    "ground_fire_burn",
+    "ignited",
+    "searing_bond_in_beam",
+    "fire_damage_and_ignite",
+    "righteous_fire_aura",
+    "demon_righteous_fire_aura"
+  ],
+  "Shocked": [
+    "shocked",
+    "ground_lightning_shock",
+    "seawitch_lightning_beam",
+    "lightning_damage_and_shock"
+  ]
 }

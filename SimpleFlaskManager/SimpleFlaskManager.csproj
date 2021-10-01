@@ -40,8 +40,9 @@
 
   <Target Name="CopyFiles" AfterTargets="Build">
     <Copy
-	  SourceFiles="$(OutDir)$(TargetName)$(TargetExt);$(OutDir)FlaskNameToBuff.json;$(OutDir)StatusEffectGroup.json"
-	  DestinationFolder="..\GameHelper\$(OutDir)Plugins\$(ProjectName)" SkipUnchangedFiles="true"/>
+	SourceFiles="$(OutDir)$(TargetName)$(TargetExt);$(OutDir)FlaskNameToBuff.json;$(OutDir)StatusEffectGroup.json"
+	DestinationFolder="..\GameHelper\$(OutDir)Plugins\$(ProjectName)"
+	SkipUnchangedFiles="true" />
   </Target>
 
 </Project>
