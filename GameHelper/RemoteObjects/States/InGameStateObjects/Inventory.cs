@@ -57,7 +57,8 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
 
         /// <summary>
         /// Gets the item at the specific slot in the inventory.
-        /// Always check if the returned item IsValid or not.
+        /// Always check if the returned item IsValid or not by comparing
+        /// Item Address with IntPtr.Zero.
         /// </summary>
         /// <param name="y">Inventory slot row, starting from 0.</param>
         /// <param name="x">Inventory slot column, starting from 0.</param>
@@ -72,6 +73,11 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
                 }
 
                 int index = (y * this.TotalBoxes.X) + x;
+                if (index >= this.itemsToInventorySlotMapping.Length)
+                {
+                    return new Item(IntPtr.Zero);
+                }
+
                 IntPtr itemAddr = this.itemsToInventorySlotMapping[index];
                 if (itemAddr == IntPtr.Zero)
                 {
