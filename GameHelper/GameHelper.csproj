@@ -48,7 +48,7 @@
   </ItemGroup>
 
   <Target Name="DeleteDebugSymbolFiles" AfterTargets="Build" Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <Delete Files="$(OutDir)GameHelper.pdb;$(OutDir)GameOffsets.pdb;$(OutDir)GameHelper.xml;$(OutDir)GameHelper.runtimeconfig.dev.json;" />
+    <Delete Files="$(OutDir)GameHelper.xml;$(OutDir)GameHelper.runtimeconfig.dev.json;" />
   </Target>
 
   <Target Name="RemoveDirectories" AfterTargets="Build">

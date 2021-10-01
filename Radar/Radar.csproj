@@ -44,7 +44,7 @@
   </ItemGroup>
 
   <Target Name="CopyFiles" AfterTargets="Build">
-    <Copy SourceFiles="$(OutDir)$(TargetName)$(TargetExt);$(OutDir)icons.png;$(OutDir)delve.png;"
+    <Copy SourceFiles="$(OutDir)$(TargetName)$(TargetExt);$(OutDir)$(TargetName).pdb;$(OutDir)icons.png;$(OutDir)delve.png;"
           DestinationFolder="..\GameHelper\$(OutDir)Plugins\$(ProjectName)"
           SkipUnchangedFiles="true"/>
   </Target>
