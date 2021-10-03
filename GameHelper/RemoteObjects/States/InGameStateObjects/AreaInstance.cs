@@ -81,7 +81,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
         /// <summary>
         /// Gets the terrain height data.
         /// </summary>
-        public int[][] GridHeightData { get; private set; } = new int[0][];
+        public float[][] GridHeightData { get; private set; } = new float[0][];
 
         /// <summary>
         /// Gets the terrain data of the current Area/Zone instance.
@@ -331,7 +331,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             return ret;
         }
 
-        private int[][] GetTerrainHeight()
+        private float[][] GetTerrainHeight()
         {
             var rotationHelper = Core.RotationSelector.Values;
             var rotatorMetrixHelper = Core.RotatorHelper.Values;
@@ -353,10 +353,10 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
 
             int gridSizeX = (int)this.TerrainMetadata.TotalTiles.X * TileStructure.TileToGridConversion;
             int gridSizeY = (int)this.TerrainMetadata.TotalTiles.Y * TileStructure.TileToGridConversion;
-            int[][] result = new int[gridSizeY][];
+            float[][] result = new float[gridSizeY][];
             Parallel.For(0, gridSizeY, (y) =>
             {
-                result[y] = new int[gridSizeX];
+                result[y] = new float[gridSizeX];
                 for (int x = 0; x < gridSizeX; x++)
                 {
                     int tileDataIndex = (y / TileStructure.TileToGridConversion *
@@ -393,8 +393,8 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
                         exactHeight = mytileHeight[mytileHeightIndex];
                     }
 
-                    result[y][x] = (mytiledata.TileHeight * (int)this.TerrainMetadata.TileHeightMultiplier) + exactHeight;
-                    result[y][x] = (int)Math.Round(result[y][x] * TerrainStruct.TileHeightFinalMultiplier);
+                    result[y][x] = (mytiledata.TileHeight * (float)this.TerrainMetadata.TileHeightMultiplier) + exactHeight;
+                    result[y][x] = result[y][x] * TerrainStruct.TileHeightFinalMultiplier * -1;
                 }
             });
 

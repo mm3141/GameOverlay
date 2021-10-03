@@ -95,7 +95,7 @@ namespace GameOffsets.Objects.States.InGameState
         [FieldOffset(0xD8)] public StdVector GridWalkableData;
         [FieldOffset(0xF0)] public StdVector GridLandscapeData;
         [FieldOffset(0x108)] public int BytesPerRow; // for walkable/landscape data.
-        public static float TileHeightFinalMultiplier = 7.81f;
+        public static float TileHeightFinalMultiplier = 7.8125f;
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 0x38)]

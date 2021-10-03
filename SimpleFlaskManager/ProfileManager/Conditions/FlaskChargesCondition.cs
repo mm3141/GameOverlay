@@ -93,8 +93,9 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
             ImGui.Text($"Flask");
             ImGui.SameLine();
             ImGui.DragInt("has##FlaskChargesFlaskSlot", ref flaskSlot, 0.05f, 1, 5);
+            ImGui.SameLine();
             UiHelper.EnumComboBox("##FlaskChargesOperator", ref operator_);
-            ImGui.DragInt("charges##FlaskChargesFlaskCharge", ref charges, 0.1f, 10, 80);
+            ImGui.DragInt("charges##FlaskChargesFlaskCharge", ref charges, 0.1f, 2, 80);
         }
     }
 }

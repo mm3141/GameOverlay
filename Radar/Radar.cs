@@ -97,6 +97,7 @@ namespace Radar
                 "Overlay setting window, click anywhere on it and then hide this Overlay " +
                 "setting window. It will fix the issue.");
 
+            ImGui.Checkbox("Do not draw when in Hideout/Town", ref this.Settings.DrawWhenNotInHideoutOrTown);
             ImGui.Checkbox("Draw Radar when game in foreground", ref this.Settings.DrawWhenForeground);
             if (ImGui.Checkbox("Modify Large Map Culling Window", ref this.Settings.ModifyCullWindow))
             {
@@ -209,6 +210,7 @@ namespace Radar
         {
             var largeMap = Core.States.InGameStateObject.GameUi.LargeMap;
             var miniMap = Core.States.InGameStateObject.GameUi.MiniMap;
+            var areaDetails = Core.States.InGameStateObject.CurrentAreaInstance.AreaDetails;
             if (this.Settings.ModifyCullWindow)
             {
                 ImGui.SetNextWindowPos(largeMap.Center, ImGuiCond.Appearing);
@@ -235,6 +237,12 @@ namespace Radar
             }
 
             if (this.Settings.DrawWhenForeground && !Core.Process.Foreground)
+            {
+                return;
+            }
+
+            if (this.Settings.DrawWhenNotInHideoutOrTown &&
+                (areaDetails.IsHideout || areaDetails.IsTown))
             {
                 return;
             }
@@ -392,7 +400,7 @@ namespace Radar
                         var val = tgtKV.Value[i];
                         var ePos = new Vector2(val.X, val.Y);
                         var fpos = Helper.DeltaInWorldToMapDelta(
-                            ePos - pPos, -playerRender.TerrainHeight + currentAreaInstance.GridHeightData[val.Y][val.X]);
+                            ePos - pPos, -playerRender.TerrainHeight - currentAreaInstance.GridHeightData[val.Y][val.X]);
                         if (this.Settings.TgtNameBackground)
                         {
                             fgDraw.AddRectFilled(mapCenter + fpos - pNameSizeH, mapCenter + fpos + pNameSizeH, UiHelper.Color(0, 0, 0, 200));
@@ -413,11 +421,11 @@ namespace Radar
 
                     for (int i = 0; i < tile.Value.ClustersCount; i++)
                     {
-                        var height = 0;
+                        float height = 0;
                         var loc = tile.Value.Clusters[i];
                         if (loc.X < currentAreaInstance.GridHeightData[0].Length && loc.Y < currentAreaInstance.GridHeightData.Length)
                         {
-                            height = -currentAreaInstance.GridHeightData[(int)loc.Y][(int)loc.X];
+                            height = currentAreaInstance.GridHeightData[(int)loc.Y][(int)loc.X];
                         }
 
                         var display = tile.Value.Display;
@@ -782,52 +790,72 @@ namespace Radar
             var bytesPerRow = instance.TerrainMetadata.BytesPerRow;
             var totalRows = mapTextureData.Length / bytesPerRow;
             using Image<Rgba32> image = new Image<Rgba32>(bytesPerRow * 2, totalRows);
-            image.Mutate(c => c.ProcessPixelRowsAsVector4((row, i) =>
+            Parallel.For(0, gridHeightData.Length, (y) =>
             {
-                for (int x = 0; x < row.Length - 1; x += 2)
+                for (int x = 0; x < gridHeightData[y].Length; x++)
                 {
-                    var terrainHeight = gridHeightData[i.Y][x];
-                    var yAxis = i.Y;
-                    int yAxisChanges = yAxis - (terrainHeight / 21);
-                    if (yAxisChanges >= 0 && yAxisChanges < totalRows)
+                    float height = gridHeightData[y][x];
+                    int index = (y * bytesPerRow) + (x / 2);
+                    int walkSizeC = mapTextureData[index];
+
+                    int walkSizeN = 0;
+                    if (index + 1 < mapTextureData.Length)
                     {
-                        yAxis = yAxisChanges;
+                        walkSizeN = mapTextureData[index + 1];
                     }
 
-                    var index = (yAxis * bytesPerRow) + (x / 2);
-                    int xAxisChanges = index - (terrainHeight / 41);
-                    if (xAxisChanges >= 0 && xAxisChanges < mapTextureData.Length)
+                    int walkSizeP = 0;
+                    if (index - 1 >= 0)
                     {
-                        index = xAxisChanges;
+                        walkSizeP = mapTextureData[index - 1];
                     }
 
-                    byte data = mapTextureData[index];
-
-                    // each byte contains 2 data points of size 4 bit.
-                    // I know this because if we don't do this, the whole map texture (final output)
-                    // has to be multiplied (scaled) by 2 since (at that point) we are eating 1 data point.
-                    // In the following loop, in iteration 0, we draw 1st data point and, in iteration 1,
-                    // we draw the 2nd data point.
-                    for (int k = 0; k < 2; k++)
+                    int walkSizeU = 0;
+                    if (index - bytesPerRow >= 0)
                     {
-                        switch ((data >> (0x04 * k)) & 0x0F)
+                        walkSizeU = mapTextureData[index - bytesPerRow];
+                    }
+
+                    int walkSizeD = 0;
+                    if (index + bytesPerRow < mapTextureData.Length)
+                    {
+                        walkSizeD = mapTextureData[index + bytesPerRow];
+                    }
+
+                    if (x % 2 == 0)
+                    {
+                        walkSizeU = (walkSizeU >> (0x04 * 0)) & 0x0F;
+                        walkSizeD = (walkSizeD >> (0x04 * 0)) & 0x0F;
+
+                        walkSizeP = (walkSizeP >> (0x04 * 1)) & 0x0F;
+                        walkSizeN = (walkSizeC >> (0x04 * 1)) & 0x0F;
+
+                        walkSizeC = (walkSizeC >> (0x04 * 0)) & 0x0F;
+                    }
+                    else
+                    {
+                        walkSizeU = (walkSizeU >> (0x04 * 1)) & 0x0F;
+                        walkSizeD = (walkSizeD >> (0x04 * 1)) & 0x0F;
+
+                        walkSizeP = (walkSizeC >> (0x04 * 0)) & 0x0F;
+                        walkSizeN = (walkSizeN >> (0x04 * 0)) & 0x0F;
+
+                        walkSizeC = (walkSizeC >> (0x04 * 1)) & 0x0F;
+                    }
+
+                    int imageX = x;
+                    int imageY = y;
+                    imageX -= (int)(height / 21.91f);
+                    imageY -= (int)(height / 21.91f);
+                    if ((walkSizeC == 0 || walkSizeC == 1) && (walkSizeD > 0 || walkSizeU > 0 || walkSizeN > 0 || walkSizeP > 0))
+                    {
+                        if (imageX < bytesPerRow * 2 && imageX >= 0 && imageY < totalRows && imageY >= 0)
                         {
-                            case 2:
-                            case 1: // walkable
-                                row[x + k] = this.Settings.WalkableMapColor;
-                                break;
-                            case 5: // walkable
-                            case 4: // walkable
-                            case 3:
-                            case 0: // non-walable
-                                row[x + k] = Vector4.Zero;
-                                break;
-                            default:
-                                throw new Exception($"New digit found {(data >> (0x04 * k)) & 0x0F}");
+                            image[imageX, imageY] = new Rgba32(this.Settings.WalkableMapColor);
                         }
                     }
                 }
-            }));
+            });
 #if DEBUG
             image.Save(this.DllDirectory + @$"/current_map_{Core.States.InGameStateObject.CurrentAreaInstance.AreaHash}.jpeg");
 #endif

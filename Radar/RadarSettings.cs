@@ -21,12 +21,17 @@ namespace Radar
         /// Multipler to apply to the Large Map icons
         /// so they display correctly on the screen.
         /// </summary>
-        public float LargeMapScaleMultiplier = 0.174f;
+        public float LargeMapScaleMultiplier = 0.1738f;
 
         /// <summary>
         /// Do not draw the Radar plugin stuff when game is in the background.
         /// </summary>
         public bool DrawWhenForeground = true;
+
+        /// <summary>
+        /// Do not draw the Radar plugin stuff when user is in hideout/town.
+        /// </summary>
+        public bool DrawWhenNotInHideoutOrTown = true;
 
         /// <summary>
         /// Hides all the entities that doesn't have life or chest component.
