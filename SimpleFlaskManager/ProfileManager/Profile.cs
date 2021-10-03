@@ -16,8 +16,6 @@ namespace SimpleFlaskManager.ProfileManager
     public class Profile
     {
         private ConditionHelper.ConditionEnum newConditionType = default;
-        private ConsoleKey newKey = ConsoleKey.D0;
-        private int index = -1;
 
         /// <summary>
         /// Gets the rules to trigger the flasks on.
