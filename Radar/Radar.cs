@@ -20,7 +20,6 @@ namespace Radar
     using Newtonsoft.Json;
     using SixLabors.ImageSharp;
     using SixLabors.ImageSharp.PixelFormats;
-    using SixLabors.ImageSharp.Processing;
 
     /// <summary>
     /// <see cref="Radar"/> plugin.

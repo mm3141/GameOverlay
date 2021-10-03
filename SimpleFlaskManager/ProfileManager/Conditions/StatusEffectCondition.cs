@@ -59,10 +59,10 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
         }
 
         /// <inheritdoc/>
-        public override void Display()
+        public override void Display(int index = 0)
         {
             ToImGui(ref this.conditionOperator, ref this.rightHandOperand, ref this.charges);
-            base.Display();
+            base.Display(index);
         }
 
         /// <inheritdoc/>
@@ -100,8 +100,7 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
             ImGui.SameLine();
             UiHelper.EnumComboBox("##StatusEffectOperator", ref operator_);
             ImGui.SameLine();
-            ImGui.InputText("buff/debuff##StatusEffect", ref buffId, 200);
-            ImGui.Text("with");
+            ImGui.InputText("(de)buff with##StatusEffect", ref buffId, 200);
             ImGui.SameLine();
             ImGui.InputInt("charges##StatusEffect", ref charges);
         }

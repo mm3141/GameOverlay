@@ -121,7 +121,8 @@ namespace GameHelper.Utils
         /// <typeparam name="T">Enum type to display in the ComboBox.</typeparam>
         /// <param name="displayText">Text to display along the ComboBox.</param>
         /// <param name="selected">Selected enum value in the ComboBox.</param>
-        public static void EnumComboBox<T>(string displayText, ref T selected)
+        /// <returns>true in case user select an item otherwise false.</returns>
+        public static bool EnumComboBox<T>(string displayText, ref T selected)
             where T : Enum
         {
             Type enumType = typeof(T);
@@ -130,7 +131,10 @@ namespace GameHelper.Utils
             if (ImGui.Combo(displayText, ref selectedIndex, enumNames, enumNames.Length))
             {
                 selected = (T)Enum.Parse(enumType, enumNames[selectedIndex]);
+                return true;
             }
+
+            return false;
         }
 
         /// <summary>
@@ -139,7 +143,8 @@ namespace GameHelper.Utils
         /// <typeparam name="T">Enum type to display in the ComboBox.</typeparam>
         /// <param name="displayText">Text to display along the ComboBox.</param>
         /// <param name="selected">Selected enum value in the ComboBox.</param>
-        public static void NonContinuousEnumComboBox<T>(string displayText, ref T selected)
+        /// <returns>true in case user select an item otherwise false.</returns>
+        public static bool NonContinuousEnumComboBox<T>(string displayText, ref T selected)
             where T : Enum
         {
             Type enumType = typeof(T);
@@ -148,7 +153,10 @@ namespace GameHelper.Utils
             if (ImGui.Combo(displayText, ref selectedIndex, enumNames, enumNames.Length))
             {
                 selected = (T)Enum.Parse(enumType, enumNames[selectedIndex]);
+                return true;
             }
+
+            return false;
         }
 
         /// <summary>

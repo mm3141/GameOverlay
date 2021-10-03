@@ -31,52 +31,68 @@ namespace SimpleFlaskManager.ProfileManager
         /// </summary>
         public void DrawSettings()
         {
-            ImGui.PushItemWidth(ImGui.GetContentRegionAvail().X / 4);
-            ImGui.TextWrapped("Index -1 means add condition as a new Rule. " +
-                "Index greater than -1 means append condition to the existing rule.");
-            ImGui.InputInt("Index", ref this.index, 1, 1);
-            UiHelper.NonContinuousEnumComboBox("Key", ref this.newKey);
-            UiHelper.EnumComboBox("Condition", ref this.newConditionType);
-            ImGui.Separator();
-            var newCondition = ConditionHelper.EnumToObject(this.newConditionType);
-            ImGui.Separator();
-            if (newCondition != null)
+            if (ImGui.Button("+"))
             {
-                if (this.index == -1)
-                {
-                    this.Rules.Add(new RuleStruct() { Condition = newCondition, Key = this.newKey });
-                }
-                else if (this.index < this.Rules.Count)
-                {
-                    this.Rules[this.index].Condition.Append(newCondition);
-                }
+                this.Rules.Add(default(RuleStruct));
             }
 
-            if (ImGui.TreeNode("Rules"))
+            ImGui.SameLine();
+            if (ImGui.BeginTabBar("Profile Rules", ImGuiTabBarFlags.AutoSelectNewTabs | ImGuiTabBarFlags.Reorderable))
             {
                 for (int i = 0; i < this.Rules.Count; i++)
                 {
-                    ImGui.Text($"Rule: {i}, Key: {this.Rules[i].Key}");
-                    ImGui.SameLine();
-                    if (ImGui.SmallButton($"Delete Rule##{i}"))
+                    var currRule = this.Rules[i];
+                    bool shouldNotDelete = true;
+                    if (ImGui.BeginTabItem($"Rule {i}", ref shouldNotDelete))
                     {
-                        this.Rules[i].Condition.Delete();
-                        this.Rules.RemoveAt(i);
-                        continue;
+                        if (UiHelper.NonContinuousEnumComboBox("Key", ref currRule.Key))
+                        {
+                            this.Rules[i] = currRule;
+                        }
+
+                        if (ImGui.TreeNodeEx("Add New condition", ImGuiTreeNodeFlags.NoTreePushOnOpen))
+                        {
+                            UiHelper.EnumComboBox("Condition", ref this.newConditionType);
+                            ImGui.PushItemWidth(ImGui.GetContentRegionAvail().X / 6);
+                            ImGui.Separator();
+                            var newCondition = ConditionHelper.EnumToObject(this.newConditionType);
+                            if (newCondition != null)
+                            {
+                                if (currRule.Condition == null)
+                                {
+                                    currRule.Condition = newCondition;
+                                }
+                                else
+                                {
+                                    currRule.Condition.Append(newCondition);
+                                }
+
+                                this.Rules[i] = currRule;
+                            }
+
+                            ImGui.PopItemWidth();
+                            ImGui.Separator();
+                        }
+
+                        if (ImGui.TreeNodeEx("Existing Conditions (all of them have to be true)", ImGuiTreeNodeFlags.NoTreePushOnOpen | ImGuiTreeNodeFlags.DefaultOpen))
+                        {
+                            ImGui.PushItemWidth(ImGui.GetContentRegionAvail().X / 6);
+                            this.Rules[i].Condition?.Display();
+                            ImGui.PopItemWidth();
+                        }
+
+                        ImGui.EndTabItem();
                     }
 
-                    if (ImGui.TreeNode($"Conditions (all of them have to be true)##{i}"))
+                    if (!shouldNotDelete)
                     {
-                        ImGui.Separator();
-                        this.Rules[i].Condition.Display();
-                        ImGui.TreePop();
+                        this.Rules[i].Condition?.Delete();
+                        this.Rules.RemoveAt(i);
                     }
                 }
 
-                ImGui.TreePop();
+                ImGui.EndTabBar();
             }
-
-            ImGui.PopItemWidth();
         }
 
         /// <summary>

@@ -5,6 +5,7 @@
 namespace SimpleFlaskManager.ProfileManager
 {
     using System;
+    using ImGuiNET;
     using SimpleFlaskManager.ProfileManager.Conditions;
 
     /// <summary>
@@ -64,7 +65,8 @@ namespace SimpleFlaskManager.ProfileManager
         /// </returns>
         public static ICondition EnumToObject(ConditionEnum conditionType)
         {
-            return conditionType switch
+            ImGui.PushID("AddingCondition");
+            ICondition p = conditionType switch
             {
                 ConditionEnum.VITALS => VitalsCondition.Add(),
                 ConditionEnum.ANIMATION => AnimationCondition.Add(),
@@ -75,6 +77,9 @@ namespace SimpleFlaskManager.ProfileManager
                 ConditionEnum.AILMENT => AilmentCondition.Add(),
                 _ => throw new Exception($"{conditionType} not implemented in ConditionHelper class"),
             };
+
+            ImGui.PopID();
+            return p;
         }
     }
 }

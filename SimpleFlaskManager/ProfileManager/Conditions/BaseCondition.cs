@@ -64,12 +64,14 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
         public abstract bool Evaluate();
 
         /// <inheritdoc/>
-        public virtual void Display()
+        public virtual void Display(int index = 0)
         {
             if (this.next != null)
             {
                 ImGui.Separator();
-                this.next.Display();
+                ImGui.PushID(++index);
+                this.next.Display(index);
+                ImGui.PopID();
             }
         }
 

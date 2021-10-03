@@ -46,10 +46,10 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
         }
 
         /// <inheritdoc/>
-        public override void Display()
+        public override void Display(int index = 0)
         {
             ToImGui(ref this.rightHandOperand);
-            base.Display();
+            base.Display(index);
         }
 
         /// <inheritdoc/>

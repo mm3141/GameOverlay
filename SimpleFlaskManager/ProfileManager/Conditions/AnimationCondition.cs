@@ -61,10 +61,10 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
         }
 
         /// <inheritdoc/>
-        public override void Display()
+        public override void Display(int index = 0)
         {
             ToImGui(ref this.conditionOperator, ref this.rightHandOperand, ref this.durationMs);
-            base.Display();
+            base.Display(index);
         }
 
         /// <inheritdoc/>
@@ -99,12 +99,13 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
         private static void ToImGui(ref OperatorEnum operator_, ref Animation animation, ref int duration)
         {
             ImGui.Text($"Only {OperatorEnum.EQUAL_TO} & {OperatorEnum.NOT_EQUAL_TO} supported.");
-            ImGui.Text($"Player Animation is");
+            ImGui.Text($"Player is");
             ImGui.SameLine();
             UiHelper.EnumComboBox("##AnimationOperator", ref operator_);
+            ImGui.SameLine();
             UiHelper.EnumComboBox("for ##AnimationRHS", ref animation);
             ImGui.SameLine();
-            ImGui.InputInt("(milliseconds)##AnimationDuration", ref duration);
+            ImGui.InputInt("ms##AnimationDuration", ref duration);
         }
     }
 }

@@ -93,10 +93,10 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
         }
 
         /// <inheritdoc/>
-        public override void Display()
+        public override void Display(int index = 0)
         {
             ToImGui(ref this.conditionOperator, ref this.vitalType, ref this.rightHandOperand);
-            base.Display();
+            base.Display(index);
         }
 
         /// <inheritdoc/>
@@ -126,6 +126,7 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
             UiHelper.EnumComboBox("is##VitalSelector", ref vital);
             ImGui.SameLine();
             UiHelper.EnumComboBox("##VitalOperator", ref operator_);
+            ImGui.SameLine();
             ImGui.InputInt("##VitalThreshold", ref threshold);
         }
 
