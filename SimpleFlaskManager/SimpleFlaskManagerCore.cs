@@ -128,6 +128,18 @@ namespace SimpleFlaskManager
                 MiscHelper.KillTCPConnectionForProcess(Core.Process.Pid);
             }
 
+            if (string.IsNullOrEmpty(this.Settings.CurrentProfile))
+            {
+                this.debugMessage = $"No Profile Selected.";
+                return;
+            }
+
+            if (!this.Settings.Profiles.ContainsKey(this.Settings.CurrentProfile))
+            {
+                this.debugMessage = $"{this.Settings.CurrentProfile} not found.";
+                return;
+            }
+
             foreach (var rule in this.Settings.Profiles[this.Settings.CurrentProfile].Rules)
             {
                 if (rule.Condition != null && rule.Condition.Evaluate())
@@ -210,18 +222,6 @@ namespace SimpleFlaskManager
                 return false;
             }
 
-            if (string.IsNullOrEmpty(this.Settings.CurrentProfile))
-            {
-                this.debugMessage = $"No Profile Selected.";
-                return false;
-            }
-
-            if (!this.Settings.Profiles.ContainsKey(this.Settings.CurrentProfile))
-            {
-                this.debugMessage = $"{this.Settings.CurrentProfile} not found.";
-                return false;
-            }
-
             if (Core.States.InGameStateObject.CurrentAreaInstance.Player.TryGetComponent<Life>(out var lifeComp))
             {
                 if (lifeComp.Health.Current <= 0)
@@ -233,6 +233,7 @@ namespace SimpleFlaskManager
             else
             {
                 this.debugMessage = $"Can not find player Life component.";
+                return false;
             }
 
             this.debugMessage = "None";
