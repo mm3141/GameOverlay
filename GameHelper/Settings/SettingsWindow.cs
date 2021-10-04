@@ -133,7 +133,7 @@ namespace GameHelper.Settings
                     ImGui.NewLine();
                     if (ImGui.Button("Test Disconnect POE"))
                     {
-                        MiscHelper.KillTCPConnectionForProcess((uint)Core.Process.Information.Id);
+                        MiscHelper.KillTCPConnectionForProcess(Core.Process.Pid);
                     }
 
                     if (showImGuiStyleEditor)

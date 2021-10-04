@@ -36,6 +36,24 @@ namespace GameHelper
         }
 
         /// <summary>
+        /// Gets the Pid of the game or zero in case game isn't running..
+        /// </summary>
+        public uint Pid
+        {
+            get
+            {
+                try
+                {
+                    return (uint)this.Information.Id;
+                }
+                catch
+                {
+                    return 0;
+                }
+            }
+        }
+
+        /// <summary>
         /// Gets a value indicating whether the game is foreground or not.
         /// </summary>
         public bool Foreground { get; private set; } = false;

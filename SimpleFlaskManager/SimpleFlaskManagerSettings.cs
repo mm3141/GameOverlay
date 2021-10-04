@@ -7,6 +7,7 @@ namespace SimpleFlaskManager
     using System.Collections.Generic;
     using GameHelper.Plugin;
     using SimpleFlaskManager.ProfileManager;
+    using SimpleFlaskManager.ProfileManager.Conditions;
 
     /// <summary>
     /// <see cref="SimpleFlaskManager"/> plugin settings class.
@@ -33,6 +34,12 @@ namespace SimpleFlaskManager
         /// Gets all the profiles containing rules on when to drink the flasks.
         /// </summary>
         public Dictionary<string, Profile> Profiles = new Dictionary<string, Profile>();
+
+        /// <summary>
+        /// Condition on which user want to auto-quit.
+        /// </summary>
+        public VitalsCondition AutoQuitCondition = new VitalsCondition(
+            OperatorEnum.LESS_THAN, VitalsCondition.VitalsEnum.LIFE, -1);
 #pragma warning restore SA1401
     }
 }

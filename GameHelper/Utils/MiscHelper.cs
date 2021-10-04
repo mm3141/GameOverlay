@@ -5,6 +5,7 @@
 namespace GameHelper.Utils
 {
     using System;
+    using System.Collections.Generic;
     using System.Diagnostics;
     using System.Linq;
     using System.Runtime.InteropServices;
@@ -100,11 +101,15 @@ namespace GameHelper.Utils
             }
 
             // Kill Path Connection
-            var pathConnection = table.FirstOrDefault(t => t.OwningPid == processId);
-            pathConnection.State = 12;
-            var ptr = Marshal.AllocCoTaskMem(Marshal.SizeOf(pathConnection));
-            Marshal.StructureToPtr(pathConnection, ptr, false);
-            SetTcpEntry(ptr);
+            MibTcprowOwnerPid pathConnection = table.FirstOrDefault(t => t.OwningPid == processId);
+            if (!EqualityComparer<MibTcprowOwnerPid>.Default.Equals(pathConnection, default(MibTcprowOwnerPid)))
+            {
+                pathConnection.State = 12;
+                var ptr = Marshal.AllocCoTaskMem(Marshal.SizeOf(pathConnection));
+                Marshal.StructureToPtr(pathConnection, ptr, false);
+                SetTcpEntry(ptr);
+                Marshal.FreeCoTaskMem(ptr);
+            }
         }
 
         [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = false)]
