@@ -118,7 +118,7 @@ namespace SimpleFlaskManager
 
             foreach (var rule in this.Settings.Profiles[this.Settings.CurrentProfile].Rules)
             {
-                if (rule.Condition.Evaluate())
+                if (rule.Condition != null && rule.Condition.Evaluate())
                 {
                     if (MiscHelper.KeyUp(rule.Key) && this.Settings.DebugMode)
                     {
