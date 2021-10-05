@@ -96,8 +96,9 @@ namespace PreloadAlert
         {
             ImGui.TextWrapped("You can also lock it by double clicking the preload window. " +
                 "However, you can only unlock it from here.");
-            ImGui.Checkbox("Lock/Unlock Preload Window", ref this.Settings.Locked);
-            ImGui.Checkbox("Hide When Locked & Not In Game", ref this.Settings.EnableHideUi);
+            ImGui.Checkbox("Lock/Unlock preload window", ref this.Settings.Locked);
+            ImGui.Checkbox("Hide when locked & not in the game", ref this.Settings.EnableHideUi);
+            ImGui.Checkbox("Hide when no preload found", ref this.Settings.HideWindowWhenEmpty);
             ImGui.Separator();
             ImGui.TextWrapped("If you find something new and wants to add it in the preload " +
                 "you can use Core -> Data Visulization -> CurrentAreaLoadedFiles feature.");
@@ -114,6 +115,11 @@ namespace PreloadAlert
                 this.Settings.Locked &&
                 (!Core.Process.Foreground ||
                 Core.States.GameCurrentState != GameStateTypes.InGameState))
+            {
+                return;
+            }
+
+            if (this.Settings.HideWindowWhenEmpty && this.preloadFound.Count == 0)
             {
                 return;
             }

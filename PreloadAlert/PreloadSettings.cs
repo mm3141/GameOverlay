@@ -29,6 +29,11 @@ namespace PreloadAlert
         public Vector4 BackgroundColor = new Vector4(Vector3.Zero, 0.8f);
 
         /// <summary>
+        /// Gets a value indicating whether the preload alert window should hide when empty.
+        /// </summary>
+        public bool HideWindowWhenEmpty = false;
+
+        /// <summary>
         /// Gets a value indicating whether the preload alert window is locked or not.
         /// </summary>
         public bool Locked = false;
