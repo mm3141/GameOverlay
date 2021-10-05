@@ -127,7 +127,9 @@ namespace PreloadAlert
             {
                 ImGui.SetNextWindowPos(this.Settings.Pos);
                 ImGui.SetNextWindowSize(this.Settings.Size);
+                ImGui.PushStyleVar(ImGuiStyleVar.WindowBorderSize, 0f);
                 ImGui.Begin(windowName, UiHelper.TransparentWindowFlags);
+                ImGui.PopStyleVar();
                 this.isPreloadAlertHovered = ImGui.IsMouseHoveringRect(this.Settings.Pos, this.Settings.Pos + this.Settings.Size);
             }
             else

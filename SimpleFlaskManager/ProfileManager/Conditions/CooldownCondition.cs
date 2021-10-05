@@ -59,7 +59,7 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
             float elapsedSeconds = this.cooldownTimer.ElapsedMilliseconds / 1000f;
             if (elapsedSeconds > this.rightHandOperand)
             {
-                if (this.EvaluateNext())
+                if (this.Next() == null || this.EvaluateNext())
                 {
                     this.cooldownTimer.Restart();
                     return true;
