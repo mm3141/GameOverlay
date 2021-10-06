@@ -221,8 +221,11 @@ namespace GameHelper.RemoteObjects
             if (information.AreaChangeCount > FileInfoValueStruct.IGNORE_FIRST_X_AREAS &&
             information.AreaChangeCount == Core.AreaChangeCounter.Value)
             {
-                var name = reader.ReadStdWString(information.Name);
-                this.PathNames[name] = information.AreaChangeCount;
+                var name = reader.ReadStdWString(information.Name).Split('@')[0];
+                this.PathNames.AddOrUpdate(name, information.AreaChangeCount, (key, oldValue) =>
+                {
+                    return Math.Max(oldValue, information.AreaChangeCount);
+                });
             }
         }
 
