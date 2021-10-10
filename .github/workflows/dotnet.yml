@@ -8,9 +8,10 @@ on:
 
 jobs:
   build:
-
-    runs-on: windows-latest
-
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
     steps:
     - uses: actions/checkout@v2
     - name: Setup .NET
@@ -24,5 +25,5 @@ jobs:
     - name: Upload the Build Artifact
       uses: actions/upload-artifact@v2
       with:
-        name: GameHelper
+        name: GameHelper-${{ matrix.os }}
         path: GameHelper/bin/Release/netcoreapp3.1
