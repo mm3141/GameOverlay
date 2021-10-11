@@ -31,7 +31,7 @@ namespace SimpleFlaskManager.ProfileManager
         {
             if (ImGui.Button("+"))
             {
-                this.Rules.Add(default(RuleStruct));
+                this.Rules.Add(RuleStruct.GetNewRule(this.Rules.Count));
             }
 
             ImGui.SameLine();
@@ -41,9 +41,14 @@ namespace SimpleFlaskManager.ProfileManager
                 {
                     var currRule = this.Rules[i];
                     bool shouldNotDelete = true;
-                    if (ImGui.BeginTabItem($"Rule {i}", ref shouldNotDelete))
+                    if (ImGui.BeginTabItem($"{currRule.Name}###Rule{i}", ref shouldNotDelete))
                     {
                         if (ImGui.Checkbox($"Enable##{i}", ref currRule.Enable))
+                        {
+                            this.Rules[i] = currRule;
+                        }
+
+                        if (ImGui.InputText($"Name##{i}", ref currRule.Name, 20))
                         {
                             this.Rules[i] = currRule;
                         }
@@ -109,6 +114,11 @@ namespace SimpleFlaskManager.ProfileManager
             public bool Enable;
 
             /// <summary>
+            /// User friendly name given to a rule.
+            /// </summary>
+            public string Name;
+
+            /// <summary>
             /// Rule condition to evaluate.
             /// </summary>
             public ICondition Condition;
@@ -117,6 +127,18 @@ namespace SimpleFlaskManager.ProfileManager
             /// Rule key to press on success.
             /// </summary>
             public ConsoleKey Key;
+
+            /// <summary>
+            /// Helper function to create a new rule.
+            /// </summary>
+            /// <param name="ruleCounter">Rule number in the profile.</param>
+            /// <returns>returns a new rule.</returns>
+            public static RuleStruct GetNewRule(int ruleCounter)
+            {
+                var newrule = default(RuleStruct);
+                newrule.Name = $"{ruleCounter}";
+                return newrule;
+            }
         }
     }
 }
