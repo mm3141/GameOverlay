@@ -236,6 +236,20 @@ namespace SimpleFlaskManager
                 return false;
             }
 
+            if (Core.States.InGameStateObject.CurrentAreaInstance.Player.TryGetComponent<Buffs>(out var buffComp))
+            {
+                if (buffComp.StatusEffects.ContainsKey("grace_period"))
+                {
+                    this.debugMessage = $"Player has Grace Period.";
+                    return false;
+                }
+            }
+            else
+            {
+                this.debugMessage = $"Can not find player Buffs component.";
+                return false;
+            }
+
             this.debugMessage = "None";
             return true;
         }
