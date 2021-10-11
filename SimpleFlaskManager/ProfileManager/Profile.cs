@@ -43,6 +43,11 @@ namespace SimpleFlaskManager.ProfileManager
                     bool shouldNotDelete = true;
                     if (ImGui.BeginTabItem($"Rule {i}", ref shouldNotDelete))
                     {
+                        if (ImGui.Checkbox($"Enable##{i}", ref currRule.Enable))
+                        {
+                            this.Rules[i] = currRule;
+                        }
+
                         if (UiHelper.NonContinuousEnumComboBox("Key", ref currRule.Key))
                         {
                             this.Rules[i] = currRule;
@@ -98,6 +103,11 @@ namespace SimpleFlaskManager.ProfileManager
         /// </summary>
         public struct RuleStruct
         {
+            /// <summary>
+            /// Enable/Disable the rule.
+            /// </summary>
+            public bool Enable;
+
             /// <summary>
             /// Rule condition to evaluate.
             /// </summary>
