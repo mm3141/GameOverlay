@@ -6,7 +6,6 @@ namespace GameHelper.RemoteObjects.Components
 {
     using System;
     using System.Collections.Concurrent;
-    using System.Collections.Generic;
     using GameHelper.Utils;
     using GameOffsets.Objects.Components;
     using ImGuiNET;

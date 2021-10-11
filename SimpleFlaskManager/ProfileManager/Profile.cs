@@ -6,6 +6,8 @@ namespace SimpleFlaskManager.ProfileManager
 {
     using System;
     using System.Collections.Generic;
+    using System.Numerics;
+    using GameHelper;
     using GameHelper.Utils;
     using ImGuiNET;
     using SimpleFlaskManager.ProfileManager.Conditions;
@@ -15,6 +17,8 @@ namespace SimpleFlaskManager.ProfileManager
     /// </summary>
     public class Profile
     {
+        private int ruleIndexToDelete = -1;
+
         private ConditionHelper.ConditionEnum newConditionType = default;
 
         /// <summary>
@@ -94,12 +98,37 @@ namespace SimpleFlaskManager.ProfileManager
 
                     if (!shouldNotDelete)
                     {
-                        this.Rules[i].Condition?.Delete();
-                        this.Rules.RemoveAt(i);
+                        this.ruleIndexToDelete = i;
+                        ImGui.OpenPopup("RuleDeleteConfirmation");
                     }
                 }
 
+                this.DrawConfirmationPopup();
                 ImGui.EndTabBar();
+            }
+        }
+
+        private void DrawConfirmationPopup()
+        {
+            ImGui.SetNextWindowPos(new Vector2(Core.Overlay.Size.X / 3f, Core.Overlay.Size.Y / 3f));
+            if (ImGui.BeginPopup("RuleDeleteConfirmation"))
+            {
+                ImGui.Text($"Do you want to delete rule with name: {this.Rules[this.ruleIndexToDelete].Name}?");
+                ImGui.Separator();
+                if (ImGui.Button("Yes", new Vector2(ImGui.GetContentRegionAvail().X / 2f, ImGui.GetTextLineHeight() * 2)))
+                {
+                    this.Rules[this.ruleIndexToDelete].Condition?.Delete();
+                    this.Rules.RemoveAt(this.ruleIndexToDelete);
+                    ImGui.CloseCurrentPopup();
+                }
+
+                ImGui.SameLine();
+                if (ImGui.Button("No", new Vector2(ImGui.GetContentRegionAvail().X, ImGui.GetTextLineHeight() * 2)))
+                {
+                    ImGui.CloseCurrentPopup();
+                }
+
+                ImGui.EndPopup();
             }
         }
 

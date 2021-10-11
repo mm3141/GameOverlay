@@ -163,7 +163,7 @@ namespace GameHelper.Settings
         private static void DrawConfirmationPopup()
         {
             ImGui.SetNextWindowPos(new Vector2(Core.Overlay.Size.X / 3f, Core.Overlay.Size.Y / 3f));
-            if (ImGui.BeginPopup("Confirmation"))
+            if (ImGui.BeginPopup("GameHelperCloseConfirmation"))
             {
                 ImGui.Text("Do you want to quit the GameHelper overlay?");
                 ImGui.Separator();
@@ -215,7 +215,7 @@ namespace GameHelper.Settings
 
                 if (!isOverlayRunningLocal)
                 {
-                    ImGui.OpenPopup("Confirmation");
+                    ImGui.OpenPopup("GameHelperCloseConfirmation");
                 }
 
                 DrawConfirmationPopup();
