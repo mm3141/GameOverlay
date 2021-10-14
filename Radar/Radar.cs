@@ -794,28 +794,28 @@ namespace Radar
                 for (int x = 0; x < gridHeightData[y].Length; x++)
                 {
                     float height = gridHeightData[y][x];
-                    int index = (y * bytesPerRow) + (x / 2);
+                    int index = (y * bytesPerRow) + (x / 2); // since there are 2 data points in 1 index.
                     int walkSizeC = mapTextureData[index];
 
-                    int walkSizeN = 0;
+                    int walkSizeN = 0; // Right
                     if (index + 1 < mapTextureData.Length)
                     {
                         walkSizeN = mapTextureData[index + 1];
                     }
 
-                    int walkSizeP = 0;
+                    int walkSizeP = 0; // Left
                     if (index - 1 >= 0)
                     {
                         walkSizeP = mapTextureData[index - 1];
                     }
 
-                    int walkSizeU = 0;
+                    int walkSizeU = 0; // Top
                     if (index - bytesPerRow >= 0)
                     {
                         walkSizeU = mapTextureData[index - bytesPerRow];
                     }
 
-                    int walkSizeD = 0;
+                    int walkSizeD = 0; // Bottom
                     if (index + bytesPerRow < mapTextureData.Length)
                     {
                         walkSizeD = mapTextureData[index + bytesPerRow];
