@@ -250,6 +250,12 @@ namespace SimpleFlaskManager
                 return false;
             }
 
+            if (!Core.States.InGameStateObject.CurrentAreaInstance.Player.TryGetComponent<Actor>(out var _))
+            {
+                this.debugMessage = $"Can not find player Actor component.";
+                return false;
+            }
+
             this.debugMessage = "None";
             return true;
         }
