@@ -185,7 +185,9 @@ namespace Radar
         private void AddDefaultBaseGameIcons(string iconPathName)
         {
             this.BaseIcons.TryAdd("Player", new IconPicker(iconPathName, IconsPngCols, IconsPngRows, 2, 0, 20));
-            this.BaseIcons.TryAdd("Chest", new IconPicker(iconPathName, IconsPngCols, IconsPngRows, 1, 13, 24));
+            this.BaseIcons.TryAdd("Strongbox Chest", new IconPicker(iconPathName, IconsPngCols, IconsPngRows, 8, 38, 40));
+            this.BaseIcons.TryAdd("Breach or Large Chest", new IconPicker(iconPathName, IconsPngCols, IconsPngRows, 1, 13, 40));
+            this.BaseIcons.TryAdd("Mini Breakable Chest", new IconPicker(iconPathName, IconsPngCols, IconsPngRows, 6, 9, 30));
 
             this.BaseIcons.TryAdd("Shrine", new IconPicker(iconPathName, IconsPngCols, IconsPngRows, 7, 0, 30));
 

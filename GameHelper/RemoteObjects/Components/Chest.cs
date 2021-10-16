@@ -28,12 +28,24 @@ namespace GameHelper.RemoteObjects.Components
         public bool IsOpened { get; private set; } = false;
 
         /// <summary>
+        /// Gets a value indicating whether chest is a strongbox or not.
+        /// </summary>
+        public bool IsStrongbox { get; private set; } = false;
+
+        /// <summary>
+        /// Gets a value indicating whether chest is a breach chest or not.
+        /// </summary>
+        public bool IsBreachOrLarge { get; private set; } = false;
+
+        /// <summary>
         /// Converts the <see cref="Chest"/> class data to ImGui.
         /// </summary>
         internal override void ToImGui()
         {
             base.ToImGui();
             ImGui.Text($"IsOpened: {this.IsOpened}");
+            ImGui.Text($"IsStrongbox: {this.IsStrongbox}");
+            ImGui.Text($"IsBreachOrLarge: {this.IsBreachOrLarge}");
         }
 
         /// <inheritdoc/>
@@ -48,6 +60,12 @@ namespace GameHelper.RemoteObjects.Components
             var reader = Core.Process.Handle;
             var data = reader.ReadMemory<ChestOffsets>(this.Address);
             this.IsOpened = data.IsOpened;
+            if (hasAddressChanged)
+            {
+                var dataInternal = reader.ReadMemory<ChestsStructInternal>(data.ChestsDataPtr);
+                this.IsStrongbox = dataInternal.Strongbox;
+                this.IsBreachOrLarge = dataInternal.IsLarge;
+            }
         }
     }
 }
