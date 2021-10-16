@@ -200,7 +200,7 @@ namespace Radar
                 this.Settings.DrawIconsSettingToImGui(
                     "Delve Icons",
                     this.Settings.DelveIcons,
-                    string.Empty);
+                    "Selecting first icon from the list of icons will display chest path name rather than the icon.");
             }
         }
 
@@ -535,16 +535,25 @@ namespace Radar
                         {
                             if (this.Settings.DelveIcons.TryGetValue(iconFinder, out var delveChestIcon))
                             {
-                                // Have to force keep the Delve Chest since GGG changed
-                                // network bubble radius for them.
+                                // Have to force keep the Delve Chest since GGG reduced
+                                // the network bubble radius for them.
                                 entity.Value.ForceKeepEntity();
-                                iconSizeMultiplierVector *= delveChestIcon.IconScale;
-                                fgDraw.AddImage(
-                                    delveChestIcon.TexturePtr,
-                                    mapCenter + fpos - iconSizeMultiplierVector,
-                                    mapCenter + fpos + iconSizeMultiplierVector,
-                                    delveChestIcon.UV0,
-                                    delveChestIcon.UV1);
+                                if (delveChestIcon.UV0 == Vector2.Zero)
+                                {
+                                    var s = ImGui.CalcTextSize(iconFinder) / 2;
+                                    fgDraw.AddRectFilled(mapCenter + fpos - s, mapCenter + fpos + s, UiHelper.Color(0, 0, 0, 255));
+                                    fgDraw.AddText(mapCenter + fpos - s, UiHelper.Color(255, 128, 128, 255), iconFinder);
+                                }
+                                else
+                                {
+                                    iconSizeMultiplierVector *= delveChestIcon.IconScale;
+                                    fgDraw.AddImage(
+                                        delveChestIcon.TexturePtr,
+                                        mapCenter + fpos - iconSizeMultiplierVector,
+                                        mapCenter + fpos + iconSizeMultiplierVector,
+                                        delveChestIcon.UV0,
+                                        delveChestIcon.UV1);
+                                }
                             }
                         }
                         else

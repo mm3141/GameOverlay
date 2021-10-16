@@ -133,8 +133,8 @@ namespace Radar
 
         private static readonly int IconsPngRows = 44;
         private static readonly int IconsPngCols = 14;
-        private static readonly int DelvePngRows = 9;
-        private static readonly int DelvePngCols = 9;
+        private static readonly int DelvePngRows = 44;
+        private static readonly int DelvePngCols = 14;
 
         /// <summary>
         /// Draws the icons setting via the ImGui widgets.
@@ -179,9 +179,7 @@ namespace Radar
             this.AddDefaultLegionIcons(basicIconPathName);
             this.AddDefaultDeliriumIcons(basicIconPathName);
             this.AddDefaultHeistIcons(basicIconPathName);
-
-            var delveIconPathName = Path.Join(dllDirectory, "delve.png");
-            this.AddDefaultDelveIcons(delveIconPathName);
+            this.AddDefaultDelveIcons(basicIconPathName);
         }
 
         private void AddDefaultBaseGameIcons(string iconPathName)
@@ -229,7 +227,7 @@ namespace Radar
 
         private void AddDefaultDelveIcons(string iconPathName)
         {
-            this.DelveIcons.TryAdd("Blockage OR DelveWall", new IconPicker(iconPathName, DelvePngCols, DelvePngRows, 3, 0, 30));
+            this.DelveIcons.TryAdd("Blockage OR DelveWall", new IconPicker(iconPathName, DelvePngCols, DelvePngRows, 0, 0, 30));
             this.DelveIcons.TryAdd("AberrantFossilChest", new IconPicker(iconPathName, DelvePngCols, DelvePngRows, 0, 0, 30));
             this.DelveIcons.TryAdd("AethericFossilChest", new IconPicker(iconPathName, DelvePngCols, DelvePngRows, 0, 0, 30));
             this.DelveIcons.TryAdd("AethericFossilChestDynamite", new IconPicker(iconPathName, DelvePngCols, DelvePngRows, 0, 0, 30));
