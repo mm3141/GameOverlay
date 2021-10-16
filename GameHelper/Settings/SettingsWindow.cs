@@ -23,13 +23,13 @@ namespace GameHelper.Settings
         private static bool isOverlayRunningLocal = true;
         private static bool isSettingsWindowVisible = true;
         private static string currentlySelectedPlugin = "Core";
-        private static bool showImGuiStyleEditor = false;
 
         /// <summary>
         /// Initializes the Main Menu.
         /// </summary>
         internal static void InitializeCoroutines()
         {
+            CoroutineHandler.Start(LoadCurrentlyConfiguredFont());
             CoroutineHandler.Start(SaveGameHelperSettings());
             Core.CoroutinesRegistrar.Add(
                 CoroutineHandler.Start(
@@ -129,16 +129,16 @@ namespace GameHelper.Settings
                     ImGui.Checkbox("Hide when game is in background", ref Core.GHSettings.HidePerfStatsWhenBg);
                     ImGui.Checkbox("Game UiExplorer", ref Core.GHSettings.ShowGameUiExplorer);
                     ImGui.Checkbox("Data Visualization", ref Core.GHSettings.ShowDataVisualization);
-                    ImGui.Checkbox("Show ImGui Editor (for changing font size)", ref showImGuiStyleEditor);
+                    ImGui.SetNextItemWidth(200f);
+                    if (ImGui.DragInt("Select Font", ref Core.GHSettings.CurrentlySelectedFont, 0.1f, 0, Core.Overlay.Fonts.Length - 1))
+                    {
+                        SetCurrentlyConfiguredFont();
+                    }
+
                     ImGui.NewLine();
                     if (ImGui.Button("Test Disconnect POE"))
                     {
                         MiscHelper.KillTCPConnectionForProcess(Core.Process.Pid);
-                    }
-
-                    if (showImGuiStyleEditor)
-                    {
-                        ImGui.ShowStyleEditor();
                     }
 
                     ImGui.EndGroup();
@@ -247,6 +247,20 @@ namespace GameHelper.Settings
             {
                 yield return new Wait(GameHelperEvents.TimeToSaveAllSettings);
                 JsonHelper.SafeToFile(Core.GHSettings, State.CoreSettingFile);
+            }
+        }
+
+        private static IEnumerator<Wait> LoadCurrentlyConfiguredFont()
+        {
+            yield return new Wait(GameHelperEvents.OnRender);
+            SetCurrentlyConfiguredFont();
+        }
+
+        private static void SetCurrentlyConfiguredFont()
+        {
+            unsafe
+            {
+                ImGui.GetIO().NativePtr->FontDefault = Core.Overlay.Fonts[Core.GHSettings.CurrentlySelectedFont];
             }
         }
     }

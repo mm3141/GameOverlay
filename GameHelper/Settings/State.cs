@@ -77,6 +77,11 @@ namespace GameHelper.Settings
         /// Gets a value indicating how much time to wait between key presses.
         /// </summary>
         public int KeyPressTimeout = 50;
+
+        /// <summary>
+        /// Gets the currently selected font.
+        /// </summary>
+        public int CurrentlySelectedFont = 0;
     }
 
 #pragma warning restore SA1401 // Fields should be private

@@ -30,6 +30,11 @@ namespace GameHelper
             OverlayKiller.InitializeCoroutines();
         }
 
+        /// <summary>
+        /// Gets the fonts loaded in the overlay.
+        /// </summary>
+        public ImFontPtr[] Fonts { get; private set; }
+
         /// <inheritdoc/>
         public override async Task Run()
         {
@@ -48,9 +53,11 @@ namespace GameHelper
         protected override void AddFonts()
         {
             base.AddFonts();
-            ImGui.GetIO().Fonts.AddFontFromFileTTF(@"C:\Windows\Fonts\segoeui.ttf", 18);
-            ImGui.GetIO().Fonts.AddFontFromFileTTF(@"C:\Windows\Fonts\segoeui.ttf", 24);
-            ImGui.GetIO().Fonts.AddFontFromFileTTF(@"C:\Windows\Fonts\segoeui.ttf", 36);
+            this.Fonts = new ImFontPtr[4];
+            this.Fonts[0] = ImGui.GetFont();
+            this.Fonts[1] = ImGui.GetIO().Fonts.AddFontFromFileTTF(@"C:\Windows\Fonts\segoeui.ttf", 18);
+            this.Fonts[2] = ImGui.GetIO().Fonts.AddFontFromFileTTF(@"C:\Windows\Fonts\segoeui.ttf", 24);
+            this.Fonts[3] = ImGui.GetIO().Fonts.AddFontFromFileTTF(@"C:\Windows\Fonts\segoeui.ttf", 36);
         }
 
         /// <inheritdoc/>
