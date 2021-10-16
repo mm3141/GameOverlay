@@ -227,7 +227,7 @@ namespace Radar
 
         private void AddDefaultDelveIcons(string iconPathName)
         {
-            this.DelveIcons.TryAdd("Blockage OR DelveWall", new IconPicker(iconPathName, DelvePngCols, DelvePngRows, 0, 0, 30));
+            this.DelveIcons.TryAdd("Blockage OR DelveWall", new IconPicker(iconPathName, DelvePngCols, DelvePngRows, 1, 11, 30));
             this.DelveIcons.TryAdd("AberrantFossilChest", new IconPicker(iconPathName, DelvePngCols, DelvePngRows, 0, 0, 30));
             this.DelveIcons.TryAdd("AethericFossilChest", new IconPicker(iconPathName, DelvePngCols, DelvePngRows, 0, 0, 30));
             this.DelveIcons.TryAdd("AethericFossilChestDynamite", new IconPicker(iconPathName, DelvePngCols, DelvePngRows, 0, 0, 30));
@@ -237,14 +237,14 @@ namespace Radar
             this.DelveIcons.TryAdd("ClothMajorSpider", new IconPicker(iconPathName, DelvePngCols, DelvePngRows, 0, 0, 30));
             this.DelveIcons.TryAdd("CorrodedFossilChest", new IconPicker(iconPathName, DelvePngCols, DelvePngRows, 0, 0, 30));
             this.DelveIcons.TryAdd("CorrodedFossilChestDynamite", new IconPicker(iconPathName, DelvePngCols, DelvePngRows, 0, 0, 30));
-            this.DelveIcons.TryAdd("DelveAzuriteChest1_1", new IconPicker(iconPathName, DelvePngCols, DelvePngRows, 0, 0, 30));
-            this.DelveIcons.TryAdd("DelveAzuriteChest1_2", new IconPicker(iconPathName, DelvePngCols, DelvePngRows, 0, 0, 30));
-            this.DelveIcons.TryAdd("DelveAzuriteChest1_3", new IconPicker(iconPathName, DelvePngCols, DelvePngRows, 0, 0, 30));
-            this.DelveIcons.TryAdd("DelveAzuriteChest2_1", new IconPicker(iconPathName, DelvePngCols, DelvePngRows, 0, 0, 30));
-            this.DelveIcons.TryAdd("DelveAzuriteVein1_1", new IconPicker(iconPathName, DelvePngCols, DelvePngRows, 0, 0, 30));
-            this.DelveIcons.TryAdd("DelveAzuriteVein1_2", new IconPicker(iconPathName, DelvePngCols, DelvePngRows, 0, 0, 30));
-            this.DelveIcons.TryAdd("DelveAzuriteVein1_3", new IconPicker(iconPathName, DelvePngCols, DelvePngRows, 0, 0, 30));
-            this.DelveIcons.TryAdd("DelveAzuriteVein2_1", new IconPicker(iconPathName, DelvePngCols, DelvePngRows, 0, 0, 30));
+            this.DelveIcons.TryAdd("DelveAzuriteChest1_1", new IconPicker(iconPathName, DelvePngCols, DelvePngRows, 7, 18, 30));
+            this.DelveIcons.TryAdd("DelveAzuriteChest1_2", new IconPicker(iconPathName, DelvePngCols, DelvePngRows, 7, 18, 30));
+            this.DelveIcons.TryAdd("DelveAzuriteChest1_3", new IconPicker(iconPathName, DelvePngCols, DelvePngRows, 5, 18, 60));
+            this.DelveIcons.TryAdd("DelveAzuriteChest2_1", new IconPicker(iconPathName, DelvePngCols, DelvePngRows, 5, 18, 60));
+            this.DelveIcons.TryAdd("DelveAzuriteVein1_1", new IconPicker(iconPathName, DelvePngCols, DelvePngRows, 7, 18, 30));
+            this.DelveIcons.TryAdd("DelveAzuriteVein1_2", new IconPicker(iconPathName, DelvePngCols, DelvePngRows, 7, 18, 30));
+            this.DelveIcons.TryAdd("DelveAzuriteVein1_3", new IconPicker(iconPathName, DelvePngCols, DelvePngRows, 5, 18, 60));
+            this.DelveIcons.TryAdd("DelveAzuriteVein2_1", new IconPicker(iconPathName, DelvePngCols, DelvePngRows, 5, 18, 60));
             this.DelveIcons.TryAdd("DelveChestArmour1", new IconPicker(iconPathName, DelvePngCols, DelvePngRows, 0, 0, 30));
             this.DelveIcons.TryAdd("DelveChestArmour2", new IconPicker(iconPathName, DelvePngCols, DelvePngRows, 0, 0, 30));
             this.DelveIcons.TryAdd("DelveChestArmour3", new IconPicker(iconPathName, DelvePngCols, DelvePngRows, 0, 0, 30));
@@ -413,13 +413,13 @@ namespace Radar
             this.DelveIcons.TryAdd("DelveChestWeaponPhysicalDamage", new IconPicker(iconPathName, DelvePngCols, DelvePngRows, 0, 0, 30));
             this.DelveIcons.TryAdd("DelveChestWeaponShaper", new IconPicker(iconPathName, DelvePngCols, DelvePngRows, 0, 0, 30));
             this.DelveIcons.TryAdd("DelveChestWeaponUnique", new IconPicker(iconPathName, DelvePngCols, DelvePngRows, 0, 0, 30));
-            this.DelveIcons.TryAdd("DelveMiningSupplies1_1", new IconPicker(iconPathName, DelvePngCols, DelvePngRows, 0, 0, 30));
-            this.DelveIcons.TryAdd("DelveMiningSupplies1_2", new IconPicker(iconPathName, DelvePngCols, DelvePngRows, 0, 0, 30));
-            this.DelveIcons.TryAdd("DelveMiningSupplies2_1", new IconPicker(iconPathName, DelvePngCols, DelvePngRows, 0, 0, 30));
-            this.DelveIcons.TryAdd("DelveMiningSuppliesDynamite", new IconPicker(iconPathName, DelvePngCols, DelvePngRows, 0, 0, 30));
-            this.DelveIcons.TryAdd("DelveMiningSuppliesDynamite2", new IconPicker(iconPathName, DelvePngCols, DelvePngRows, 0, 0, 30));
-            this.DelveIcons.TryAdd("DelveMiningSuppliesFlares1_1", new IconPicker(iconPathName, DelvePngCols, DelvePngRows, 0, 0, 30));
-            this.DelveIcons.TryAdd("DelveMiningSuppliesFlares1_2", new IconPicker(iconPathName, DelvePngCols, DelvePngRows, 0, 0, 30));
+            this.DelveIcons.TryAdd("DelveMiningSupplies1_1", new IconPicker(iconPathName, DelvePngCols, DelvePngRows, 0, 11, 60));
+            this.DelveIcons.TryAdd("DelveMiningSupplies1_2", new IconPicker(iconPathName, DelvePngCols, DelvePngRows, 0, 11, 60));
+            this.DelveIcons.TryAdd("DelveMiningSupplies2_1", new IconPicker(iconPathName, DelvePngCols, DelvePngRows, 0, 11, 60));
+            this.DelveIcons.TryAdd("DelveMiningSuppliesDynamite", new IconPicker(iconPathName, DelvePngCols, DelvePngRows, 0, 11, 60));
+            this.DelveIcons.TryAdd("DelveMiningSuppliesDynamite2", new IconPicker(iconPathName, DelvePngCols, DelvePngRows, 0, 11, 60));
+            this.DelveIcons.TryAdd("DelveMiningSuppliesFlares1_1", new IconPicker(iconPathName, DelvePngCols, DelvePngRows, 0, 11, 60));
+            this.DelveIcons.TryAdd("DelveMiningSuppliesFlares1_2", new IconPicker(iconPathName, DelvePngCols, DelvePngRows, 0, 11, 60));
             this.DelveIcons.TryAdd("DelveMiningSuppliesFlaresEncounter", new IconPicker(iconPathName, DelvePngCols, DelvePngRows, 0, 0, 30));
             this.DelveIcons.TryAdd("DenseFossilChest", new IconPicker(iconPathName, DelvePngCols, DelvePngRows, 0, 0, 30));
             this.DelveIcons.TryAdd("DynamiteArmour", new IconPicker(iconPathName, DelvePngCols, DelvePngRows, 0, 0, 30));
