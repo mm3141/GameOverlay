@@ -192,7 +192,7 @@ namespace Radar
             this.BaseIcons.TryAdd("Friendly", new IconPicker(iconPathName, IconsPngCols, IconsPngRows, 1, 0, 20));
             this.BaseIcons.TryAdd("Normal Monster", new IconPicker(iconPathName, IconsPngCols, IconsPngRows, 0, 14, 20));
             this.BaseIcons.TryAdd("Magic Monster", new IconPicker(iconPathName, IconsPngCols, IconsPngRows, 6, 3, 20));
-            this.BaseIcons.TryAdd("Rare Monster", new IconPicker(iconPathName, IconsPngCols, IconsPngRows, 3, 14, 20));
+            this.BaseIcons.TryAdd("Rare Monster", new IconPicker(iconPathName, IconsPngCols, IconsPngRows, 5, 4, 20));
             this.BaseIcons.TryAdd("Unique Monster", new IconPicker(iconPathName, IconsPngCols, IconsPngRows, 5, 14, 30));
         }
 

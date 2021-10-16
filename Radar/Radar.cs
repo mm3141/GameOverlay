@@ -800,7 +800,7 @@ namespace Radar
             using Image<Rgba32> image = new Image<Rgba32>(bytesPerRow * 2, totalRows);
             Parallel.For(0, gridHeightData.Length, (y) =>
             {
-                for (int x = 0; x < gridHeightData[y].Length; x++)
+                for (int x = 1; x < gridHeightData[y].Length - 1; x++)
                 {
                     float height = gridHeightData[y][x];
                     int index = (y * bytesPerRow) + (x / 2); // since there are 2 data points in 1 index.
