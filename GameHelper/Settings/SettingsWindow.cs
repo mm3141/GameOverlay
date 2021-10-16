@@ -13,6 +13,7 @@ namespace GameHelper.Settings
     using GameHelper.CoroutineEvents;
     using GameHelper.Plugin;
     using GameHelper.Utils;
+    using GameOffsets;
     using ImGuiNET;
 
     /// <summary>
@@ -97,7 +98,8 @@ namespace GameHelper.Settings
                     ImGui.BeginGroup();
                     ImGui.TextWrapped("Developer of this software is not responsible for " +
                         "any loss that may happen due to the usage of this software. Use this " +
-                        "software at your own risk.");
+                        "software at your own risk. This is a free software, do not pay anyone " +
+                        "to get it.");
                     ImGui.NewLine();
                     ImGui.NewLine();
                     ImGui.TextWrapped($"!!!!IMPORTANT!!!! Please provide below the " +
@@ -121,6 +123,12 @@ namespace GameHelper.Settings
                     ImGui.NewLine();
                     ImGui.SetNextItemWidth(ImGui.GetContentRegionAvail().X / 3);
                     UiHelper.NonContinuousEnumComboBox("Select Show/Hide Key", ref Core.GHSettings.MainMenuHotKey);
+                    ImGui.SetNextItemWidth(ImGui.GetContentRegionAvail().X / 3);
+                    if (ImGui.DragInt("Select Font", ref Core.GHSettings.CurrentlySelectedFont, 0.1f, 0, Core.Overlay.Fonts.Length - 1))
+                    {
+                        SetCurrentlyConfiguredFont();
+                    }
+
                     ImGui.Checkbox("Performance Stats", ref Core.GHSettings.ShowPerfStats);
                     ImGui.Spacing();
                     ImGui.SameLine();
@@ -129,16 +137,19 @@ namespace GameHelper.Settings
                     ImGui.Checkbox("Hide when game is in background", ref Core.GHSettings.HidePerfStatsWhenBg);
                     ImGui.Checkbox("Game UiExplorer", ref Core.GHSettings.ShowGameUiExplorer);
                     ImGui.Checkbox("Data Visualization", ref Core.GHSettings.ShowDataVisualization);
-                    ImGui.SetNextItemWidth(200f);
-                    if (ImGui.DragInt("Select Font", ref Core.GHSettings.CurrentlySelectedFont, 0.1f, 0, Core.Overlay.Fonts.Length - 1))
-                    {
-                        SetCurrentlyConfiguredFont();
-                    }
-
                     ImGui.NewLine();
                     if (ImGui.Button("Test Disconnect POE"))
                     {
                         MiscHelper.KillTCPConnectionForProcess(Core.Process.Pid);
+                    }
+
+                    ImGui.NewLine();
+                    if (ImGui.CollapsingHeader("Thank you for your support! Means a lot to me!"))
+                    {
+                        foreach (var c in GameProcessDetails.Contributors)
+                        {
+                            ImGui.TextColored(new Vector4(212 / 255f, 175 / 255f, 55 / 255f, 255 / 255f), c);
+                        }
                     }
 
                     ImGui.EndGroup();
