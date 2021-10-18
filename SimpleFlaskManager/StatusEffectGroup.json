@@ -33,5 +33,16 @@
     "ground_lightning_shock",
     "seawitch_lightning_beam",
     "lightning_damage_and_shock"
+  ],
+  "Cursed": [
+    "curse_temporal_chains",
+    "curse_elemental_weakness",
+    "curse_cold_weakness",
+    "curse_lightning_weakness",
+    "curse_chaos_weakness",
+    "curse_fire_weakness",
+    "curse_newpunishment",
+    "curse_enfeeble",
+    "curse_vulnerability"
   ]
 }
