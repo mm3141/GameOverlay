@@ -50,6 +50,16 @@ namespace Radar
         public bool MakeCullWindowFullScreen = false;
 
         /// <summary>
+        /// Gets a value indicating whether to draw the map in culling window or not.
+        /// </summary>
+        public bool DrawMapInCull = true;
+
+        /// <summary>
+        /// Gets a value indicating whether to draw the tiles in culling window or not.
+        /// </summary>
+        public bool DrawTileInCull = true;
+
+        /// <summary>
         /// Gets a value indicating whether user wants to draw walkable map or not.
         /// </summary>
         public bool DrawWalkableMap = true;

@@ -112,6 +112,13 @@ namespace Radar
                 this.Settings.CullWindowSize.Y = Core.Process.WindowArea.Height;
             }
 
+            if (ImGui.TreeNode("Culling window advance options"))
+            {
+                ImGui.Checkbox("Draw map in culling window", ref this.Settings.DrawMapInCull);
+                ImGui.Checkbox("Draw tiles in culling window", ref this.Settings.DrawTileInCull);
+                ImGui.TreePop();
+            }
+
             ImGui.TreePop();
             ImGui.Separator();
             ImGui.NewLine();
@@ -367,7 +374,15 @@ namespace Radar
             p2 += mapCenter;
             p3 += mapCenter;
             p4 += mapCenter;
-            ImGui.GetWindowDrawList().AddImageQuad(this.walkableMapTexture, p1, p2, p3, p4);
+
+            if (this.Settings.DrawMapInCull)
+            {
+                ImGui.GetWindowDrawList().AddImageQuad(this.walkableMapTexture, p1, p2, p3, p4);
+            }
+            else
+            {
+                ImGui.GetBackgroundDrawList().AddImageQuad(this.walkableMapTexture, p1, p2, p3, p4);
+            }
         }
 
         private void DrawTgtFiles(Vector2 mapCenter)
@@ -378,7 +393,16 @@ namespace Radar
                 (uint)(this.Settings.TgtNameColor.Z * 255),
                 (uint)(this.Settings.TgtNameColor.W * 255));
 
-            var fgDraw = ImGui.GetWindowDrawList();
+            ImDrawListPtr fgDraw = null;
+            if (this.Settings.DrawTileInCull)
+            {
+                fgDraw = ImGui.GetWindowDrawList();
+            }
+            else
+            {
+                fgDraw = ImGui.GetBackgroundDrawList();
+            }
+
             var currentAreaInstance = Core.States.InGameStateObject.CurrentAreaInstance;
             if (!currentAreaInstance.Player.TryGetComponent<Render>(out var playerRender))
             {
