@@ -96,7 +96,7 @@ namespace GameHelper.RemoteObjects.UiElement
                 var pos = this.GetUnScaledPosition();
                 pos.X *= myScale.WidthScale;
                 pos.Y *= myScale.HeightScale;
-                return pos / Core.GHSettings.WindowScale;
+                return pos;
             }
 
             private set
@@ -116,7 +116,7 @@ namespace GameHelper.RemoteObjects.UiElement
                 var size = this.unScaledSize;
                 size.X *= scale.WidthScale;
                 size.Y *= scale.HeightScale;
-                return size / Core.GHSettings.WindowScale;
+                return size;
             }
 
             private set

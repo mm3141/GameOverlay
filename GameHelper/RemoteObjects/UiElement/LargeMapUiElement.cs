@@ -88,11 +88,9 @@ namespace GameHelper.RemoteObjects.UiElement
             var data = reader.ReadMemory<MapUiElementOffset>(this.Address);
             this.shift.X = data.Shift.X;
             this.shift.Y = data.Shift.Y;
-            this.shift /= Core.GHSettings.WindowScale;
 
             this.defaultShift.X = data.DefaultShift.X;
             this.defaultShift.Y = data.DefaultShift.Y;
-            this.defaultShift /= Core.GHSettings.WindowScale;
 
             this.Zoom = data.Zoom;
         }

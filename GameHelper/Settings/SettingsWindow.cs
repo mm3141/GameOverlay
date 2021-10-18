@@ -101,14 +101,6 @@ namespace GameHelper.Settings
                         "software at your own risk. This is a free software, do not pay anyone " +
                         "to get it.");
                     ImGui.NewLine();
-                    ImGui.NewLine();
-                    ImGui.TextWrapped($"!!!!IMPORTANT!!!! Please provide below the " +
-                        $"Window Settings -> Display Settings -> Scale value. Restart the " +
-                        $"Overlay after setting this value.\nExample Values:\n\t100%% -> 1\n\t" +
-                        $"125%% -> 1.25\n\t150%% -> 1.50 etc\nThis is used to align the texture " +
-                        $"drawn on the screen (e.g. Radar, UiElements border) with the InGame " +
-                        $"UiElements and Map. It does not resize text or windows.");
-                    ImGui.DragFloat("Window Scale", ref Core.GHSettings.WindowScale, 0.25f, 1f, 5f);
                     ImGui.TextWrapped("When GameOverlay press a key in the game, the key " +
                         "has to go to the GGG server for it to work. This process takes " +
                         "time equal to your latency. During this time GameOverlay might " +

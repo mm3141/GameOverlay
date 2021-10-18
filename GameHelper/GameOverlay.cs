@@ -21,6 +21,7 @@ namespace GameHelper
         /// Initializes a new instance of the <see cref="GameOverlay"/> class.
         /// </summary>
         internal GameOverlay()
+            : base(true)
         {
             CoroutineHandler.Start(this.UpdateOverlayBounds(), priority: int.MaxValue);
             SettingsWindow.InitializeCoroutines();
