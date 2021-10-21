@@ -147,11 +147,14 @@ namespace GameHelper
             {
                 yield return new Wait(1d);
                 processesInfo.Clear();
-                foreach (var process in Process.GetProcessesByName(GameProcessDetails.ProcessName))
+                foreach (var process in Process.GetProcesses())
                 {
-                    if (process.MainWindowTitle.ToLower() == GameProcessDetails.WindowTitle)
+                    if (GameProcessDetails.ProcessName.TryGetValue(process.ProcessName, out var windowTitle))
                     {
-                        processesInfo.Add(process);
+                        if (process.MainWindowTitle.ToLower() == windowTitle)
+                        {
+                            processesInfo.Add(process);
+                        }
                     }
                 }
 
