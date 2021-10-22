@@ -17,7 +17,7 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 3.1.x
+        dotnet-version: 5.0.x
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
@@ -26,4 +26,4 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: GameHelper-${{ matrix.os }}
-        path: GameHelper/bin/Release/netcoreapp3.1
+        path: GameHelper/bin/Release/net5.0/win-x64
