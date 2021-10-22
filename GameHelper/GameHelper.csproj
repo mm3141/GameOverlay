@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <StartupObject>GameHelper.Program</StartupObject>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <Authors>zaafar</Authors>
