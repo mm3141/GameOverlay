@@ -35,57 +35,37 @@ namespace GameHelper.RemoteObjects.States
         /// <summary>
         /// Gets the data related to the current area instance.
         /// </summary>
-        public AreaInstance CurrentAreaInstance
-        {
-            get;
-            private set;
-        }
+        public AreaInstance CurrentAreaInstance { get; private set; }
 
-        = new AreaInstance(IntPtr.Zero);
+            = new AreaInstance(IntPtr.Zero);
 
         /// <summary>
         /// Gets the data related to the player the user is playing.
         /// </summary>
-        public ServerData ServerDataObject
-        {
-            get;
-            private set;
-        }
+        public ServerData ServerDataObject { get; private set; }
 
-        = new ServerData(IntPtr.Zero);
+            = new ServerData(IntPtr.Zero);
 
         /// <summary>
         /// Gets the World to Screen Matrix.
         /// </summary>
-        public Matrix4x4 WorldToScreenMatrix
-        {
-            get;
-            private set;
-        }
+        public Matrix4x4 WorldToScreenMatrix { get; private set; }
 
-        = Matrix4x4.Identity;
+            = Matrix4x4.Identity;
 
         /// <summary>
         /// Gets the UiRoot main child which contains all the UiElements of the game.
         /// </summary>
-        public ImportantUiElements GameUi
-        {
-            get;
-            private set;
-        }
+        public ImportantUiElements GameUi { get; private set; }
 
-        = new ImportantUiElements(IntPtr.Zero);
+            = new ImportantUiElements(IntPtr.Zero);
 
         /// <summary>
         /// Gets the data related to the root ui element.
         /// </summary>
-        internal UiElementBase UiRoot
-        {
-            get;
-            private set;
-        }
+        internal UiElementBase UiRoot { get; private set; }
 
-        = new UiElementBase(IntPtr.Zero);
+            = new UiElementBase(IntPtr.Zero);
 
         /// <summary>
         /// Converts the World position to Screen location.
