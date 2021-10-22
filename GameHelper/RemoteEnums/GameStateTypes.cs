@@ -10,10 +10,24 @@ namespace GameHelper.RemoteEnums
     public enum GameStateTypes
     {
         /// <summary>
-        /// This is a special State, it will not trigger State Change Event.
-        /// This is just for displaying purposes. It means Game isn't stared.
+        /// When user is in Area Loading Screen.
         /// </summary>
-        GameNotLoaded,
+        AreaLoadingState,
+
+        /// <summary>
+        /// Game state.
+        /// </summary>
+        WaitingState,
+
+        /// <summary>
+        /// When user is in Login Screen.
+        /// </summary>
+        CreditsState,
+
+        /// <summary>
+        /// Game State.
+        /// </summary>
+        EscapeState,
 
         /// <summary>
         /// When User is in Town/Hideout/Area/Zone etc.
@@ -21,24 +35,9 @@ namespace GameHelper.RemoteEnums
         InGameState,
 
         /// <summary>
-        /// When user is in Login Screen.
-        /// </summary>
-        PreGameState,
-
-        /// <summary>
         /// Game State.
         /// </summary>
-        WaitingState,
-
-        /// <summary>
-        /// Game state.
-        /// </summary>
-        SelectCharacterState,
-
-        /// <summary>
-        /// Game State.
-        /// </summary>
-        LoadingState,
+        ChangePasswordState,
 
         /// <summary>
         /// Game State.
@@ -48,7 +47,17 @@ namespace GameHelper.RemoteEnums
         /// <summary>
         /// Game State.
         /// </summary>
+        PreGameState,
+
+        /// <summary>
+        /// Game State.
+        /// </summary>
         CreateCharacterState,
+
+        /// <summary>
+        /// Game State.
+        /// </summary>
+        SelectCharacterState,
 
         /// <summary>
         /// Game State.
@@ -58,21 +67,12 @@ namespace GameHelper.RemoteEnums
         /// <summary>
         /// Game State.
         /// </summary>
-        EscapeState,
+        LoadingState,
 
         /// <summary>
-        /// Game State.
+        /// This is a special State, it will not trigger State Change Event.
+        /// This is just for displaying purposes. It means Game isn't stared.
         /// </summary>
-        CreditsState,
-
-        /// <summary>
-        /// When user is in Area Loading Screen.
-        /// </summary>
-        AreaLoadingState,
-
-        /// <summary>
-        /// Game State.
-        /// </summary>
-        ChangePasswordState,
+        GameNotLoaded,
     }
 }

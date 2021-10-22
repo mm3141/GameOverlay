@@ -66,7 +66,7 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
         /// <inheritdoc/>
         public override bool Evaluate()
         {
-            var flask = Core.States.InGameStateObject.ServerDataObject.FlaskInventory[0, this.slot - 1];
+            var flask = Core.States.InGameStateObject.CurrentAreaInstance.ServerDataObject.FlaskInventory[0, this.slot - 1];
             if (flask.Address == IntPtr.Zero)
             {
                 return false;

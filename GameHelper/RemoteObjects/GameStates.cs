@@ -11,7 +11,6 @@ namespace GameHelper.RemoteObjects
     using GameHelper.RemoteEnums;
     using GameHelper.RemoteObjects.States;
     using GameHelper.Utils;
-    using GameOffsets.Natives;
     using GameOffsets.Objects;
     using ImGuiNET;
 
@@ -113,19 +112,19 @@ namespace GameHelper.RemoteObjects
             {
                 this.myStaticObj = reader.ReadMemory<GameStateStaticOffset>(this.Address);
                 var data = reader.ReadMemory<GameStateOffset>(this.myStaticObj.GameState);
-                var states = reader.ReadStdMapAsList<StdWString, IntPtr>(data.States, true);
+                var states = reader.ReadStdList<StateInternalStructure>(data.States);
                 for (int i = 0; i < states.Count; i++)
                 {
                     var state = states[i];
-                    string name = reader.ReadStdWString(state.Key);
-                    this.UpdateKnownStatesObjects(name, state.Value);
+                    string name = $"{(GameStateTypes)state.StateEnumToName}";
+                    this.UpdateKnownStatesObjects(name, state.StatePtr);
                     if (this.AllStates.ContainsKey(name))
                     {
-                        this.AllStates[name] = state.Value;
+                        this.AllStates[name] = state.StatePtr;
                     }
                     else
                     {
-                        this.AllStates.Add(name, state.Value);
+                        this.AllStates.Add(name, state.StatePtr);
                     }
                 }
             }

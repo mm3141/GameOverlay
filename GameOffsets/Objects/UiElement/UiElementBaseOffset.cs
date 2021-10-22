@@ -8,21 +8,21 @@ namespace GameOffsets.Objects.UiElement
     public struct UiElementBaseOffset
     {
         [FieldOffset(0x000)] public IntPtr Vtable;
-        [FieldOffset(0x020)] public IntPtr Self;
-        [FieldOffset(0x028)] public StdVector ChildrensPtr; // both points to same children UiElements.
+        [FieldOffset(0x028)] public IntPtr Self;
+        [FieldOffset(0x030)] public StdVector ChildrensPtr; // both points to same children UiElements.
         // [FieldOffset(0x038)] public StdVector ChildrensPtr1; // both points to same children UiElements.
-        [FieldOffset(0x60)] public StdTuple2D<float> PositionModifier;
-        [FieldOffset(0x68)] public StdWString Id;
-        [FieldOffset(0x8A)] public byte ScaleIndex;
+        [FieldOffset(0xA8)] public StdTuple2D<float> PositionModifier;
+        [FieldOffset(0xB0)] public StdWString Id;
+        [FieldOffset(0xD2)] public byte ScaleIndex;
         // Following Ptr is basically pointing to InGameState+0x458.
         // No idea what InGameState+0x458 is pointing to.
         // [FieldOffset(0x088)] public IntPtr UnknownPtr;
-        [FieldOffset(0x98)] public IntPtr ParentPtr; // UiElement.
-        [FieldOffset(0xA0)] public StdTuple2D<float> RelativePosition; // variable
-        [FieldOffset(0xB8)] public float LocalScaleMultiplier;
+        [FieldOffset(0xE0)] public IntPtr ParentPtr; // UiElement.
+        [FieldOffset(0xE8)] public StdTuple2D<float> RelativePosition; // variable
+        [FieldOffset(0x100)] public float LocalScaleMultiplier;
         // [FieldOffset(0x108)] public float Scale;
-        [FieldOffset(0x118)] public uint Flags; // variable
-        [FieldOffset(0x138)] public StdTuple2D<float> UnscaledSize; // variable
+        [FieldOffset(0x160)] public uint Flags; // variable
+        [FieldOffset(0x180)] public StdTuple2D<float> UnscaledSize; // variable
         // Tooltip????
     }
 
@@ -31,9 +31,9 @@ namespace GameOffsets.Objects.UiElement
         private const int SHOULD_MODIFY_BINARY_POS = 0x0A;
         private const int IS_VISIBLE_BINARY_POS = 0x0B;
 
-        public const int SCALE_INDEX_1 = 0x04;
-        public const int SCALE_INDEX_2 = 0x00;
-        public const int SCALE_INDEX_3 = 0x02;
+        public const int SCALE_INDEX_1 = 0x00;
+        public const int SCALE_INDEX_2 = 0x02;
+        public const int SCALE_INDEX_3 = 0x06;
 
         public static Func<uint, bool> IsVisibleChecker = new Func<uint, bool>((param) =>
         {

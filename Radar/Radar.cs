@@ -617,7 +617,7 @@ namespace Radar
                     var chestIcon = chestComp.IsBreachOrLarge ?
                         this.Settings.BaseIcons["Breach or Large Chest"] :
                         this.Settings.BaseIcons["Mini Breakable Chest"];
-                    if (chestComp.IsStrongbox)
+                    if (chestComp.IsStrongbox && !chestComp.IsBreachOrLarge)
                     {
                         if (entity.Value.Path.StartsWith("Metadata/Chests/StrongBoxes/Arcanist") ||
                             entity.Value.Path.StartsWith("Metadata/Chests/StrongBoxes/Cartographer") ||

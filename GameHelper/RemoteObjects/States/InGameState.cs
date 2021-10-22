@@ -11,7 +11,6 @@ namespace GameHelper.RemoteObjects.States
     using GameHelper.CoroutineEvents;
     using GameHelper.RemoteObjects.States.InGameStateObjects;
     using GameHelper.RemoteObjects.UiElement;
-    using GameHelper.Utils;
     using GameOffsets.Natives;
     using GameOffsets.Objects.States;
     using ImGuiNET;
@@ -42,17 +41,6 @@ namespace GameHelper.RemoteObjects.States
         }
 
         = new AreaInstance(IntPtr.Zero);
-
-        /// <summary>
-        /// Gets the data related to the player the user is playing.
-        /// </summary>
-        public ServerData ServerDataObject
-        {
-            get;
-            private set;
-        }
-
-        = new ServerData(IntPtr.Zero);
 
         /// <summary>
         /// Gets the World to Screen Matrix.
@@ -131,7 +119,6 @@ namespace GameHelper.RemoteObjects.States
             this.CurrentAreaInstance.Address = IntPtr.Zero;
             this.UiRoot.Address = IntPtr.Zero;
             this.GameUi.Address = IntPtr.Zero;
-            this.ServerDataObject.Address = IntPtr.Zero;
             this.WorldToScreenMatrix = Matrix4x4.Identity;
         }
 
@@ -140,7 +127,6 @@ namespace GameHelper.RemoteObjects.States
         {
             var reader = Core.Process.Handle;
             var data = reader.ReadMemory<InGameStateOffset>(this.Address);
-            this.ServerDataObject.Address = data.ServerData;
             this.CurrentAreaInstance.Address = data.LocalData;
             this.UiRoot.Address = data.UiRootPtr;
             this.GameUi.Address = data.IngameUi;

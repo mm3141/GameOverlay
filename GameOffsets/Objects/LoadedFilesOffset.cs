@@ -14,7 +14,7 @@ namespace GameOffsets.Objects
         [FieldOffset(0x1C)] public float Unknown1;
         [FieldOffset(0x20)] public long FilesPointerStructureCounter;
         public static int TotalCount = 0x10;
-        public static int Capacity = 0xFFF; // Expected FilesPointerStructureCapacity (unless GGG changes the algo)
+        public static int Capacity = 0x0FFF; // Expected FilesPointerStructureCapacity (unless GGG changes the algo)
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]

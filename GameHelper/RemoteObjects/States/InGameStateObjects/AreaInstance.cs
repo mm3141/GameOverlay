@@ -54,6 +54,17 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
         public WorldAreaDat AreaDetails { get; private set; } = new WorldAreaDat(IntPtr.Zero);
 
         /// <summary>
+        /// Gets the data related to the player the user is playing.
+        /// </summary>
+        public ServerData ServerDataObject
+        {
+            get;
+            private set;
+        }
+
+        = new ServerData(IntPtr.Zero);
+
+        /// <summary>
         /// Gets the player Entity.
         /// </summary>
         public Entity Player { get; private set; } = new Entity();
@@ -189,6 +200,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
         protected override void CleanUpData()
         {
             this.MonsterLevel = 0x00;
+            this.ServerDataObject.Address = IntPtr.Zero;
             this.AreaHash = string.Empty;
             this.Player.Address = IntPtr.Zero;
             this.AreaDetails.Address = IntPtr.Zero;
@@ -202,6 +214,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
         {
             var reader = Core.Process.Handle;
             var data = reader.ReadMemory<AreaInstanceOffsets>(this.Address);
+            this.ServerDataObject.Address = data.ServerDataPtr;
             if (hasAddressChanged)
             {
                 this.AwakeEntities.Clear();
