@@ -39,7 +39,7 @@
   </ItemGroup>
 
   <Target Name="CopyFiles" AfterTargets="Build">
-    <Copy SourceFiles="$(OutDir)$(TargetName)$(TargetExt);$(OutDir)$(TargetName).pdb;$(OutDir)FlaskNameToBuff.json;$(OutDir)StatusEffectGroup.json" DestinationFolder="..\GameHelper\$(OutDir)Plugins\$(ProjectName)" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="$(OutDir)$(TargetName)$(TargetExt);$(OutDir)$(TargetName).pdb;$(OutDir)FlaskNameToBuff.json;$(OutDir)StatusEffectGroup.json" DestinationFolder="..\GameHelper\$(OutDir)win-x64\Plugins\$(ProjectName)" SkipUnchangedFiles="true" />
   </Target>
 
 </Project>
