@@ -19,9 +19,9 @@ jobs:
       with:
         dotnet-version: 5.0.x
     - name: Restore dependencies
-      run: dotnet restore
-    - name: Build
-      run: dotnet build --configuration Release
+      run: dotnet restore --runtime win-x64
+    - name: Buil
+      run: dotnet build --configuration Release --no-restore
     - name: Upload the Build Artifact
       uses: actions/upload-artifact@v2
       with:
