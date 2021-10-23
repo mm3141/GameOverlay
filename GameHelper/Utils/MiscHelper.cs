@@ -9,12 +9,14 @@ namespace GameHelper.Utils
     using System.Diagnostics;
     using System.Linq;
     using System.Runtime.InteropServices;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// Util class to send keyboard/mouse keys to the game.
     /// </summary>
     public static class MiscHelper
     {
+        private static Task<IntPtr> sendingMessage = null;
         private static Random rand = new Random();
         private static Stopwatch delayBetweenKeys = Stopwatch.StartNew();
 
@@ -48,6 +50,11 @@ namespace GameHelper.Utils
         /// <returns>Is the key actually pressed or not.</returns>
         public static bool KeyUp(ConsoleKey key)
         {
+            if (sendingMessage != null && !sendingMessage.IsCompleted)
+            {
+                return false;
+            }
+
             if (delayBetweenKeys.ElapsedMilliseconds >= Core.GHSettings.KeyPressTimeout + (rand.Next() % 10))
             {
                 delayBetweenKeys.Restart();
@@ -59,7 +66,7 @@ namespace GameHelper.Utils
 
             if (Core.Process.Address != IntPtr.Zero)
             {
-                SendMessage(Core.Process.Information.MainWindowHandle, 0x101, (int)key, 0);
+                sendingMessage = Task.Run(() => SendMessage(Core.Process.Information.MainWindowHandle, 0x101, (int)key, 0));
                 return true;
             }
 
