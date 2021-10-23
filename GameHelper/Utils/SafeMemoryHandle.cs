@@ -281,13 +281,15 @@ namespace GameHelper.Utils
 #if DEBUG
                         Console.WriteLine($"ERROR ({this.readStdMapInfiniteCounter}):" +
                             $" Reading HashMap failed current counter {counter} is greater than" +
-                            $" Maximum allowed HashMap size ({MaxAllowed}).");
+                            $" Maximum allowed HashMap size ({MaxAllowed})." +
+                            $" Game tells us the expected size to be {size}.");
 #endif
                         if (this.readStdMapInfiniteCounter > MaxInfiniteCounter)
                         {
                             throw new Exception("ERROR: Reading HashMap failed" +
                                 $" current counter {counter} is greater than" +
-                                $" Maximum allowed HashMap size ({MaxAllowed}).");
+                                $" Maximum allowed HashMap size ({MaxAllowed})." +
+                                $" Game tells us the expected size to be {size}.");
                         }
 
                         this.readStdMapInfiniteCounter++;
