@@ -21,7 +21,7 @@
     [StructLayout(LayoutKind.Explicit, Pack = 1)]
     public struct StateInternalStructure
     {
-        [FieldOffset(0x00)] public short StateEnumToName;
+        [FieldOffset(0x00)] public byte StateEnumToName;
         [FieldOffset(0x08)] public IntPtr StatePtr;
     }
 
