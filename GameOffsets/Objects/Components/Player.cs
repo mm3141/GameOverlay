@@ -7,6 +7,6 @@
     public struct PlayerOffsets
     {
         [FieldOffset(0x000)] public ComponentHeader Header;
-        [FieldOffset(0x158)] public StdWString Name;
+        [FieldOffset(0x160)] public StdWString Name;
     }
 }

@@ -83,6 +83,8 @@ namespace GameHelper.RemoteEnums
         RESERVED5,
         RESERVED6,
         ExpeditionStorage1,
+        HellscapeModificationInventory1,
+        LabyrinthCraftingInput,
 #pragma warning restore SA1602, CS1591
     }
 }
