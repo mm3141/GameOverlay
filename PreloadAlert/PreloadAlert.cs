@@ -99,6 +99,7 @@ namespace PreloadAlert
             ImGui.Checkbox("Lock/Unlock preload window", ref this.Settings.Locked);
             ImGui.Checkbox("Hide when locked & not in the game", ref this.Settings.EnableHideUi);
             ImGui.Checkbox("Hide when no preload found", ref this.Settings.HideWindowWhenEmpty);
+            ImGui.Checkbox("Hide when in town or hideout", ref this.Settings.HideWhenInTownOrHideout);
             ImGui.Separator();
             ImGui.TextWrapped("If you find something new and wants to add it in the preload " +
                 "you can use Core -> Data Visulization -> CurrentAreaLoadedFiles feature.");
@@ -125,6 +126,11 @@ namespace PreloadAlert
             }
 
             var areaDetails = Core.States.InGameStateObject.CurrentAreaInstance.AreaDetails;
+            if (this.Settings.HideWhenInTownOrHideout && (areaDetails.IsHideout || areaDetails.IsTown))
+            {
+                return;
+            }
+
             string windowName = "Preload Window";
             ImGui.PushStyleColor(ImGuiCol.WindowBg, this.isPreloadAlertHovered ? Vector4.Zero : this.Settings.BackgroundColor);
             ImGui.PushStyleVar(ImGuiStyleVar.WindowBorderSize, this.isPreloadAlertHovered ? 0.0f : 0.5f);

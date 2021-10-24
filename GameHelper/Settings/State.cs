@@ -77,6 +77,12 @@ namespace GameHelper.Settings
         /// Gets the currently selected font.
         /// </summary>
         public int CurrentlySelectedFont = 0;
+
+        /// <summary>
+        /// Gets the value indicating whether user wants to keep the entities
+        /// that are outside of the network bubble.
+        /// </summary>
+        public bool RemoveAllInvalidEntities = false;
     }
 
 #pragma warning restore SA1401 // Fields should be private

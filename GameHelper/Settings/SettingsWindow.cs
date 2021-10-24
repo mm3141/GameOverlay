@@ -127,8 +127,9 @@ namespace GameHelper.Settings
                     ImGui.Spacing();
                     ImGui.SameLine();
                     ImGui.Checkbox("Hide when game is in background", ref Core.GHSettings.HidePerfStatsWhenBg);
-                    ImGui.Checkbox("Game UiExplorer", ref Core.GHSettings.ShowGameUiExplorer);
-                    ImGui.Checkbox("Data Visualization", ref Core.GHSettings.ShowDataVisualization);
+                    ImGui.Checkbox("Game UiExplorer (GE)", ref Core.GHSettings.ShowGameUiExplorer);
+                    ImGui.Checkbox("Data Visualization (DV)", ref Core.GHSettings.ShowDataVisualization);
+                    ImGui.Checkbox("Do not save entities outside the network bubble", ref Core.GHSettings.RemoveAllInvalidEntities);
                     ImGui.NewLine();
                     if (ImGui.Button("Test Disconnect POE"))
                     {

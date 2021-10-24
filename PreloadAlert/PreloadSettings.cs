@@ -34,6 +34,11 @@ namespace PreloadAlert
         public bool HideWindowWhenEmpty = false;
 
         /// <summary>
+        /// Gets a value indicating whether the preload alert window should hide when in town/hideout.
+        /// </summary>
+        public bool HideWhenInTownOrHideout = false;
+
+        /// <summary>
         /// Gets a value indicating whether the preload alert window is locked or not.
         /// </summary>
         public bool Locked = false;

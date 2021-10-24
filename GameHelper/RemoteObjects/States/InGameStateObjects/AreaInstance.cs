@@ -247,17 +247,21 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
 
             foreach (var kv in this.AwakeEntities)
             {
-                if (!kv.Value.IsValid &&
-
-                    // This logic isn't perfect in case something happens to the entity before
-                    // we can cache the location of that entity. In that case we will just
-                    // delete that entity anyway. This activity is fine as long as it doesn't
-                    // crash the GameHelper.
-                    this.Player.DistanceFrom(kv.Value) <
-                    AreaInstanceConstants.NETWORK_BUBBLE_RADIUS)
+                if (!kv.Value.IsValid)
                 {
-                    this.AwakeEntities.TryRemove(kv.Key, out _);
-                    continue;
+                    if (Core.GHSettings.RemoveAllInvalidEntities ||
+
+                        // This logic isn't perfect in case something happens to the entity before
+                        // we can cache the location of that entity. In that case we will just
+                        // delete that entity anyway. This activity is fine as long as it doesn't
+                        // crash the GameHelper. This logic is to detect if entity exploded due to
+                        // explodi-chest or just left the network bubble since entity leaving network
+                        // bubble is same as entity exploded.
+                        this.Player.DistanceFrom(kv.Value) < AreaInstanceConstants.NETWORK_BUBBLE_RADIUS)
+                    {
+                        this.AwakeEntities.TryRemove(kv.Key, out _);
+                        continue;
+                    }
                 }
 
                 kv.Value.IsValid = false;
