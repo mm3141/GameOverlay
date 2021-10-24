@@ -21,8 +21,10 @@
 
         public override string ToString()
         {
-            return $"BuffDefinationPtr: {this.BuffDefinationPtr.ToInt64():X}, MaxTime: {this.TotalTime}, " +
-                $"TimeLeft: {this.TimeLeft}, Charges: {this.Charges}";
+            string maxTime = float.IsInfinity(this.TotalTime) ? "Inf" : this.TotalTime.ToString();
+            string timeLeft = float.IsInfinity(this.TimeLeft) ? "Inf" : this.TotalTime.ToString();
+            return $"BuffDefinationPtr: {this.BuffDefinationPtr.ToInt64():X}, MaxTime: {maxTime}, " +
+                $"TimeLeft: {timeLeft}, Charges: {this.Charges}";
         }
     }
 }
