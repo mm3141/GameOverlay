@@ -5,6 +5,7 @@
 namespace SimpleFlaskManager.ProfileManager.Conditions
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using GameHelper;
     using GameHelper.RemoteObjects.Components;
@@ -19,7 +20,7 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
     {
         private static int flaskSlotStatic = 1;
         private IntPtr flaskAddressCache = IntPtr.Zero;
-        private string flaskBuffCache = string.Empty;
+        private List<string> flaskBuffsCache = new List<string>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FlaskEffectCondition"/> class.
@@ -69,9 +70,9 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
             {
                 if (flask.TryGetComponent<Base>(out var baseComponent))
                 {
-                    if (JsonDataHelper.FlaskNameToBuff.TryGetValue(baseComponent.ItemBaseName, out var buffName))
+                    if (JsonDataHelper.FlaskNameToBuffGroups.TryGetValue(baseComponent.ItemBaseName, out var buffNames))
                     {
-                        this.flaskBuffCache = buffName;
+                        this.flaskBuffsCache = buffNames;
                         this.flaskAddressCache = flask.Address;
                     }
                     else
@@ -85,7 +86,7 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
             var player = Core.States.InGameStateObject.CurrentAreaInstance.Player;
             if (player.TryGetComponent<Buffs>(out var buffComponent))
             {
-                if (!buffComponent.StatusEffects.Keys.Any(statusEffect => statusEffect.StartsWith(this.flaskBuffCache)))
+                if (!this.flaskBuffsCache.Any(buffName => buffComponent.StatusEffects.ContainsKey(buffName)))
                 {
                     return true && this.EvaluateNext();
                 }
