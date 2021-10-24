@@ -356,15 +356,15 @@ namespace GameHelper.Utils
         internal List<TValue> ReadStdBucket<TValue>(StdBucket nativeContainer)
             where TValue : unmanaged
         {
-            var ret = new List<TValue>((int)nativeContainer.Counter);
-            var size = (int)(nativeContainer.Capacity + 1) / 8;
             if (nativeContainer.Data == IntPtr.Zero ||
-                nativeContainer.Capacity == 0x00 ||
-                nativeContainer.Counter == 0x00)
+                nativeContainer.Capacity <= 0x00 ||
+                nativeContainer.Counter <= 0x00)
             {
-                return ret;
+                return new List<TValue>();
             }
 
+            var size = (int)(nativeContainer.Capacity + 1) / 8;
+            var ret = new List<TValue>((int)nativeContainer.Counter);
             var dataArray = this.ReadMemoryArray<StdBucketNode<TValue>>(nativeContainer.Data, size);
             for (int i = 0; i < dataArray.Length; i++)
             {
