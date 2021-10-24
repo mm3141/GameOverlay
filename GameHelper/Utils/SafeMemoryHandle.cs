@@ -348,6 +348,72 @@ namespace GameHelper.Utils
         }
 
         /// <summary>
+        /// Reads the std::bucket into a list.
+        /// </summary>
+        /// <typeparam name="TValue">value type that the std bucket contains.</typeparam>
+        /// <param name="nativeContainer">native object of the std::bucket.</param>
+        /// <returns>a list containing all the valid values found in std::bucket.</returns>
+        internal List<TValue> ReadStdBucket<TValue>(StdBucket nativeContainer)
+            where TValue : unmanaged
+        {
+            var ret = new List<TValue>((int)nativeContainer.Counter);
+            var size = (int)(nativeContainer.Capacity + 1) / 8;
+            if (nativeContainer.Data == IntPtr.Zero ||
+                nativeContainer.Capacity == 0x00 ||
+                nativeContainer.Counter == 0x00)
+            {
+                return ret;
+            }
+
+            var dataArray = this.ReadMemoryArray<StdBucketNode<TValue>>(nativeContainer.Data, size);
+            for (int i = 0; i < dataArray.Length; i++)
+            {
+                var data = dataArray[i];
+                if (data.Flag0 != StdBucketNode<TValue>.InValidPointerFlagValue)
+                {
+                    ret.Add(data.Pointer0);
+                }
+
+                if (data.Flag1 != StdBucketNode<TValue>.InValidPointerFlagValue)
+                {
+                    ret.Add(data.Pointer1);
+                }
+
+                if (data.Flag2 != StdBucketNode<TValue>.InValidPointerFlagValue)
+                {
+                    ret.Add(data.Pointer2);
+                }
+
+                if (data.Flag3 != StdBucketNode<TValue>.InValidPointerFlagValue)
+                {
+                    ret.Add(data.Pointer3);
+                }
+
+                if (data.Flag4 != StdBucketNode<TValue>.InValidPointerFlagValue)
+                {
+                    ret.Add(data.Pointer4);
+                }
+
+                if (data.Flag5 != StdBucketNode<TValue>.InValidPointerFlagValue)
+                {
+                    ret.Add(data.Pointer5);
+                }
+
+                if (data.Flag6 != StdBucketNode<TValue>.InValidPointerFlagValue)
+                {
+                    ret.Add(data.Pointer6);
+                }
+
+                if (data.Flag7 != StdBucketNode<TValue>.InValidPointerFlagValue)
+                {
+                    ret.Add(data.Pointer7);
+                }
+            }
+
+            return ret;
+        }
+
+        /// <summary>
         /// When overridden in a derived class, executes the code required to free the handle.
         /// </summary>
         /// <returns>

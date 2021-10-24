@@ -169,80 +169,14 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
                 var lookupPtr = reader.ReadMemory<ComponentLookUpStruct>(
                     entityDetails.ComponentLookUpPtr);
 
-                var nameAndIndexArray = reader.ReadMemoryArray<ComponentArrayStructure>(lookupPtr.ComponentArray, ((int)lookupPtr.Capacity + 1) / 8);
-                for (int i = 0; i < nameAndIndexArray.Length; i++)
+                var namesAndIndexes = reader.ReadStdBucket<ComponentNameAndIndexStruct>(lookupPtr.ComponentsNameAndIndex);
+                for (int i = 0; i < namesAndIndexes.Count; i++)
                 {
-                    var bucket = nameAndIndexArray[i];
-                    if (bucket.Flag0 != ComponentArrayStructure.InValidPointerFlagValue)
+                    var nameAndIndex = namesAndIndexes[i];
+                    var name = reader.ReadString(nameAndIndex.NamePtr);
+                    if (!(string.IsNullOrEmpty(name) || this.componentAddresses.ContainsKey(name)))
                     {
-                        var name = reader.ReadString(bucket.Pointer0.NamePtr);
-                        if (!(string.IsNullOrEmpty(name) || this.componentAddresses.ContainsKey(name)))
-                        {
-                            this.componentAddresses.Add(name, entityComponent[bucket.Pointer0.Index]);
-                        }
-                    }
-
-                    if (bucket.Flag1 != ComponentArrayStructure.InValidPointerFlagValue)
-                    {
-                        var name = reader.ReadString(bucket.Pointer1.NamePtr);
-                        if (!(string.IsNullOrEmpty(name) || this.componentAddresses.ContainsKey(name)))
-                        {
-                            this.componentAddresses.Add(name, entityComponent[bucket.Pointer1.Index]);
-                        }
-                    }
-
-                    if (bucket.Flag2 != ComponentArrayStructure.InValidPointerFlagValue)
-                    {
-                        var name = reader.ReadString(bucket.Pointer2.NamePtr);
-                        if (!(string.IsNullOrEmpty(name) || this.componentAddresses.ContainsKey(name)))
-                        {
-                            this.componentAddresses.Add(name, entityComponent[bucket.Pointer2.Index]);
-                        }
-                    }
-
-                    if (bucket.Flag3 != ComponentArrayStructure.InValidPointerFlagValue)
-                    {
-                        var name = reader.ReadString(bucket.Pointer3.NamePtr);
-                        if (!(string.IsNullOrEmpty(name) || this.componentAddresses.ContainsKey(name)))
-                        {
-                            this.componentAddresses.Add(name, entityComponent[bucket.Pointer3.Index]);
-                        }
-                    }
-
-                    if (bucket.Flag4 != ComponentArrayStructure.InValidPointerFlagValue)
-                    {
-                        var name = reader.ReadString(bucket.Pointer4.NamePtr);
-                        if (!(string.IsNullOrEmpty(name) || this.componentAddresses.ContainsKey(name)))
-                        {
-                            this.componentAddresses.Add(name, entityComponent[bucket.Pointer4.Index]);
-                        }
-                    }
-
-                    if (bucket.Flag5 != ComponentArrayStructure.InValidPointerFlagValue)
-                    {
-                        var name = reader.ReadString(bucket.Pointer5.NamePtr);
-                        if (!(string.IsNullOrEmpty(name) || this.componentAddresses.ContainsKey(name)))
-                        {
-                            this.componentAddresses.Add(name, entityComponent[bucket.Pointer5.Index]);
-                        }
-                    }
-
-                    if (bucket.Flag6 != ComponentArrayStructure.InValidPointerFlagValue)
-                    {
-                        var name = reader.ReadString(bucket.Pointer6.NamePtr);
-                        if (!(string.IsNullOrEmpty(name) || this.componentAddresses.ContainsKey(name)))
-                        {
-                            this.componentAddresses.Add(name, entityComponent[bucket.Pointer6.Index]);
-                        }
-                    }
-
-                    if (bucket.Flag7 != ComponentArrayStructure.InValidPointerFlagValue)
-                    {
-                        var name = reader.ReadString(bucket.Pointer7.NamePtr);
-                        if (!(string.IsNullOrEmpty(name) || this.componentAddresses.ContainsKey(name)))
-                        {
-                            this.componentAddresses.Add(name, entityComponent[bucket.Pointer7.Index]);
-                        }
+                        this.componentAddresses.Add(name, entityComponent[nameAndIndex.Index]);
                     }
                 }
             }

@@ -147,71 +147,13 @@ namespace GameHelper.RemoteObjects
             return reader.ReadMemoryArray<LoadedFilesRootObject>(this.Address, totalFiles);
         }
 
-        private void ScanAllBucketsParallel(SafeMemoryHandle reader, LoadedFilesRootObject filesRootObj)
+        private void ScanForFilesParallel(SafeMemoryHandle reader, LoadedFilesRootObject filesRootObj)
         {
-            if (filesRootObj.FilesArray == IntPtr.Zero)
+            var filesPtr = reader.ReadStdBucket<FilesPointerStructure>(filesRootObj.LoadedFiles);
+            Parallel.For(0, filesPtr.Count, (index) =>
             {
-                throw new Exception("Couldn't read LoadedFilesRootObject array " +
-                    $"from FileRoot address: {this.Address.ToInt64():X}");
-            }
-
-            if (filesRootObj.FilesPointerStructureCapacity != LoadedFilesRootObject.Capacity)
-            {
-                throw new Exception($"Looks like Capacity changed to" +
-                    $"{filesRootObj.FilesPointerStructureCapacity} " +
-                    $"from {LoadedFilesRootObject.Capacity}");
-            }
-
-            // Max buckets can be calculated from FilesPointerStructureCapacity
-            // but I don't expect it to ever change unless GGG change their
-            // FileStoring algorithm. With that being said, I prefer known constants
-            // rather than calculations. How to calculate this constant is given in
-            // FilesArrayStructure.MaximumBuckets description.
-            var filesPtr = reader.ReadMemoryArray<FilesArrayStructure>(
-                filesRootObj.FilesArray,
-                FilesArrayStructure.MaximumBuckets);
-            Parallel.For(0, filesPtr.Length, (i) =>
-            {
-                var fileNode = filesPtr[i];
-                if (fileNode.Flag0 != FilesArrayStructure.InValidPointerFlagValue)
-                {
-                    this.AddFileIfLoadedInCurrentArea(reader, fileNode.Pointer0.FilesPointer);
-                }
-
-                if (fileNode.Flag1 != FilesArrayStructure.InValidPointerFlagValue)
-                {
-                    this.AddFileIfLoadedInCurrentArea(reader, fileNode.Pointer1.FilesPointer);
-                }
-
-                if (fileNode.Flag2 != FilesArrayStructure.InValidPointerFlagValue)
-                {
-                    this.AddFileIfLoadedInCurrentArea(reader, fileNode.Pointer2.FilesPointer);
-                }
-
-                if (fileNode.Flag3 != FilesArrayStructure.InValidPointerFlagValue)
-                {
-                    this.AddFileIfLoadedInCurrentArea(reader, fileNode.Pointer3.FilesPointer);
-                }
-
-                if (fileNode.Flag4 != FilesArrayStructure.InValidPointerFlagValue)
-                {
-                    this.AddFileIfLoadedInCurrentArea(reader, fileNode.Pointer4.FilesPointer);
-                }
-
-                if (fileNode.Flag5 != FilesArrayStructure.InValidPointerFlagValue)
-                {
-                    this.AddFileIfLoadedInCurrentArea(reader, fileNode.Pointer5.FilesPointer);
-                }
-
-                if (fileNode.Flag6 != FilesArrayStructure.InValidPointerFlagValue)
-                {
-                    this.AddFileIfLoadedInCurrentArea(reader, fileNode.Pointer6.FilesPointer);
-                }
-
-                if (fileNode.Flag7 != FilesArrayStructure.InValidPointerFlagValue)
-                {
-                    this.AddFileIfLoadedInCurrentArea(reader, fileNode.Pointer7.FilesPointer);
-                }
+                var fileNode = filesPtr[index];
+                this.AddFileIfLoadedInCurrentArea(reader, fileNode.FilesPointer);
             });
         }
 
@@ -254,7 +196,7 @@ namespace GameHelper.RemoteObjects
                     var reader = Core.Process.Handle;
                     for (int i = 0; i < filesRootObjs.Length; i++)
                     {
-                        this.ScanAllBucketsParallel(reader, filesRootObjs[i]);
+                        this.ScanForFilesParallel(reader, filesRootObjs[i]);
                         yield return new Wait(0d);
                     }
 
