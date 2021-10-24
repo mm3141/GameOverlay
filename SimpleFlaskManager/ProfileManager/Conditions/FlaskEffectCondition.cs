@@ -5,6 +5,7 @@
 namespace SimpleFlaskManager.ProfileManager.Conditions
 {
     using System;
+    using System.Linq;
     using GameHelper;
     using GameHelper.RemoteObjects.Components;
     using ImGuiNET;
@@ -84,7 +85,7 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
             var player = Core.States.InGameStateObject.CurrentAreaInstance.Player;
             if (player.TryGetComponent<Buffs>(out var buffComponent))
             {
-                if (!buffComponent.StatusEffects.ContainsKey(this.flaskBuffCache))
+                if (!buffComponent.StatusEffects.Keys.Any(statusEffect => statusEffect.StartsWith(this.flaskBuffCache)))
                 {
                     return true && this.EvaluateNext();
                 }
