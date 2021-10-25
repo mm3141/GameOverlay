@@ -19,5 +19,12 @@
         {
             return (Last.ToInt64() - First.ToInt64()) / elementSize;
         }
+
+        public override string ToString()
+        {
+            return $"First: {this.First.ToInt64():X} - " +
+                   $"Last: {this.Last.ToInt64():X} - " +
+                   $"Size (bytes): {this.TotalElements(1)}";
+        }
     }
 }
