@@ -825,6 +825,11 @@ namespace Radar
             var gridHeightData = instance.GridHeightData;
             var mapTextureData = instance.GridWalkableData;
             var bytesPerRow = instance.TerrainMetadata.BytesPerRow;
+            if (bytesPerRow <= 0)
+            {
+                return;
+            }
+
             var totalRows = mapTextureData.Length / bytesPerRow;
             using Image<Rgba32> image = new Image<Rgba32>(bytesPerRow * 2, totalRows);
             Parallel.For(0, gridHeightData.Length, (y) =>
