@@ -36,7 +36,6 @@ namespace GameHelper.Utils
         /// Initializes a new instance of the <see cref="SafeMemoryHandle"/> class.
         /// </summary>
         /// <param name="processId">processId you want to access.</param>
-        [SecurityPermission(SecurityAction.LinkDemand, UnmanagedCode = true)]
         internal SafeMemoryHandle(int processId)
             : base(true)
         {
@@ -99,7 +98,7 @@ namespace GameHelper.Utils
             var length = nativeContainer.Last.ToInt64() - nativeContainer.First.ToInt64();
             if (length == 0 || length % typeSize != 0)
             {
-                return new T[0];
+                return Array.Empty<T>();
             }
 
             return this.ReadMemoryArray<T>(nativeContainer.First, (int)length / typeSize);
@@ -119,7 +118,7 @@ namespace GameHelper.Utils
         {
             if (this.IsInvalid || address.ToInt64() <= 0 || nsize <= 0)
             {
-                return new T[0];
+                return Array.Empty<T>();
             }
 
             var buffer = new T[nsize];
@@ -142,7 +141,7 @@ namespace GameHelper.Utils
             catch (Exception e)
             {
                 Console.WriteLine($"ERROR: {e.Message}");
-                return new T[0];
+                return Array.Empty<T>();
             }
         }
 
@@ -420,7 +419,6 @@ namespace GameHelper.Utils
         /// true if the handle is released successfully; otherwise, in the event of a catastrophic failure, false.
         /// In this case, it generates a releaseHandleFailed MDA Managed Debugging Assistant.
         /// </returns>
-        [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
         protected override bool ReleaseHandle()
         {
             Console.WriteLine($"Releasing handle on 0x{this.handle:X}\n");
