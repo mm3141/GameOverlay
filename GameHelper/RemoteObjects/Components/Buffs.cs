@@ -78,8 +78,8 @@ namespace GameHelper.RemoteObjects.Components
                     // known Effect
                     this.StatusEffects.AddOrUpdate(oldEffectname, statusEffectData, (key, oldValue) =>
                     {
-                        oldValue.Charges++;
-                        return oldValue;
+                        statusEffectData.Charges = ++oldValue.Charges;
+                        return statusEffectData;
                     });
                 }
                 else if (this.TryGetNameFromBuffDefination(
@@ -89,8 +89,8 @@ namespace GameHelper.RemoteObjects.Components
                     // Unknown Effect.
                     this.StatusEffects.AddOrUpdate(newEffectName, statusEffectData, (key, oldValue) =>
                     {
-                        oldValue.Charges++;
-                        return oldValue;
+                        statusEffectData.Charges = ++oldValue.Charges;
+                        return statusEffectData;
                     });
 
                     addressToEffectNameCache[statusEffectData.BuffDefinationPtr] = newEffectName;
