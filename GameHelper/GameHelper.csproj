@@ -1,8 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
-    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <StartupObject>GameHelper.Program</StartupObject>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <Authors>zaafar</Authors>
