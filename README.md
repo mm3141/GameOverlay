@@ -9,3 +9,4 @@ Good way to start is to fix one of the existing issue OR add a new issue ( if it
 
 - If your MR or idea is rejected feel free to create a branch or fork this tool and do whatever you want.
 
+- Only I will release the GH tool to OC website or discord thread.
