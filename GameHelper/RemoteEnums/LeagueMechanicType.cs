@@ -1,4 +1,8 @@
-﻿namespace GameHelper.RemoteEnums
+﻿// <copyright file="LeagueMechanicType.cs" company="None">
+// Copyright (c) None. All rights reserved.
+// </copyright>
+
+namespace GameHelper.RemoteEnums
 {
     /// <summary>
     /// Gets the different type of league mechanics in the game.

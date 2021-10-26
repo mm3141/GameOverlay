@@ -117,6 +117,11 @@ namespace Radar
         public Dictionary<string, IconPicker> BaseIcons = new Dictionary<string, IconPicker>();
 
         /// <summary>
+        /// Icons to display on the map. Breach includes breach chests.
+        /// </summary>
+        public Dictionary<string, IconPicker> BreachIcons = new Dictionary<string, IconPicker>();
+
+        /// <summary>
         /// Icons to display on the map. Legion includes special legion monster chests.
         /// since they can't be covered by base icons.
         /// </summary>
@@ -181,11 +186,11 @@ namespace Radar
         /// <summary>
         /// Adds the default icons if the setting file isn't available.
         /// </summary>
-        /// <param name="dllDirectory">directory where the plugin dll is located.</param>
-        public void AddDefaultIcons(string dllDirectory)
+        public void AddDefaultIcons()
         {
-            var basicIconPathName = Path.Join(dllDirectory, "icons.png");
+            var basicIconPathName = Path.Join("Plugins", "Radar", "icons.png");
             this.AddDefaultBaseGameIcons(basicIconPathName);
+            this.AddDefaultBreachIcons(basicIconPathName);
             this.AddDefaultLegionIcons(basicIconPathName);
             this.AddDefaultDeliriumIcons(basicIconPathName);
             this.AddDefaultHeistIcons(basicIconPathName);
@@ -197,7 +202,7 @@ namespace Radar
             this.BaseIcons.TryAdd("Player", new IconPicker(iconPathName, IconsPngCols, IconsPngRows, 2, 0, 20));
             this.BaseIcons.TryAdd("Strongbox", new IconPicker(iconPathName, IconsPngCols, IconsPngRows, 8, 38, 30));
             this.BaseIcons.TryAdd("Arcanist/Cartographer/Divination", new IconPicker(iconPathName, IconsPngCols, IconsPngRows, 6, 41, 35));
-            this.BaseIcons.TryAdd("Breach or Large Chest", new IconPicker(iconPathName, IconsPngCols, IconsPngRows, 1, 13, 20));
+            this.BaseIcons.TryAdd("Large Chest", new IconPicker(iconPathName, IconsPngCols, IconsPngRows, 1, 13, 20));
             this.BaseIcons.TryAdd("Mini Breakable Chest", new IconPicker(iconPathName, IconsPngCols, IconsPngRows, 6, 9, 20));
 
             this.BaseIcons.TryAdd("Shrine", new IconPicker(iconPathName, IconsPngCols, IconsPngRows, 7, 0, 30));
@@ -212,6 +217,11 @@ namespace Radar
         private void AddDefaultLegionIcons(string iconPathName)
         {
             this.LegionIcons.TryAdd("Legion Monster Chest", new IconPicker(iconPathName, IconsPngCols, IconsPngRows, 4, 41, 30));
+        }
+
+        private void AddDefaultBreachIcons(string iconPathName)
+        {
+            this.BreachIcons.TryAdd("Breach Chest", new IconPicker(iconPathName, IconsPngCols, IconsPngRows, 6, 41, 30));
         }
 
         private void AddDefaultDeliriumIcons(string iconPathName)

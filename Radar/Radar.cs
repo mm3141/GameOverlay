@@ -187,6 +187,11 @@ namespace Radar
                     "Blockages icon can be set from Delve Icons category i.e. 'Blockage OR DelveWall'");
 
                 this.Settings.DrawIconsSettingToImGui(
+                    "Breach Icons",
+                    this.Settings.BreachIcons,
+                    "Breach bosses are same as BaseGame Icons -> Unique Monsters.");
+
+                this.Settings.DrawIconsSettingToImGui(
                     "Legion Icons",
                     this.Settings.LegionIcons,
                     "Legion bosses are same as BaseGame Icons -> Unique Monsters.");
@@ -318,7 +323,7 @@ namespace Radar
                     Dictionary<string, Dictionary<string, TgtClusters>>>(tgtfiles);
             }
 
-            this.Settings.AddDefaultIcons(this.DllDirectory);
+            this.Settings.AddDefaultIcons();
 
             this.onMove = CoroutineHandler.Start(this.OnMove());
             this.onForegroundChange = CoroutineHandler.Start(this.OnForegroundChange());
@@ -393,7 +398,7 @@ namespace Radar
                 (uint)(this.Settings.TgtNameColor.Z * 255),
                 (uint)(this.Settings.TgtNameColor.W * 255));
 
-            ImDrawListPtr fgDraw = null;
+            ImDrawListPtr fgDraw;
             if (this.Settings.DrawTileInCull)
             {
                 fgDraw = ImGui.GetWindowDrawList();
@@ -615,7 +620,10 @@ namespace Radar
                     }
 
                     var chestIcon = chestComp.IsBreachOrLarge ?
-                        this.Settings.BaseIcons["Breach or Large Chest"] :
+                        currentAreaInstance.DisappearingEntities.TryGetValue(entity.Key, out var league) &&
+                        league == LeagueMechanicType.Breach ?
+                        this.Settings.BreachIcons["Breach Chest"] :
+                        this.Settings.BaseIcons["Large Chest"] :
                         this.Settings.BaseIcons["Mini Breakable Chest"];
                     if (chestComp.IsStrongbox && !chestComp.IsBreachOrLarge)
                     {

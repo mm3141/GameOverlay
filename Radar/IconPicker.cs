@@ -180,7 +180,7 @@ namespace Radar
 
         private void UploadIconSpriteFile()
         {
-            Core.Overlay.AddOrGetImagePointer(this.FilePathName, out var p, out var w, out var h);
+            Core.Overlay.AddOrGetImagePointer(this.FilePathName, out var p, out var _, out var _);
             this.TexturePtr = p;
         }
 
