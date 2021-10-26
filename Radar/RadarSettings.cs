@@ -186,9 +186,10 @@ namespace Radar
         /// <summary>
         /// Adds the default icons if the setting file isn't available.
         /// </summary>
-        public void AddDefaultIcons()
+        /// <param name="dllDirectory">directory where the plugin dll is located.</param>
+        public void AddDefaultIcons(string dllDirectory)
         {
-            var basicIconPathName = Path.Join("Plugins", "Radar", "icons.png");
+            var basicIconPathName = Path.Join(dllDirectory, "icons.png");
             this.AddDefaultBaseGameIcons(basicIconPathName);
             this.AddDefaultBreachIcons(basicIconPathName);
             this.AddDefaultLegionIcons(basicIconPathName);

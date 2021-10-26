@@ -323,7 +323,7 @@ namespace Radar
                     Dictionary<string, Dictionary<string, TgtClusters>>>(tgtfiles);
             }
 
-            this.Settings.AddDefaultIcons();
+            this.Settings.AddDefaultIcons(this.DllDirectory);
 
             this.onMove = CoroutineHandler.Start(this.OnMove());
             this.onForegroundChange = CoroutineHandler.Start(this.OnForegroundChange());

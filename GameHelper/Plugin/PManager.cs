@@ -92,7 +92,9 @@ namespace GameHelper.Plugin
             var assembly = ReadPluginFiles(pluginDirectory);
             if (assembly != null)
             {
-                LoadPlugin(assembly, pluginDirectory.FullName);
+                var relativePluginDir = pluginDirectory.FullName.Replace(
+                    State.PluginsDirectory.FullName, State.PluginsDirectory.Name);
+                LoadPlugin(assembly, relativePluginDir);
             }
         }
 
