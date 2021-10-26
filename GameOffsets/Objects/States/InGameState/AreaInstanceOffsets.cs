@@ -10,6 +10,7 @@ namespace GameOffsets.Objects.States.InGameState
         [FieldOffset(0x80)] public IntPtr AreaDetailsPtr; // WorldAreaDatOffsets.cs
         [FieldOffset(0xB0)] public byte MonsterLevel;
         [FieldOffset(0x114)] public uint CurrentAreaHash;
+        [FieldOffset(0x550)] public StdVector OverlayLeagueMechanic; //int, float.
         [FieldOffset(0x580)] public IntPtr ServerDataPtr;
         [FieldOffset(0x588)] public IntPtr LocalPlayerPtr;
         // Sleeping is decorations, disabled particles, effects.

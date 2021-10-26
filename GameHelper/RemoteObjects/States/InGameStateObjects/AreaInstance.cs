@@ -10,6 +10,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
     using System.Threading.Tasks;
     using Coroutine;
     using GameHelper.CoroutineEvents;
+    using GameHelper.RemoteEnums;
     using GameHelper.RemoteObjects.Components;
     using GameHelper.RemoteObjects.FilesStructures;
     using GameHelper.Utils;
@@ -25,6 +26,8 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
         private bool filterByPath = false;
         private string entityIdFilter = string.Empty;
         private string entityPathFilter = string.Empty;
+        private StdVector overlayLeagueMechanic = default;
+        private bool isLeagueMechanicActivated = false;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AreaInstance"/> class.
@@ -36,6 +39,12 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             Core.CoroutinesRegistrar.Add(CoroutineHandler.Start(
                 this.OnPerFrame(), "[AreaInstance] Update Area Data", int.MaxValue - 3));
         }
+
+        /// <summary>
+        /// Gets the entities that will disappear once overlay league mechanic is gone.
+        /// </summary>
+        public ConcurrentDictionary<EntityNodeKey, LeagueMechanicType> DisappearingEntities { get; private set; }
+            = new ConcurrentDictionary<EntityNodeKey, LeagueMechanicType>();
 
         /// <summary>
         /// Gets the Monster Level of current Area.
@@ -111,6 +120,13 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
         internal override void ToImGui()
         {
             base.ToImGui();
+            if (ImGui.TreeNode("League Mechanic Info"))
+            {
+                ImGui.Text($"Any League Mechanic Activated: {this.isLeagueMechanicActivated}");
+                ImGui.Text($"Address: {this.overlayLeagueMechanic}");
+                ImGui.TreePop();
+            }
+
             ImGui.Text($"Area Hash: {this.AreaHash}");
             ImGui.Text($"Monster Level: {this.MonsterLevel}");
             if (ImGui.TreeNode("Terrain Metadata"))
@@ -194,6 +210,16 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
 
                 ImGui.TreePop();
             }
+
+            if (ImGui.TreeNode($"Disappearing Entities ({this.DisappearingEntities.Count})###Disappearing Enttiies"))
+            {
+                foreach (var disappearingEntity in this.DisappearingEntities)
+                {
+                    ImGui.Text($"{disappearingEntity.Key}");
+                }
+
+                ImGui.TreePop();
+            }
         }
 
         /// <inheritdoc/>
@@ -207,6 +233,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             this.NetworkBubbleEntityCount = 0x00;
             this.TerrainMetadata = default;
             this.AwakeEntities.Clear();
+            this.DisappearingEntities.Clear();
         }
 
         /// <inheritdoc/>
@@ -214,6 +241,8 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
         {
             var reader = Core.Process.Handle;
             var data = reader.ReadMemory<AreaInstanceOffsets>(this.Address);
+            this.overlayLeagueMechanic = data.OverlayLeagueMechanic;
+            this.isLeagueMechanicActivated = data.OverlayLeagueMechanic.TotalElements(1) > 0;
             this.ServerDataObject.Address = data.ServerDataPtr;
             if (hasAddressChanged)
             {
@@ -260,11 +289,22 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
                         this.Player.DistanceFrom(kv.Value) < AreaInstanceConstants.NETWORK_BUBBLE_RADIUS)
                     {
                         this.AwakeEntities.TryRemove(kv.Key, out _);
-                        continue;
                     }
                 }
 
                 kv.Value.IsValid = false;
+            }
+
+            if (!this.isLeagueMechanicActivated && this.DisappearingEntities.Count > 0)
+            {
+                CoroutineHandler.InvokeLater(new Wait(0.5d), () =>
+                {
+                    foreach (var dE in this.DisappearingEntities)
+                    {
+                        this.AwakeEntities.TryRemove(dE.Key, out var _);
+                        this.DisappearingEntities.TryRemove(dE.Key, out var _);
+                    }
+                });
             }
 
             Parallel.For(0, entitiesInNetworkBubble.Count, (index) =>
@@ -280,6 +320,22 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
                     if (!string.IsNullOrEmpty(entity.Path))
                     {
                         this.AwakeEntities[key] = entity;
+                    }
+
+                    if (this.isLeagueMechanicActivated)
+                    {
+                        if (entity.Path.Contains("Breach"))
+                        {
+                            this.DisappearingEntities[key] = LeagueMechanicType.Breach;
+                        }
+                        else if (entity.Path.Contains("LeagueAffliction"))
+                        {
+                            this.DisappearingEntities[key] = LeagueMechanicType.Delirium;
+                        }
+                        else if (entity.Path.Contains("Hellscape"))
+                        {
+                            this.DisappearingEntities[key] = LeagueMechanicType.Scourge;
+                        }
                     }
                 }
             });
