@@ -83,6 +83,12 @@ namespace GameHelper.Settings
         /// that are outside of the network bubble.
         /// </summary>
         public bool RemoveAllInvalidEntities = false;
+
+        /// <summary>
+        /// Gets a value indicating whether user wants to disable entity processing
+        /// when in town/hideout.
+        /// </summary>
+        public bool DisableEntityProcessingInTownOrHideout = false;
     }
 
 #pragma warning restore SA1401 // Fields should be private

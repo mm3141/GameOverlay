@@ -252,13 +252,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
 
             this.MonsterLevel = data.MonsterLevel;
             this.AreaHash = $"{data.CurrentAreaHash:X}";
-#if DEBUG
-            var entitiesInNetworkBubble = reader.ReadStdMapAsList<EntityNodeKey, EntityNodeValue>(
-                data.AwakeEntities, false, null);
-#else
-            var entitiesInNetworkBubble = reader.ReadStdMapAsList<EntityNodeKey, EntityNodeValue>(
-                data.AwakeEntities, false, EntityFilter.IgnoreSleepingEntities);
-#endif
+            var entitiesInNetworkBubble = this.GetCurrentEntities(data);
             this.NetworkBubbleEntityCount = entitiesInNetworkBubble.Count;
             this.Player.Address = data.LocalPlayerPtr;
             this.TerrainMetadata = data.TerrainMetadata;
@@ -267,9 +261,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             // since other players would have killed that entity anyway. Also, in BR
             // when you die and teleport to other ppl (i.e. spectate) the AwakeEntities
             // gets corrupted anyway.
-            if (this.AreaDetails.IsHideout ||
-                this.AreaDetails.IsTown ||
-                this.AreaDetails.IsBattleRoyale)
+            if (this.AreaDetails.IsBattleRoyale)
             {
                 this.AwakeEntities.Clear();
             }
@@ -279,6 +271,8 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
                 if (!kv.Value.IsValid)
                 {
                     if (Core.GHSettings.RemoveAllInvalidEntities ||
+                        this.AreaDetails.IsHideout ||
+                        this.AreaDetails.IsTown ||
 
                         // This logic isn't perfect in case something happens to the entity before
                         // we can cache the location of that entity. In that case we will just
@@ -346,6 +340,23 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
                 this.GridHeightData = this.GetTerrainHeight();
                 this.TgtTilesLocations = this.GetTgtFileData();
             }
+        }
+
+        private List<(EntityNodeKey Key, EntityNodeValue Value)> GetCurrentEntities(AreaInstanceOffsets data)
+        {
+            var reader = Core.Process.Handle;
+            if (Core.GHSettings.DisableEntityProcessingInTownOrHideout &&
+                (this.AreaDetails.IsHideout || this.AreaDetails.IsTown))
+            {
+                return new List<(EntityNodeKey Key, EntityNodeValue Value)>();
+            }
+#if DEBUG
+            return reader.ReadStdMapAsList<EntityNodeKey, EntityNodeValue>(
+                data.AwakeEntities, false, null);
+#else
+            return reader.ReadStdMapAsList<EntityNodeKey, EntityNodeValue>(
+                data.AwakeEntities, false, EntityFilter.IgnoreSleepingEntities);
+#endif
         }
 
         private Dictionary<string, List<StdTuple2D<int>>> GetTgtFileData()

@@ -130,6 +130,7 @@ namespace GameHelper.Settings
                     ImGui.Checkbox("Game UiExplorer (GE)", ref Core.GHSettings.ShowGameUiExplorer);
                     ImGui.Checkbox("Data Visualization (DV)", ref Core.GHSettings.ShowDataVisualization);
                     ImGui.Checkbox("Do not save entities outside the network bubble", ref Core.GHSettings.RemoveAllInvalidEntities);
+                    ImGui.Checkbox("Disable entity processing when in town or hideout", ref Core.GHSettings.DisableEntityProcessingInTownOrHideout);
                     ImGui.NewLine();
                     if (ImGui.Button("Test Disconnect POE"))
                     {
