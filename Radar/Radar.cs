@@ -26,6 +26,21 @@ namespace Radar
     /// </summary>
     public sealed class Radar : PCore<RadarSettings>
     {
+        // Legion Cache.
+        private readonly Dictionary<uint, byte> frozenInTimeEntities = new Dictionary<uint, byte>();
+
+        private readonly string heistUsefullChestContains = "HeistChestSecondary";
+        private readonly string heistAllChestStarting = "Metadata/Chests/LeagueHeist";
+        private readonly Dictionary<uint, string> heistChestCache = new Dictionary<uint, string>();
+
+        // Delirium Hidden Monster cache.
+        private readonly Dictionary<uint, string> deliriumHiddenMonster = new Dictionary<uint, string>();
+        private readonly string deliriumHiddenMonsterStarting = "Metadata/Monsters/LeagueAffliction/DoodadDaemons/DoodadDaemon";
+
+        private readonly string delveChestStarting = "Metadata/Chests/DelveChests/";
+        private readonly Dictionary<uint, string> delveChestCache = new Dictionary<uint, string>();
+        private bool isAzuriteMine = false;
+
         /// <summary>
         /// If we don't do this, user will be asked to
         /// setup the culling window everytime they open the game.
@@ -41,26 +56,12 @@ namespace Radar
         private string tmpTileName = string.Empty;
         private string tmpDisplayName = string.Empty;
         private int tmpExpectedClusters = 1;
+        private string leaderName = string.Empty;
 
         private Vector2 miniMapCenterWithDefaultShift = Vector2.Zero;
         private double miniMapDiagonalLength = 0x00;
 
         private double largeMapDiagonalLength = 0x00;
-
-        // Legion Cache.
-        private Dictionary<uint, byte> frozenInTimeEntities = new Dictionary<uint, byte>();
-
-        private string heistUsefullChestContains = "HeistChestSecondary";
-        private string heistAllChestStarting = "Metadata/Chests/LeagueHeist";
-        private Dictionary<uint, string> heistChestCache = new Dictionary<uint, string>();
-
-        // Delirium Hidden Monster cache.
-        private Dictionary<uint, string> deliriumHiddenMonster = new Dictionary<uint, string>();
-        private string deliriumHiddenMonsterStarting = "Metadata/Monsters/LeagueAffliction/DoodadDaemons/DoodadDaemon";
-
-        private string delveChestStarting = "Metadata/Chests/DelveChests/";
-        private bool isAzuriteMine = false;
-        private Dictionary<uint, string> delveChestCache = new Dictionary<uint, string>();
 
         private IntPtr walkableMapTexture = IntPtr.Zero;
         private Vector2 walkableMapDimension = Vector2.Zero;
@@ -179,6 +180,7 @@ namespace Radar
             ImGui.NewLine();
             ImGui.Checkbox("Hide Entities without Life/Chest component", ref this.Settings.HideUseless);
             ImGui.Checkbox("Show Player Names", ref this.Settings.ShowPlayersNames);
+            ImGui.InputText("Party Leader Name", ref this.leaderName, 200);
             if (ImGui.CollapsingHeader("Icons Setting"))
             {
                 this.Settings.DrawIconsSettingToImGui(
@@ -532,7 +534,9 @@ namespace Radar
                     }
                     else
                     {
-                        var playerIcon = this.Settings.BaseIcons["Player"];
+                        var playerIcon = playerComp.Name == this.leaderName ?
+                            this.Settings.BaseIcons["Leader"] :
+                            this.Settings.BaseIcons["Player"];
                         iconSizeMultiplierVector *= playerIcon.IconScale;
                         fgDraw.AddImage(
                             playerIcon.TexturePtr,

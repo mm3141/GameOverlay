@@ -201,6 +201,7 @@ namespace Radar
         private void AddDefaultBaseGameIcons(string iconPathName)
         {
             this.BaseIcons.TryAdd("Player", new IconPicker(iconPathName, IconsPngCols, IconsPngRows, 2, 0, 20));
+            this.BaseIcons.TryAdd("Leader", new IconPicker(iconPathName, IconsPngCols, IconsPngRows, 3, 0, 20));
             this.BaseIcons.TryAdd("Strongbox", new IconPicker(iconPathName, IconsPngCols, IconsPngRows, 8, 38, 30));
             this.BaseIcons.TryAdd("Arcanist/Cartographer/Divination", new IconPicker(iconPathName, IconsPngCols, IconsPngRows, 6, 41, 35));
             this.BaseIcons.TryAdd("Large Chest", new IconPicker(iconPathName, IconsPngCols, IconsPngRows, 1, 13, 20));
