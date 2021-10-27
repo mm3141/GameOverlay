@@ -4,6 +4,7 @@
 
 namespace SimpleFlaskManager.ProfileManager.Conditions
 {
+    using System.Linq;
     using GameHelper;
     using GameHelper.RemoteObjects.Components;
     using GameHelper.Utils;
@@ -56,23 +57,18 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
         public override bool Evaluate()
         {
             var player = Core.States.InGameStateObject.CurrentAreaInstance.Player;
-            var isAilmentOnPlayer = false;
             if (JsonDataHelper.StatusEffectGroups.TryGetValue(this.rightHandOperand, out var statusEffects))
             {
                 if (player.TryGetComponent<Buffs>(out var buffComponent))
                 {
-                    for (int i = 0; i < statusEffects.Count; i++)
+                    if (statusEffects.Any(statusEffect => buffComponent.StatusEffects.ContainsKey(statusEffect)))
                     {
-                        if (buffComponent.StatusEffects.ContainsKey(statusEffects[i]))
-                        {
-                            isAilmentOnPlayer = true;
-                            break;
-                        }
+                        return true && this.EvaluateNext();
                     }
                 }
             }
 
-            return isAilmentOnPlayer && this.EvaluateNext();
+            return false;
         }
 
         private static void ToImGui(ref string statusEffectGroupKey)
