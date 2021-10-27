@@ -92,8 +92,8 @@ namespace GameHelper.RemoteObjects.FilesStructures
             var data = reader.ReadMemory<WorldAreaDatOffsets>(this.Address);
             this.Id = reader.ReadUnicodeString(data.IdPtr);
             this.Name = reader.ReadUnicodeString(data.NamePtr);
-            this.IsTown = data.IsTown || this.Name == "HeistHub";
-            this.HasWaypoint = data.HasWaypoint || this.Name == "HeistHub";
+            this.IsTown = data.IsTown || this.Id == "HeistHub";
+            this.HasWaypoint = data.HasWaypoint || this.Id == "HeistHub";
             this.IsHideout = this.Id.ToLower().Contains("hideout");
             this.IsBattleRoyale = this.Id.ToLower().Contains("exileroyale");
         }

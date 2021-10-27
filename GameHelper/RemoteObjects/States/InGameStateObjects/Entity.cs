@@ -17,10 +17,10 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
     /// </summary>
     public class Entity : RemoteObjectBase
     {
-        private Dictionary<string, IntPtr> componentAddresses =
+        private readonly Dictionary<string, IntPtr> componentAddresses =
             new Dictionary<string, IntPtr>();
 
-        private Dictionary<string, RemoteObjectBase> componentCache =
+        private readonly Dictionary<string, RemoteObjectBase> componentCache =
             new Dictionary<string, RemoteObjectBase>();
 
         /// <summary>
@@ -55,7 +55,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
         /// Gets or Sets a value indicating whether the entity
         /// exists in the game or not.
         /// </summary>
-        internal bool IsValid { get; set; } = false;
+        public bool IsValid { get; set; } = false;
 
         /// <summary>
         /// Calculate the distance from the other entity.
