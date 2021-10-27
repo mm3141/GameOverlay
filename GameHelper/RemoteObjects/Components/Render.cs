@@ -41,6 +41,15 @@ namespace GameHelper.RemoteObjects.Components
         }
 
         /// <summary>
+        /// Gets the position where entity is located on the grid (map).
+        /// </summary>
+        public StdTuple3D<float> ModelBounds
+        {
+            get => this.modelBounds;
+            private set => this.modelBounds = value;
+        }
+
+        /// <summary>
         /// Gets the postion where entity is rendered in the game world.
         /// NOTE: Z-Axis is pointing to the (visible/invisible) healthbar.
         /// </summary>
@@ -60,7 +69,7 @@ namespace GameHelper.RemoteObjects.Components
             ImGui.Text($"Grid Position: {this.gridPos2D}");
             ImGui.Text($"World Position: {this.WorldPosition}");
             ImGui.Text($"Terrain Height (Z-Axis): {this.TerrainHeight}");
-            ImGui.Text($"Model Bonds: {this.modelBounds}");
+            ImGui.Text($"Model Bounds: {this.modelBounds}");
         }
 
         /// <inheritdoc/>

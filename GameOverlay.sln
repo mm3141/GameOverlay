@@ -22,6 +22,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Radar", "Radar\Radar.csproj
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleFlaskManager", "SimpleFlaskManager\SimpleFlaskManager.csproj", "{86A443FF-7326-4B21-BC81-20813A7E307E}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HealthBars", "HealthBars\HealthBars.csproj", "{113DA4E9-73EB-411C-B328-6440DBB5AB1C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -48,6 +50,10 @@ Global
 		{86A443FF-7326-4B21-BC81-20813A7E307E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{86A443FF-7326-4B21-BC81-20813A7E307E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{86A443FF-7326-4B21-BC81-20813A7E307E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{113DA4E9-73EB-411C-B328-6440DBB5AB1C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{113DA4E9-73EB-411C-B328-6440DBB5AB1C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{113DA4E9-73EB-411C-B328-6440DBB5AB1C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{113DA4E9-73EB-411C-B328-6440DBB5AB1C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

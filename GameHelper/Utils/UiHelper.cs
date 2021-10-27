@@ -38,6 +38,13 @@ namespace GameHelper.Utils
         public static uint Color(uint r, uint g, uint b, uint a) => a << 24 | b << 16 | g << 8 | r;
 
         /// <summary>
+        /// Converts rgba color information to uint32 color format.
+        /// </summary>
+        /// <param name="color">x,y,z,w = alpha number between 0 - 255.</param>
+        /// <returns>color in uint32 format.</returns>
+        public static uint Color(Vector4 color) => (uint)color.W << 24 | (uint)color.Z << 16 | (uint)color.Y << 8 | (uint)color.X;
+
+        /// <summary>
         /// Draws the Rectangle on the screen.
         /// </summary>
         /// <param name="pos">Postion of the rectange.</param>

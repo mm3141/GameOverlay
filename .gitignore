@@ -362,3 +362,7 @@ FodyWeavers.xsd
 GameHelper.xml
 PreloadAlert.xml
 Radar.xml
+
+GameHelper/configs/core_settings.json
+GameHelper/imgui.ini
+GameHelper/configs/plugins.json
