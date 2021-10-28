@@ -26,7 +26,7 @@ namespace GameHelper.Settings
         public static readonly FileInfo PluginsMetadataFile = new("configs/plugins.json");
 
         /// <summary>
-        /// Folder containing all the plugins.
+        /// We save the POE index here for connection after restart
         /// </summary>
         [JsonIgnore]
         public static readonly DirectoryInfo PluginsDirectory = new("Plugins");
@@ -36,6 +36,11 @@ namespace GameHelper.Settings
         /// </summary>
         [JsonIgnore]
         public bool IsOverlayRunning = true;
+
+        /// <summary>
+        /// Save here last POE index to attacjing
+        /// </summary>
+        public int curr_poe_index { get; set; } = 0;
 
         /// <summary>
         /// Gets or sets hotKey to show/hide the main menu.

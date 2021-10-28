@@ -124,7 +124,6 @@ namespace GameHelper
         }
 
         = new(IntPtr.Zero, 24);
-
         /// <summary>
         /// Gets the GameHelper settings.
         /// </summary>
