@@ -12,6 +12,9 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]
+    needs: calculate-version
+    env:
+      SEMVER: ${{ needs.calculate-version.outputs.semVer }}
     steps:
       - uses: actions/checkout@v2
       - name: Setup .NET
@@ -22,8 +25,27 @@ jobs:
         run: dotnet restore
       - name: Build
         run: dotnet build --configuration Release --no-restore
+      - name: Install GitVersion
+        uses: gittools/actions/gitversion/setup@v0.9.7
+        with:
+          versionSpec: "5.x"
+      - name: Display version
+        run: |
+          echo $SEMVER > VERSION.txt
       - name: Upload the Build Artifact
         uses: actions/upload-artifact@v2
         with:
           name: GameHelper-${{ matrix.os }}
           path: GameHelper/bin/Release/net5.0
+  calculate-version:
+    name: Calculate Version
+    runs-on: ubuntu-latest
+    outputs:
+      semVer: ${{ steps.gitversion.outputs.semVer }}
+    steps:
+      - name: Determine Version
+        id: gitversion
+        uses: gittools/actions/gitversion/execute@v0.9.7
+        with:
+          useConfigFile: true
+          configFilePath: VersionConfig.yml
