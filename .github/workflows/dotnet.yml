@@ -25,7 +25,7 @@ jobs:
         run: dotnet restore
       - name: Build
         run: |
-          dotnet build --configuration Release --no-restore -p:Version=$VERSION
+          dotnet build --configuration Release --no-restore /p:Version=$VERSION
       - name: Upload the Build Artifact
         uses: actions/upload-artifact@v2
         with:
