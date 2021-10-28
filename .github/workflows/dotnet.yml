@@ -22,12 +22,7 @@ jobs:
       - name: Restore dependencies
         run: dotnet restore
       - name: Build
-        env:
-          VERSION: ${{ needs.semver.bump-semver.outputs.new_version }}
-          VERSION2: ${{ steps.bump-semver.outputs.new_version }}
-          VERSION3: ${{ needs.steps.bump-semver.outputs.new_version }}
-        run: |
-          dotnet build --configuration Release --no-restore /p:Version=$VERSION
+        run: dotnet build --configuration Release --no-restore /p:Version=${{ needs.semver.outputs.new_version }}
       - name: Upload the Build Artifact
         uses: actions/upload-artifact@v2
         with:
@@ -35,6 +30,8 @@ jobs:
           path: GameHelper/bin/Release/net5.0
   semver:
     runs-on: [ubuntu-latest]
+    outputs:
+      new_version: ${{ steps.bump-semver.outputs.new_version }}
     steps:
       - uses: actions/checkout@v2
       - uses: actions-ecosystem/action-get-latest-tag@v1
