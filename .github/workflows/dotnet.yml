@@ -25,7 +25,7 @@ jobs:
         env:
           VERSION: ${{ needs.semver.bump-semver.outputs.new_version }}
           VERSION2: ${{ steps.bump-semver.outputs.new_version }}
-          VERSION3: ${{ needssteps.bump-semver.outputs.new_version }}
+          VERSION3: ${{ needs.steps.bump-semver.outputs.new_version }}
         run: |
           dotnet build --configuration Release --no-restore /p:Version=$VERSION
       - name: Upload the Build Artifact
