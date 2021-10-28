@@ -11,8 +11,10 @@
         /// </summary>
         public static Dictionary<string, string> ProcessName = new()
         {
-            { "PathOfExile" , "Path of Exile".ToLower() } ,
+            { "PathOfExile" , "Path of Exile".ToLower() }, // also works on Garena
             { "PathOfExile_KG", "Path of Exile".ToLower() },
+            { "PathOfExileSteam", "Path of Exile".ToLower() },
+            { "PathOfExile_x64", "Path of Exile".ToLower() }
         };
 
         public static List<string> Contributors = new()
