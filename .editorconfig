@@ -6,11 +6,10 @@ dotnet_diagnostic.CA2211.severity = none
 # CA1822: Mark members as static
 dotnet_diagnostic.CA1822.severity = none
 
-# CA1051: Do not declare visible instance fields
-dotnet_diagnostic.CA1051.severity = none
+csharp_using_directive_placement=inside_namespace:silent
+csharp_prefer_simple_using_statement=true:suggestion
+csharp_prefer_static_local_function=false:suggestion
 
-# Default severity for analyzer diagnostics with category 'StyleCop.CSharp.MaintainabilityRules'
-dotnet_analyzer_diagnostic.category-StyleCop.CSharp.MaintainabilityRules.severity = none
-
-# SA1204: Static elements should appear before instance elements
-dotnet_diagnostic.SA1204.severity = none
+[*.{cs,vb}]
+dotnet_style_object_initializer=false:suggestion
+dotnet_style_collection_initializer=true:suggestion

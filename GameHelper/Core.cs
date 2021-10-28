@@ -47,7 +47,7 @@ namespace GameHelper
             private set;
         }
 
-        = new List<ActiveCoroutine>();
+        = new();
 
         /// <summary>
         /// Gets the GameStates instance. For details read class description.
@@ -58,7 +58,7 @@ namespace GameHelper
             private set;
         }
 
-        = new GameStates(IntPtr.Zero);
+        = new(IntPtr.Zero);
 
         /// <summary>
         /// Gets the files loaded for the current area.
@@ -69,7 +69,7 @@ namespace GameHelper
             private set;
         }
 
-        = new LoadedFiles(IntPtr.Zero);
+        = new(IntPtr.Zero);
 
         /// <summary>
         /// Gets the GameProcess instance. For details read class description.
@@ -79,7 +79,7 @@ namespace GameHelper
             get; private set;
         }
 
-        = new GameProcess();
+        = new();
 
         /// <summary>
         /// Gets the AreaChangeCounter instance. For details read class description.
@@ -90,7 +90,7 @@ namespace GameHelper
             private set;
         }
 
-        = new AreaChangeCounter(IntPtr.Zero);
+        = new(IntPtr.Zero);
 
         /// <summary>
         /// Gets the values associated with the Game Window Scale.
@@ -101,7 +101,7 @@ namespace GameHelper
             private set;
         }
 
-        = new GameWindowScale(IntPtr.Zero);
+        = new(IntPtr.Zero);
 
         /// <summary>
         /// Gets the values associated with the terrain rotation selector.
@@ -112,7 +112,7 @@ namespace GameHelper
             private set;
         }
 
-        = new TerrainHeightHelper(IntPtr.Zero, 8);
+        = new(IntPtr.Zero, 8);
 
         /// <summary>
         /// Gets the values associated with the terrain rotator helper.
@@ -123,7 +123,7 @@ namespace GameHelper
             private set;
         }
 
-        = new TerrainHeightHelper(IntPtr.Zero, 24);
+        = new(IntPtr.Zero, 24);
 
         /// <summary>
         /// Gets the GameHelper settings.

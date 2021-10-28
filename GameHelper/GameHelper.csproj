@@ -25,19 +25,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="stylecop.json" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <AdditionalFiles Include="stylecop.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </AdditionalFiles>
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="ClickableTransparentOverlay" Version="3.5.0" />
+    <PackageReference Include="ClickableTransparentOverlay" Version="4.0.0" />
     <PackageReference Include="Coroutine" Version="2.1.1" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="ProcessMemoryUtilities.Net" Version="1.3.4" />
   </ItemGroup>
 
