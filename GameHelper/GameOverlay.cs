@@ -39,6 +39,7 @@ namespace GameHelper
         /// <inheritdoc/>
         public override async Task Run()
         {
+            Core.Initialize();
             Core.InitializeCororutines();
             await base.Run();
         }
