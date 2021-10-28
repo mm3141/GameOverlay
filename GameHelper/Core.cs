@@ -6,6 +6,7 @@ namespace GameHelper
 {
     using System;
     using System.Collections.Generic;
+    using System.IO;
     using System.Reflection;
     using Coroutine;
     using GameHelper.CoroutineEvents;
@@ -21,6 +22,11 @@ namespace GameHelper
     /// </summary>
     public static class Core
     {
+        /// <summary>
+        /// Gets the GameHelper version.
+        /// </summary>
+        private static string version;
+
         /// <summary>
         /// Gets the GameHelper Overlay.
         /// </summary>
@@ -128,6 +134,30 @@ namespace GameHelper
         }
 
         = JsonHelper.CreateOrLoadJsonFile<State>(State.CoreSettingFile);
+
+        /// <summary>
+        /// Initializes the <see cref="Core"/> class.
+        /// </summary>
+        public static void Initialize()
+        {
+            try
+            {
+                version = File.ReadAllText("VERSION.txt");
+            }
+            catch (Exception)
+            {
+                version = "Dev";
+            }
+        }
+
+        /// <summary>
+        /// Get GameHelper version.
+        /// </summary>
+        /// <returns>GameHelper version.</returns>
+        public static string GetVersion()
+        {
+            return version;
+        }
 
         /// <summary>
         /// Initializes the <see cref="Core"/> class coroutines.

@@ -215,7 +215,7 @@ namespace GameHelper.Settings
 
                 ImGui.SetNextWindowSizeConstraints(new Vector2(800, 600), Vector2.One * float.MaxValue);
                 var isMainMenuExpanded = ImGui.Begin(
-                    "Game Overlay Settings Menu",
+                    $"Game Overlay Settings Menu [v{Core.GetVersion()}]",
                     ref isOverlayRunningLocal);
 
                 if (!isOverlayRunningLocal)
