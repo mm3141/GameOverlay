@@ -10,6 +10,8 @@ jobs:
   build:
     runs-on: ${{ matrix.os }}
     needs: [semver]
+    env:
+      VERSION: ${{ needs.semver.bump-semver.outputs.new_version }}
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]
@@ -22,7 +24,7 @@ jobs:
       - name: Restore dependencies
         run: dotnet restore
       - name: Build
-        run: dotnet build --configuration Release --no-restore -p:Version=${{ needs.semver.bump-semver.outputs.new_version }}
+        run: dotnet build --configuration Release --no-restore -p:Version=$VERSION
       - name: Upload the Build Artifact
         uses: actions/upload-artifact@v2
         with:
