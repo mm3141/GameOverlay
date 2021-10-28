@@ -29,9 +29,6 @@ jobs:
         uses: gittools/actions/gitversion/setup@v0.9.7
         with:
           versionSpec: "5.x"
-      - name: Display version
-        run: |
-          echo $SEMVER > VERSION.txt
       - name: Upload the Build Artifact
         uses: actions/upload-artifact@v2
         with:
