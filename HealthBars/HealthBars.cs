@@ -37,6 +37,8 @@ namespace HealthBars
         /// <inheritdoc/>
         public override void DrawSettings()
         {
+            ImGui.Text("NOTE: Turn off in game health bars for best result.");
+            ImGui.NewLine();
             ImGui.Checkbox("Show in Town", ref this.Settings.ShowInTown);
             ImGui.Checkbox("Show in Hideout", ref this.Settings.ShowInHideout);
             ImGui.NewLine();
