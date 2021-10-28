@@ -112,19 +112,6 @@ namespace GameHelper.Settings
                         $"when you close the overlay or hide it via {Core.GHSettings.MainMenuHotKey} button.");
                     ImGui.NewLine();
                     ImGui.Text($"Current Game State: {Core.States.GameCurrentState}");
-
-                    if (Core.Process.curr_poe_process_count == 2) {
-                        ImGui.NewLine();
-                        if (ImGui.Button("Current POE index is [" + Core.GHSettings.curr_poe_index + "]")) {
-                            var cpi = Core.GHSettings.curr_poe_index;
-                            _ = cpi == 0 ? Core.GHSettings.curr_poe_index = 1 : Core.GHSettings.curr_poe_index = 0;
-                            Core.GHSettings.Save();
-                            //Application restart here -
-                        }
-                        ImGui.SameLine();
-                        ImGui.Text("<<=Click here to bind POE to the second one. Then restart!");
-                    }
-
                     ImGui.NewLine();
                     ImGui.SetNextItemWidth(ImGui.GetContentRegionAvail().X / 3);
                     UiHelper.NonContinuousEnumComboBox("Select Show/Hide Key", ref Core.GHSettings.MainMenuHotKey);

@@ -43,8 +43,4 @@
     <Copy SourceFiles="$(OutDir)$(TargetName)$(TargetExt);$(OutDir)$(TargetName).pdb;$(OutDir)icons.png;" DestinationFolder="..\GameHelper\$(OutDir)Plugins\$(ProjectName)" SkipUnchangedFiles="true" />
   </Target>
 
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="xcopy &quot;C:\GameOverplay[LAST]\Radar\bin\Debug\netcoreapp3.1\Radar.dll&quot; &quot;C:\GameOverplay[LAST]\GameHelper\bin\Debug\netcoreapp3.1\Plugins\Radar\Radar.dll&quot; /Y /R&#xD;&#xA;xcopy &quot;C:\GameOverplay[LAST]\Radar\bin\Debug\netcoreapp3.1\Radar.pdb&quot; &quot;C:\GameOverplay[LAST]\GameHelper\bin\Debug\netcoreapp3.1\Plugins\Radar\Radar.pdb&quot; /Y /R" />
-  </Target>
-
 </Project>

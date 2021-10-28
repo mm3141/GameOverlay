@@ -132,40 +132,37 @@ namespace GameHelper
                 CoroutineHandler.Start(this.FindAndOpen());
             }
         }
+
         /// <summary>
-        /// Bind the list of processes from the list of processes running on the system
-        /// </summary>
-        public int curr_poe_process_count { get; private set; }
-        List<Process> _pa = new List<Process>(); //list of simultaneously running OE processes;
-      
+        /// Finds the list of processes from the list of processes running on the system
         /// based on the GameOffsets.GameProcessName class.
+        /// </summary>
         /// <returns>
         /// co-routine IWait.
         /// </returns>
-        private IEnumerator<Wait> FindAndOpen() {
-            while (true) {
+        private IEnumerator<Wait> FindAndOpen()
+        {
+            var processesInfo = new List<Process>();
+            while (true)
+            {
                 yield return new Wait(1d);
-                _pa.Clear();
-                foreach (var process in Process.GetProcesses()) {
-                    if (GameProcessDetails.ProcessName.TryGetValue(process.ProcessName, out var windowTitle)) {
-                        if (process.MainWindowTitle.ToLower() == windowTitle) {
-                            _pa.Add(process);
+                processesInfo.Clear();
+                foreach (var process in Process.GetProcesses())
+                {
+                    if (GameProcessDetails.ProcessName.TryGetValue(process.ProcessName, out var windowTitle))
+                    {
+                        if (process.MainWindowTitle.ToLower() == windowTitle)
+                        {
+                            processesInfo.Add(process);
                         }
                     }
                 }
-                curr_poe_process_count = _pa.Count;
-                if (_pa.Count == 0) {
-                    //do you check it somewhere and react to it?
-                } else if (_pa.Count == 1) {
-                    this.Information = _pa[0];
-                    if (this.Open()) {
-                        break;
-                    }
-                } else { //_pa.Count == 2
-                    var cpi = Core.GHSettings.curr_poe_index;
-                    Debug.Assert(cpi == 0 || cpi == 1);
-                    this.Information = _pa[Core.GHSettings.curr_poe_index];
-                    if (this.Open()) {
+
+                if (processesInfo.Count == 1)
+                {
+                    this.Information = processesInfo[0];
+                    if (this.Open())
+                    {
                         break;
                     }
                 }

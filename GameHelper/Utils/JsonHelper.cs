@@ -5,7 +5,6 @@
 namespace GameHelper.Utils
 {
     using System.IO;
-    using GameHelper.Settings;
     using Newtonsoft.Json;
 
     /// <summary>
@@ -13,9 +12,6 @@ namespace GameHelper.Utils
     /// </summary>
     internal static class JsonHelper
     {
-        public static void Save(this State state) {
-            SafeToFile(Core.GHSettings, State.CoreSettingFile);
-        }
         /// <summary>
         /// Creates new instance or load from the file if file exists.
         /// </summary>
