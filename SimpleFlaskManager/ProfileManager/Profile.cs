@@ -62,7 +62,20 @@ namespace SimpleFlaskManager.ProfileManager
                             this.Rules[i] = currRule;
                         }
 
-                        if (ImGui.TreeNodeEx("Add New condition", ImGuiTreeNodeFlags.NoTreePushOnOpen))
+                        if (ImGui.TreeNodeEx("Existing Conditions (all of them have to be true)", ImGuiTreeNodeFlags.DefaultOpen))
+                        {
+                            ImGui.PushItemWidth(ImGui.GetContentRegionAvail().X / 6);
+                            this.Rules[i].Condition?.Display();
+                            ImGui.PopItemWidth();
+                            ImGui.TreePop();
+                        }
+
+                        for(int _ = 0; _ < 3; _++)
+                        {
+                            ImGui.Separator();
+                        }
+
+                        if (ImGui.TreeNode("Add New condition"))
                         {
                             UiHelper.EnumComboBox("Condition", ref this.newConditionType);
                             ImGui.PushItemWidth(ImGui.GetContentRegionAvail().X / 6);
@@ -84,13 +97,7 @@ namespace SimpleFlaskManager.ProfileManager
 
                             ImGui.PopItemWidth();
                             ImGui.Separator();
-                        }
-
-                        if (ImGui.TreeNodeEx("Existing Conditions (all of them have to be true)", ImGuiTreeNodeFlags.NoTreePushOnOpen | ImGuiTreeNodeFlags.DefaultOpen))
-                        {
-                            ImGui.PushItemWidth(ImGui.GetContentRegionAvail().X / 6);
-                            this.Rules[i].Condition?.Display();
-                            ImGui.PopItemWidth();
+                            ImGui.TreePop();
                         }
 
                         ImGui.EndTabItem();
