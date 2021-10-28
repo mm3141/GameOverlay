@@ -69,11 +69,6 @@ namespace HealthBars
 
                 if (awakeEntity.Value.IsValid)
                 {
-                    if (!awakeEntity.Value.TryGetComponent<Render>(out var _) || !awakeEntity.Value.TryGetComponent<Life>(out var entityLife) || !entityLife.IsAlive)
-                    {
-                        continue;
-                    }
-
                     this.DrawEntityHealth(awakeEntity);
                 }
             }

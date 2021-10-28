@@ -491,6 +491,7 @@ namespace Radar
                 var isPlayer = entity.Value.TryGetComponent<Player>(out var playerComp);
                 var isPosAvailable = entity.Value.TryGetComponent<Positioned>(out var entityPos);
                 var isRenderAvailable = entity.Value.TryGetComponent<Render>(out var entityRender);
+                var isDiesAfterTime = entity.Value.TryGetComponent<DiesAfterTime>(out var _);
 
                 if (!isPosAvailable || !isRenderAvailable)
                 {
@@ -498,6 +499,10 @@ namespace Radar
                 }
                 else if (this.Settings.HideUseless)
                 {
+                    if (isDiesAfterTime)
+                    {
+                        continue;
+                    }
                     if (!(hasVital || isChest || isPlayer))
                     {
                         continue;
