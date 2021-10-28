@@ -132,12 +132,13 @@ namespace GameHelper
                 CoroutineHandler.Start(this.FindAndOpen());
             }
         }
+        /// <summary>
+        /// Bind the list of processes from the list of processes running on the system
+        /// </summary>
         public int curr_poe_process_count { get; private set; }
         List<Process> _pa = new List<Process>(); //list of simultaneously running OE processes;
-        /// <summary>
-        /// Finds the list of processes from the list of processes running on the system
+      
         /// based on the GameOffsets.GameProcessName class.
-        /// </summary>
         /// <returns>
         /// co-routine IWait.
         /// </returns>
