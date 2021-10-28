@@ -156,7 +156,7 @@ namespace GameHelper
         /// <returns>GameHelper version.</returns>
         public static string GetVersion()
         {
-            return version;
+            return version.Trim();
         }
 
         /// <summary>
