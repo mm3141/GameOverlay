@@ -22,10 +22,10 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
         private static OperatorEnum operatorStatic = OperatorEnum.EQUAL_TO;
         private static Animation selectedStatic = 0;
         private static int durationMsStatic = 0;
+        private readonly Stopwatch sw;
 
         [JsonProperty]
         private int durationMs;
-        private Stopwatch sw;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AnimationCondition"/> class.

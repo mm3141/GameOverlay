@@ -11,7 +11,7 @@ namespace GameHelper.RemoteEnums
     /// </summary>
     public enum InventoryName
     {
-#pragma warning disable SA1602, CS1591 // Got it from the game, no need to document it.
+#pragma warning disable CS1591, SA1602
         NoInvSelected,
         MainInventory1,
         BodyArmour1,
@@ -85,6 +85,6 @@ namespace GameHelper.RemoteEnums
         ExpeditionStorage1,
         HellscapeModificationInventory1,
         LabyrinthCraftingInput,
-#pragma warning restore SA1602, CS1591
+#pragma warning restore CS1591, SA1602
     }
 }

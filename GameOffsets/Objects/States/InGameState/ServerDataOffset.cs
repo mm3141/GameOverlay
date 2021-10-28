@@ -1,7 +1,7 @@
 namespace GameOffsets.Objects.States.InGameState
 {
-    using System;
     using Natives;
+    using System;
     using System.Runtime.InteropServices;
 
     [StructLayout(LayoutKind.Explicit, Pack = 1)]
@@ -11,7 +11,7 @@ namespace GameOffsets.Objects.States.InGameState
         [FieldOffset(0x8BE8 - SKIP)] public StdVector PlayerInventories; // InventoryArrayStruct
     }
 
-    [StructLayout(LayoutKind.Explicit, Pack =1)]
+    [StructLayout(LayoutKind.Explicit, Pack = 1)]
     public struct InventoryArrayStruct
     {
         [FieldOffset(0x00)] public int InventoryId;

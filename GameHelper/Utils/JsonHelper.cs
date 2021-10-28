@@ -29,7 +29,7 @@ namespace GameHelper.Utils
             }
             else
             {
-                T obj = new T();
+                T obj = new();
                 JsonHelper.SafeToFile(obj, file);
                 return obj;
             }

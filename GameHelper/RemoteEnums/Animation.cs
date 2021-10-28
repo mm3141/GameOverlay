@@ -10,7 +10,7 @@ namespace GameHelper.RemoteEnums
     /// </summary>
     public enum Animation
     {
-#pragma warning disable SA1602, CS1591 // Got it from the game, no need to document it.
+#pragma warning disable CS1591, SA1602
         Idle,
         Melee,
         MeleeWithStep,
@@ -153,6 +153,6 @@ namespace GameHelper.RemoteEnums
         ReviveLeft,
         ReviveRight,
         Fling,
-#pragma warning restore SA1602, CS1591
+#pragma warning restore CS1591, SA1602
     }
 }

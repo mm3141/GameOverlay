@@ -69,7 +69,7 @@ namespace GameHelper.Utils
             // in the last read operation.
             int totalReadOperations = CalculateTotalReadOperations(processSize);
 
-            Dictionary<string, int> result = new Dictionary<string, int>();
+            Dictionary<string, int> result = new();
 
             int totalPatterns = Patterns.Length;
             bool[] isPatternFound = new bool[totalPatterns];

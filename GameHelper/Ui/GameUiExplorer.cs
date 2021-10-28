@@ -18,7 +18,7 @@ namespace GameHelper.Ui
     /// </summary>
     public static class GameUiExplorer
     {
-        private static List<UiElement> elements = new List<UiElement>();
+        private static readonly List<UiElement> Elements = new();
 
         /// <summary>
         /// Initializes the co-routines.
@@ -35,13 +35,13 @@ namespace GameHelper.Ui
         /// <param name="element">UiElementBase to investigate.</param>
         internal static void AddUiElement(UiElementBase element)
         {
-            elements.Add(CreateUiElement(element));
+            Elements.Add(CreateUiElement(element));
             Core.GHSettings.ShowGameUiExplorer = true;
         }
 
         private static UiElement CreateUiElement(UiElementBase element)
         {
-            UiElement eleStruct = new UiElement()
+            UiElement eleStruct = new()
             {
                 CurrentChildIndex = -1,
                 CurrentChildPreview = string.Empty,
@@ -59,13 +59,13 @@ namespace GameHelper.Ui
 
         private static void RemoveUiElement(int i)
         {
-            elements[i].Children.Clear();
-            elements.RemoveAt(i);
+            Elements[i].Children.Clear();
+            Elements.RemoveAt(i);
         }
 
         private static void RemoveAllUiElements()
         {
-            for (int i = elements.Count - 1; i >= 0; i--)
+            for (int i = Elements.Count - 1; i >= 0; i--)
             {
                 RemoveUiElement(i);
             }
@@ -112,9 +112,9 @@ namespace GameHelper.Ui
                     }
 
                     ImGui.Separator();
-                    for (int i = 0; i < elements.Count; i++)
+                    for (int i = 0; i < Elements.Count; i++)
                     {
-                        var current = elements[i];
+                        var current = Elements[i];
                         string eleName = $"{current.Element.Id}";
                         bool isRequired = true;
                         bool isCurrentModified = false;
@@ -161,7 +161,7 @@ namespace GameHelper.Ui
                                     }
 
                                     isCurrentModified = true;
-                                    elements[i] = current;
+                                    Elements[i] = current;
                                 }
                                 else if (ImGui.IsKeyPressed(ImGui.GetKeyIndex(ImGuiKey.DownArrow)))
                                 {
@@ -175,7 +175,7 @@ namespace GameHelper.Ui
                                     }
 
                                     isCurrentModified = true;
-                                    elements[i] = current;
+                                    Elements[i] = current;
                                 }
                                 else if (ImGui.IsKeyPressed(ImGui.GetKeyIndex(ImGuiKey.Enter)))
                                 {
@@ -192,14 +192,14 @@ namespace GameHelper.Ui
                                     {
                                         current.CurrentChildIndex = j;
                                         current.CurrentChildPreview = $"{child.Address.ToInt64():X}-{child.Id}";
-                                        elements[i] = current;
+                                        Elements[i] = current;
                                     }
 
                                     if (isEnterPressed && selected)
                                     {
                                         current.CurrentChildIndex = j;
                                         current.CurrentChildPreview = $"{child.Address.ToInt64():X}-{child.Id}";
-                                        elements[i] = current;
+                                        Elements[i] = current;
                                         ImGui.CloseCurrentPopup();
                                         isEnterPressed = false;
                                     }
@@ -241,7 +241,7 @@ namespace GameHelper.Ui
                             {
                                 if (ImGui.Button($"Go to child##{i}"))
                                 {
-                                    elements[i] = CreateUiElement(current.Children[current.CurrentChildIndex]);
+                                    Elements[i] = CreateUiElement(current.Children[current.CurrentChildIndex]);
                                 }
                             }
                             else
@@ -254,7 +254,7 @@ namespace GameHelper.Ui
                             {
                                 if (ImGui.Button($"Go to parent##{i}"))
                                 {
-                                    elements[i] = CreateUiElement(current.Element.Parent);
+                                    Elements[i] = CreateUiElement(current.Element.Parent);
                                 }
                             }
                             else

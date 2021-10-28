@@ -17,8 +17,7 @@ namespace GameHelper.Ui
     /// </summary>
     public static class PerformanceStats
     {
-        private static Dictionary<string, MovingAverage> movingAverage
-            = new Dictionary<string, MovingAverage>();
+        private static readonly Dictionary<string, MovingAverage> MovingAverageValue = new();
 
         private static bool isPerformanceWindowHovered = false;
 
@@ -86,7 +85,7 @@ namespace GameHelper.Ui
                             Core.CoroutinesRegistrar.Remove(coroutine);
                         }
 
-                        if (movingAverage.TryGetValue(coroutine.Name, out var value))
+                        if (MovingAverageValue.TryGetValue(coroutine.Name, out var value))
                         {
                             value.ComputeAverage(
                                 coroutine.LastMoveNextTime.TotalMilliseconds,
@@ -95,7 +94,7 @@ namespace GameHelper.Ui
                         }
                         else
                         {
-                            movingAverage[coroutine.Name] = new MovingAverage();
+                            MovingAverageValue[coroutine.Name] = new MovingAverage();
                         }
                     }
 
@@ -111,8 +110,8 @@ namespace GameHelper.Ui
 
         private class MovingAverage
         {
-            private Queue<double> samples = new Queue<double>();
-            private int windowSize = 144 * 10; // 10 seconds moving average @ 144 FPS.
+            private readonly Queue<double> samples = new();
+            private readonly int windowSize = 144 * 10; // 10 seconds moving average @ 144 FPS.
             private double sampleAccumulator;
             private int lastIterationNumber = 0;
 

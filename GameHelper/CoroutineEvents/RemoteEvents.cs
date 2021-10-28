@@ -18,11 +18,11 @@ namespace GameHelper.CoroutineEvents
         /// last recorded time and IsLoading bool is set to false.
         /// NOTE: when this is triggered the preloads might not be up to date.
         /// </summary>
-        public static readonly Event AreaChanged = new Event();
+        public static readonly Event AreaChanged = new();
 
         /// <summary>
         /// Gets the Current State Changed event.
         /// </summary>
-        internal static readonly Event StateChanged = new Event();
+        internal static readonly Event StateChanged = new();
     }
 }

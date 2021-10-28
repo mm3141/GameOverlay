@@ -14,7 +14,6 @@ namespace SimpleFlaskManager
     /// </summary>
     public sealed class SimpleFlaskManagerSettings : IPSettings
     {
-#pragma warning disable SA1401
         /// <summary>
         /// Gets a value indicating weather flask manager debug mode is enabled or not.
         /// </summary>
@@ -33,13 +32,12 @@ namespace SimpleFlaskManager
         /// <summary>
         /// Gets all the profiles containing rules on when to drink the flasks.
         /// </summary>
-        public Dictionary<string, Profile> Profiles = new Dictionary<string, Profile>();
+        public Dictionary<string, Profile> Profiles = new();
 
         /// <summary>
         /// Condition on which user want to auto-quit.
         /// </summary>
-        public VitalsCondition AutoQuitCondition = new VitalsCondition(
-            OperatorEnum.LESS_THAN, VitalsCondition.VitalsEnum.LIFE, -1);
-#pragma warning restore SA1401
+        public VitalsCondition AutoQuitCondition =
+            new(OperatorEnum.LESS_THAN, VitalsCondition.VitalsEnum.LIFE, -1);
     }
 }

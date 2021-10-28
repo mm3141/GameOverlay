@@ -15,6 +15,6 @@ namespace GameHelper.CoroutineEvents
         /// Gets the event that is triggered after all the preloads
         /// of the current area/zone are updated.
         /// </summary>
-        public static readonly Event PreloadsUpdated = new Event();
+        public static readonly Event PreloadsUpdated = new();
     }
 }

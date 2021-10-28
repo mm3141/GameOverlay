@@ -67,7 +67,7 @@ namespace GameHelper.Utils
             var textSizeHalf = ImGui.CalcTextSize(text) / 2;
             var location = Core.States.InGameStateObject.WorldToScreen(pos);
             var max = location + textSizeHalf;
-            location = location - textSizeHalf;
+            location -= textSizeHalf;
             ImGui.GetBackgroundDrawList().AddRectFilled(location, max, colBg);
             ImGui.GetForegroundDrawList().AddText(location, colFg, text);
         }

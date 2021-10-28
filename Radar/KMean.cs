@@ -105,7 +105,7 @@ namespace Radar
             // or instead of randomly assigning each tuple to a cluster, pick
             // numClusters of the tuples as initial centroids/means then use
             // those means to assign each tuple to an initial cluster.
-            Random random = new Random(randomSeed);
+            Random random = new(randomSeed);
             int[] clustering = new int[numTuples];
 
             // make sure each cluster has at least one tuple

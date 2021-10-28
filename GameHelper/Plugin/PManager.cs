@@ -21,8 +21,7 @@ namespace GameHelper.Plugin
     /// </summary>
     internal static class PManager
     {
-        private static ConcurrentBag<KeyValuePair<string, IPCore>> plugins =
-            new ConcurrentBag<KeyValuePair<string, IPCore>>();
+        private static readonly ConcurrentBag<KeyValuePair<string, IPCore>> Plugins = new();
 
         /// <summary>
         /// Gets the loaded plugins.
@@ -124,7 +123,7 @@ namespace GameHelper.Plugin
                 IPCore pluginCore = Activator.CreateInstance(iPluginClasses[0]) as IPCore;
                 pluginCore.SetPluginDllLocation(pluginRootDirectory);
                 string pluginName = assembly.GetName().Name;
-                plugins.Add(new KeyValuePair<string, IPCore>(pluginName, pluginCore));
+                Plugins.Add(new KeyValuePair<string, IPCore>(pluginName, pluginCore));
             }
             catch (Exception e)
             {
@@ -134,7 +133,7 @@ namespace GameHelper.Plugin
 
         private static void CombinePluginAndMetadata()
         {
-            while (plugins.TryTake(out var tmp))
+            while (Plugins.TryTake(out var tmp))
             {
                 if (AllPlugins.ContainsKey(tmp.Key))
                 {

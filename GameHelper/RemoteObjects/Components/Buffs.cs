@@ -21,8 +21,7 @@ namespace GameHelper.RemoteObjects.Components
         ///     N = total life components in gamehelper memory,
         ///     M = total number of buff those components has.
         /// </summary>
-        private static ConcurrentDictionary<IntPtr, string> addressToEffectNameCache
-            = new ConcurrentDictionary<IntPtr, string>();
+        private static readonly ConcurrentDictionary<IntPtr, string> AddressToEffectNameCache = new();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Buffs"/> class.
@@ -73,7 +72,7 @@ namespace GameHelper.RemoteObjects.Components
             for (int i = 0; i < statusEffects.Length; i++)
             {
                 var statusEffectData = reader.ReadMemory<StatusEffectStruct>(statusEffects[i]);
-                if (addressToEffectNameCache.TryGetValue(statusEffectData.BuffDefinationPtr, out var oldEffectname))
+                if (AddressToEffectNameCache.TryGetValue(statusEffectData.BuffDefinationPtr, out var oldEffectname))
                 {
                     // known Effect
                     this.StatusEffects.AddOrUpdate(oldEffectname, statusEffectData, (key, oldValue) =>
@@ -93,7 +92,7 @@ namespace GameHelper.RemoteObjects.Components
                         return statusEffectData;
                     });
 
-                    addressToEffectNameCache[statusEffectData.BuffDefinationPtr] = newEffectName;
+                    AddressToEffectNameCache[statusEffectData.BuffDefinationPtr] = newEffectName;
                 }
             }
         }

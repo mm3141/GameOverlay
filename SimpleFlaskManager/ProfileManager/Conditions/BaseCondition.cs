@@ -17,7 +17,6 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
     public abstract class BaseCondition<T>
         : ICondition
     {
-#pragma warning disable SA1401 // Fields should be private
         /// <summary>
         /// Right hand side operand of the condition.
         /// </summary>
@@ -29,7 +28,6 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
         /// </summary>
         [JsonProperty]
         protected OperatorEnum conditionOperator;
-#pragma warning restore SA1401 // Fields should be private
 
         [JsonProperty]
         private ICondition next;

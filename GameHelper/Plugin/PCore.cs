@@ -4,7 +4,6 @@
 
 namespace GameHelper.Plugin
 {
-#pragma warning disable SA1401 // Fields should be private
     /// <summary>
     /// Interface for creating plugins.
     /// </summary>
@@ -20,7 +19,7 @@ namespace GameHelper.Plugin
         /// <summary>
         /// Gets or sets the plugin settings.
         /// </summary>
-        public TSettings Settings = new TSettings();
+        public TSettings Settings = new();
 
         /// <inheritdoc/>
         public abstract void OnDisable();
@@ -43,5 +42,4 @@ namespace GameHelper.Plugin
             this.DllDirectory = dllLocation;
         }
     }
-#pragma warning restore SA1401 // Fields should be private
 }

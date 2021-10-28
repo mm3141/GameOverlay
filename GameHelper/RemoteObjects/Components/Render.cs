@@ -15,7 +15,7 @@ namespace GameHelper.RemoteObjects.Components
     /// </summary>
     public class Render : RemoteObjectBase
     {
-        private static float worldToGridRatio =
+        private static readonly float WorldToGridRatio =
             TileStructure.TileToWorldConversion / TileStructure.TileToGridConversion;
 
         private StdTuple3D<float> modelBounds = default;
@@ -86,8 +86,8 @@ namespace GameHelper.RemoteObjects.Components
             this.WorldPosition = data.CurrentWorldPosition;
             this.modelBounds = data.CharactorModelBounds;
             this.TerrainHeight = (float)Math.Round(data.TerrainHeight, 4);
-            this.gridPos2D.X = data.CurrentWorldPosition.X / worldToGridRatio;
-            this.gridPos2D.Y = data.CurrentWorldPosition.Y / worldToGridRatio;
+            this.gridPos2D.X = data.CurrentWorldPosition.X / WorldToGridRatio;
+            this.gridPos2D.Y = data.CurrentWorldPosition.Y / WorldToGridRatio;
         }
     }
 }

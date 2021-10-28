@@ -27,18 +27,18 @@ namespace Radar
     public sealed class Radar : PCore<RadarSettings>
     {
         // Legion Cache.
-        private readonly Dictionary<uint, byte> frozenInTimeEntities = new Dictionary<uint, byte>();
+        private readonly Dictionary<uint, byte> frozenInTimeEntities = new();
 
         private readonly string heistUsefullChestContains = "HeistChestSecondary";
         private readonly string heistAllChestStarting = "Metadata/Chests/LeagueHeist";
-        private readonly Dictionary<uint, string> heistChestCache = new Dictionary<uint, string>();
+        private readonly Dictionary<uint, string> heistChestCache = new();
 
         // Delirium Hidden Monster cache.
-        private readonly Dictionary<uint, string> deliriumHiddenMonster = new Dictionary<uint, string>();
+        private readonly Dictionary<uint, string> deliriumHiddenMonster = new();
         private readonly string deliriumHiddenMonsterStarting = "Metadata/Monsters/LeagueAffliction/DoodadDaemons/DoodadDaemon";
 
         private readonly string delveChestStarting = "Metadata/Chests/DelveChests/";
-        private readonly Dictionary<uint, string> delveChestCache = new Dictionary<uint, string>();
+        private readonly Dictionary<uint, string> delveChestCache = new();
         private bool isAzuriteMine = false;
 
         /// <summary>
@@ -66,7 +66,7 @@ namespace Radar
         private IntPtr walkableMapTexture = IntPtr.Zero;
         private Vector2 walkableMapDimension = Vector2.Zero;
 
-        private Dictionary<string, TgtClusters> currentAreaImportantTiles = new Dictionary<string, TgtClusters>();
+        private Dictionary<string, TgtClusters> currentAreaImportantTiles = new();
 
         private string SettingPathname => Path.Join(this.DllDirectory, "config", "settings.txt");
 
@@ -843,7 +843,7 @@ namespace Radar
             }
 
             var totalRows = mapTextureData.Length / bytesPerRow;
-            using Image<Rgba32> image = new Image<Rgba32>(bytesPerRow * 2, totalRows);
+            using Image<Rgba32> image = new(bytesPerRow * 2, totalRows);
             Parallel.For(0, gridHeightData.Length, (y) =>
             {
                 for (int x = 1; x < gridHeightData[y].Length - 1; x++)
@@ -987,16 +987,11 @@ namespace Radar
 
         private IconPicker RarityToIconMapping(Rarity rarity)
         {
-            switch (rarity)
+            return rarity switch
             {
-                case Rarity.Normal:
-                case Rarity.Magic:
-                case Rarity.Rare:
-                case Rarity.Unique:
-                    return this.Settings.BaseIcons[$"{rarity} Monster"];
-                default:
-                    return this.Settings.BaseIcons[$"Normal Monster"];
-            }
+                Rarity.Normal or Rarity.Magic or Rarity.Rare or Rarity.Unique => this.Settings.BaseIcons[$"{rarity} Monster"],
+                _ => this.Settings.BaseIcons[$"Normal Monster"],
+            };
         }
 
         private string HeistChestPathToIcon(string path)

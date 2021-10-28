@@ -18,8 +18,7 @@ namespace GameHelper.RemoteObjects.Components
         /// <summary>
         /// Cache the BaseItemType.Dat data to save few reads per frame.
         /// </summary>
-        private static ConcurrentDictionary<IntPtr, string> baseItemTypeDatCache
-            = new ConcurrentDictionary<IntPtr, string>();
+        private static readonly ConcurrentDictionary<IntPtr, string> BaseItemTypeDatCache = new();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Base"/> class.
@@ -53,7 +52,7 @@ namespace GameHelper.RemoteObjects.Components
         {
             var reader = Core.Process.Handle;
             var data = reader.ReadMemory<BaseOffsets>(this.Address);
-            if (baseItemTypeDatCache.TryGetValue(data.BaseInternalPtr, out var itemName))
+            if (BaseItemTypeDatCache.TryGetValue(data.BaseInternalPtr, out var itemName))
             {
                 this.ItemBaseName = itemName;
             }
@@ -63,7 +62,7 @@ namespace GameHelper.RemoteObjects.Components
                 string name = reader.ReadStdWString(baseItemTypeDatRow.BaseNamePtr);
                 if (!string.IsNullOrEmpty(name))
                 {
-                    baseItemTypeDatCache[data.BaseInternalPtr] = name;
+                    BaseItemTypeDatCache[data.BaseInternalPtr] = name;
                     this.ItemBaseName = name;
                 }
             }

@@ -101,12 +101,12 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
         /// <summary>
         /// Gets the terrain height data.
         /// </summary>
-        public float[][] GridHeightData { get; private set; } = new float[0][];
+        public float[][] GridHeightData { get; private set; } = Array.Empty<float[]>();
 
         /// <summary>
         /// Gets the terrain data of the current Area/Zone instance.
         /// </summary>
-        public byte[] GridWalkableData { get; private set; } = new byte[0];
+        public byte[] GridWalkableData { get; private set; } = Array.Empty<byte>();
 
         /// <summary>
         /// Gets the Disctionary of Lists containing only the named tgt tiles locations.
@@ -289,7 +289,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
                 kv.Value.IsValid = false;
             }
 
-            if (!this.isLeagueMechanicActivated && this.DisappearingEntities.Count > 0)
+            if (!this.isLeagueMechanicActivated && !this.DisappearingEntities.IsEmpty)
             {
                 CoroutineHandler.InvokeLater(new Wait(0.5d), () =>
                 {
@@ -364,7 +364,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             var reader = Core.Process.Handle;
             var tileData = reader.ReadStdVector<TileStructure>(this.TerrainMetadata.TileDetailsPtr);
             var ret = new Dictionary<string, List<StdTuple2D<int>>>();
-            object mylock = new object();
+            object mylock = new();
             Parallel.For(
                 0,
                 tileData.Length,

@@ -1,8 +1,8 @@
 namespace GameOffsets.Objects
 {
+    using GameOffsets.Natives;
     using System;
     using System.Runtime.InteropServices;
-    using GameOffsets.Natives;
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct LoadedFilesRootObject

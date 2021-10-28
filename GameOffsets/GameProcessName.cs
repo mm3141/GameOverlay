@@ -9,13 +9,13 @@
         /// and the main window title. See task-manager to find the exact process name
         /// and convert the game to the window mode to see the window title on the game.
         /// </summary>
-        public static Dictionary<string, string> ProcessName = new Dictionary<string, string>()
+        public static Dictionary<string, string> ProcessName = new()
         {
             { "PathOfExile" , "Path of Exile".ToLower() } ,
             { "PathOfExile_KG", "Path of Exile".ToLower() },
         };
 
-        public static List<string> Contributors = new List<string>()
+        public static List<string> Contributors = new()
         {
             "Dax***",
             "Scrippydoo",

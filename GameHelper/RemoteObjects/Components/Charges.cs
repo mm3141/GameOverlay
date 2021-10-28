@@ -5,7 +5,6 @@
 namespace GameHelper.RemoteObjects.Components
 {
     using System;
-    using GameHelper.RemoteEnums;
     using GameOffsets.Objects.Components;
     using ImGuiNET;
 

@@ -4,9 +4,7 @@
 
 namespace SimpleFlaskManager.ProfileManager.Conditions
 {
-    using System;
     using System.Diagnostics;
-    using GameHelper.RemoteObjects.Components;
     using ImGuiNET;
 
     /// <summary>
@@ -17,7 +15,7 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
     {
         private static float cooldownStatic = 0.0f;
 
-        private Stopwatch cooldownTimer = Stopwatch.StartNew();
+        private readonly Stopwatch cooldownTimer = Stopwatch.StartNew();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CooldownCondition"/> class.

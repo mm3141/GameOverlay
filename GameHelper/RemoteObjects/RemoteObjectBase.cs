@@ -16,8 +16,8 @@ namespace GameHelper.RemoteObjects
     /// </summary>
     public abstract class RemoteObjectBase
     {
+        private readonly bool forceUpdate;
         private IntPtr address;
-        private bool forceUpdate;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RemoteObjectBase"/> class.

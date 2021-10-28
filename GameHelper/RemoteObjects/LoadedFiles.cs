@@ -26,7 +26,7 @@ namespace GameHelper.RemoteObjects
         private bool areaAlreadyDone = false;
         private string filename = string.Empty;
         private string searchText = string.Empty;
-        private string[] searchTextSplit = new string[0];
+        private string[] searchTextSplit = Array.Empty<string>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LoadedFiles"/> class.

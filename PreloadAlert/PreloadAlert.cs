@@ -24,16 +24,14 @@ namespace PreloadAlert
         private readonly ImGuiColorEditFlags colorEditflags
             = ImGuiColorEditFlags.NoInputs | ImGuiColorEditFlags.NoLabel;
 
-        private readonly Dictionary<PreloadInfo, byte> preloadFound
-            = new Dictionary<PreloadInfo, byte>();
+        private readonly Dictionary<PreloadInfo, byte> preloadFound = new();
 
         private string path = string.Empty;
         private string displayName = string.Empty;
-        private Vector4 color = new Vector4(1f);
+        private Vector4 color = new(1f);
 
         private ActiveCoroutine onPreloadUpdated;
-        private Dictionary<string, PreloadInfo> importantPreloads
-            = new Dictionary<string, PreloadInfo>();
+        private Dictionary<string, PreloadInfo> importantPreloads = new();
 
         private bool isPreloadAlertHovered = false;
 

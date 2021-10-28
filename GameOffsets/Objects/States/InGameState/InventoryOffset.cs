@@ -1,7 +1,7 @@
 namespace GameOffsets.Objects.States.InGameState
 {
-    using System;
     using Natives;
+    using System;
     using System.Runtime.InteropServices;
 
     [StructLayout(LayoutKind.Explicit, Pack = 1)]

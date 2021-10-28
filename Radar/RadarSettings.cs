@@ -16,7 +16,6 @@ namespace Radar
     /// </summary>
     public sealed class RadarSettings : IPSettings
     {
-#pragma warning disable SA1401
         /// <summary>
         /// Multipler to apply to the Large Map icons
         /// so they display correctly on the screen.
@@ -97,7 +96,7 @@ namespace Radar
         /// <summary>
         /// Gets a value indicating what color to use for drawing tile name.
         /// </summary>
-        public Vector4 TgtNameColor = new Vector4(1f, 0.5f, 0.5f, 1f);
+        public Vector4 TgtNameColor = new(1f, 0.5f, 0.5f, 1f);
 
         /// <summary>
         /// Gets a value indicating wether user want to draw a background when writing tile name.
@@ -108,43 +107,41 @@ namespace Radar
         /// Gets the Tgts and their expected clusters per area/zone/map.
         /// </summary>
         [JsonIgnore]
-        public Dictionary<string, Dictionary<string, TgtClusters>> ImportantTgts =
-            new Dictionary<string, Dictionary<string, TgtClusters>>();
+        public Dictionary<string, Dictionary<string, TgtClusters>> ImportantTgts = new();
 
         /// <summary>
         /// Icons to display on the map. Base game includes normal chests, strongboxes, monsters etc.
         /// </summary>
-        public Dictionary<string, IconPicker> BaseIcons = new Dictionary<string, IconPicker>();
+        public Dictionary<string, IconPicker> BaseIcons = new();
 
         /// <summary>
         /// Icons to display on the map. Breach includes breach chests.
         /// </summary>
-        public Dictionary<string, IconPicker> BreachIcons = new Dictionary<string, IconPicker>();
+        public Dictionary<string, IconPicker> BreachIcons = new();
 
         /// <summary>
         /// Icons to display on the map. Legion includes special legion monster chests.
         /// since they can't be covered by base icons.
         /// </summary>
-        public Dictionary<string, IconPicker> LegionIcons = new Dictionary<string, IconPicker>();
+        public Dictionary<string, IconPicker> LegionIcons = new();
 
         /// <summary>
         /// Icons to display on the map. Delirium includes the special spawners and bombs that
         /// delirium brings and they can't be convered by base icons.
         /// </summary>
-        public Dictionary<string, IconPicker> DeliriumIcons = new Dictionary<string, IconPicker>();
+        public Dictionary<string, IconPicker> DeliriumIcons = new();
 
         /// <summary>
         /// Icons to display on the map. Heist includes the special heist chests that can't
         /// be distinguished by base chests.
         /// </summary>
-        public Dictionary<string, IconPicker> HeistIcons = new Dictionary<string, IconPicker>();
+        public Dictionary<string, IconPicker> HeistIcons = new();
 
         /// <summary>
         /// Icons to display on the map. Delve includes the special delve chests which can't be
         /// distinguished by using base chests icons.
         /// </summary>
-        public Dictionary<string, IconPicker> DelveIcons = new Dictionary<string, IconPicker>();
-#pragma warning restore SA1401
+        public Dictionary<string, IconPicker> DelveIcons = new();
 
         private static readonly int IconsPngRows = 44;
         private static readonly int IconsPngCols = 14;

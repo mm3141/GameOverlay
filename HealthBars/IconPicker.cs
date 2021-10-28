@@ -21,7 +21,7 @@ namespace HealthBars
     /// </summary>
     public class IconPicker
     {
-        private static ImGuiWindowFlags popUpFlags =
+        private static readonly ImGuiWindowFlags PopUpFlags =
             ImGuiWindowFlags.AlwaysHorizontalScrollbar |
             ImGuiWindowFlags.NoSavedSettings |
             ImGuiWindowFlags.NoBackground;
@@ -136,7 +136,7 @@ namespace HealthBars
                 ImGui.SetNextWindowPos(this.popUpPos, ImGuiCond.Appearing);
                 ImGui.SetNextWindowSize(new Vector2(400), ImGuiCond.Appearing);
                 var title = $"Icon Picker (Double click to select an item)";
-                if (ImGui.Begin(title, ref this.showPopUp, popUpFlags))
+                if (ImGui.Begin(title, ref this.showPopUp, PopUpFlags))
                 {
                     if (ImGui.IsWindowHovered() && ImGui.GetIO().MouseDoubleClicked[0])
                     {

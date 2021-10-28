@@ -16,7 +16,6 @@ namespace GameHelper.RemoteObjects.UiElement
     /// </summary>
     public class UiElementBase : RemoteObjectBase
     {
-#pragma warning disable SA1401 // Fields should be private
         /// <summary>
         /// Flags associated with the UiElement.
         /// They contains IsVisible and ShouldModifyPostion information.
@@ -46,9 +45,8 @@ namespace GameHelper.RemoteObjects.UiElement
         /// <summary>
         /// Gets the children addresses of this Ui Element.
         /// </summary>
-        protected IntPtr[] childrenAddresses = new IntPtr[0];
+        protected IntPtr[] childrenAddresses = Array.Empty<IntPtr>();
 
-#pragma warning restore SA1401 // Fields should be private
         private string id = string.Empty;
         private Vector2 positionModifier = Vector2.Zero;
         private bool show = false;
@@ -91,11 +89,11 @@ namespace GameHelper.RemoteObjects.UiElement
         {
             get
             {
-                var myScale = Core.GameScale.GetScaleValue(
+                var (widthScale, heightScale) = Core.GameScale.GetScaleValue(
                     this.scaleIndex, this.localScaleMultiplier);
                 var pos = this.GetUnScaledPosition();
-                pos.X *= myScale.WidthScale;
-                pos.Y *= myScale.HeightScale;
+                pos.X *= widthScale;
+                pos.Y *= heightScale;
                 return pos;
             }
 
@@ -111,11 +109,11 @@ namespace GameHelper.RemoteObjects.UiElement
         {
             get
             {
-                var scale = Core.GameScale.GetScaleValue(
+                var (widthScale, heightScale) = Core.GameScale.GetScaleValue(
                     this.scaleIndex, this.localScaleMultiplier);
                 var size = this.unScaledSize;
-                size.X *= scale.WidthScale;
-                size.Y *= scale.HeightScale;
+                size.X *= widthScale;
+                size.Y *= heightScale;
                 return size;
             }
 
@@ -204,13 +202,13 @@ namespace GameHelper.RemoteObjects.UiElement
             ImGui.Text($"Scale Indenx {this.scaleIndex}");
             ImGui.Text($"Local Scale Multiplier {this.localScaleMultiplier}");
             ImGui.Text($"Flags: {this.flags:X}");
-    }
+        }
 
         /// <inheritdoc/>
         protected override void CleanUpData()
         {
             this.Parent = null;
-            this.childrenAddresses = new IntPtr[0];
+            this.childrenAddresses = Array.Empty<IntPtr>();
             this.flags = 0x00;
             this.localScaleMultiplier = 0x00;
             this.relativePosition = Vector2.Zero;
@@ -287,14 +285,14 @@ namespace GameHelper.RemoteObjects.UiElement
             }
             else
             {
-                var parentScale = Core.GameScale.GetScaleValue(
+                var (parentScaleW, parentScaleH) = Core.GameScale.GetScaleValue(
                     this.Parent.scaleIndex, this.Parent.localScaleMultiplier);
-                var myScale = Core.GameScale.GetScaleValue(
+                var (myScaleW, myScaleH) = Core.GameScale.GetScaleValue(
                     this.scaleIndex, this.localScaleMultiplier);
                 Vector2 myPos;
-                myPos.X = (parentPos.X * parentScale.WidthScale / myScale.WidthScale)
+                myPos.X = (parentPos.X * parentScaleW / myScaleW)
                     + this.relativePosition.X;
-                myPos.Y = (parentPos.Y * parentScale.HeightScale / myScale.HeightScale)
+                myPos.Y = (parentPos.Y * parentScaleH / myScaleH)
                     + this.relativePosition.Y;
                 return myPos;
             }

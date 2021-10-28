@@ -14,37 +14,37 @@ namespace GameHelper.CoroutineEvents
         /// <summary>
         /// Gets the event raised when the game has changed its size, position or both.
         /// </summary>
-        public static readonly Event OnMoved = new Event();
+        public static readonly Event OnMoved = new();
 
         /// <summary>
         /// Gets the event raised when the game Foreground property has changed.
         /// </summary>
-        public static readonly Event OnForegroundChanged = new Event();
+        public static readonly Event OnForegroundChanged = new();
 
         /// <summary>
         /// Gets the event raised just before the GameProcess has closed the game.
         /// </summary>
-        public static readonly Event OnClose = new Event();
+        public static readonly Event OnClose = new();
 
         /// <summary>
         /// To Update data every frame before rendering.
         /// </summary>
-        internal static readonly Event PerFrameDataUpdate = new Event();
+        internal static readonly Event PerFrameDataUpdate = new();
 
         /// <summary>
         /// To submit ImGui code for generating the UI.
         /// </summary>
-        internal static readonly Event OnRender = new Event();
+        internal static readonly Event OnRender = new();
 
         /// <summary>
         /// Gets the event raised when GameProcess has opened a new game.
         /// </summary>
-        internal static readonly Event OnOpened = new Event();
+        internal static readonly Event OnOpened = new();
 
         /// <summary>
         /// Gets the Game Helper closing event. The event is called whenever
         /// all the settings have to be saved.
         /// </summary>
-        internal static readonly Event TimeToSaveAllSettings = new Event();
+        internal static readonly Event TimeToSaveAllSettings = new();
     }
 }

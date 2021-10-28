@@ -22,10 +22,10 @@ namespace SimpleFlaskManager
     /// </summary>
     public sealed class SimpleFlaskManagerCore : PCore<SimpleFlaskManagerSettings>
     {
-        private Vector2 size = new Vector2(400, 200);
+        private readonly List<string> keyPressInfo = new();
+        private Vector2 size = new(400, 200);
         private string debugMessage = "None";
         private string newProfileName = string.Empty;
-        private List<string> keyPressInfo = new List<string>();
 
         private string SettingPathname => Path.Join(this.DllDirectory, "config", "settings.txt");
 

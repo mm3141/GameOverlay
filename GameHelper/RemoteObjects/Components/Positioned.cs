@@ -5,7 +5,6 @@
 namespace GameHelper.RemoteObjects.Components
 {
     using System;
-    using GameOffsets.Natives;
     using GameOffsets.Objects.Components;
     using GameOffsets.Objects.States.InGameState;
     using ImGuiNET;

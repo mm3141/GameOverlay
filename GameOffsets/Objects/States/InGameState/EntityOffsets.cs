@@ -1,8 +1,8 @@
 ﻿namespace GameOffsets.Objects.States.InGameState
 {
+    using GameOffsets.Natives;
     using System;
     using System.Runtime.InteropServices;
-    using GameOffsets.Natives;
 
     [StructLayout(LayoutKind.Explicit, Pack = 1)]
     public struct ItemStruct
@@ -25,17 +25,15 @@
     {
         // 0th bit set = invalid. test byte ptr [rcx+5C],01
         // pass IsValid byte to this function.
-        public static Func<byte, bool> IsValidEntity =
-            new Func<byte, bool>((param) =>
-            {
-                return !Util.isBitSetByte(param, 0);
-            });
+        public static Func<byte, bool> IsValidEntity = new((param) =>
+        {
+            return !Util.isBitSetByte(param, 0);
+        });
 
-        public static Func<byte, bool> IsFriendly =
-            new Func<byte, bool>((param) =>
-            {
-                return (param & 0x7F) == 0x01;
-            });
+        public static Func<byte, bool> IsFriendly = new((param) =>
+        {
+            return (param & 0x7F) == 0x01;
+        });
     }
 
     [StructLayout(LayoutKind.Explicit, Pack = 1)]

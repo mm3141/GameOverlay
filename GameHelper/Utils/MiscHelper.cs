@@ -16,9 +16,9 @@ namespace GameHelper.Utils
     /// </summary>
     public static class MiscHelper
     {
+        private static readonly Random Rand = new();
+        private static readonly Stopwatch DelayBetweenKeys = Stopwatch.StartNew();
         private static Task<IntPtr> sendingMessage = null;
-        private static Random rand = new Random();
-        private static Stopwatch delayBetweenKeys = Stopwatch.StartNew();
 
         private enum TcpTableClass
         {
@@ -55,9 +55,9 @@ namespace GameHelper.Utils
                 return false;
             }
 
-            if (delayBetweenKeys.ElapsedMilliseconds >= Core.GHSettings.KeyPressTimeout + (rand.Next() % 10))
+            if (DelayBetweenKeys.ElapsedMilliseconds >= Core.GHSettings.KeyPressTimeout + (Rand.Next() % 10))
             {
-                delayBetweenKeys.Restart();
+                DelayBetweenKeys.Restart();
             }
             else
             {
@@ -109,12 +109,12 @@ namespace GameHelper.Utils
 
             // Kill Path Connection
             MibTcprowOwnerPid pathConnection = table.FirstOrDefault(t => t.OwningPid == processId);
-            if (!EqualityComparer<MibTcprowOwnerPid>.Default.Equals(pathConnection, default(MibTcprowOwnerPid)))
+            if (!EqualityComparer<MibTcprowOwnerPid>.Default.Equals(pathConnection, default))
             {
                 pathConnection.State = 12;
                 var ptr = Marshal.AllocCoTaskMem(Marshal.SizeOf(pathConnection));
                 Marshal.StructureToPtr(pathConnection, ptr, false);
-                SetTcpEntry(ptr);
+                _ = SetTcpEntry(ptr);
                 Marshal.FreeCoTaskMem(ptr);
             }
         }

@@ -6,9 +6,7 @@ namespace GameHelper.Utils
 {
     using System;
     using System.Collections.Generic;
-    using System.Runtime.ConstrainedExecution;
     using System.Runtime.InteropServices;
-    using System.Security.Permissions;
     using System.Text;
     using GameOffsets.Natives;
     using Microsoft.Win32.SafeHandles;
@@ -98,7 +96,7 @@ namespace GameHelper.Utils
             var length = nativeContainer.Last.ToInt64() - nativeContainer.First.ToInt64();
             if (length == 0 || length % typeSize != 0)
             {
-                return new T[0];
+                return Array.Empty<T>();
             }
 
             return this.ReadMemoryArray<T>(nativeContainer.First, (int)length / typeSize);
@@ -118,7 +116,7 @@ namespace GameHelper.Utils
         {
             if (this.IsInvalid || address.ToInt64() <= 0 || nsize <= 0)
             {
-                return new T[0];
+                return Array.Empty<T>();
             }
 
             var buffer = new T[nsize];
@@ -141,7 +139,7 @@ namespace GameHelper.Utils
             catch (Exception e)
             {
                 Console.WriteLine($"ERROR: {e.Message}");
-                return new T[0];
+                return Array.Empty<T>();
             }
         }
 

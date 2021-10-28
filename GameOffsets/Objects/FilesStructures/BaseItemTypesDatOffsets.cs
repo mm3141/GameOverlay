@@ -1,7 +1,7 @@
 ﻿namespace GameOffsets.Objects.FilesStructures
 {
-    using System.Runtime.InteropServices;
     using GameOffsets.Natives;
+    using System.Runtime.InteropServices;
 
     [StructLayout(LayoutKind.Explicit, Pack = 1)]
     public struct BaseItemTypesDatOffsets

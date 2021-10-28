@@ -43,8 +43,8 @@
         /// <returns>byte array and a mask (bool) array for it.</returns>
         private static (byte[], bool[]) ParseArrayOfHexBytes(List<string> arrayOfHexBytes)
         {
-            List<bool> mask = new List<bool>();
-            List<byte> data = new List<byte>();
+            List<bool> mask = new();
+            List<byte> data = new();
             for (int i = 0; i < arrayOfHexBytes.Count; i++)
             {
                 string hexByte = arrayOfHexBytes[i];

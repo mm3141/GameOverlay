@@ -264,7 +264,6 @@ namespace GameHelper
             }
         }
 
-#pragma warning disable SA1204 // Static elements should appear before instance elements
         [DllImport("user32.dll")]
         private static extern IntPtr GetForegroundWindow();
 
@@ -273,8 +272,6 @@ namespace GameHelper
 
         [DllImport("user32.dll")]
         private static extern bool ClientToScreen(IntPtr hWnd, out Point lpPoint);
-
-#pragma warning restore SA1204 // Static elements should appear before instance elements
 
         [StructLayout(LayoutKind.Sequential)]
         private struct RECT

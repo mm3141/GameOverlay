@@ -25,14 +25,12 @@ namespace HealthBars
     /// </summary>
     public sealed class HealthBars : PCore<HealthBarsSettings>
     {
-        private ActiveCoroutine onAreaChange;
-
-        private ConcurrentDictionary<uint, Vector2> bPositions;
-
         /// <summary>
         /// Sprites for HealthBars.
         /// </summary>
-        private Dictionary<string, IconPicker> sprites = new Dictionary<string, IconPicker>();
+        private readonly Dictionary<string, IconPicker> sprites = new();
+        private ActiveCoroutine onAreaChange;
+        private ConcurrentDictionary<uint, Vector2> bPositions;
 
         private string SettingPathname => Path.Join(this.DllDirectory, "config", "settings.txt");
 
@@ -71,7 +69,7 @@ namespace HealthBars
 
                 if (awakeEntity.Value.IsValid)
                 {
-                    if (!awakeEntity.Value.TryGetComponent<Render>(out var eRender) || !awakeEntity.Value.TryGetComponent<Life>(out var entityLife) || !entityLife.IsAlive)
+                    if (!awakeEntity.Value.TryGetComponent<Render>(out var _) || !awakeEntity.Value.TryGetComponent<Life>(out var entityLife) || !entityLife.IsAlive)
                     {
                         continue;
                     }
@@ -116,13 +114,13 @@ namespace HealthBars
         {
             var hasVital = entity.Value.TryGetComponent<Life>(out var entityLife);
             var hasOMP = entity.Value.TryGetComponent<ObjectMagicProperties>(out var entityMagicProperties);
-            var isBlockage = entity.Value.TryGetComponent<TriggerableBlockage>(out var blockageComp);
+            var isBlockage = entity.Value.TryGetComponent<TriggerableBlockage>(out var _);
             var hasRender = entity.Value.TryGetComponent<Render>(out var eRender);
             var hasPositioned = entity.Value.TryGetComponent<Positioned>(out var entityPositioned);
-            var isPlayer = entity.Value.TryGetComponent<Player>(out var playerComp);
-            var willDieAfterTime = entity.Value.TryGetComponent<DiesAfterTime>(out var diesAfterTime);
+            var isPlayer = entity.Value.TryGetComponent<Player>(out var _);
+            var willDieAfterTime = entity.Value.TryGetComponent<DiesAfterTime>(out var _);
 
-            if (!hasVital || !entityLife.IsAlive || (!hasOMP && isBlockage && !isPlayer) || !hasRender || !hasPositioned || willDieAfterTime)
+            if (!hasVital || !entityLife.IsAlive || (!hasOMP && !isPlayer) || !hasRender || !hasPositioned || willDieAfterTime || isBlockage)
             {
                 return;
             }
@@ -153,8 +151,8 @@ namespace HealthBars
             float manaReserved = entityLife.Mana.ReservedPercent / 100;
             float manaPercent = entityLife.Mana.CurrentInPercent() * ((100 - manaReserved) / 100);
 
-            Vector2 hpOffset = new Vector2(0, 1);
-            Vector2 manaOffset = new Vector2(0, 10);
+            Vector2 hpOffset = new(0, 1);
+            Vector2 manaOffset = new(0, 10);
 
             // TODO: Make correct dictionary instead of IconPickers
             if (entityPositioned.IsFriendly)
@@ -211,12 +209,12 @@ namespace HealthBars
         private void DrawSprite(string spriteName, float sx, float sy, float sw, float sh, float ssw, float ssh, Vector2 t, float tw, float th, float mulw, float mulh, bool border, uint borderColor)
         {
             var draw = ImGui.GetBackgroundDrawList();
-            Vector2 uv0 = new Vector2(sx / ssw, sy / ssh);
-            Vector2 uv1 = new Vector2((sx + sw) / ssw, (sy + sh) / ssh);
+            Vector2 uv0 = new(sx / ssw, sy / ssh);
+            Vector2 uv1 = new((sx + sw) / ssw, (sy + sh) / ssh);
             var sprite = this.sprites[spriteName];
-            Vector2 bounds = new Vector2(tw * (((mulw < 0) ? 100 : mulw) / 100), th * (((mulh < 0) ? 100 : mulh) / 100));
-            Vector2 vbounds = new Vector2(tw, th);
-            Vector2 half = new Vector2(vbounds.X / 2, 0);
+            Vector2 bounds = new(tw * (((mulw < 0) ? 100 : mulw) / 100), th * (((mulh < 0) ? 100 : mulh) / 100));
+            Vector2 vbounds = new(tw, th);
+            Vector2 half = new(vbounds.X / 2, 0);
             draw.AddImage(sprite.TexturePtr, t - half, t - half + bounds, uv0, uv1);
 
             if (border == true)
@@ -227,18 +225,13 @@ namespace HealthBars
 
         private uint RarityColor(Rarity rarity)
         {
-            switch (rarity)
+            return rarity switch
             {
-                case Rarity.Unique:
-                    return UiHelper.Color(this.Settings.UniqueColor * 255f);
-                case Rarity.Rare:
-                    return UiHelper.Color(this.Settings.RareColor * 255f);
-                case Rarity.Magic:
-                    return UiHelper.Color(this.Settings.MagicColor * 255f);
-                case Rarity.Normal:
-                default:
-                    return UiHelper.Color(this.Settings.NormalColor * 255f);
-            }
+                Rarity.Unique => UiHelper.Color(this.Settings.UniqueColor * 255f),
+                Rarity.Rare => UiHelper.Color(this.Settings.RareColor * 255f),
+                Rarity.Magic => UiHelper.Color(this.Settings.MagicColor * 255f),
+                _ => UiHelper.Color(this.Settings.NormalColor * 255f),
+            };
         }
 
         private IEnumerator<Wait> ClearData()

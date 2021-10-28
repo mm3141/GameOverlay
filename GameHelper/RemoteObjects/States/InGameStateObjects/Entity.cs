@@ -17,11 +17,8 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
     /// </summary>
     public class Entity : RemoteObjectBase
     {
-        private readonly Dictionary<string, IntPtr> componentAddresses =
-            new Dictionary<string, IntPtr>();
-
-        private readonly Dictionary<string, RemoteObjectBase> componentCache =
-            new Dictionary<string, RemoteObjectBase>();
+        private readonly Dictionary<string, IntPtr> componentAddresses = new();
+        private readonly Dictionary<string, RemoteObjectBase> componentCache = new();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Entity"/> class.

@@ -20,7 +20,7 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
     {
         private static int flaskSlotStatic = 1;
         private IntPtr flaskAddressCache = IntPtr.Zero;
-        private List<string> flaskBuffsCache = new List<string>();
+        private List<string> flaskBuffsCache = new();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FlaskEffectCondition"/> class.

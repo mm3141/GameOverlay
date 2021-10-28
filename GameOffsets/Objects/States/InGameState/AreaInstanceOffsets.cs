@@ -1,8 +1,8 @@
 namespace GameOffsets.Objects.States.InGameState
 {
+    using GameOffsets.Natives;
     using System;
     using System.Runtime.InteropServices;
-    using GameOffsets.Natives;
 
     [StructLayout(LayoutKind.Explicit, Pack = 1)]
     public struct AreaInstanceOffsets
@@ -27,19 +27,18 @@ namespace GameOffsets.Objects.States.InGameState
         // Updating it to 1630 to remove false positive.
         // 1630 render distance is around 150 grid distance. ( divide by 10.87 )
         // 1 full screen size is around 14xx so this is slightly more than 1 screen size.
-        public static int NETWORK_BUBBLE_RADIUS = 1630;
+        public const int NETWORK_BUBBLE_RADIUS = 1630;
     }
 
     public static class EntityFilter
     {
-        public static Func<EntityNodeKey, bool> IgnoreSleepingEntities =
-            new Func<EntityNodeKey, bool>((param) =>
-            {
-                // from the game code
-                //     if (0x3fffffff < *(uint *)(lVar1 + 0x60)) {}
-                //     CMP    dword ptr [RSI + 0x60],0x40000000
-                return param.id < 0x40000000;
-            });
+        public static Func<EntityNodeKey, bool> IgnoreSleepingEntities = new ((param) =>
+        {
+            // from the game code
+            //     if (0x3fffffff < *(uint *)(lVar1 + 0x60)) {}
+            //     CMP    dword ptr [RSI + 0x60],0x40000000
+            return param.id < 0x40000000;
+        });
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
@@ -68,6 +67,16 @@ namespace GameOffsets.Objects.States.InGameState
         public override int GetHashCode()
         {
             return this.id.GetHashCode();
+        }
+
+        public static bool operator ==(EntityNodeKey left, EntityNodeKey right)
+        {
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(EntityNodeKey left, EntityNodeKey right)
+        {
+            return !(left == right);
         }
     }
 

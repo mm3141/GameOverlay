@@ -12,7 +12,6 @@ namespace HealthBars
     /// </summary>
     public sealed class HealthBarsSettings : IPSettings
     {
-#pragma warning disable SA1401
         /// <summary>
         /// Show bar in town.
         /// </summary>

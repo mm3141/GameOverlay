@@ -15,7 +15,7 @@ namespace GameHelper
     using ImGuiNET;
 
     /// <inheritdoc/>
-    public class GameOverlay : Overlay
+    public sealed class GameOverlay : Overlay
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GameOverlay"/> class.
