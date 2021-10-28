@@ -1,0 +1,25 @@
+mode: Mainline
+commit-message-incrementing: MergeMessageOnly
+
+assembly-versioning-format: "{Major}.{Minor}.{Patch}.{env:BUILDCOUNT ?? 0}"
+assembly-informational-format: "{NuGetVersionV2}+Build.{env:BUILDCOUNT ?? 0}.Date.{CommitDate}.Branch.{env:SAFEBRANCHNAME ?? unknown}.Sha.{Sha}"
+commit-date-format: yyyyMMddTHHmmss
+
+branches:
+  master:
+    increment: Patch
+    is-release-branch: true
+  pull-request:
+    tag: rc
+    increment: Patch
+  feature:
+    regex: .*/
+    tag: useBranchName
+    increment: Patch
+    source-branches: ["master", "feature"]
+    track-merge-target: true
+  release:
+    tag: ""
+    regex: releases?[/-]\d+\.\d+\.\d+
+    increment: Patch
+    is-release-branch: true
