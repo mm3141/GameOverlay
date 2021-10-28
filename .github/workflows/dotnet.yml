@@ -14,9 +14,6 @@ jobs:
         os: [ubuntu-latest, windows-latest]
     steps:
       - uses: actions/checkout@v2
-      - name: GitVersion
-        id: gitversion
-        uses: PoshCode/Actions/gitversion@v1
       - name: Setup .NET
         uses: actions/setup-dotnet@v1
         with:
