@@ -20,10 +20,10 @@ jobs:
         with:
           dotnet-version: 5.0.x
       - name: Restore dependencies
-        run: dotnet restore
+        run: dotnet restore --runtime win-x64
       - name: Build
         run: |
-          dotnet build --configuration Release --no-restore
+          dotnet build --configuration Release --no-restore --runtime win-x64
           echo ${{ needs.semver.outputs.new_version }} > GameHelper/bin/Release/net5.0/VERSION.txt
       - name: Upload the Build Artifact
         uses: actions/upload-artifact@v2
