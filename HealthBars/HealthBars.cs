@@ -287,18 +287,18 @@ namespace HealthBars
             {
                 if (this.Settings.ShowEnemyMana)
                 {
-                    this.DrawSprite("EmptyDoubleBar", scale, 1, 68, 108, 19, 110, 88, location, 108, 19, -1, -1, false, drawBorder, borderColor, false);
+                    this.DrawSprite("EmptyDoubleBar", scale, 1, 68, 108, 19, 110, 88, location, 108, 19, -1, -1, false, drawBorder, borderColor, false, false);
 
                     this.DrawSprite("EmptyMana", scale, 1, 19, 1, 8, 110, 88, location + manaOffset, 104, 8, 100f - manaReserved, -1, false);
                     this.DrawSprite("Mana", scale, 1, 47, 1, 8, 110, 88, location + manaOffset, 104, 8, manaPercent, -1, false);
                 }
                 else
                 {
-                    this.DrawSprite("EmptyBar", scale, 1, 57, 108, 9, 110, 88, location, 108, 9, -1, -1, false, drawBorder, borderColor, false);
+                    this.DrawSprite("EmptyBar", scale, 1, 57, 108, 9, 110, 88, location, 108, 9, -1, -1, false, drawBorder, borderColor, false, false);
                 }
 
                 this.DrawSprite("EmptyHP", scale, 1, 10, 1, 7, 110, 88, location + hpOffset, 104, 7, 100f - hpReserved, -1, false);
-                this.DrawSprite("EnemyHP", scale, 1, 29, 1, 7, 110, 88, location + hpOffset, 104, 7, hpPercent, -1, this.Settings.ShowEnemyGradationMarks, inCullingRange, cullingColor, true);
+                this.DrawSprite("EnemyHP", scale, 1, 29, 1, 7, 110, 88, location + hpOffset, 104, 7, hpPercent, -1, this.Settings.ShowEnemyGradationMarks, inCullingRange, cullingColor, true, true);
             }
 
             if (entityLife.EnergyShield.Total > 0)
@@ -323,7 +323,7 @@ namespace HealthBars
             float mulh,
             bool marks)
         {
-            this.DrawSprite(spriteName, scale, sx, sy, sw, sh, ssw, ssh, t, tw, th, mulw, mulh, marks, false, 0, false);
+            this.DrawSprite(spriteName, scale, sx, sy, sw, sh, ssw, ssh, t, tw, th, mulw, mulh, marks, false, 0, false, false);
         }
 
         private void DrawSprite(
@@ -343,7 +343,8 @@ namespace HealthBars
             bool marks,
             bool border,
             uint borderColor,
-            bool inner)
+            bool inner,
+            bool fill)
         {
             var draw = ImGui.GetBackgroundDrawList();
             Vector2 uv0 = new Vector2(sx / ssw, sy / ssh);
@@ -356,7 +357,7 @@ namespace HealthBars
 
             draw.AddImage(sprite.TexturePtr, pos, pos + bounds, uv0, uv1);
 
-            if (marks == true)
+            if (marks)
             {
                 uint markColor = UiHelper.Color(255, 255, 255, 100);
                 Vector2 markLine = new Vector2(0, vbounds.Y - 1.5f);
@@ -369,15 +370,18 @@ namespace HealthBars
                 draw.AddLine(pos + mark75, pos + markLine + mark75, markColor);
             }
 
-            if (border == true)
+            if (border)
             {
-                if (inner)
+                Vector2 b1 = pos;
+                Vector2 b2 = pos + (inner ? bounds : vbounds);
+
+                if (fill)
                 {
-                    draw.AddRect(pos, pos + bounds, borderColor);
+                    draw.AddRectFilled(b1, b2, borderColor);
                 }
                 else
                 {
-                    draw.AddRect(pos, pos + vbounds, borderColor);
+                    draw.AddRect(b1, b2, borderColor);
                 }
             }
         }
