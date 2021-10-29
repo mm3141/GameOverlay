@@ -22,10 +22,12 @@
     {
         public long PAD_00;
         public IntPtr Data; // ComponentArrayStructure
-        public long Capacity; // actually, it's Capacity number - 1.
+        public int Capacity; // actually, it's Capacity number - 1.
+        public int PAD_14;
         public int Unknown3; // byte + padd
         public float Unknown4;
-        public long Counter;
+        public int Counter;
+        public int PAD_24;
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
