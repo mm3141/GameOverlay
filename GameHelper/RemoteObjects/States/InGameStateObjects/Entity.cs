@@ -173,7 +173,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
                     var name = reader.ReadString(nameAndIndex.NamePtr);
                     if (!(string.IsNullOrEmpty(name) || this.componentAddresses.ContainsKey(name)))
                     {
-                        this.componentAddresses.Add(name, entityComponent[nameAndIndex.Index]);
+                        this.componentAddresses.TryAdd(name, entityComponent[nameAndIndex.Index]);
                     }
                 }
             }
