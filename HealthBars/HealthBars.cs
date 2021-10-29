@@ -46,12 +46,12 @@ namespace HealthBars
             ImGui.Checkbox("Show player bars", ref this.Settings.ShowPlayerBars);
             if (this.Settings.ShowPlayerBars)
             {
-                ImGui.DragFloat("Player bar scale", ref this.Settings.PlayerBarScale, 0.01f, 0.3f, 5);
+                ImGui.DragFloat("Player scale", ref this.Settings.PlayerBarScale, 0.01f, 0.3f, 5);
             }
             ImGui.Checkbox("Show friendly bars", ref this.Settings.ShowFriendlyBars);
             if (this.Settings.ShowFriendlyBars)
             {
-                ImGui.DragFloat("Friendly bar scale", ref this.Settings.FriendlyBarScale, 0.01f, 0.3f, 5);
+                ImGui.DragFloat("Friendly scale", ref this.Settings.FriendlyBarScale, 0.01f, 0.3f, 5);
             }
             ImGui.Checkbox("Show enemy Mana", ref this.Settings.ShowEnemyMana);
             ImGui.NewLine();
@@ -75,25 +75,38 @@ namespace HealthBars
 
             ImGui.Checkbox("Normal bars", ref this.Settings.ShowNormalBar);
             if (this.Settings.ShowNormalBar) { 
-                ImGui.DragFloat("Normal bar scale", ref this.Settings.NormalBarScale, 0.01f, 0.3f, 5);
+                ImGui.DragFloat("Normal scale", ref this.Settings.NormalBarScale, 0.01f, 0.3f, 5);
+                ImGui.NewLine();
             }
-            ImGui.SameLine();
+            else
+            {
+                ImGui.SameLine();
+            }
             ImGui.Checkbox("Magic bars", ref this.Settings.ShowMagicBar);
             if (this.Settings.ShowMagicBar)
             {
-                ImGui.DragFloat("Normal bar scale", ref this.Settings.MagicBarScale, 0.01f, 0.3f, 5);
+                ImGui.DragFloat("Magic scale", ref this.Settings.MagicBarScale, 0.01f, 0.3f, 5);
+                ImGui.NewLine();
             }
-            ImGui.SameLine();
+            else
+            {
+                ImGui.SameLine();
+            }
             ImGui.Checkbox("Rare bars", ref this.Settings.ShowRareBar);
             if (this.Settings.ShowRareBar)
             {
-                ImGui.DragFloat("Normal bar scale", ref this.Settings.RareBarScale, 0.01f, 0.3f, 5);
+                ImGui.DragFloat("Rare scale", ref this.Settings.RareBarScale, 0.01f, 0.3f, 5);
+                ImGui.NewLine();
             }
-            ImGui.SameLine();
+            else
+            {
+                ImGui.SameLine();
+            }
             ImGui.Checkbox("Unique bars", ref this.Settings.ShowUniqueBar);
             if (this.Settings.ShowUniqueBar)
             {
-                ImGui.DragFloat("Normal bar scale", ref this.Settings.UniqueBarScale, 0.01f, 0.3f, 5);
+                ImGui.DragFloat("Unique scale", ref this.Settings.UniqueBarScale, 0.01f, 0.3f, 5);
+                ImGui.NewLine();
             }
 
             ImGui.NewLine();
@@ -215,6 +228,7 @@ namespace HealthBars
             uint borderColor = hasOMP && drawBorder ? this.RarityColor(rarity) : 0;
 
             var curPos = eRender.WorldPosition;
+            curPos.X += 11.25f;
             curPos.Z -= 1.4f * eRender.ModelBounds.Z;
             var location = Core.States.InGameStateObject.WorldToScreen(curPos);
 
