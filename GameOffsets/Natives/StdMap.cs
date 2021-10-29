@@ -14,7 +14,8 @@
     public struct StdMap
     {
         public IntPtr Head;
-        public ulong Size;
+        public int Size;
+        public int PAD_C;
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
