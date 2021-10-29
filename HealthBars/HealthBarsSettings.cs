@@ -43,6 +43,31 @@ namespace HealthBars
         public bool ShowCullRange = false;
 
         /// <summary>
+        /// Show culling range for normal monsters.
+        /// </summary>
+        public bool ShowNormalCull = true;
+
+        /// <summary>
+        /// Show culling range for magic monsters.
+        /// </summary>
+        public bool ShowMagicCull = false;
+
+        /// <summary>
+        /// Show culling range for rare monsters.
+        /// </summary>
+        public bool ShowRareCull = false;
+
+        /// <summary>
+        /// Show culling range for unique monsters.
+        /// </summary>
+        public bool ShowUniqueCull = true;
+
+        /// <summary>
+        /// Culling range value.
+        /// </summary>
+        public int CullingRange = 10;
+
+        /// <summary>
         /// Cull range color.
         /// </summary>
         public Vector4 CullRangeColor = new Vector4(200, 200, 200, 200) / 255f;

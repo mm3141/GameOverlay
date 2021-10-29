@@ -32,7 +32,6 @@ namespace HealthBars
         private readonly Dictionary<string, IconPicker> sprites = new();
         private ActiveCoroutine onAreaChange;
         private ConcurrentDictionary<uint, Vector2> bPositions;
-        private uint cullingRange = 30;
 
         private string SettingPathname => Path.Join(this.DllDirectory, "config", "settings.txt");
 
@@ -53,6 +52,15 @@ namespace HealthBars
             ImGui.Checkbox("Show cull range", ref this.Settings.ShowCullRange);
             if (this.Settings.ShowCullRange)
             {
+                ImGui.Checkbox("Normal monsters", ref this.Settings.ShowNormalCull);
+                ImGui.SameLine();
+                ImGui.Checkbox("Magic monsters", ref this.Settings.ShowMagicCull);
+                ImGui.SameLine();
+                ImGui.Checkbox("Rare monsters", ref this.Settings.ShowRareCull);
+                ImGui.SameLine();
+                ImGui.Checkbox("Unique monsters", ref this.Settings.ShowUniqueCull);
+
+                ImGui.DragInt("Culling range", ref this.Settings.CullingRange, 0.01f, 0, 50);
                 ImGui.ColorEdit4("Cull color", ref this.Settings.CullRangeColor);
             }
             ImGui.NewLine();
@@ -205,8 +213,15 @@ namespace HealthBars
 
             Vector2 hpOffset = new(0, 1);
             Vector2 manaOffset = new(0, 10);
-            bool inCullingRange = hpPercent > 0 && hpPercent < this.cullingRange && this.Settings.ShowCullRange;
-            uint cullingColor = UiHelper.Color(this.Settings.CullRangeColor);
+
+            bool showCulling = hasOMP && this.Settings.ShowCullRange && (
+                (entityMagicProperties.Rarity == Rarity.Normal) && this.Settings.ShowNormalCull||
+                (entityMagicProperties.Rarity == Rarity.Magic) && this.Settings.ShowMagicCull ||
+                (entityMagicProperties.Rarity == Rarity.Rare) && this.Settings.ShowRareCull ||
+                (entityMagicProperties.Rarity == Rarity.Unique) && this.Settings.ShowUniqueCull
+                );
+            bool inCullingRange = hpPercent > 0 && hpPercent < this.Settings.CullingRange && showCulling;
+            uint cullingColor = UiHelper.Color(this.Settings.CullRangeColor * 255f);
 
             // TODO: Make correct dictionary instead of IconPickers
             if (entityPositioned.IsFriendly)
@@ -224,7 +239,7 @@ namespace HealthBars
                 }
 
                 this.DrawSprite("EmptyHP", 1, 10, 1, 7, 110, 88, location + hpOffset, 104, 7, 100f - hpReserved, -1, false);
-                this.DrawSprite("HP", 1, 38, 1, 7, 110, 88, location + hpOffset, 104, 7, hpPercent, -1, this.Settings.ShowFriendlyGradationMarks);
+                this.DrawSprite("HP", 1, 38, 1, 7, 110, 88, location + hpOffset, 104, 7, hpPercent, -1, this.Settings.ShowFriendlyGradationMarks, inCullingRange, cullingColor, true);
             }
             else
             {
@@ -250,12 +265,41 @@ namespace HealthBars
             }
         }
 
-        private void DrawSprite(string spriteName, float sx, float sy, float sw, float sh, float ssw, float ssh, Vector2 t, float tw, float th, float mulw, float mulh, bool marks)
+        private void DrawSprite(
+            string spriteName,
+            float sx,
+            float sy,
+            float sw,
+            float sh,
+            float ssw,
+            float ssh,
+            Vector2 t,
+            float tw,
+            float th,
+            float mulw,
+            float mulh,
+            bool marks)
         {
             this.DrawSprite(spriteName, sx, sy, sw, sh, ssw, ssh, t, tw, th, mulw, mulh, marks, false, 0, false);
         }
 
-        private void DrawSprite(string spriteName, float sx, float sy, float sw, float sh, float ssw, float ssh, Vector2 t, float tw, float th, float mulw, float mulh, bool marks, bool border, uint borderColor, bool inner)
+        private void DrawSprite(
+            string spriteName,
+            float sx,
+            float sy,
+            float sw,
+            float sh,
+            float ssw,
+            float ssh,
+            Vector2 t,
+            float tw,
+            float th,
+            float mulw,
+            float mulh,
+            bool marks,
+            bool border,
+            uint borderColor,
+            bool inner)
         {
             var draw = ImGui.GetBackgroundDrawList();
             Vector2 uv0 = new(sx / ssw, sy / ssh);
@@ -264,23 +308,33 @@ namespace HealthBars
             Vector2 bounds = new(tw * (((mulw < 0) ? 100 : mulw) / 100), th * (((mulh < 0) ? 100 : mulh) / 100));
             Vector2 vbounds = new(tw, th);
             Vector2 half = new(10 + vbounds.X / 2, 0);
-            draw.AddImage(sprite.TexturePtr, t - half, t - half + bounds, uv0, uv1);
+            Vector2 pos = t - half;
+
+            draw.AddImage(sprite.TexturePtr, pos, pos + bounds, uv0, uv1);
+
+            if (marks == true)
+            {
+                uint markColor = UiHelper.Color(255, 255, 255, 100);
+                Vector2 markLine = new Vector2(0, vbounds.Y - 1.5f);
+                Vector2 mark25 = new Vector2(vbounds.X * 0.25f, 0);
+                Vector2 mark50 = new Vector2(vbounds.X * 0.5f, 0);
+                Vector2 mark75 = new Vector2(vbounds.X * 0.75f, 0);
+
+                draw.AddLine(pos + mark25, pos + markLine + mark25, markColor);
+                draw.AddLine(pos + mark50, pos + markLine + mark50, markColor);
+                draw.AddLine(pos + mark75, pos + markLine + mark75, markColor);
+            }
 
             if (border == true)
             {
                 if (inner)
                 {
-                    draw.AddRect(t - half, t - half + bounds, borderColor);
+                    draw.AddRect(pos, pos + bounds, borderColor);
                 }
                 else
                 {
-                    draw.AddRect(t - half, t - half + vbounds, borderColor);
+                    draw.AddRect(pos, pos + vbounds, borderColor);
                 }
-            }
-
-            if (marks == true)
-            {
-                draw.AddLine(t - half, t - half + vbounds, UiHelper.Color(255,255,255,255));
             }
         }
 
