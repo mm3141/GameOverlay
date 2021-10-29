@@ -238,9 +238,8 @@ namespace GameHelper.Utils
             where TValue : unmanaged
         {
             const int MaxAllowed = 10000;
-            var size = nativeContainer.Size;
             var collection = new List<(TKey Key, TValue Value)>();
-            if (size <= 0 || size > MaxAllowed)
+            if (nativeContainer.Size <= 0 || nativeContainer.Size > MaxAllowed)
             {
                 return collection;
             }
@@ -249,11 +248,11 @@ namespace GameHelper.Utils
             var head = this.ReadMemory<StdMapNode<TKey, TValue>>(nativeContainer.Head);
             var parent = this.ReadMemory<StdMapNode<TKey, TValue>>(head.Parent);
             childrens.Push(parent);
-            ulong counter = 0;
+            int counter = 0;
             while (childrens.Count != 0)
             {
                 var cur = childrens.Pop();
-                if (counter++ > size + 5)
+                if (counter++ > nativeContainer.Size + 5)
                 {
                     childrens.Clear();
                     return collection;
@@ -325,8 +324,8 @@ namespace GameHelper.Utils
                 return new List<TValue>();
             }
 
-            var size = (int)(nativeContainer.Capacity + 1) / 8;
-            var ret = new List<TValue>((int)nativeContainer.Counter);
+            int size = (nativeContainer.Capacity + 1) / 8;
+            var ret = new List<TValue>(nativeContainer.Counter);
             var dataArray = this.ReadMemoryArray<StdBucketNode<TValue>>(nativeContainer.Data, size);
             for (int i = 0; i < dataArray.Length; i++)
             {
