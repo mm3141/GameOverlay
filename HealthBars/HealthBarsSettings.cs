@@ -28,14 +28,104 @@ namespace HealthBars
         public bool ShowEnemyMana = false;
 
         /// <summary>
+        /// Show player bars.
+        /// </summary>
+        public bool ShowPlayerBars = true;
+
+        /// <summary>
         /// Show friendly bars.
         /// </summary>
         public bool ShowFriendlyBars = false;
 
         /// <summary>
+        /// Show friendly gradation marks.
+        /// </summary>
+        public bool ShowCullRange = false;
+
+        /// <summary>
+        /// Show culling range for normal monsters.
+        /// </summary>
+        public bool ShowNormalCull = true;
+
+        /// <summary>
+        /// Show culling range for magic monsters.
+        /// </summary>
+        public bool ShowMagicCull = false;
+
+        /// <summary>
+        /// Show culling range for rare monsters.
+        /// </summary>
+        public bool ShowRareCull = false;
+
+        /// <summary>
+        /// Show culling range for unique monsters.
+        /// </summary>
+        public bool ShowUniqueCull = true;
+
+        /// <summary>
+        /// Culling range value.
+        /// </summary>
+        public int CullingRange = 10;
+
+        /// <summary>
+        /// Cull range color.
+        /// </summary>
+        public Vector4 CullRangeColor = new Vector4(200, 200, 200, 200) / 255f;
+
+        /// <summary>
+        /// Show friendly gradation marks.
+        /// </summary>
+        public bool ShowFriendlyGradationMarks = false;
+
+        /// <summary>
+        /// Show enemy gradation marks.
+        /// </summary>
+        public bool ShowEnemyGradationMarks = false;
+
+        /// <summary>
         /// Show rarity border around bar.
         /// </summary>
         public bool ShowRarityBorders = true;
+
+        /// <summary>
+        /// Show rarity border around normal monster bar.
+        /// </summary>
+        public bool ShowNormalBorders = true;
+
+        /// <summary>
+        /// Show rarity border around magic monster bar.
+        /// </summary>
+        public bool ShowMagicBorders = true;
+
+        /// <summary>
+        /// Show rarity border around rare monster bar.
+        /// </summary>
+        public bool ShowRareBorders = true;
+
+        /// <summary>
+        /// Show rarity border around unique monster bar.
+        /// </summary>
+        public bool ShowUniqueBorders = true;
+
+        /// <summary>
+        /// Show normal monster bar.
+        /// </summary>
+        public bool ShowNormalBar = true;
+
+        /// <summary>
+        /// Show magic monster bar.
+        /// </summary>
+        public bool ShowMagicBar = true;
+
+        /// <summary>
+        /// Show rare monster bar.
+        /// </summary>
+        public bool ShowRareBar = true;
+
+        /// <summary>
+        /// Show unique monster bar.
+        /// </summary>
+        public bool ShowUniqueBar = true;
 
         /// <summary>
         /// Normal monster color.
