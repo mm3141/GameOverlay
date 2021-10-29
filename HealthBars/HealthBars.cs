@@ -44,7 +44,15 @@ namespace HealthBars
             ImGui.Checkbox("Show in Hideout", ref this.Settings.ShowInHideout);
             ImGui.NewLine();
             ImGui.Checkbox("Show player bars", ref this.Settings.ShowPlayerBars);
+            if (this.Settings.ShowPlayerBars)
+            {
+                ImGui.DragFloat("Player bar scale", ref this.Settings.PlayerBarScale, 0.01f, 0.3f, 5);
+            }
             ImGui.Checkbox("Show friendly bars", ref this.Settings.ShowFriendlyBars);
+            if (this.Settings.ShowFriendlyBars)
+            {
+                ImGui.DragFloat("Friendly bar scale", ref this.Settings.FriendlyBarScale, 0.01f, 0.3f, 5);
+            }
             ImGui.Checkbox("Show enemy Mana", ref this.Settings.ShowEnemyMana);
             ImGui.NewLine();
             ImGui.Checkbox("Show friendly gradation marks", ref this.Settings.ShowFriendlyGradationMarks);
@@ -66,12 +74,27 @@ namespace HealthBars
             ImGui.NewLine();
 
             ImGui.Checkbox("Normal bars", ref this.Settings.ShowNormalBar);
+            if (this.Settings.ShowNormalBar) { 
+                ImGui.DragFloat("Normal bar scale", ref this.Settings.NormalBarScale, 0.01f, 0.3f, 5);
+            }
             ImGui.SameLine();
             ImGui.Checkbox("Magic bars", ref this.Settings.ShowMagicBar);
+            if (this.Settings.ShowMagicBar)
+            {
+                ImGui.DragFloat("Normal bar scale", ref this.Settings.MagicBarScale, 0.01f, 0.3f, 5);
+            }
             ImGui.SameLine();
             ImGui.Checkbox("Rare bars", ref this.Settings.ShowRareBar);
+            if (this.Settings.ShowRareBar)
+            {
+                ImGui.DragFloat("Normal bar scale", ref this.Settings.RareBarScale, 0.01f, 0.3f, 5);
+            }
             ImGui.SameLine();
             ImGui.Checkbox("Unique bars", ref this.Settings.ShowUniqueBar);
+            if (this.Settings.ShowUniqueBar)
+            {
+                ImGui.DragFloat("Normal bar scale", ref this.Settings.UniqueBarScale, 0.01f, 0.3f, 5);
+            }
 
             ImGui.NewLine();
             ImGui.Checkbox("Show rarity borders", ref this.Settings.ShowRarityBorders);
@@ -162,16 +185,19 @@ namespace HealthBars
             var hasPositioned = entity.Value.TryGetComponent<Positioned>(out var entityPositioned);
             var isPlayer = entity.Value.TryGetComponent<Player>(out var _);
             var willDieAfterTime = entity.Value.TryGetComponent<DiesAfterTime>(out var _);
+            bool isFriendly = hasPositioned ? entityPositioned.IsFriendly : false;
+
+            Rarity rarity = hasOMP ? entityMagicProperties.Rarity : Rarity.Normal;
 
             bool isCurrentPlayer = entity.Value.Address == Core.States.InGameStateObject.CurrentAreaInstance.Player.Address;
 
             bool drawBar = (isPlayer && isCurrentPlayer && this.Settings.ShowPlayerBars) ||
-                (hasPositioned && entityPositioned.IsFriendly && this.Settings.ShowFriendlyBars && !isCurrentPlayer) ||
-                (hasPositioned && !entityPositioned.IsFriendly && hasOMP && (
-                    (entityMagicProperties.Rarity == Rarity.Normal) && this.Settings.ShowNormalBar ||
-                    (entityMagicProperties.Rarity == Rarity.Magic) && this.Settings.ShowMagicBar ||
-                    (entityMagicProperties.Rarity == Rarity.Rare) && this.Settings.ShowRareBar ||
-                    (entityMagicProperties.Rarity == Rarity.Unique) && this.Settings.ShowUniqueBar
+                (hasPositioned && isFriendly && this.Settings.ShowFriendlyBars && !isCurrentPlayer) ||
+                (hasPositioned && !isFriendly && hasOMP && (
+                    (rarity == Rarity.Normal) && this.Settings.ShowNormalBar ||
+                    (rarity == Rarity.Magic) && this.Settings.ShowMagicBar ||
+                    (rarity == Rarity.Rare) && this.Settings.ShowRareBar ||
+                    (rarity == Rarity.Unique) && this.Settings.ShowUniqueBar
                 )
                 );
 
@@ -181,12 +207,12 @@ namespace HealthBars
             }
 
             bool drawBorder = hasOMP && this.Settings.ShowRarityBorders && (
-                (entityMagicProperties.Rarity == Rarity.Normal) && this.Settings.ShowNormalBorders ||
-                (entityMagicProperties.Rarity == Rarity.Magic) && this.Settings.ShowMagicBorders ||
-                (entityMagicProperties.Rarity == Rarity.Rare) && this.Settings.ShowRareBorders ||
-                (entityMagicProperties.Rarity == Rarity.Unique) && this.Settings.ShowUniqueBorders
+                (rarity == Rarity.Normal) && this.Settings.ShowNormalBorders ||
+                (rarity == Rarity.Magic) && this.Settings.ShowMagicBorders ||
+                (rarity == Rarity.Rare) && this.Settings.ShowRareBorders ||
+                (rarity == Rarity.Unique) && this.Settings.ShowUniqueBorders
                 );
-            uint borderColor = hasOMP && drawBorder ? this.RarityColor(entityMagicProperties.Rarity) : 0;
+            uint borderColor = hasOMP && drawBorder ? this.RarityColor(rarity) : 0;
 
             var curPos = eRender.WorldPosition;
             curPos.Z -= 1.4f * eRender.ModelBounds.Z;
@@ -211,62 +237,65 @@ namespace HealthBars
             float manaReserved = entityLife.Mana.ReservedPercent / 100;
             float manaPercent = entityLife.Mana.CurrentInPercent() * ((100 - manaReserved) / 100);
 
-            Vector2 hpOffset = new(0, 1);
-            Vector2 manaOffset = new(0, 10);
+            float scale = this.RarityBarScale(rarity, isPlayer, isFriendly);
+
+            Vector2 hpOffset = new Vector2(0, 1) * scale;
+            Vector2 manaOffset = new Vector2(0, 10) * scale;
 
             bool showCulling = hasOMP && this.Settings.ShowCullRange && (
-                (entityMagicProperties.Rarity == Rarity.Normal) && this.Settings.ShowNormalCull||
-                (entityMagicProperties.Rarity == Rarity.Magic) && this.Settings.ShowMagicCull ||
-                (entityMagicProperties.Rarity == Rarity.Rare) && this.Settings.ShowRareCull ||
-                (entityMagicProperties.Rarity == Rarity.Unique) && this.Settings.ShowUniqueCull
+                (rarity == Rarity.Normal) && this.Settings.ShowNormalCull||
+                (rarity == Rarity.Magic) && this.Settings.ShowMagicCull ||
+                (rarity == Rarity.Rare) && this.Settings.ShowRareCull ||
+                (rarity == Rarity.Unique) && this.Settings.ShowUniqueCull
                 );
             bool inCullingRange = hpPercent > 0 && hpPercent < this.Settings.CullingRange && showCulling;
             uint cullingColor = UiHelper.Color(this.Settings.CullRangeColor * 255f);
 
             // TODO: Make correct dictionary instead of IconPickers
-            if (entityPositioned.IsFriendly)
+            if (isFriendly)
             {
                 if (isCurrentPlayer)
                 {
-                    this.DrawSprite("EmptyDoubleBar", 1, 68, 108, 19, 110, 88, location, 108, 19, -1, -1, false);
+                    this.DrawSprite("EmptyDoubleBar", scale, 1, 68, 108, 19, 110, 88, location, 108, 19, -1, -1, false);
 
-                    this.DrawSprite("EmptyMana", 1, 19, 1, 8, 110, 88, location + manaOffset, 104, 8, 100f - manaReserved, -1, false);
-                    this.DrawSprite("Mana", 1, 47, 1, 8, 110, 88, location + manaOffset, 104, 8, manaPercent, -1, false);
+                    this.DrawSprite("EmptyMana", scale, 1, 19, 1, 8, 110, 88, location + manaOffset, 104, 8, 100f - manaReserved, -1, false);
+                    this.DrawSprite("Mana", scale, 1, 47, 1, 8, 110, 88, location + manaOffset, 104, 8, manaPercent, -1, false);
                 }
                 else
                 {
-                    this.DrawSprite("EmptyBar", 1, 57, 108, 9, 110, 88, location, 108, 9, -1, -1, false);
+                    this.DrawSprite("EmptyBar", scale, 1, 57, 108, 9, 110, 88, location, 108, 9, -1, -1, false);
                 }
 
-                this.DrawSprite("EmptyHP", 1, 10, 1, 7, 110, 88, location + hpOffset, 104, 7, 100f - hpReserved, -1, false);
-                this.DrawSprite("HP", 1, 38, 1, 7, 110, 88, location + hpOffset, 104, 7, hpPercent, -1, this.Settings.ShowFriendlyGradationMarks, inCullingRange, cullingColor, true);
+                this.DrawSprite("EmptyHP", scale, 1, 10, 1, 7, 110, 88, location + hpOffset, 104, 7, 100f - hpReserved, -1, false);
+                this.DrawSprite("HP", scale, 1, 38, 1, 7, 110, 88, location + hpOffset, 104, 7, hpPercent, -1, this.Settings.ShowFriendlyGradationMarks);
             }
             else
             {
                 if (this.Settings.ShowEnemyMana)
                 {
-                    this.DrawSprite("EmptyDoubleBar", 1, 68, 108, 19, 110, 88, location, 108, 19, -1, -1, false, drawBorder, borderColor, false);
+                    this.DrawSprite("EmptyDoubleBar", scale, 1, 68, 108, 19, 110, 88, location, 108, 19, -1, -1, false, drawBorder, borderColor, false);
 
-                    this.DrawSprite("EmptyMana", 1, 19, 1, 8, 110, 88, location + manaOffset, 104, 8, 100f - manaReserved, -1, false);
-                    this.DrawSprite("Mana", 1, 47, 1, 8, 110, 88, location + manaOffset, 104, 8, manaPercent, -1, false);
+                    this.DrawSprite("EmptyMana", scale, 1, 19, 1, 8, 110, 88, location + manaOffset, 104, 8, 100f - manaReserved, -1, false);
+                    this.DrawSprite("Mana", scale, 1, 47, 1, 8, 110, 88, location + manaOffset, 104, 8, manaPercent, -1, false);
                 }
                 else
                 {
-                    this.DrawSprite("EmptyBar", 1, 57, 108, 9, 110, 88, location, 108, 9, -1, -1, false, drawBorder, borderColor, false);
+                    this.DrawSprite("EmptyBar", scale, 1, 57, 108, 9, 110, 88, location, 108, 9, -1, -1, false, drawBorder, borderColor, false);
                 }
 
-                this.DrawSprite("EmptyHP", 1, 10, 1, 7, 110, 88, location + hpOffset, 104, 7, 100f - hpReserved, -1, false);
-                this.DrawSprite("EnemyHP", 1, 29, 1, 7, 110, 88, location + hpOffset, 104, 7, hpPercent, -1, this.Settings.ShowEnemyGradationMarks, inCullingRange, cullingColor, true);
+                this.DrawSprite("EmptyHP", scale, 1, 10, 1, 7, 110, 88, location + hpOffset, 104, 7, 100f - hpReserved, -1, false);
+                this.DrawSprite("EnemyHP", scale, 1, 29, 1, 7, 110, 88, location + hpOffset, 104, 7, hpPercent, -1, this.Settings.ShowEnemyGradationMarks, inCullingRange, cullingColor, true);
             }
 
             if (entityLife.EnergyShield.Total > 0)
             {
-                this.DrawSprite("ES", 1, 1, 1, 7, 110, 88, location + hpOffset, 104, 7, esPercent, -1, false);
+                this.DrawSprite("ES", scale, 1, 1, 1, 7, 110, 88, location + hpOffset, 104, 7, esPercent, -1, false);
             }
         }
 
         private void DrawSprite(
             string spriteName,
+            float scale,
             float sx,
             float sy,
             float sw,
@@ -280,11 +309,12 @@ namespace HealthBars
             float mulh,
             bool marks)
         {
-            this.DrawSprite(spriteName, sx, sy, sw, sh, ssw, ssh, t, tw, th, mulw, mulh, marks, false, 0, false);
+            this.DrawSprite(spriteName, scale, sx, sy, sw, sh, ssw, ssh, t, tw, th, mulw, mulh, marks, false, 0, false);
         }
 
         private void DrawSprite(
             string spriteName,
+            float scale,
             float sx,
             float sy,
             float sw,
@@ -302,12 +332,12 @@ namespace HealthBars
             bool inner)
         {
             var draw = ImGui.GetBackgroundDrawList();
-            Vector2 uv0 = new(sx / ssw, sy / ssh);
-            Vector2 uv1 = new((sx + sw) / ssw, (sy + sh) / ssh);
+            Vector2 uv0 = new Vector2(sx / ssw, sy / ssh);
+            Vector2 uv1 = new Vector2((sx + sw) / ssw, (sy + sh) / ssh);
             var sprite = this.sprites[spriteName];
-            Vector2 bounds = new(tw * (((mulw < 0) ? 100 : mulw) / 100), th * (((mulh < 0) ? 100 : mulh) / 100));
-            Vector2 vbounds = new(tw, th);
-            Vector2 half = new(10 + vbounds.X / 2, 0);
+            Vector2 bounds = new Vector2(tw * (((mulw < 0) ? 100 : mulw) / 100), th * (((mulh < 0) ? 100 : mulh) / 100)) * scale;
+            Vector2 vbounds = new Vector2(tw, th) * scale;
+            Vector2 half = new Vector2(10 + vbounds.X / 2, 0);
             Vector2 pos = t - half;
 
             draw.AddImage(sprite.TexturePtr, pos, pos + bounds, uv0, uv1);
@@ -347,6 +377,28 @@ namespace HealthBars
                 Rarity.Magic => UiHelper.Color(this.Settings.MagicColor * 255f),
                 _ => UiHelper.Color(this.Settings.NormalColor * 255f),
             };
+        }
+
+        private float RarityBarScale(Rarity rarity, bool isPlayer, bool isFriendly)
+        {
+            if (isPlayer)
+            {
+                return this.Settings.PlayerBarScale;
+            }
+            else if (!isPlayer && isFriendly)
+            {
+                return this.Settings.FriendlyBarScale;
+            }
+            else
+            {
+                return rarity switch
+                {
+                    Rarity.Unique => this.Settings.UniqueBarScale,
+                    Rarity.Rare => this.Settings.RareBarScale,
+                    Rarity.Magic => this.Settings.MagicBarScale,
+                    _ => this.Settings.NormalBarScale,
+                };
+            }
         }
 
         private IEnumerator<Wait> ClearData()

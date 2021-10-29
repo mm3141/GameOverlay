@@ -38,6 +38,36 @@ namespace HealthBars
         public bool ShowFriendlyBars = false;
 
         /// <summary>
+        /// Normal monster bar render scale.
+        /// </summary>
+        public float NormalBarScale = 1f;
+
+        /// <summary>
+        /// Normal monster bar render scale.
+        /// </summary>
+        public float MagicBarScale = 1f;
+
+        /// <summary>
+        /// Normal monster bar render scale.
+        /// </summary>
+        public float RareBarScale = 1f;
+
+        /// <summary>
+        /// Normal monster bar render scale.
+        /// </summary>
+        public float UniqueBarScale = 1f;
+
+        /// <summary>
+        /// Player bar render scale.
+        /// </summary>
+        public float PlayerBarScale = 1f;
+
+        /// <summary>
+        /// Player bar render scale.
+        /// </summary>
+        public float FriendlyBarScale = 1f;
+
+        /// <summary>
         /// Show friendly gradation marks.
         /// </summary>
         public bool ShowCullRange = false;
@@ -45,7 +75,7 @@ namespace HealthBars
         /// <summary>
         /// Show culling range for normal monsters.
         /// </summary>
-        public bool ShowNormalCull = true;
+        public bool ShowNormalCull = false;
 
         /// <summary>
         /// Show culling range for magic monsters.
