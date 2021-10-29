@@ -355,7 +355,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
                 data.AwakeEntities, false, null);
 #else
             return reader.ReadStdMapAsList<EntityNodeKey, EntityNodeValue>(
-                data.AwakeEntities, false, EntityFilter.IgnoreSleepingEntities);
+                data.AwakeEntities, EntityFilter.IgnoreSleepingEntities);
 #endif
         }
 

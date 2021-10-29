@@ -18,9 +18,6 @@ namespace GameHelper.Utils
     /// </summary>
     internal class SafeMemoryHandle : SafeHandleZeroOrMinusOneIsInvalid
     {
-        private const int MaxInfiniteCounter = 3;
-        private int readStdMapInfiniteCounter = 0;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="SafeMemoryHandle"/> class.
         /// </summary>
@@ -233,13 +230,10 @@ namespace GameHelper.Utils
         /// <typeparam name="TKey">key type of the stdmap.</typeparam>
         /// <typeparam name="TValue">value type of the stdmap.</typeparam>
         /// <param name="nativeContainer">native object of the std::map.</param>
-        /// <param name="validate_size">Validate the total while loop iteration with given map size.</param>
         /// <param name="keyfilter">Filter the keys based on the function return value.</param>
         /// <returns>a list containing the keys and the values of the stdmap as named tuple.</returns>
         internal List<(TKey Key, TValue Value)> ReadStdMapAsList<TKey, TValue>(
-            StdMap nativeContainer,
-            bool validate_size,
-            Func<TKey, bool> keyfilter = null)
+            StdMap nativeContainer, Func<TKey, bool> keyfilter = null)
             where TKey : unmanaged
             where TValue : unmanaged
         {
@@ -259,39 +253,10 @@ namespace GameHelper.Utils
             while (childrens.Count != 0)
             {
                 var cur = childrens.Pop();
-                counter++;
-                if (validate_size)
+                if (counter++ > size + 5)
                 {
-                    // Validating for read size vs actual size.
-                    if (counter > size)
-                    {
-                        throw new Exception("ERROR: Reading HashMap failed" +
-                            $" current loop counter {counter} is greater than" +
-                            $" the HashMap size ({size}).");
-                    }
-                }
-                else
-                {
-                    // Validating for infinite loop.
-                    if (counter > MaxAllowed)
-                    {
-#if DEBUG
-                        Console.WriteLine($"ERROR ({this.readStdMapInfiniteCounter}):" +
-                            $" Reading HashMap failed current counter {counter} is greater than" +
-                            $" Maximum allowed HashMap size ({MaxAllowed})." +
-                            $" Game tells us the expected size to be {size}.");
-#endif
-                        if (this.readStdMapInfiniteCounter > MaxInfiniteCounter)
-                        {
-                            throw new Exception("ERROR: Reading HashMap failed" +
-                                $" current counter {counter} is greater than" +
-                                $" Maximum allowed HashMap size ({MaxAllowed})." +
-                                $" Game tells us the expected size to be {size}.");
-                        }
-
-                        this.readStdMapInfiniteCounter++;
-                        break;
-                    }
+                    childrens.Clear();
+                    return collection;
                 }
 
                 if (!cur.IsNil && (keyfilter == null || keyfilter(cur.Data.Key)))
