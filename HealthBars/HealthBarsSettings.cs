@@ -38,6 +38,46 @@ namespace HealthBars
         public bool ShowRarityBorders = true;
 
         /// <summary>
+        /// Show rarity border around normal monster bar.
+        /// </summary>
+        public bool ShowNormalBorders = true;
+
+        /// <summary>
+        /// Show rarity border around magic monster bar.
+        /// </summary>
+        public bool ShowMagicBorders = true;
+
+        /// <summary>
+        /// Show rarity border around rare monster bar.
+        /// </summary>
+        public bool ShowRareBorders = true;
+
+        /// <summary>
+        /// Show rarity border around unique monster bar.
+        /// </summary>
+        public bool ShowUniqueBorders = true;
+
+        /// <summary>
+        /// Show normal monster bar.
+        /// </summary>
+        public bool ShowNormalBar = true;
+
+        /// <summary>
+        /// Show magic monster bar.
+        /// </summary>
+        public bool ShowMagicBar = true;
+
+        /// <summary>
+        /// Show rare monster bar.
+        /// </summary>
+        public bool ShowRareBar = true;
+
+        /// <summary>
+        /// Show unique monster bar.
+        /// </summary>
+        public bool ShowUniqueBar = true;
+
+        /// <summary>
         /// Normal monster color.
         /// </summary>
         public Vector4 NormalColor = new Vector4(255, 255, 255, 100) / 255f;

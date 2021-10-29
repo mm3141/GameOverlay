@@ -4,6 +4,7 @@
 
 namespace HealthBars
 {
+    using System;
     using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.IO;
@@ -46,13 +47,32 @@ namespace HealthBars
             ImGui.NewLine();
             ImGui.Checkbox("Show enemy Mana", ref this.Settings.ShowEnemyMana);
 
+            ImGui.Checkbox("Normal bars", ref this.Settings.ShowNormalBar);
+            ImGui.SameLine();
+            ImGui.Checkbox("Magic bars", ref this.Settings.ShowMagicBar);
+            ImGui.SameLine();
+            ImGui.Checkbox("Rare bars", ref this.Settings.ShowRareBar);
+            ImGui.SameLine();
+            ImGui.Checkbox("Unique bars", ref this.Settings.ShowUniqueBar);
+
             ImGui.NewLine();
             ImGui.Checkbox("Show rarity borders", ref this.Settings.ShowRarityBorders);
             if (this.Settings.ShowRarityBorders)
             {
+                ImGui.Checkbox("#NormalBorder", ref this.Settings.ShowNormalBorders);
+                ImGui.SameLine();
                 ImGui.ColorEdit4("Normal", ref this.Settings.NormalColor);
+
+                ImGui.Checkbox("#MagicBorder", ref this.Settings.ShowMagicBorders);
+                ImGui.SameLine();
                 ImGui.ColorEdit4("Magic", ref this.Settings.MagicColor);
+
+                ImGui.Checkbox("#RareBorder", ref this.Settings.ShowRareBorders);
+                ImGui.SameLine();
                 ImGui.ColorEdit4("Rare", ref this.Settings.RareColor);
+
+                ImGui.Checkbox("#UniqueBorder", ref this.Settings.ShowUniqueBorders);
+                ImGui.SameLine();
                 ImGui.ColorEdit4("Unique", ref this.Settings.UniqueColor);
             }
         }
@@ -122,7 +142,12 @@ namespace HealthBars
                 return;
             }
 
-            bool drawBorder = hasOMP && this.Settings.ShowRarityBorders;
+            bool drawBorder = hasOMP && this.Settings.ShowRarityBorders && (
+                (entityMagicProperties.Rarity == Rarity.Normal) && this.Settings.ShowNormalBorders || 
+                (entityMagicProperties.Rarity == Rarity.Magic) && this.Settings.ShowMagicBorders ||
+                (entityMagicProperties.Rarity == Rarity.Rare) && this.Settings.ShowRareBorders ||
+                (entityMagicProperties.Rarity == Rarity.Unique) && this.Settings.ShowUniqueBorders
+                );
             uint borderColor = hasOMP && drawBorder ? this.RarityColor(entityMagicProperties.Rarity) : 0;
 
             var curPos = eRender.WorldPosition;
