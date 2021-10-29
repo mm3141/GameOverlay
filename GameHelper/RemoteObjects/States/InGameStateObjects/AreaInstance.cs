@@ -350,13 +350,13 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             {
                 return new List<(EntityNodeKey Key, EntityNodeValue Value)>();
             }
-#if DEBUG
-            return reader.ReadStdMapAsList<EntityNodeKey, EntityNodeValue>(
-                data.AwakeEntities, false, null);
-#else
+/*#if DEBUG
+ * This is not working. Signature mismatch.
+            return reader.ReadStdMapAsList<EntityNodeKey, EntityNodeValue>(data.AwakeEntities, false, null);
+#else*/
             return reader.ReadStdMapAsList<EntityNodeKey, EntityNodeValue>(
                 data.AwakeEntities, EntityFilter.IgnoreSleepingEntities);
-#endif
+/*#endif*/
         }
 
         private Dictionary<string, List<StdTuple2D<int>>> GetTgtFileData()
