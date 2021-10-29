@@ -28,9 +28,34 @@ namespace HealthBars
         public bool ShowEnemyMana = false;
 
         /// <summary>
+        /// Show player bars.
+        /// </summary>
+        public bool ShowPlayerBars = true;
+
+        /// <summary>
         /// Show friendly bars.
         /// </summary>
         public bool ShowFriendlyBars = false;
+
+        /// <summary>
+        /// Show friendly gradation marks.
+        /// </summary>
+        public bool ShowCullRange = false;
+
+        /// <summary>
+        /// Cull range color.
+        /// </summary>
+        public Vector4 CullRangeColor = new Vector4(200, 200, 200, 200) / 255f;
+
+        /// <summary>
+        /// Show friendly gradation marks.
+        /// </summary>
+        public bool ShowFriendlyGradationMarks = false;
+
+        /// <summary>
+        /// Show enemy gradation marks.
+        /// </summary>
+        public bool ShowEnemyGradationMarks = false;
 
         /// <summary>
         /// Show rarity border around bar.
