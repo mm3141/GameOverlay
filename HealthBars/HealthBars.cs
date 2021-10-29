@@ -198,7 +198,7 @@ namespace HealthBars
             var hasPositioned = entity.Value.TryGetComponent<Positioned>(out var entityPositioned);
             var isPlayer = entity.Value.TryGetComponent<Player>(out var _);
             var willDieAfterTime = entity.Value.TryGetComponent<DiesAfterTime>(out var _);
-            bool isFriendly = hasPositioned ? entityPositioned.IsFriendly : false;
+            bool isFriendly = hasPositioned && entityPositioned.IsFriendly;
 
             Rarity rarity = hasOMP ? entityMagicProperties.Rarity : Rarity.Normal;
 
@@ -347,12 +347,12 @@ namespace HealthBars
             bool fill)
         {
             var draw = ImGui.GetBackgroundDrawList();
-            Vector2 uv0 = new Vector2(sx / ssw, sy / ssh);
-            Vector2 uv1 = new Vector2((sx + sw) / ssw, (sy + sh) / ssh);
+            Vector2 uv0 = new(sx / ssw, sy / ssh);
+            Vector2 uv1 = new((sx + sw) / ssw, (sy + sh) / ssh);
             var sprite = this.sprites[spriteName];
             Vector2 bounds = new Vector2(tw * (((mulw < 0) ? 100 : mulw) / 100), th * (((mulh < 0) ? 100 : mulh) / 100)) * scale;
             Vector2 vbounds = new Vector2(tw, th) * scale;
-            Vector2 half = new Vector2(10 + vbounds.X / 2, 0);
+            Vector2 half = new(10 + vbounds.X / 2, 0);
             Vector2 pos = t - half;
 
             draw.AddImage(sprite.TexturePtr, pos, pos + bounds, uv0, uv1);
@@ -360,10 +360,10 @@ namespace HealthBars
             if (marks)
             {
                 uint markColor = UiHelper.Color(255, 255, 255, 100);
-                Vector2 markLine = new Vector2(0, vbounds.Y - 1.5f);
-                Vector2 mark25 = new Vector2(vbounds.X * 0.25f, 0);
-                Vector2 mark50 = new Vector2(vbounds.X * 0.5f, 0);
-                Vector2 mark75 = new Vector2(vbounds.X * 0.75f, 0);
+                Vector2 markLine = new(0, vbounds.Y - 1.5f);
+                Vector2 mark25 = new(vbounds.X * 0.25f, 0);
+                Vector2 mark50 = new(vbounds.X * 0.5f, 0);
+                Vector2 mark75 = new(vbounds.X * 0.75f, 0);
 
                 draw.AddLine(pos + mark25, pos + markLine + mark25, markColor);
                 draw.AddLine(pos + mark50, pos + markLine + mark50, markColor);
