@@ -863,13 +863,13 @@ namespace Radar
             }
 
             var totalRows = mapTextureData.Length / bytesPerRow;
+            var mapEdgeDetector = new MapEdgeDetector(mapTextureData, bytesPerRow);
             using Image<Rgba32> image = new(bytesPerRow * 2, totalRows);
             Parallel.For(0, gridHeightData.Length, y =>
             {
                 for (var x = 1; x < gridHeightData[y].Length - 1; x++)
                 {
-                    var mapEdgeDetector = new MapEdgeDetector(mapTextureData, bytesPerRow, y, x);
-                    if (!mapEdgeDetector.AtLeastOneDirectionIsBorder())
+                    if (!mapEdgeDetector.IsBorder(x, y))
                     {
                         continue;
                     }
@@ -878,7 +878,7 @@ namespace Radar
                     var imageX = x - height;
                     var imageY = y - height;
 
-                    if (mapEdgeDetector.IsInsideMapBoundary(totalRows, imageX, imageY, bytesPerRow))
+                    if (mapEdgeDetector.IsInsideMapBoundary(totalRows, imageX, imageY))
                     {
                         image[imageX, imageY] = new Rgba32(this.Settings.WalkableMapColor);
                     }
