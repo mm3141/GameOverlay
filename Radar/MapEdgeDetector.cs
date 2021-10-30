@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace Radar
@@ -15,6 +13,8 @@ namespace Radar
         /// <summary>
         /// Class that helps with map edge detection.
         /// </summary>
+        /// <param name="mapWalkableData">Byte array that contains map walkable data</param>
+        /// <param name="bytesPerRow"></param>
         public MapEdgeDetector(byte[] mapWalkableData, int bytesPerRow)
         {
             this.mapWalkableData = mapWalkableData;
@@ -22,9 +22,10 @@ namespace Radar
         }
 
         /// <summary>
-        /// Checks if the current tile is not walkable and at least 1 other direction is walkable too.
+        /// Detects if the current tile is a border
+        /// By detecting if the current tile is not walkable and at least 1 other direction is walkable.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>True if the current tile is a border, false otherwise.</returns>
         public bool IsBorder(int x, int y)
         {
             var index = (y * bytesPerRow) + (x / 2); // (x / 2) => since there are 2 data points in 1 byte.
@@ -32,19 +33,19 @@ namespace Radar
             var shiftIfFirstNibble = oneIfFirstNibbleZeroIfNot * 0x4;
             var shiftIfSecondNibble = zeroIfFirstNibbleOneIfNot * 0x4;
 
-            var currentTile = SetTile(mapWalkableData, index, shiftIfSecondNibble);
-            
-            // we add the extra condition if currentTile == 1 to make the border thicker.
+            var currentTile = SetTile(index, shiftIfSecondNibble);
+
+            // we add the extra condition if currentTile != 1 to make the border thicker.
             if (currentTile != 1 && CanWalk(currentTile))
             {
                 return false;
             }
 
-            var upTile = SetTile(mapWalkableData, index + bytesPerRow, shiftIfSecondNibble);
-            var downTile = SetTile(mapWalkableData, index - bytesPerRow, shiftIfSecondNibble);
-            var leftTile = SetTile(mapWalkableData, index - oneIfFirstNibbleZeroIfNot, shiftIfFirstNibble);
-            var rightTile = SetTile(mapWalkableData, index + zeroIfFirstNibbleOneIfNot, shiftIfFirstNibble);
-            
+            var upTile = SetTile( index + bytesPerRow, shiftIfSecondNibble);
+            var downTile = SetTile( index - bytesPerRow, shiftIfSecondNibble);
+            var leftTile = SetTile( index - oneIfFirstNibbleZeroIfNot, shiftIfFirstNibble);
+            var rightTile = SetTile( index + zeroIfFirstNibbleOneIfNot, shiftIfFirstNibble);
+
             return CanWalk(downTile) || CanWalk(upTile) || CanWalk(rightTile) || CanWalk(leftTile);
         }
 
@@ -68,9 +69,8 @@ namespace Radar
         /// <param name="totalRows"></param>
         /// <param name="imageX"></param>
         /// <param name="imageY"></param>
-        /// <param name="bytesPerRow"></param>
         /// <returns>True if X,Y is within the boundary of the image. Otherwise false</returns>
-        public bool IsInsideMapBoundary(int totalRows, int imageX, int imageY, int bytesPerRow)
+        public bool IsInsideMapBoundary(int totalRows, int imageX, int imageY)
         {
             var width = bytesPerRow * 2;
             return imageX < width && imageX >= 0 && imageY < totalRows && imageY >= 0;
@@ -82,7 +82,7 @@ namespace Radar
             return wantsFirstNibble ? (1, 0) : (0, 1);
         }
 
-        private static int SetTile(IEnumerable<byte> mapWalkableData, int index, int shiftAmount)
+        private int SetTile(int index, int shiftAmount)
         {
             var data = mapWalkableData.ElementAtOrDefault(index);
             return (data >> shiftAmount) & 0xF;

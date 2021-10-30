@@ -878,7 +878,7 @@ namespace Radar
                     var imageX = x - height;
                     var imageY = y - height;
 
-                    if (mapEdgeDetector.IsInsideMapBoundary(totalRows, imageX, imageY, bytesPerRow))
+                    if (mapEdgeDetector.IsInsideMapBoundary(totalRows, imageX, imageY))
                     {
                         image[imageX, imageY] = new Rgba32(this.Settings.WalkableMapColor);
                     }
