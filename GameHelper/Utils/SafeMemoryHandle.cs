@@ -147,31 +147,32 @@ namespace GameHelper.Utils
         /// <returns>string.</returns>
         internal string ReadStdWString(StdWString nativecontainer)
         {
-            long length = nativecontainer.Length.ToInt64();
-            long capacity = nativecontainer.Capacity.ToInt64();
             const int MaxAllowed = 1000;
-            if (length < 0 || length > MaxAllowed || capacity < 0 || capacity > MaxAllowed)
+            if (nativecontainer.Length < 0 ||
+                nativecontainer.Length > MaxAllowed ||
+                nativecontainer.Capacity < 0 ||
+                nativecontainer.Capacity > MaxAllowed)
             {
                 Console.WriteLine($"ERROR: Reading std::wstring. Details: {nativecontainer}");
                 return string.Empty;
             }
 
-            if (length == 0 || capacity == 0)
+            if (nativecontainer.Length == 0 || nativecontainer.Capacity == 0)
             {
                 return string.Empty;
             }
 
-            if (capacity <= 8)
+            if (nativecontainer.Capacity <= 8)
             {
                 byte[] buffer = BitConverter.GetBytes(nativecontainer.Buffer.ToInt64());
                 string ret = Encoding.Unicode.GetString(buffer);
                 buffer = BitConverter.GetBytes(nativecontainer.ReservedBytes.ToInt64());
                 ret += Encoding.Unicode.GetString(buffer);
-                return ret[0 .. (int)length];
+                return ret[0 ..nativecontainer.Length];
             }
             else
             {
-                byte[] buffer = this.ReadMemoryArray<byte>(nativecontainer.Buffer, (int)length * 2);
+                byte[] buffer = this.ReadMemoryArray<byte>(nativecontainer.Buffer, nativecontainer.Length * 2);
                 return Encoding.Unicode.GetString(buffer);
             }
         }
@@ -238,9 +239,8 @@ namespace GameHelper.Utils
             where TValue : unmanaged
         {
             const int MaxAllowed = 10000;
-            var size = nativeContainer.Size;
             var collection = new List<(TKey Key, TValue Value)>();
-            if (size <= 0 || size > MaxAllowed)
+            if (nativeContainer.Size <= 0 || nativeContainer.Size > MaxAllowed)
             {
                 return collection;
             }
@@ -249,11 +249,11 @@ namespace GameHelper.Utils
             var head = this.ReadMemory<StdMapNode<TKey, TValue>>(nativeContainer.Head);
             var parent = this.ReadMemory<StdMapNode<TKey, TValue>>(head.Parent);
             childrens.Push(parent);
-            ulong counter = 0;
+            int counter = 0;
             while (childrens.Count != 0)
             {
                 var cur = childrens.Pop();
-                if (counter++ > size + 5)
+                if (counter++ > nativeContainer.Size + 5)
                 {
                     childrens.Clear();
                     return collection;
@@ -319,14 +319,13 @@ namespace GameHelper.Utils
             where TValue : unmanaged
         {
             if (nativeContainer.Data == IntPtr.Zero ||
-                nativeContainer.Capacity <= 0x00 ||
-                nativeContainer.Counter <= 0x00)
+                nativeContainer.Capacity <= 0x00)
             {
                 return new List<TValue>();
             }
 
-            var size = (int)(nativeContainer.Capacity + 1) / 8;
-            var ret = new List<TValue>((int)nativeContainer.Counter);
+            int size = ((int)nativeContainer.Capacity + 1) / 8;
+            var ret = new List<TValue>();
             var dataArray = this.ReadMemoryArray<StdBucketNode<TValue>>(nativeContainer.Data, size);
             for (int i = 0; i < dataArray.Length; i++)
             {

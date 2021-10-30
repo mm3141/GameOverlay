@@ -25,7 +25,8 @@
         public long Capacity; // actually, it's Capacity number - 1.
         public int Unknown3; // byte + padd
         public float Unknown4;
-        public long Counter;
+        public int PAD_20; // it's actually Counter (i.e. amount of items in the bucket) but unstable, do not use this.
+        public int PAD_24;
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]

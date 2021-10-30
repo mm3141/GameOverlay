@@ -28,6 +28,6 @@
         public int ReservedPercent;
 
         public int CurrentInPercent() =>
-            (int)Math.Round(100 * Current / (Total - (ReservedFlat + Math.Round(ReservedPercent * 0.0001 * Total))));
+            Total > 0 ? (int)Math.Round(100 * Current / (Total - (ReservedFlat + Math.Round(ReservedPercent * 0.0001 * Total)))) : 0;
     }
 }
