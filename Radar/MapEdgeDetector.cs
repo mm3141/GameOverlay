@@ -28,15 +28,16 @@ namespace Radar
         }
 
         /// <summary>
-        /// Detects if the current tile is a border
-        /// By detecting if the current tile is not walkable and at least 1 other direction is walkable.
+        /// Detects if the current tile is a border.
+        /// 
+        /// The current tile is a border if it itself is not walkable and at least one adjacent tile is walkable.
+        /// At least one adjacent tile has to be walkable to avoid not just drawing all non-walkable tiles.
         /// </summary>
         /// <returns>True if the current tile is a border, false otherwise.</returns>
         public bool IsBorder(int x, int y)
         {
             var index = (y * bytesPerRow) + (x / 2); // (x / 2) => since there are 2 data points in 1 byte.
             var (oneIfFirstNibbleZeroIfNot, zeroIfFirstNibbleOneIfNot) = NibbleHandler(x);
-            var shiftIfFirstNibble = oneIfFirstNibbleZeroIfNot * 0x4;
             var shiftIfSecondNibble = zeroIfFirstNibbleOneIfNot * 0x4;
 
             var currentTile = GetTileValueAt(index, shiftIfSecondNibble);
@@ -59,6 +60,7 @@ namespace Radar
                 return true;
             }
 
+            var shiftIfFirstNibble = oneIfFirstNibbleZeroIfNot * 0x4;
             var leftTile = GetTileValueAt(index - oneIfFirstNibbleZeroIfNot, shiftIfFirstNibble);
             if (CanWalk(leftTile))
             {
