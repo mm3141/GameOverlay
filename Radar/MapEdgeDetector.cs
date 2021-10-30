@@ -9,48 +9,43 @@ namespace Radar
     /// </summary>
     public class MapEdgeDetector
     {
-        /// <summary>
-        /// Map (current location) walkable data is stored in these variables.
-        /// </summary>
-        private readonly int currentTile, rightTile, leftTile, upTile, downTile;
+        private readonly int bytesPerRow;
+        private readonly byte[] mapWalkableData;
 
         /// <summary>
         /// Class that helps with map edge detection.
         /// </summary>
-        /// <param name="mapWalkableData">map data which stores the information about y,x being walkable or not.</param>
-        /// <param name="bytesPerRow">number of bytes in a single row of walkable map data.</param>
-        /// <param name="y">map y location whos edge caller wants to detect.</param>
-        /// <param name="x">map x location whos edge caller wants to detect.</param>
-        public MapEdgeDetector(byte[] mapWalkableData, int bytesPerRow, int y, int x)
+        public MapEdgeDetector(byte[] mapWalkableData, int bytesPerRow)
         {
-            var index = (y * bytesPerRow) + (x / 2); // (x / 2) => since there are 2 data points in 1 byte.
-            var wantsFirstNibble = x % 2 == 0;
-            var oneIfFirstNibbleZeroIfNot = wantsFirstNibble ? 1 : 0;
-            var zeroIfFirstNibbleOneIfNot = wantsFirstNibble ? 0 : 1;
-            var shiftIfFirstNibble = oneIfFirstNibbleZeroIfNot * 0x4;
-            var shiftIfSecondNibble = zeroIfFirstNibbleOneIfNot * 0x4;
-
-            currentTile = (GetByIndex(mapWalkableData, index) >> shiftIfSecondNibble) & 0xF;
-            upTile = (GetByIndex(mapWalkableData, index + bytesPerRow) >> shiftIfSecondNibble) & 0xF;
-            downTile = (GetByIndex(mapWalkableData, index - bytesPerRow) >> shiftIfSecondNibble) & 0xF;
-            leftTile = (GetByIndex(mapWalkableData, index - oneIfFirstNibbleZeroIfNot) >> shiftIfFirstNibble) & 0xF;
-            rightTile = (GetByIndex(mapWalkableData, index + zeroIfFirstNibbleOneIfNot) >> shiftIfFirstNibble) & 0xF;
-        }
-
-        private static byte GetByIndex(IEnumerable<byte> mapTextureData, int index)
-        {
-            return mapTextureData.ElementAtOrDefault(index);
+            this.mapWalkableData = mapWalkableData;
+            this.bytesPerRow = bytesPerRow;
         }
 
         /// <summary>
-        /// Checks if the current tile is walkable and at least 1 other direction is walkable too.
+        /// Checks if the current tile is not walkable and at least 1 other direction is walkable too.
         /// </summary>
         /// <returns></returns>
-        public bool AtLeastOneDirectionIsBorder()
+        public bool IsBorder(int x, int y)
         {
+            var index = (y * bytesPerRow) + (x / 2); // (x / 2) => since there are 2 data points in 1 byte.
+            var (oneIfFirstNibbleZeroIfNot, zeroIfFirstNibbleOneIfNot) = NibbleHandler(x);
+            var shiftIfFirstNibble = oneIfFirstNibbleZeroIfNot * 0x4;
+            var shiftIfSecondNibble = zeroIfFirstNibbleOneIfNot * 0x4;
+
+            var currentTile = SetTile(mapWalkableData, index, shiftIfSecondNibble);
+            
             // we add the extra condition if currentTile == 1 to make the border thicker.
-            return (!CanWalk(currentTile) || currentTile == 1) &&
-                   (CanWalk(downTile) || CanWalk(upTile) || CanWalk(rightTile) || CanWalk(leftTile));
+            if (currentTile != 1 && CanWalk(currentTile))
+            {
+                return false;
+            }
+
+            var upTile = SetTile(mapWalkableData, index + bytesPerRow, shiftIfSecondNibble);
+            var downTile = SetTile(mapWalkableData, index - bytesPerRow, shiftIfSecondNibble);
+            var leftTile = SetTile(mapWalkableData, index - oneIfFirstNibbleZeroIfNot, shiftIfFirstNibble);
+            var rightTile = SetTile(mapWalkableData, index + zeroIfFirstNibbleOneIfNot, shiftIfFirstNibble);
+            
+            return CanWalk(downTile) || CanWalk(upTile) || CanWalk(rightTile) || CanWalk(leftTile);
         }
 
         /// <summary>
@@ -79,6 +74,18 @@ namespace Radar
         {
             var width = bytesPerRow * 2;
             return imageX < width && imageX >= 0 && imageY < totalRows && imageY >= 0;
+        }
+
+        private static (int oneIfFirstNibbleZeroIfNot, int zeroIfFirstNibbleOneIfNot) NibbleHandler(int x)
+        {
+            var wantsFirstNibble = x % 2 == 0;
+            return wantsFirstNibble ? (1, 0) : (0, 1);
+        }
+
+        private static int SetTile(IEnumerable<byte> mapWalkableData, int index, int shiftAmount)
+        {
+            var data = mapWalkableData.ElementAtOrDefault(index);
+            return (data >> shiftAmount) & 0xF;
         }
     }
 }
