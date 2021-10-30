@@ -319,14 +319,13 @@ namespace GameHelper.Utils
             where TValue : unmanaged
         {
             if (nativeContainer.Data == IntPtr.Zero ||
-                nativeContainer.Capacity <= 0x00 ||
-                nativeContainer.Counter <= 0x00)
+                nativeContainer.Capacity <= 0x00)
             {
                 return new List<TValue>();
             }
 
-            int size = (nativeContainer.Capacity + 1) / 8;
-            var ret = new List<TValue>(nativeContainer.Counter);
+            int size = ((int)nativeContainer.Capacity + 1) / 8;
+            var ret = new List<TValue>();
             var dataArray = this.ReadMemoryArray<StdBucketNode<TValue>>(nativeContainer.Data, size);
             for (int i = 0; i < dataArray.Length; i++)
             {

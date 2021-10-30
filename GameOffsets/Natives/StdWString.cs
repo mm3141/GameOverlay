@@ -17,9 +17,9 @@ namespace GameOffsets.Natives
         //// Since the pointer takes 8 bytes and 8 Capacity wstring takes 16 bytes
         //// wstring reserves 8 bytes over here which is then used to store the string.
         public IntPtr ReservedBytes;
-        public int Length;
+        public int Length; // according to debugger this is long but for now int is working fine.
         public int PAD_14;
-        public int Capacity;
+        public int Capacity; // according to debugger this is long but for now int is working fine.
         public int PAD_1C;
 
         public override string ToString()

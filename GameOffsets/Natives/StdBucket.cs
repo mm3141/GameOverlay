@@ -22,11 +22,10 @@
     {
         public long PAD_00;
         public IntPtr Data; // ComponentArrayStructure
-        public int Capacity; // actually, it's Capacity number - 1.
-        public int PAD_14;
+        public long Capacity; // actually, it's Capacity number - 1.
         public int Unknown3; // byte + padd
         public float Unknown4;
-        public int Counter;
+        public int PAD_20; // it's actually Counter (i.e. amount of items in the bucket) but unstable, do not use this.
         public int PAD_24;
     }
 
