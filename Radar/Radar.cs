@@ -868,8 +868,8 @@ namespace Radar
             {
                 for (var x = 1; x < gridHeightData[y].Length - 1; x++)
                 {
-                    var walkSize = new MapEdgeDetector(mapTextureData, bytesPerRow, y, x);
-                    if (!walkSize.AtleastOneDirectionIsBorder())
+                    var mapEdgeDetector = new MapEdgeDetector(mapTextureData, bytesPerRow, y, x);
+                    if (!mapEdgeDetector.AtLeastOneDirectionIsBorder())
                     {
                         continue;
                     }
@@ -878,7 +878,7 @@ namespace Radar
                     var imageX = x - height;
                     var imageY = y - height;
 
-                    if (walkSize.ShouldDrawBorderEdge(totalRows, imageX, imageY, bytesPerRow))
+                    if (mapEdgeDetector.IsInsideMapBoundary(totalRows, imageX, imageY, bytesPerRow))
                     {
                         image[imageX, imageY] = new Rgba32(this.Settings.WalkableMapColor);
                     }
