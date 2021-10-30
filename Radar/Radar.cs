@@ -855,16 +855,15 @@ namespace Radar
 
             var instance = Core.States.InGameStateObject.CurrentAreaInstance;
             var gridHeightData = instance.GridHeightData;
-            var mapTextureData = instance.GridWalkableData;
+            var mapWalkableData = instance.GridWalkableData;
             var bytesPerRow = instance.TerrainMetadata.BytesPerRow;
             if (bytesPerRow <= 0)
             {
                 return;
             }
 
-            var totalRows = mapTextureData.Length / bytesPerRow;
-            var mapEdgeDetector = new MapEdgeDetector(mapTextureData, bytesPerRow);
-            using Image<Rgba32> image = new(bytesPerRow * 2, totalRows);
+            var mapEdgeDetector = new MapEdgeDetector(mapWalkableData, bytesPerRow);
+            using Image<Rgba32> image = new(bytesPerRow * 2, mapEdgeDetector.TotalRows);
             Parallel.For(0, gridHeightData.Length, y =>
             {
                 for (var x = 1; x < gridHeightData[y].Length - 1; x++)
@@ -878,7 +877,7 @@ namespace Radar
                     var imageX = x - height;
                     var imageY = y - height;
 
-                    if (mapEdgeDetector.IsInsideMapBoundary(totalRows, imageX, imageY))
+                    if (mapEdgeDetector.IsInsideMapBoundary(imageX, imageY))
                     {
                         image[imageX, imageY] = new Rgba32(this.Settings.WalkableMapColor);
                     }
