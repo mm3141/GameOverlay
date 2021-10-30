@@ -25,8 +25,8 @@ namespace Radar
         {
             var index = (y * bytesPerRow) + (x / 2); // (x / 2) => since there are 2 data points in 1 byte.
             var wantsFirstNibble = x % 2 == 0;
-            var oneIfFirstNibbleZeroIfNot = wantsFirstNibble? 1:0;
-            var zeroIfFirstNibbleOneIfNot = wantsFirstNibble? 0:1;
+            var oneIfFirstNibbleZeroIfNot = wantsFirstNibble ? 1 : 0;
+            var zeroIfFirstNibbleOneIfNot = wantsFirstNibble ? 0 : 1;
             var shiftIfFirstNibble = oneIfFirstNibbleZeroIfNot * 0x4;
             var shiftIfSecondNibble = zeroIfFirstNibbleOneIfNot * 0x4;
 
