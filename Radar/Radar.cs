@@ -96,8 +96,8 @@ namespace Radar
                               "Overlay setting window, click anywhere on it and then hide this Overlay " +
                               "setting window. It will fix the issue.");
 
-            ImGui.Checkbox("Do not draw when in Hideout/Town", ref this.Settings.DrawWhenNotInHideoutOrTown);
-            ImGui.Checkbox("Draw Radar when game in foreground", ref this.Settings.DrawWhenForeground);
+            ImGui.Checkbox("Hide Radar when in Hideout/Town", ref this.Settings.DrawWhenNotInHideoutOrTown);
+            ImGui.Checkbox("Hide Radar when game is in the background", ref this.Settings.DrawWhenForeground);
             if (ImGui.Checkbox("Modify Large Map Culling Window", ref this.Settings.ModifyCullWindow))
             {
                 if (this.Settings.ModifyCullWindow)
