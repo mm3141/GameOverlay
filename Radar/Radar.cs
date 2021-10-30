@@ -2,8 +2,6 @@
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
-using System.Linq;
-
 namespace Radar
 {
     using System;
@@ -866,12 +864,12 @@ namespace Radar
 
             var totalRows = mapTextureData.Length / bytesPerRow;
             using Image<Rgba32> image = new(bytesPerRow * 2, totalRows);
-            Parallel.For(0, gridHeightData.Length, (y) =>
+            Parallel.For(0, gridHeightData.Length, y =>
             {
                 for (var x = 1; x < gridHeightData[y].Length - 1; x++)
                 {
-                    var walkSize = new WalkSize(mapTextureData, bytesPerRow, y, x);
-                    if (!walkSize.IsWalkable())
+                    var walkSize = new MapEdgeDetector(mapTextureData, bytesPerRow, y, x);
+                    if (!walkSize.AtleastOneDirectionIsBorder())
                     {
                         continue;
                     }
@@ -880,14 +878,15 @@ namespace Radar
                     var imageX = x - height;
                     var imageY = y - height;
 
-                    if (imageX < bytesPerRow * 2 && imageX >= 0 && imageY < totalRows && imageY >= 0)
+                    if (walkSize.ShouldDrawBorderEdge(totalRows, imageX, imageY, bytesPerRow))
                     {
                         image[imageX, imageY] = new Rgba32(this.Settings.WalkableMapColor);
                     }
                 }
             });
 #if DEBUG
-            image.Save(this.DllDirectory + @$"/current_map_{Core.States.InGameStateObject.CurrentAreaInstance.AreaHash}.jpeg");
+            image.Save(this.DllDirectory +
+                       @$"/current_map_{Core.States.InGameStateObject.CurrentAreaInstance.AreaHash}.jpeg");
 #endif
             Core.Overlay.AddOrGetImagePointer("walkable_map", image, false, false, out var t, out var w, out var h);
             this.walkableMapTexture = t;
@@ -910,7 +909,7 @@ namespace Radar
                 {
 #if DEBUG
                     Console.WriteLine($"Couldn't find tile name {kv.Key} in area {this.currentAreaName}." +
-                        " Please delete/fix Radar plugin config file.");
+                                      " Please delete/fix Radar plugin config file.");
 #endif
                     kv.Value.MakeInvalid();
                 }
