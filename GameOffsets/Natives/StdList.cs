@@ -14,7 +14,8 @@
     public struct StdList
     {
         public IntPtr Head;
-        public ulong Size;
+        public int Size; // according to debugger this is long but for now int is working fine.
+        public int PAD_C;
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
