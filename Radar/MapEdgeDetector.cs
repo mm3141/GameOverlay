@@ -35,19 +35,6 @@ namespace Radar
             rightTile = SetTile(mapWalkableData, index + zeroIfFirstNibbleOneIfNot, shiftIfFirstNibble);
         }
 
-        private static (int oneIfFirstNibbleZeroIfNot, int zeroIfFirstNibbleOneIfNot) NibbleHandler(int x)
-        {
-            var wantsFirstNibble = x % 2 == 0;
-            return wantsFirstNibble ? (1, 0) : (0, 1);
-        }
-
-        private static int SetTile(IEnumerable<byte> mapWalkableData, int index, int shiftAmount)
-        {
-            var data = mapWalkableData.ElementAtOrDefault(index);
-            return (data >> shiftAmount) & 0xF;
-        }
-
-
         /// <summary>
         /// Checks if the current tile is walkable and at least 1 other direction is walkable too.
         /// </summary>
@@ -85,6 +72,18 @@ namespace Radar
         {
             var width = bytesPerRow * 2;
             return imageX < width && imageX >= 0 && imageY < totalRows && imageY >= 0;
+        }
+
+        private static (int oneIfFirstNibbleZeroIfNot, int zeroIfFirstNibbleOneIfNot) NibbleHandler(int x)
+        {
+            var wantsFirstNibble = x % 2 == 0;
+            return wantsFirstNibble ? (1, 0) : (0, 1);
+        }
+
+        private static int SetTile(IEnumerable<byte> mapWalkableData, int index, int shiftAmount)
+        {
+            var data = mapWalkableData.ElementAtOrDefault(index);
+            return (data >> shiftAmount) & 0xF;
         }
     }
 }
