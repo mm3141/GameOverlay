@@ -41,12 +41,40 @@ namespace Radar
                 return false;
             }
 
-            var upTile = SetTile( index + bytesPerRow, shiftIfSecondNibble);
-            var downTile = SetTile( index - bytesPerRow, shiftIfSecondNibble);
-            var leftTile = SetTile( index - oneIfFirstNibbleZeroIfNot, shiftIfFirstNibble);
-            var rightTile = SetTile( index + zeroIfFirstNibbleOneIfNot, shiftIfFirstNibble);
+            var upTile = SetTile(index + bytesPerRow, shiftIfSecondNibble);
+            if (CanWalk(upTile))
+            {
+                return true;
+            }
 
-            return CanWalk(downTile) || CanWalk(upTile) || CanWalk(rightTile) || CanWalk(leftTile);
+            var downTile = SetTile(index - bytesPerRow, shiftIfSecondNibble);
+            if (CanWalk(downTile))
+            {
+                return true;
+            }
+
+            var leftTile = SetTile(index - oneIfFirstNibbleZeroIfNot, shiftIfFirstNibble);
+            if (CanWalk(leftTile))
+            {
+                return true;
+            }
+
+            var rightTile = SetTile(index + zeroIfFirstNibbleOneIfNot, shiftIfFirstNibble);
+            return CanWalk(rightTile);
+        }
+
+
+        /// <summary>
+        /// Checks if (ImageX,ImageY) coordinate is within the width and height of the map.
+        /// </summary>
+        /// <param name="totalRows"></param>
+        /// <param name="imageX"></param>
+        /// <param name="imageY"></param>
+        /// <returns>True if X,Y is within the boundary of the image. Otherwise false</returns>
+        public bool IsInsideMapBoundary(int totalRows, int imageX, int imageY)
+        {
+            var width = bytesPerRow * 2;
+            return imageX < width && imageX >= 0 && imageY < totalRows && imageY >= 0;
         }
 
         /// <summary>
@@ -61,19 +89,6 @@ namespace Radar
         private static bool CanWalk(int tileValue)
         {
             return tileValue != 0;
-        }
-
-        /// <summary>
-        /// Checks if (ImageX,ImageY) coordinate is within the width and height of the map.
-        /// </summary>
-        /// <param name="totalRows"></param>
-        /// <param name="imageX"></param>
-        /// <param name="imageY"></param>
-        /// <returns>True if X,Y is within the boundary of the image. Otherwise false</returns>
-        public bool IsInsideMapBoundary(int totalRows, int imageX, int imageY)
-        {
-            var width = bytesPerRow * 2;
-            return imageX < width && imageX >= 0 && imageY < totalRows && imageY >= 0;
         }
 
         private static (int oneIfFirstNibbleZeroIfNot, int zeroIfFirstNibbleOneIfNot) NibbleHandler(int x)
