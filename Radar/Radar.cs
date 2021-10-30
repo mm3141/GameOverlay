@@ -35,7 +35,9 @@ namespace Radar
 
         // Delirium Hidden Monster cache.
         private readonly Dictionary<uint, string> deliriumHiddenMonster = new();
-        private readonly string deliriumHiddenMonsterStarting = "Metadata/Monsters/LeagueAffliction/DoodadDaemons/DoodadDaemon";
+
+        private readonly string deliriumHiddenMonsterStarting =
+            "Metadata/Monsters/LeagueAffliction/DoodadDaemons/DoodadDaemon";
 
         private readonly string delveChestStarting = "Metadata/Chests/DelveChests/";
         private readonly Dictionary<uint, string> delveChestCache = new();
@@ -76,14 +78,14 @@ namespace Radar
         public override void DrawSettings()
         {
             ImGui.TextWrapped("Following slider is for fixing large map icons. " +
-                "You have to use it if you feel that LargeMap Icons " +
-                "are moving while your player is moving. You only have " +
-                "to find a value that works for you per game window resolution. " +
-                "Basically, you don't have to change it unless you change your " +
-                "game window resolution. Also, please contribute back, let me know " +
-                "what resolution you use and what value works best for you. " +
-                "This slider has no impact on mini-map icons. For windowed-full-screen " +
-                "default value should be good enough.");
+                              "You have to use it if you feel that LargeMap Icons " +
+                              "are moving while your player is moving. You only have " +
+                              "to find a value that works for you per game window resolution. " +
+                              "Basically, you don't have to change it unless you change your " +
+                              "game window resolution. Also, please contribute back, let me know " +
+                              "what resolution you use and what value works best for you. " +
+                              "This slider has no impact on mini-map icons. For windowed-full-screen " +
+                              "default value should be good enough.");
             ImGui.DragFloat(
                 "Large Map Fix",
                 ref this.Settings.LargeMapScaleMultiplier,
@@ -91,8 +93,8 @@ namespace Radar
                 0.01f,
                 0.3f);
             ImGui.TextWrapped("If your mini/large map icon are not working/visible. Open this " +
-                "Overlay setting window, click anywhere on it and then hide this Overlay " +
-                "setting window. It will fix the issue.");
+                              "Overlay setting window, click anywhere on it and then hide this Overlay " +
+                              "setting window. It will fix the issue.");
 
             ImGui.Checkbox("Do not draw when in Hideout/Town", ref this.Settings.DrawWhenNotInHideoutOrTown);
             ImGui.Checkbox("Draw Radar when game in foreground", ref this.Settings.DrawWhenForeground);
@@ -162,14 +164,16 @@ namespace Radar
             }
 
             ImGui.SameLine();
-            if (ImGui.RadioButton("Don't show tile name", !this.Settings.ShowAllTgtNames && !this.Settings.ShowImportantTgtNames))
+            if (ImGui.RadioButton("Don't show tile name",
+                !this.Settings.ShowAllTgtNames && !this.Settings.ShowImportantTgtNames))
             {
                 this.Settings.ShowAllTgtNames = false;
                 this.Settings.ShowImportantTgtNames = false;
             }
 
             ImGui.ColorEdit4("Tile text color", ref this.Settings.TgtNameColor);
-            ImGui.Checkbox("Put black box around tile text, makes easier to read.", ref this.Settings.TgtNameBackground);
+            ImGui.Checkbox("Put black box around tile text, makes easier to read.",
+                ref this.Settings.TgtNameBackground);
             if (ImGui.CollapsingHeader("Important Tile Setting"))
             {
                 this.AddNewTileBox();
@@ -227,10 +231,10 @@ namespace Radar
                 ImGui.SetNextWindowSize(new Vector2(400f), ImGuiCond.Appearing);
                 ImGui.Begin("Large Map Culling Window");
                 ImGui.TextWrapped("This is a culling window for the large map icons. " +
-                    "Any large map icons outside of this window will be hidden automatically. " +
-                    "Feel free to change the position/size of this window. " +
-                    "Once you are happy with the dimensions, double click this window. " +
-                    "You can bring this window back from the settings menu.");
+                                  "Any large map icons outside of this window will be hidden automatically. " +
+                                  "Feel free to change the position/size of this window. " +
+                                  "Once you are happy with the dimensions, double click this window. " +
+                                  "You can bring this window back from the settings menu.");
                 this.Settings.CullWindowPos = ImGui.GetWindowPos();
                 this.Settings.CullWindowSize = ImGui.GetWindowSize();
                 if (ImGui.IsWindowHovered() && ImGui.IsMouseDoubleClicked(ImGuiMouseButton.Left))
@@ -427,13 +431,16 @@ namespace Radar
                         var val = tgtKV.Value[i];
                         var ePos = new Vector2(val.X, val.Y);
                         var fpos = Helper.DeltaInWorldToMapDelta(
-                            ePos - pPos, -playerRender.TerrainHeight - currentAreaInstance.GridHeightData[val.Y][val.X]);
+                            ePos - pPos,
+                            -playerRender.TerrainHeight - currentAreaInstance.GridHeightData[val.Y][val.X]);
                         if (this.Settings.TgtNameBackground)
                         {
-                            fgDraw.AddRectFilled(mapCenter + fpos - pNameSizeH, mapCenter + fpos + pNameSizeH, UiHelper.Color(0, 0, 0, 200));
+                            fgDraw.AddRectFilled(mapCenter + fpos - pNameSizeH, mapCenter + fpos + pNameSizeH,
+                                UiHelper.Color(0, 0, 0, 200));
                         }
 
-                        fgDraw.AddText(ImGui.GetFont(), ImGui.GetFontSize(), mapCenter + fpos - pNameSizeH, col, tgtKV.Key);
+                        fgDraw.AddText(ImGui.GetFont(), ImGui.GetFontSize(), mapCenter + fpos - pNameSizeH, col,
+                            tgtKV.Key);
                     }
                 }
             }
@@ -450,7 +457,8 @@ namespace Radar
                     {
                         float height = 0;
                         var loc = tile.Value.Clusters[i];
-                        if (loc.X < currentAreaInstance.GridHeightData[0].Length && loc.Y < currentAreaInstance.GridHeightData.Length)
+                        if (loc.X < currentAreaInstance.GridHeightData[0].Length &&
+                            loc.Y < currentAreaInstance.GridHeightData.Length)
                         {
                             height = currentAreaInstance.GridHeightData[(int)loc.Y][(int)loc.X];
                         }
@@ -461,10 +469,12 @@ namespace Radar
                             loc - pPos, -playerRender.TerrainHeight + height);
                         if (this.Settings.TgtNameBackground)
                         {
-                            fgDraw.AddRectFilled(mapCenter + fpos - pNameSizeH, mapCenter + fpos + pNameSizeH, UiHelper.Color(0, 0, 0, 200));
+                            fgDraw.AddRectFilled(mapCenter + fpos - pNameSizeH, mapCenter + fpos + pNameSizeH,
+                                UiHelper.Color(0, 0, 0, 200));
                         }
 
-                        fgDraw.AddText(ImGui.GetFont(), ImGui.GetFontSize(), mapCenter + fpos - pNameSizeH, col, display);
+                        fgDraw.AddText(ImGui.GetFont(), ImGui.GetFontSize(), mapCenter + fpos - pNameSizeH, col,
+                            display);
                     }
                 }
             }
@@ -503,6 +513,7 @@ namespace Radar
                     {
                         continue;
                     }
+
                     if (!(hasVital || isChest || isPlayer))
                     {
                         continue;
@@ -519,7 +530,8 @@ namespace Radar
                     {
                         continue;
                     }
-                    else if (isPlayer && entity.Value.Address == Core.States.InGameStateObject.CurrentAreaInstance.Player.Address)
+                    else if (isPlayer && entity.Value.Address ==
+                        Core.States.InGameStateObject.CurrentAreaInstance.Player.Address)
                     {
                         continue;
                     }
@@ -534,14 +546,16 @@ namespace Radar
                     if (this.Settings.ShowPlayersNames)
                     {
                         var pNameSizeH = ImGui.CalcTextSize(playerComp.Name) / 2;
-                        fgDraw.AddRectFilled(mapCenter + fpos - pNameSizeH, mapCenter + fpos + pNameSizeH, UiHelper.Color(0, 0, 0, 200));
-                        fgDraw.AddText(ImGui.GetFont(), ImGui.GetFontSize(), mapCenter + fpos - pNameSizeH, UiHelper.Color(255, 128, 128, 255), playerComp.Name);
+                        fgDraw.AddRectFilled(mapCenter + fpos - pNameSizeH, mapCenter + fpos + pNameSizeH,
+                            UiHelper.Color(0, 0, 0, 200));
+                        fgDraw.AddText(ImGui.GetFont(), ImGui.GetFontSize(), mapCenter + fpos - pNameSizeH,
+                            UiHelper.Color(255, 128, 128, 255), playerComp.Name);
                     }
                     else
                     {
-                        var playerIcon = playerComp.Name == this.leaderName ?
-                            this.Settings.BaseIcons["Leader"] :
-                            this.Settings.BaseIcons["Player"];
+                        var playerIcon = playerComp.Name == this.leaderName
+                            ? this.Settings.BaseIcons["Leader"]
+                            : this.Settings.BaseIcons["Player"];
                         iconSizeMultiplierVector *= playerIcon.IconScale;
                         fgDraw.AddImage(
                             playerIcon.TexturePtr,
@@ -576,8 +590,10 @@ namespace Radar
                                 if (delveChestIcon.UV0 == Vector2.Zero)
                                 {
                                     var s = ImGui.CalcTextSize(iconFinder) / 2;
-                                    fgDraw.AddRectFilled(mapCenter + fpos - s, mapCenter + fpos + s, UiHelper.Color(0, 0, 0, 255));
-                                    fgDraw.AddText(mapCenter + fpos - s, UiHelper.Color(255, 128, 128, 255), iconFinder);
+                                    fgDraw.AddRectFilled(mapCenter + fpos - s, mapCenter + fpos + s,
+                                        UiHelper.Color(0, 0, 0, 255));
+                                    fgDraw.AddText(mapCenter + fpos - s, UiHelper.Color(255, 128, 128, 255),
+                                        iconFinder);
                                 }
                                 else
                                 {
@@ -628,12 +644,11 @@ namespace Radar
                         continue;
                     }
 
-                    var chestIcon = chestComp.IsBreachOrLarge ?
-                        currentAreaInstance.DisappearingEntities.TryGetValue(entity.Key, out var league) &&
-                        league == LeagueMechanicType.Breach ?
-                        this.Settings.BreachIcons["Breach Chest"] :
-                        this.Settings.BaseIcons["Large Chest"] :
-                        this.Settings.BaseIcons["Mini Breakable Chest"];
+                    var chestIcon = chestComp.IsBreachOrLarge
+                        ? currentAreaInstance.DisappearingEntities.TryGetValue(entity.Key, out var league) &&
+                          league == LeagueMechanicType.Breach ? this.Settings.BreachIcons["Breach Chest"] :
+                        this.Settings.BaseIcons["Large Chest"]
+                        : this.Settings.BaseIcons["Mini Breakable Chest"];
                     if (chestComp.IsStrongbox && !chestComp.IsBreachOrLarge)
                     {
                         if (entity.Value.Path.StartsWith("Metadata/Chests/StrongBoxes/Arcanist") ||
@@ -725,9 +740,9 @@ namespace Radar
                         }
                     }
 
-                    var monsterIcon = entityPos.IsFriendly ?
-                        this.Settings.BaseIcons["Friendly"] :
-                        this.RarityToIconMapping(omp.Rarity);
+                    var monsterIcon = entityPos.IsFriendly
+                        ? this.Settings.BaseIcons["Friendly"]
+                        : this.RarityToIconMapping(omp.Rarity);
                     iconSizeMultiplierVector *= monsterIcon.IconScale;
                     fgDraw.AddImage(
                         monsterIcon.TexturePtr,
@@ -849,74 +864,29 @@ namespace Radar
 
             var totalRows = mapTextureData.Length / bytesPerRow;
             using Image<Rgba32> image = new(bytesPerRow * 2, totalRows);
-            Parallel.For(0, gridHeightData.Length, (y) =>
+            Parallel.For(0, gridHeightData.Length, y =>
             {
-                for (int x = 1; x < gridHeightData[y].Length - 1; x++)
+                for (var x = 1; x < gridHeightData[y].Length - 1; x++)
                 {
-                    float height = gridHeightData[y][x];
-                    int index = (y * bytesPerRow) + (x / 2); // since there are 2 data points in 1 index.
-                    int walkSizeC = mapTextureData[index];
-
-                    int walkSizeN = 0; // Right
-                    if (index + 1 < mapTextureData.Length)
+                    var walkSize = new MapEdgeDetector(mapTextureData, bytesPerRow, y, x);
+                    if (!walkSize.AtleastOneDirectionIsBorder())
                     {
-                        walkSizeN = mapTextureData[index + 1];
+                        continue;
                     }
 
-                    int walkSizeP = 0; // Left
-                    if (index - 1 >= 0)
+                    var height = (int)(gridHeightData[y][x] / 21.91f);
+                    var imageX = x - height;
+                    var imageY = y - height;
+
+                    if (walkSize.ShouldDrawBorderEdge(totalRows, imageX, imageY, bytesPerRow))
                     {
-                        walkSizeP = mapTextureData[index - 1];
-                    }
-
-                    int walkSizeU = 0; // Top
-                    if (index - bytesPerRow >= 0)
-                    {
-                        walkSizeU = mapTextureData[index - bytesPerRow];
-                    }
-
-                    int walkSizeD = 0; // Bottom
-                    if (index + bytesPerRow < mapTextureData.Length)
-                    {
-                        walkSizeD = mapTextureData[index + bytesPerRow];
-                    }
-
-                    if (x % 2 == 0)
-                    {
-                        walkSizeU = (walkSizeU >> (0x04 * 0)) & 0x0F;
-                        walkSizeD = (walkSizeD >> (0x04 * 0)) & 0x0F;
-
-                        walkSizeP = (walkSizeP >> (0x04 * 1)) & 0x0F;
-                        walkSizeN = (walkSizeC >> (0x04 * 1)) & 0x0F;
-
-                        walkSizeC = (walkSizeC >> (0x04 * 0)) & 0x0F;
-                    }
-                    else
-                    {
-                        walkSizeU = (walkSizeU >> (0x04 * 1)) & 0x0F;
-                        walkSizeD = (walkSizeD >> (0x04 * 1)) & 0x0F;
-
-                        walkSizeP = (walkSizeC >> (0x04 * 0)) & 0x0F;
-                        walkSizeN = (walkSizeN >> (0x04 * 0)) & 0x0F;
-
-                        walkSizeC = (walkSizeC >> (0x04 * 1)) & 0x0F;
-                    }
-
-                    int imageX = x;
-                    int imageY = y;
-                    imageX -= (int)(height / 21.91f);
-                    imageY -= (int)(height / 21.91f);
-                    if ((walkSizeC == 0 || walkSizeC == 1) && (walkSizeD > 0 || walkSizeU > 0 || walkSizeN > 0 || walkSizeP > 0))
-                    {
-                        if (imageX < bytesPerRow * 2 && imageX >= 0 && imageY < totalRows && imageY >= 0)
-                        {
-                            image[imageX, imageY] = new Rgba32(this.Settings.WalkableMapColor);
-                        }
+                        image[imageX, imageY] = new Rgba32(this.Settings.WalkableMapColor);
                     }
                 }
             });
 #if DEBUG
-            image.Save(this.DllDirectory + @$"/current_map_{Core.States.InGameStateObject.CurrentAreaInstance.AreaHash}.jpeg");
+            image.Save(this.DllDirectory +
+                       @$"/current_map_{Core.States.InGameStateObject.CurrentAreaInstance.AreaHash}.jpeg");
 #endif
             Core.Overlay.AddOrGetImagePointer("walkable_map", image, false, false, out var t, out var w, out var h);
             this.walkableMapTexture = t;
@@ -939,7 +909,7 @@ namespace Radar
                 {
 #if DEBUG
                     Console.WriteLine($"Couldn't find tile name {kv.Key} in area {this.currentAreaName}." +
-                        " Please delete/fix Radar plugin config file.");
+                                      " Please delete/fix Radar plugin config file.");
 #endif
                     kv.Value.MakeInvalid();
                 }
@@ -994,7 +964,8 @@ namespace Radar
         {
             return rarity switch
             {
-                Rarity.Normal or Rarity.Magic or Rarity.Rare or Rarity.Unique => this.Settings.BaseIcons[$"{rarity} Monster"],
+                Rarity.Normal or Rarity.Magic or Rarity.Rare or Rarity.Unique => this.Settings.BaseIcons[
+                    $"{rarity} Monster"],
                 _ => this.Settings.BaseIcons[$"Normal Monster"],
             };
         }
@@ -1105,7 +1076,8 @@ namespace Radar
                         }
 
                         ImGui.SameLine();
-                        ImGui.Text($"Tile Name: {tgt.Key}, Expected Clusters: {tgt.Value.ClustersCount}, Display: {tgt.Value.Display}");
+                        ImGui.Text(
+                            $"Tile Name: {tgt.Key}, Expected Clusters: {tgt.Value.ClustersCount}, Display: {tgt.Value.Display}");
                     }
                 }
 
