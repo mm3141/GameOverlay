@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -23,9 +24,9 @@ namespace Radar
         public MapEdgeDetector(byte[] mapWalkableData, int bytesPerRow, int y, int x)
         {
             var index = (y * bytesPerRow) + (x / 2); // (x / 2) => since there are 2 data points in 1 byte.
-            var wantsFirstNibble = x % 2;
-            var oneIfFirstNibbleZeroIfNot = wantsFirstNibble ^ 1;
-            var zeroIfFirstNibbleOneIfNot = wantsFirstNibble ^ 0;
+            var wantsFirstNibble = x % 2 == 0;
+            var oneIfFirstNibbleZeroIfNot = wantsFirstNibble ? 1 : 0;
+            var zeroIfFirstNibbleOneIfNot = wantsFirstNibble ? 0 : 1;
             var shiftIfFirstNibble = oneIfFirstNibbleZeroIfNot * 0x4;
             var shiftIfSecondNibble = zeroIfFirstNibbleOneIfNot * 0x4;
 
@@ -47,8 +48,8 @@ namespace Radar
         /// <returns></returns>
         public bool AtLeastOneDirectionIsBorder()
         {
-            // we add the extra condition if current == 1 to make the border thicker.
-            return (CanWalk(currentTile) || currentTile == 1) &&
+            // we add the extra condition if currentTile == 1 to make the border thicker.
+            return (!CanWalk(currentTile) || currentTile == 1) &&
                    (CanWalk(downTile) || CanWalk(upTile) || CanWalk(rightTile) || CanWalk(leftTile));
         }
 
