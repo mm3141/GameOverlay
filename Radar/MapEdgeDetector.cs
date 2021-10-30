@@ -25,7 +25,7 @@ namespace Radar
             var zeroIfEvenOneIfOdd = evenRemainder ^ 0;
             var shiftIfEven = oneIfEvenZeroIfOdd * 0x4;
             var shiftIfOdd = zeroIfEvenOneIfOdd * 0x4;
-            
+
             current = (GetByIndex(mapTextureData, index) >> shiftIfOdd) & 0xF;
             up = (GetByIndex(mapTextureData, index + bytesPerRow) >> shiftIfOdd) & 0xF;
             down = (GetByIndex(mapTextureData, index - bytesPerRow) >> shiftIfOdd) & 0xF;
@@ -39,12 +39,20 @@ namespace Radar
         }
 
         /// <summary>
-        /// Not sure about this function yet.
+        /// Checks if the current tile is walkable and at least 1 other direction is walkable too.
         /// </summary>
         /// <returns></returns>
         public bool AtLeastOneDirectionIsBorder()
         {
-            return current is 0 or 1 && (down > 0 || up > 0 || right > 0 || left > 0);
+            // we add the extra condition if current == 1 to make the border thicker.
+            return (CanWalk(current) || current == 1) &&
+                   (CanWalk(down) || CanWalk(up) || CanWalk(right) || CanWalk(left));
+        }
+
+        private static bool CanWalk(int direction)
+        {
+            // Values are [0;5], 1,2,3,4,5 = can walk. 0 = cannot walk.
+            return direction != 0;
         }
 
         /// <summary>
