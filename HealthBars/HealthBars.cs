@@ -266,44 +266,51 @@ namespace HealthBars
             uint cullingColor = UiHelper.Color(this.Settings.CullRangeColor * 255f);
 
             // TODO: Make correct dictionary instead of IconPickers
+            Vector2 d1 = new(location.X, location.Y);
+            Vector2 d2 = new(location.X, location.Y);
+            Vector2 d3 = new(location.X, location.Y);
+            Vector2 d4 = new(location.X, location.Y);
+            Vector2 d5 = new(location.X, location.Y);
+            Vector2 d6 = new(location.X, location.Y);
             if (isFriendly)
             {
                 if (isCurrentPlayer)
                 {
-                    this.DrawSprite("EmptyDoubleBar", scale, 1, 68, 108, 19, 110, 88, location, 108, 19, -1, -1, false);
 
-                    this.DrawSprite("EmptyMana", scale, 1, 19, 1, 8, 110, 88, location + manaOffset, 104, 8, 100f - manaReserved, -1, false);
-                    this.DrawSprite("Mana", scale, 1, 47, 1, 8, 110, 88, location + manaOffset, 104, 8, manaPercent, -1, false);
+                    this.DrawSprite("EmptyDoubleBar", scale, 1, 68, 108, 19, 110, 88, d1, 108, 19, -1, -1, false);
+
+                    this.DrawSprite("EmptyMana", scale, 1, 19, 1, 8, 110, 88, d2 + manaOffset, 104, 8, 100f - manaReserved, -1, false);
+                    this.DrawSprite("Mana", scale, 1, 47, 1, 8, 110, 88, d3 + manaOffset, 104, 8, manaPercent, -1, false);
                 }
                 else
                 {
-                    this.DrawSprite("EmptyBar", scale, 1, 57, 108, 9, 110, 88, location, 108, 9, -1, -1, false);
+                    this.DrawSprite("EmptyBar", scale, 1, 57, 108, 9, 110, 88, d1, 108, 9, -1, -1, false);
                 }
 
-                this.DrawSprite("EmptyHP", scale, 1, 10, 1, 7, 110, 88, location + hpOffset, 104, 7, 100f - hpReserved, -1, false);
-                this.DrawSprite("HP", scale, 1, 38, 1, 7, 110, 88, location + hpOffset, 104, 7, hpPercent, -1, this.Settings.ShowFriendlyGradationMarks);
+                this.DrawSprite("EmptyHP", scale, 1, 10, 1, 7, 110, 88, d4 + hpOffset, 104, 7, 100f - hpReserved, -1, false);
+                this.DrawSprite("HP", scale, 1, 38, 1, 7, 110, 88, d5 + hpOffset, 104, 7, hpPercent, -1, this.Settings.ShowFriendlyGradationMarks);
             }
             else
             {
                 if (this.Settings.ShowEnemyMana)
                 {
-                    this.DrawSprite("EmptyDoubleBar", scale, 1, 68, 108, 19, 110, 88, location, 108, 19, -1, -1, false, drawBorder, borderColor, false, false);
+                    this.DrawSprite("EmptyDoubleBar", scale, 1, 68, 108, 19, 110, 88, d1, 108, 19, -1, -1, false, drawBorder, borderColor, false, false);
 
-                    this.DrawSprite("EmptyMana", scale, 1, 19, 1, 8, 110, 88, location + manaOffset, 104, 8, 100f - manaReserved, -1, false);
-                    this.DrawSprite("Mana", scale, 1, 47, 1, 8, 110, 88, location + manaOffset, 104, 8, manaPercent, -1, false);
+                    this.DrawSprite("EmptyMana", scale, 1, 19, 1, 8, 110, 88, d2 + manaOffset, 104, 8, 100f - manaReserved, -1, false);
+                    this.DrawSprite("Mana", scale, 1, 47, 1, 8, 110, 88, d3 + manaOffset, 104, 8, manaPercent, -1, false);
                 }
                 else
                 {
-                    this.DrawSprite("EmptyBar", scale, 1, 57, 108, 9, 110, 88, location, 108, 9, -1, -1, false, drawBorder, borderColor, false, false);
+                    this.DrawSprite("EmptyBar", scale, 1, 57, 108, 9, 110, 88, d1, 108, 9, -1, -1, false, drawBorder, borderColor, false, false);
                 }
 
-                this.DrawSprite("EmptyHP", scale, 1, 10, 1, 7, 110, 88, location + hpOffset, 104, 7, 100f - hpReserved, -1, false);
-                this.DrawSprite("EnemyHP", scale, 1, 29, 1, 7, 110, 88, location + hpOffset, 104, 7, hpPercent, -1, this.Settings.ShowEnemyGradationMarks, inCullingRange, cullingColor, true, true);
+                this.DrawSprite("EmptyHP", scale, 1, 10, 1, 7, 110, 88, d4 + hpOffset, 104, 7, 100f - hpReserved, -1, false);
+                this.DrawSprite("EnemyHP", scale, 1, 29, 1, 7, 110, 88, d5 + hpOffset, 104, 7, hpPercent, -1, this.Settings.ShowEnemyGradationMarks, inCullingRange, cullingColor, true, true);
             }
 
             if (entityLife.EnergyShield.Total > 0)
             {
-                this.DrawSprite("ES", scale, 1, 1, 1, 7, 110, 88, location + hpOffset, 104, 7, esPercent, -1, false);
+                this.DrawSprite("ES", scale, 1, 1, 1, 7, 110, 88, d6 + hpOffset, 104, 7, esPercent, -1, false);
             }
         }
 
