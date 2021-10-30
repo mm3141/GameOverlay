@@ -34,7 +34,7 @@ namespace Radar
             upTile = (GetByIndex(mapWalkableData, index + bytesPerRow) >> shiftIfSecondNibble) & 0xF;
             downTile = (GetByIndex(mapWalkableData, index - bytesPerRow) >> shiftIfSecondNibble) & 0xF;
             leftTile = (GetByIndex(mapWalkableData, index - oneIfFirstNibbleZeroIfNot) >> shiftIfFirstNibble) & 0xF;
-            rightTile = (GetByIndex(mapWalkableData, index + oneIfFirstNibbleZeroIfNot) >> shiftIfFirstNibble) & 0xF;
+            rightTile = (GetByIndex(mapWalkableData, index + zeroIfFirstNibbleOneIfNot) >> shiftIfFirstNibble) & 0xF;
         }
 
         private static byte GetByIndex(IEnumerable<byte> mapTextureData, int index)
