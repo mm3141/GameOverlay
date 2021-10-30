@@ -493,6 +493,16 @@ namespace Radar
             this.DelveIcons.TryAdd("SerratedFossilChestDynamite", new IconPicker(iconPathName, DelvePngCols, DelvePngRows, 0, 0, 30));
             this.DelveIcons.TryAdd("ShudderingFossilChest", new IconPicker(iconPathName, DelvePngCols, DelvePngRows, 0, 0, 30));
             this.DelveIcons.TryAdd("TangledFossilChest", new IconPicker(iconPathName, DelvePngCols, DelvePngRows, 0, 0, 30));
+            this.DelveIcons.TryAdd("AberrantFossilChestDynamite", new IconPicker(iconPathName, DelvePngCols, DelvePngRows, 0, 0, 30));
+            this.DelveIcons.TryAdd("DenseFossilChestDynamite", new IconPicker(iconPathName, DelvePngCols, DelvePngRows, 0, 0, 30));
+            this.DelveIcons.TryAdd("EncrustedFossilChestDynamite", new IconPicker(iconPathName, DelvePngCols, DelvePngRows, 0, 0, 30));
+            this.DelveIcons.TryAdd("FrigidFossilChestDynamite", new IconPicker(iconPathName, DelvePngCols, DelvePngRows, 0, 0, 30));
+            this.DelveIcons.TryAdd("JaggedFossilChestDynamite", new IconPicker(iconPathName, DelvePngCols, DelvePngRows, 0, 0, 30));
+            this.DelveIcons.TryAdd("LucentFossilChestDynamite", new IconPicker(iconPathName, DelvePngCols, DelvePngRows, 0, 0, 30));
+            this.DelveIcons.TryAdd("MetallicFossilChestDynamite", new IconPicker(iconPathName, DelvePngCols, DelvePngRows, 0, 0, 30));
+            this.DelveIcons.TryAdd("PristineFossilChestDynamite", new IconPicker(iconPathName, DelvePngCols, DelvePngRows, 0, 0, 30));
+            this.DelveIcons.TryAdd("ScorchedFossilChestDynamite", new IconPicker(iconPathName, DelvePngCols, DelvePngRows, 0, 0, 30));
+            this.DelveIcons.TryAdd("ShudderingFossilChestDynamite", new IconPicker(iconPathName, DelvePngCols, DelvePngRows, 0, 0, 30));
         }
     }
 }
