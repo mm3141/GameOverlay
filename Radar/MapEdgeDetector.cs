@@ -24,23 +24,29 @@ namespace Radar
         public MapEdgeDetector(byte[] mapWalkableData, int bytesPerRow, int y, int x)
         {
             var index = (y * bytesPerRow) + (x / 2); // (x / 2) => since there are 2 data points in 1 byte.
-            var wantsFirstNibble = x % 2 == 0;
-            var oneIfFirstNibbleZeroIfNot = wantsFirstNibble ? 1 : 0;
-            var zeroIfFirstNibbleOneIfNot = wantsFirstNibble ? 0 : 1;
+            var (oneIfFirstNibbleZeroIfNot, zeroIfFirstNibbleOneIfNot) = NibbleHandler(x);
             var shiftIfFirstNibble = oneIfFirstNibbleZeroIfNot * 0x4;
             var shiftIfSecondNibble = zeroIfFirstNibbleOneIfNot * 0x4;
 
-            currentTile = (GetByIndex(mapWalkableData, index) >> shiftIfSecondNibble) & 0xF;
-            upTile = (GetByIndex(mapWalkableData, index + bytesPerRow) >> shiftIfSecondNibble) & 0xF;
-            downTile = (GetByIndex(mapWalkableData, index - bytesPerRow) >> shiftIfSecondNibble) & 0xF;
-            leftTile = (GetByIndex(mapWalkableData, index - oneIfFirstNibbleZeroIfNot) >> shiftIfFirstNibble) & 0xF;
-            rightTile = (GetByIndex(mapWalkableData, index + zeroIfFirstNibbleOneIfNot) >> shiftIfFirstNibble) & 0xF;
+            currentTile = SetTile(mapWalkableData, index, shiftIfSecondNibble);
+            upTile = SetTile(mapWalkableData, index + bytesPerRow, shiftIfSecondNibble);
+            downTile = SetTile(mapWalkableData, index - bytesPerRow, shiftIfSecondNibble);
+            leftTile = SetTile(mapWalkableData, index - oneIfFirstNibbleZeroIfNot, shiftIfFirstNibble);
+            rightTile = SetTile(mapWalkableData, index + zeroIfFirstNibbleOneIfNot, shiftIfFirstNibble);
         }
 
-        private static byte GetByIndex(IEnumerable<byte> mapTextureData, int index)
+        private static (int oneIfFirstNibbleZeroIfNot, int zeroIfFirstNibbleOneIfNot) NibbleHandler(int x)
         {
-            return mapTextureData.ElementAtOrDefault(index);
+            var wantsFirstNibble = x % 2 == 0;
+            return wantsFirstNibble ? (1, 0) : (0, 1);
         }
+
+        private static int SetTile(IEnumerable<byte> mapWalkableData, int index, int shiftAmount)
+        {
+            var data = mapWalkableData.ElementAtOrDefault(index);
+            return (data >> shiftAmount) & 0xF;
+        }
+
 
         /// <summary>
         /// Checks if the current tile is walkable and at least 1 other direction is walkable too.
