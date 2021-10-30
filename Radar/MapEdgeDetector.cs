@@ -11,7 +11,7 @@ namespace Radar
         /// <summary>
         /// Map (current location) walkable data is stored in these variables.
         /// </summary>
-        private readonly int current, right, left, up, down;
+        private readonly int currentTile, rightTile, leftTile, upTile, downTile;
 
         /// <summary>
         /// Class that helps with map edge detection.
@@ -29,11 +29,11 @@ namespace Radar
             var shiftIfFirstNibble = oneIfFirstNibbleZeroIfNot * 0x4;
             var shiftIfSecondNibble = zeroIfFirstNibbleOneIfNot * 0x4;
 
-            current = (GetByIndex(mapWalkableData, index) >> shiftIfSecondNibble) & 0xF;
-            up = (GetByIndex(mapWalkableData, index + bytesPerRow) >> shiftIfSecondNibble) & 0xF;
-            down = (GetByIndex(mapWalkableData, index - bytesPerRow) >> shiftIfSecondNibble) & 0xF;
-            left = (GetByIndex(mapWalkableData, index - oneIfFirstNibbleZeroIfNot) >> shiftIfFirstNibble) & 0xF;
-            right = (GetByIndex(mapWalkableData, index + zeroIfFirstNibbleOneIfNot) >> shiftIfFirstNibble) & 0xF;
+            currentTile = (GetByIndex(mapWalkableData, index) >> shiftIfSecondNibble) & 0xF;
+            upTile = (GetByIndex(mapWalkableData, index + bytesPerRow) >> shiftIfSecondNibble) & 0xF;
+            downTile = (GetByIndex(mapWalkableData, index - bytesPerRow) >> shiftIfSecondNibble) & 0xF;
+            leftTile = (GetByIndex(mapWalkableData, index - oneIfFirstNibbleZeroIfNot) >> shiftIfFirstNibble) & 0xF;
+            rightTile = (GetByIndex(mapWalkableData, index + zeroIfFirstNibbleOneIfNot) >> shiftIfFirstNibble) & 0xF;
         }
 
         private static byte GetByIndex(IEnumerable<byte> mapTextureData, int index)
@@ -48,8 +48,8 @@ namespace Radar
         public bool AtLeastOneDirectionIsBorder()
         {
             // we add the extra condition if current == 1 to make the border thicker.
-            return (CanWalk(current) || current == 1) &&
-                   (CanWalk(down) || CanWalk(up) || CanWalk(right) || CanWalk(left));
+            return (CanWalk(currentTile) || currentTile == 1) &&
+                   (CanWalk(downTile) || CanWalk(upTile) || CanWalk(rightTile) || CanWalk(leftTile));
         }
 
         /// <summary>
@@ -59,11 +59,11 @@ namespace Radar
         /// if entity size is 3 than 3 or above is walkable). For the purpose
         /// of generating map we will assume everything above 0 is walkable.
         /// </summary>
-        /// <param name="value">map walkable data value</param>
+        /// <param name="tileValue">map tile walkable value</param>
         /// <returns></returns>
-        private static bool CanWalk(int value)
+        private static bool CanWalk(int tileValue)
         {
-            return value != 0;
+            return tileValue != 0;
         }
 
         /// <summary>
