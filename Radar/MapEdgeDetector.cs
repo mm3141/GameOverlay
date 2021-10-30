@@ -48,7 +48,7 @@ namespace Radar
         public bool AtLeastOneDirectionIsBorder()
         {
             // we add the extra condition if current == 1 to make the border thicker.
-            return (CanWalk(currentTile) || currentTile == 1) &&
+            return (!CanWalk(currentTile) || currentTile == 1) &&
                    (CanWalk(downTile) || CanWalk(upTile) || CanWalk(rightTile) || CanWalk(leftTile));
         }
 
