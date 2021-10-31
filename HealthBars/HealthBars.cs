@@ -4,7 +4,6 @@
 
 namespace HealthBars
 {
-    using System;
     using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.IO;
@@ -150,12 +149,12 @@ namespace HealthBars
         /// <inheritdoc/>
         public override void DrawUI()
         {
-            var cAI = Core.States.InGameStateObject.CurrentAreaInstance;
+            var cAreaInstance = Core.States.InGameStateObject.CurrentAreaInstance;
 
-            foreach (var awakeEntity in cAI.AwakeEntities)
+            foreach (var awakeEntity in cAreaInstance.AwakeEntities)
             {
-                if ((!this.Settings.ShowInTown && cAI.AreaDetails.IsTown) ||
-                    (!this.Settings.ShowInHideout && cAI.AreaDetails.IsHideout))
+                if ((!this.Settings.ShowInTown && cAreaInstance.AreaDetails.IsTown) ||
+                    (!this.Settings.ShowInHideout && cAreaInstance.AreaDetails.IsHideout))
                 {
                     continue;
                 }
@@ -280,11 +279,12 @@ namespace HealthBars
             {
                 if (isCurrentPlayer)
                 {
+                    var manaPos = new Vector2(location.X, location.Y) + manaOffset;
                     this.DrawSprite("EmptyDoubleBar", scale, 1, 68, 108, 19, 110, 88, location, 108, 19, -1, -1, false);
 
-                    this.DrawSprite("EmptyMana", scale, 1, 19, 1, 8, 110, 88, location + manaOffset, 104, 8,
+                    this.DrawSprite("EmptyMana", scale, 1, 19, 1, 8, 110, 88, manaPos, 104, 8,
                         100f - manaReserved, -1, false);
-                    this.DrawSprite("Mana", scale, 1, 47, 1, 8, 110, 88, location + manaOffset, 104, 8, manaPercent, -1,
+                    this.DrawSprite("Mana", scale, 1, 47, 1, 8, 110, 88, manaPos, 104, 8, manaPercent, -1,
                         false);
                 }
                 else
@@ -292,7 +292,8 @@ namespace HealthBars
                     this.DrawSprite("EmptyBar", scale, 1, 57, 108, 9, 110, 88, location, 108, 9, -1, -1, false);
                 }
 
-                this.DrawSprite("EmptyHP", scale, 1, 10, 1, 7, 110, 88, location + hpOffset, 104, 7, 100f - hpReserved, -1,
+                this.DrawSprite("EmptyHP", scale, 1, 10, 1, 7, 110, 88, location + hpOffset, 104, 7, 100f - hpReserved,
+                    -1,
                     false);
                 this.DrawSprite("HP", scale, 1, 38, 1, 7, 110, 88, location + hpOffset, 104, 7, hpPercent, -1,
                     this.Settings.ShowFriendlyGradationMarks);
@@ -302,7 +303,7 @@ namespace HealthBars
                 if (this.Settings.ShowEnemyMana)
                 {
                     this.DrawSprite("EmptyDoubleBar", scale, 1, 68, 108, 19, 110, 88, location, 108, 19, -1, -1, false,
-                        drawBorder, borderColor, false, false);
+                        drawBorder, borderColor);
 
                     this.DrawSprite("EmptyMana", scale, 1, 19, 1, 8, 110, 88, location + manaOffset, 104, 8,
                         100f - manaReserved, -1, false);
@@ -311,11 +312,13 @@ namespace HealthBars
                 }
                 else
                 {
-                    this.DrawSprite("EmptyBar", scale, 1, 57, 108, 9, 110, 88, location, 108, 9, -1, -1, false, drawBorder,
-                        borderColor, false, false);
+                    this.DrawSprite("EmptyBar", scale, 1, 57, 108, 9, 110, 88, location, 108, 9, -1, -1, false,
+                        drawBorder,
+                        borderColor);
                 }
 
-                this.DrawSprite("EmptyHP", scale, 1, 10, 1, 7, 110, 88, location + hpOffset, 104, 7, 100f - hpReserved, -1,
+                this.DrawSprite("EmptyHP", scale, 1, 10, 1, 7, 110, 88, location + hpOffset, 104, 7, 100f - hpReserved,
+                    -1,
                     false);
                 this.DrawSprite("EnemyHP", scale, 1, 29, 1, 7, 110, 88, location + hpOffset, 104, 7, hpPercent, -1,
                     this.Settings.ShowEnemyGradationMarks, inCullingRange, cullingColor, true, true);
@@ -341,31 +344,11 @@ namespace HealthBars
             float th,
             float mulw,
             float mulh,
-            bool marks)
-        {
-            this.DrawSprite(spriteName, scale, sx, sy, sw, sh, ssw, ssh, t, tw, th, mulw, mulh, marks, false, 0, false,
-                false);
-        }
-
-        private void DrawSprite(
-            string spriteName,
-            float scale,
-            float sx,
-            float sy,
-            float sw,
-            float sh,
-            float ssw,
-            float ssh,
-            Vector2 t,
-            float tw,
-            float th,
-            float mulw,
-            float mulh,
             bool marks,
-            bool border,
-            uint borderColor,
-            bool inner,
-            bool fill)
+            bool border = false,
+            uint borderColor = 0,
+            bool inner = false,
+            bool fill = false)
         {
             var draw = ImGui.GetBackgroundDrawList();
             var uv0 = new Vector2(sx / ssw, sy / ssh);
@@ -466,7 +449,6 @@ namespace HealthBars
             this.sprites.TryAdd("EnemyHP", new IconPicker(spriteSheetPathName, 1, 8, 108, 19, 1));
             this.sprites.TryAdd("HP", new IconPicker(spriteSheetPathName, 1, 8, 108, 19, 1));
             this.sprites.TryAdd("Mana", new IconPicker(spriteSheetPathName, 1, 8, 108, 19, 1));
-
             this.sprites.TryAdd("EmptyBar", new IconPicker(spriteSheetPathName, 1, 8, 108, 19, 1));
             this.sprites.TryAdd("EmptyDoubleBar", new IconPicker(spriteSheetPathName, 1, 8, 108, 19, 1));
         }
