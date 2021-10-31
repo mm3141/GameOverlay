@@ -2,42 +2,40 @@
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
-namespace SimpleFlaskManager
-{
+namespace SimpleFlaskManager {
     using System.Collections.Generic;
     using GameHelper.Plugin;
-    using SimpleFlaskManager.ProfileManager;
-    using SimpleFlaskManager.ProfileManager.Conditions;
+    using ProfileManager;
+    using ProfileManager.Conditions;
 
     /// <summary>
-    /// <see cref="SimpleFlaskManager"/> plugin settings class.
+    ///     <see cref="SimpleFlaskManager" /> plugin settings class.
     /// </summary>
-    public sealed class SimpleFlaskManagerSettings : IPSettings
-    {
+    public sealed class SimpleFlaskManagerSettings : IPSettings {
         /// <summary>
-        /// Gets a value indicating weather flask manager debug mode is enabled or not.
+        ///     Condition on which user want to auto-quit.
         /// </summary>
-        public bool DebugMode = false;
+        public readonly VitalsCondition AutoQuitCondition =
+            new(OperatorEnum.LESS_THAN, VitalsCondition.VitalsEnum.LIFE, -1);
 
         /// <summary>
-        /// Gets a value indicating weather flask manager should work in hideoutor not.
-        /// </summary>
-        public bool ShouldRunInHideout = true;
-
-        /// <summary>
-        /// Gets the currently selected profile.
+        ///     Gets the currently selected profile.
         /// </summary>
         public string CurrentProfile = string.Empty;
 
         /// <summary>
-        /// Gets all the profiles containing rules on when to drink the flasks.
+        ///     Gets a value indicating weather flask manager debug mode is enabled or not.
         /// </summary>
-        public Dictionary<string, Profile> Profiles = new();
+        public bool DebugMode = false;
 
         /// <summary>
-        /// Condition on which user want to auto-quit.
+        ///     Gets all the profiles containing rules on when to drink the flasks.
         /// </summary>
-        public VitalsCondition AutoQuitCondition =
-            new(OperatorEnum.LESS_THAN, VitalsCondition.VitalsEnum.LIFE, -1);
+        public readonly Dictionary<string, Profile> Profiles = new();
+
+        /// <summary>
+        ///     Gets a value indicating weather flask manager should work in hideout or not.
+        /// </summary>
+        public bool ShouldRunInHideout = true;
     }
 }
