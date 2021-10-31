@@ -49,6 +49,20 @@ namespace GameHelper.Plugin
             Core.CoroutinesRegistrar.Add(CoroutineHandler.Start(
                 DrawPluginUiRenderCoroutine(), "[PManager] Draw Plugins UI"));
         }
+#if DEBUG
+        /// <summary>
+        /// Cleans up the already loaded plugins.
+        /// </summary>
+        internal static void CleanUpAllPlugins()
+        {
+            foreach (var plugin in AllPlugins)
+            {
+                plugin.Value.Plugin.OnDisable();
+            }
+
+            AllPlugins.Clear();
+        }
+#endif
 
         private static List<DirectoryInfo> GetPluginsDirectories()
         {
