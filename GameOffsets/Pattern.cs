@@ -31,7 +31,7 @@
         /// Number of bytes to skip in the offset returned from the pattern
         /// in order to reach the static-address offset data. If the input HEX string
         /// contains ^ in it, the BytesToSkip is calculated from the it.
-        /// e.g. "D2 F3 ^ 22 45 23" will put 2 in BytesToSkip. 
+        /// e.g. "D2 F3 ^ 22 45 23" will put 2 in BytesToSkip.
         /// </summary>
         public int BytesToSkip;
 
