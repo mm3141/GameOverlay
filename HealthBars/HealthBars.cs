@@ -181,9 +181,7 @@ namespace HealthBars {
 
             var spriteSheetPathName = Path.Join(DllDirectory, "spritesheet.png");
             spriteController.AddSprites(spriteSheetPathName);
-
             bPositions = new ConcurrentDictionary<uint, Vector2>();
-
             onAreaChange = CoroutineHandler.Start(ClearData());
         }
 
