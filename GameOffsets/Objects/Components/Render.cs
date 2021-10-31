@@ -1,11 +1,9 @@
-namespace GameOffsets.Objects.Components
-{
-    using GameOffsets.Natives;
+namespace GameOffsets.Objects.Components {
     using System.Runtime.InteropServices;
+    using Natives;
 
     [StructLayout(LayoutKind.Explicit, Pack = 1)]
-    public struct RenderOffsets
-    {
+    public struct RenderOffsets {
         [FieldOffset(0x0000)] public ComponentHeader Header;
 
         // Same as Positioned Component CurrentWorldPosition,

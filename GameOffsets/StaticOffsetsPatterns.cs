@@ -1,9 +1,6 @@
-﻿namespace GameOffsets
-{
-    public struct StaticOffsetsPatterns
-    {
-        public static Pattern[] patterns =
-        {
+﻿namespace GameOffsets {
+    public struct StaticOffsetsPatterns {
+        public static Pattern[] patterns = {
             // <HowToFindIt>
             // 1: Open CheatEngine and Attach to POE Game
             // 2: Search for String: "InGameState", type: UTF-16 (use case insensitive if you don't find anything in the first try)
@@ -22,8 +19,7 @@
             // 9: Copy the base address and put it in your "Add address manually" button this is your InGameState Address.
             // 10: Do "Find out what accesses this address" and make a pattern out of that function. (pick the one which has smallest offset)
             // </HowToFindIt>
-            new Pattern
-            (
+            new(
                 "Game States",
                 "48 83 EC ?? 48 8B F1 33 ED 48 39 2D ^ ?? ?? ?? ??"
             ),
@@ -44,8 +40,7 @@
             // 12.1: Put (RSI)==0xAddress-of-step8 in the start-condition.
             // 13 From here, find the function which loads that address.
             // </HowToFindIt>
-            new Pattern
-            (
+            new(
                 "File Root",
                 "48 ?? ?? ^ ?? ?? ?? ?? 41 ?? ?? ?? 39 ?? ?? ?? ?? ?? 0F 8E"
             ),
@@ -67,8 +62,7 @@
             //       Feel free to test this, just to be sure that the Address you are picking
             //       is the correct one.
             // </HowToFindIt>
-            new Pattern
-            (
+            new(
                 "AreaChangeCounter",
                 "FF ?? ?? ?? ?? ?? E8 ?? ?? ?? ?? FF 05 ^ ?? ?? ?? ?? ?? 8D ?? ?? ?? 8B ??"
             ),
@@ -86,8 +80,7 @@
             // Now look for who access this address
             // </HowToFindIt>
             // this is the pattern.
-            new Pattern
-            (
+            new(
                 "GameWindowScaleValues",
                 "C7 ?? 00 00 80 3F C7 ?? 04 00 00 80 3F C3 ?? ?? ?? ?? ^ ?? ?? ?? ?? ?? ?? ?? ?? C3 ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? C3 ?? ?? ?? ??"
             ),
@@ -106,18 +99,16 @@
             //          that function will be the first function in that whole window that has more than 10 instructions, every function before this function will have
             //          2 or 3 or 4 instructions max.
             // </HowToFindIt>
-            new Pattern
-            (
+            new(
                 "Terrain Rotator Helper",
                 "4c ?? ?? ?? 48 ?? ?? ^ ?? ?? ?? ?? 4c ?? ?? 8b ?? 2b ?? 33 ??"
             ),
 
             // Same as above pattern, just added 23 ?? because the data is actually before the pattern.
-            new Pattern
-            (
+            new(
                 "Terrain Rotation Selector",
                 "^ ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? 4c ?? ?? ?? 48 ?? ?? ?? ?? ?? ?? 4c ?? ?? 8b ?? 2b ?? 33 ??"
-            ),
+            )
         };
     }
 }
