@@ -1,11 +1,8 @@
-using System.Numerics;
+namespace HealthBars.View.Entities {
+    using System.Numerics;
 
-namespace HealthBars.View.Entities
-{
-    public class CurrentPlayer : IEntity
-    {
-        public void Draw(EntityParams entityParams, SpriteController spriteController)
-        {
+    public class CurrentPlayer : IEntity {
+        public void Draw(EntityParams entityParams, SpriteController spriteController) {
             var scale = RarityBarScale(entityParams);
             var location = entityParams.Pos;
             var manaOffset = new Vector2(0, 10) * scale;
@@ -29,16 +26,18 @@ namespace HealthBars.View.Entities
             spriteController.DrawSprite("HP", scale, 1, 38, 1, 7, 110, 88, location + hpOffset, 104, 7, hpPercent,
                 -1,
                 entityParams.Settings.ShowFriendlyGradationMarks);
-            if (entityParams.ESTotal > 0)
-            {
+            if (entityParams.ESTotal > 0) {
                 spriteController.DrawSprite("ES", scale, 1, 1, 1, 7, 110, 88, location + hpOffset, 104, 7,
                     entityParams.ESPercent,
                     -1, false);
             }
         }
 
-        private static float RarityBarScale(EntityParams entityParams)
-        {
+        public bool ShouldDraw(EntityParams entityParams) {
+            return entityParams.Settings.ShowPlayerBars;
+        }
+
+        private static float RarityBarScale(EntityParams entityParams) {
             return entityParams.Settings.PlayerBarScale;
         }
     }

@@ -1,13 +1,10 @@
-using System.Numerics;
-using GameHelper.RemoteEnums;
-using GameHelper.Utils;
+namespace HealthBars.View.Entities {
+    using System.Numerics;
+    using GameHelper.RemoteEnums;
+    using GameHelper.Utils;
 
-namespace HealthBars.View.Entities
-{
-    public class Enemy : IEntity
-    {
-        public void Draw(EntityParams entityParams, SpriteController spriteController)
-        {
+    public class Enemy : IEntity {
+        public void Draw(EntityParams entityParams, SpriteController spriteController) {
             var scale = RarityBarScale(entityParams);
             var location = entityParams.Pos;
             var manaOffset = new Vector2(0, 10) * scale;
@@ -18,8 +15,7 @@ namespace HealthBars.View.Entities
             var hpReserved = entityParams.HpReserved;
             var drawBorder = entityParams.DrawBorder;
             var borderColor = entityParams.BorderColor;
-            if (entityParams.Settings.ShowEnemyMana)
-            {
+            if (entityParams.Settings.ShowEnemyMana) {
                 spriteController.DrawSprite("EmptyDoubleBar", scale, 1, 68, 108, 19, 110, 88, location, 108, 19, -1,
                     -1, false,
                     drawBorder, borderColor);
@@ -30,8 +26,7 @@ namespace HealthBars.View.Entities
                     manaPercent, -1,
                     false);
             }
-            else
-            {
+            else {
                 spriteController.DrawSprite("EmptyBar", scale, 1, 57, 108, 9, 110, 88, location, 108, 9, -1, -1,
                     false,
                     drawBorder,
@@ -50,14 +45,23 @@ namespace HealthBars.View.Entities
                 entityParams.Settings.ShowEnemyGradationMarks, inCullingRange, cullingColor, true, true);
         }
 
-        private float RarityBarScale(EntityParams entityParams)
-        {
-            return entityParams.Rarity switch
-            {
+        public bool ShouldDraw(EntityParams entityParams) {
+            var rarity = entityParams.Rarity;
+            var settings = entityParams.Settings;
+            return entityParams.HasMagicProperties && (
+                rarity == Rarity.Normal && settings.ShowNormalBar ||
+                rarity == Rarity.Magic && settings.ShowMagicBar ||
+                rarity == Rarity.Rare && settings.ShowRareBar ||
+                rarity == Rarity.Unique && settings.ShowUniqueBar
+            );
+        }
+
+        private float RarityBarScale(EntityParams entityParams) {
+            return entityParams.Rarity switch {
                 Rarity.Unique => entityParams.Settings.UniqueBarScale,
                 Rarity.Rare => entityParams.Settings.RareBarScale,
                 Rarity.Magic => entityParams.Settings.MagicBarScale,
-                _ => entityParams.Settings.NormalBarScale,
+                _ => entityParams.Settings.NormalBarScale
             };
         }
     }

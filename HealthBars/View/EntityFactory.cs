@@ -1,81 +1,52 @@
 #nullable enable
-using System.Collections.Generic;
-using GameHelper;
-using GameHelper.RemoteEnums;
-using GameHelper.RemoteObjects.Components;
-using GameHelper.RemoteObjects.States.InGameStateObjects;
-using GameOffsets.Objects.States.InGameState;
-using HealthBars.View.Entities;
+namespace HealthBars.View {
+    using Entities;
+    using GameHelper;
+    using GameHelper.RemoteObjects.Components;
+    using GameHelper.RemoteObjects.States.InGameStateObjects;
 
-namespace HealthBars.View
-{
-    public class EntityFactory
-    {
-        public static IEntity? GetEntity(KeyValuePair<EntityNodeKey, Entity> entity, HealthBarsSettings settings)
-        {
-            var hasVital = entity.Value.TryGetComponent<Life>(out var entityLife);
-            if (!hasVital || !entityLife.IsAlive)
-            {
+    public static class EntityFactory {
+        public static IEntity? GetEntity(Entity entity) {
+            var hasVital = entity.TryGetComponent<Life>(out var entityLife);
+            if (!hasVital || !entityLife.IsAlive) {
                 return null;
             }
 
-            var isBlockage = entity.Value.TryGetComponent<TriggerableBlockage>(out _);
-            if (isBlockage)
-            {
+            var isBlockage = entity.TryGetComponent<TriggerableBlockage>(out _);
+            if (isBlockage) {
                 return null;
             }
 
-            var hasRender = entity.Value.TryGetComponent<Render>(out var render);
-            if (!hasRender)
-            {
+            var hasRender = entity.TryGetComponent<Render>(out _);
+            if (!hasRender) {
                 return null;
             }
 
-            var hasPositioned = entity.Value.TryGetComponent<Positioned>(out var positioned);
-            if (!hasPositioned)
-            {
+            var hasPositioned = entity.TryGetComponent<Positioned>(out var positioned);
+            if (!hasPositioned) {
                 return null;
             }
 
-            var isPlayer = entity.Value.TryGetComponent<Player>(out _);
-            var hasMagicProperties = entity.Value.TryGetComponent<ObjectMagicProperties>(out var magicProperties);
-            if (!hasMagicProperties && !isPlayer)
-            {
+            var isPlayer = entity.TryGetComponent<Player>(out _);
+            var hasMagicProperties = entity.TryGetComponent<ObjectMagicProperties>(out _);
+            if (!hasMagicProperties && !isPlayer) {
                 return null;
             }
 
-            var willDieAfterTime = entity.Value.TryGetComponent<DiesAfterTime>(out _);
-            if (willDieAfterTime)
-            {
+            var willDieAfterTime = entity.TryGetComponent<DiesAfterTime>(out _);
+            if (willDieAfterTime) {
                 return null;
             }
 
-            var isFriendly = positioned.IsFriendly;
-            var rarity = hasMagicProperties ? magicProperties.Rarity : Rarity.Normal;
             var isCurrentPlayer =
-                entity.Value.Address == Core.States.InGameStateObject.CurrentAreaInstance.Player.Address;
-            var drawBar = (isPlayer && isCurrentPlayer && settings.ShowPlayerBars) ||
-                          (isFriendly && settings.ShowFriendlyBars && !isCurrentPlayer) ||
-                          (!isFriendly && hasMagicProperties && (
-                                  (rarity == Rarity.Normal) && settings.ShowNormalBar ||
-                                  (rarity == Rarity.Magic) && settings.ShowMagicBar ||
-                                  (rarity == Rarity.Rare) && settings.ShowRareBar ||
-                                  (rarity == Rarity.Unique) && settings.ShowUniqueBar
-                              )
-                          );
+                entity.Address == Core.States.InGameStateObject.CurrentAreaInstance.Player.Address;
 
-            if (!drawBar)
-            {
-                return null;
-            }
-
-            if (isCurrentPlayer)
-            {
+            if (isCurrentPlayer) {
                 return new CurrentPlayer();
             }
 
-            if (isFriendly)
-            {
+            var isFriendly = positioned.IsFriendly;
+            if (isFriendly) {
                 return new Friendly();
             }
 
