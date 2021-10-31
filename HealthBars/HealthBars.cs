@@ -200,46 +200,66 @@ namespace HealthBars
         private void DrawEntityHealth(KeyValuePair<EntityNodeKey, Entity> entity)
         {
             var hasVital = entity.Value.TryGetComponent<Life>(out var entityLife);
-            var hasOMP = entity.Value.TryGetComponent<ObjectMagicProperties>(out var entityMagicProperties);
-            var isBlockage = entity.Value.TryGetComponent<TriggerableBlockage>(out var _);
-            var hasRender = entity.Value.TryGetComponent<Render>(out var eRender);
-            var hasPositioned = entity.Value.TryGetComponent<Positioned>(out var entityPositioned);
-            var isPlayer = entity.Value.TryGetComponent<Player>(out var _);
-            var willDieAfterTime = entity.Value.TryGetComponent<DiesAfterTime>(out var _);
-            bool isFriendly = hasPositioned && entityPositioned.IsFriendly;
-
-            Rarity rarity = hasOMP ? entityMagicProperties.Rarity : Rarity.Normal;
-
-            bool isCurrentPlayer =
+            if (!hasVital || !entityLife.IsAlive)
+            {
+                return;
+            }
+            var isBlockage = entity.Value.TryGetComponent<TriggerableBlockage>(out _);
+            if (isBlockage)
+            {
+                return;
+            }
+            var hasRender = entity.Value.TryGetComponent<Render>(out var render);
+            if (!hasRender)
+            {
+                return;
+            }
+            var hasPositioned = entity.Value.TryGetComponent<Positioned>(out var positioned);
+            if (!hasPositioned)
+            {
+                return;
+            }
+            var isPlayer = entity.Value.TryGetComponent<Player>(out _);
+            var hasMagicProperties = entity.Value.TryGetComponent<ObjectMagicProperties>(out var magicProperties);
+            if (!hasMagicProperties && !isPlayer)
+            {
+                return;
+            }
+            var willDieAfterTime = entity.Value.TryGetComponent<DiesAfterTime>(out _);
+            if (willDieAfterTime)
+            {
+                return;
+            }
+            var isFriendly = positioned.IsFriendly;
+            var rarity = hasMagicProperties ? magicProperties.Rarity : Rarity.Normal;
+            var isCurrentPlayer =
                 entity.Value.Address == Core.States.InGameStateObject.CurrentAreaInstance.Player.Address;
+            var drawBar = (isPlayer && isCurrentPlayer && this.Settings.ShowPlayerBars) ||
+                          (isFriendly && this.Settings.ShowFriendlyBars && !isCurrentPlayer) ||
+                          (!isFriendly && hasMagicProperties && (
+                                  (rarity == Rarity.Normal) && this.Settings.ShowNormalBar ||
+                                  (rarity == Rarity.Magic) && this.Settings.ShowMagicBar ||
+                                  (rarity == Rarity.Rare) && this.Settings.ShowRareBar ||
+                                  (rarity == Rarity.Unique) && this.Settings.ShowUniqueBar
+                              )
+                          );
 
-            bool drawBar = (isPlayer && isCurrentPlayer && this.Settings.ShowPlayerBars) ||
-                           (hasPositioned && isFriendly && this.Settings.ShowFriendlyBars && !isCurrentPlayer) ||
-                           (hasPositioned && !isFriendly && hasOMP && (
-                                   (rarity == Rarity.Normal) && this.Settings.ShowNormalBar ||
-                                   (rarity == Rarity.Magic) && this.Settings.ShowMagicBar ||
-                                   (rarity == Rarity.Rare) && this.Settings.ShowRareBar ||
-                                   (rarity == Rarity.Unique) && this.Settings.ShowUniqueBar
-                               )
-                           );
-
-            if (!drawBar || !hasVital || !entityLife.IsAlive || (!hasOMP && !isPlayer) || !hasRender ||
-                !hasPositioned || willDieAfterTime || isBlockage)
+            if (!drawBar)
             {
                 return;
             }
 
-            var drawBorder = hasOMP && this.Settings.ShowRarityBorders && (
+            var drawBorder = hasMagicProperties && this.Settings.ShowRarityBorders && (
                 (rarity == Rarity.Normal) && this.Settings.ShowNormalBorders ||
                 (rarity == Rarity.Magic) && this.Settings.ShowMagicBorders ||
                 (rarity == Rarity.Rare) && this.Settings.ShowRareBorders ||
                 (rarity == Rarity.Unique) && this.Settings.ShowUniqueBorders
             );
-            var borderColor = hasOMP && drawBorder ? this.RarityColor(rarity) : 0;
+            var borderColor = hasMagicProperties && drawBorder ? this.RarityColor(rarity) : 0;
 
-            var curPos = eRender.WorldPosition;
+            var curPos = render.WorldPosition;
             curPos.X += 11.25f;
-            curPos.Z -= 1.4f * eRender.ModelBounds.Z;
+            curPos.Z -= 1.4f * render.ModelBounds.Z;
             var location = Core.States.InGameStateObject.WorldToScreen(curPos);
 
             if (!this.bPositions.TryGetValue(entity.Key.id, out Vector2 prevLocation))
@@ -266,7 +286,7 @@ namespace HealthBars
             var hpOffset = new Vector2(0, 1) * scale;
             var manaOffset = new Vector2(0, 10) * scale;
 
-            var showCulling = hasOMP && this.Settings.ShowCullRange && (
+            var showCulling = hasMagicProperties && this.Settings.ShowCullRange && (
                 (rarity == Rarity.Normal) && this.Settings.ShowNormalCull ||
                 (rarity == Rarity.Magic) && this.Settings.ShowMagicCull ||
                 (rarity == Rarity.Rare) && this.Settings.ShowRareCull ||
@@ -275,13 +295,14 @@ namespace HealthBars
             var inCullingRange = hpPercent > 0 && hpPercent < this.Settings.CullingRange && showCulling;
             var cullingColor = UiHelper.Color(this.Settings.CullRangeColor * 255f);
 
+
             if (isFriendly)
             {
                 if (isCurrentPlayer)
                 {
-                    var manaPos = new Vector2(location.X, location.Y) + manaOffset;
                     this.DrawSprite("EmptyDoubleBar", scale, 1, 68, 108, 19, 110, 88, location, 108, 19, -1, -1, false);
 
+                    var manaPos = location + manaOffset;
                     this.DrawSprite("EmptyMana", scale, 1, 19, 1, 8, 110, 88, manaPos, 104, 8,
                         100f - manaReserved, -1, false);
                     this.DrawSprite("Mana", scale, 1, 47, 1, 8, 110, 88, manaPos, 104, 8, manaPercent, -1,
