@@ -29,6 +29,9 @@ namespace Radar
         // Legion Cache.
         private readonly Dictionary<uint, byte> frozenInTimeEntities = new();
 
+        private readonly string diesAfterTimeIgnore = "Metadata/Monsters/AtlasExiles/CrusaderInfluenceMonsters/CrusaderArcaneRune";
+        private readonly HashSet<uint> diesAfterTimeCache = new();
+
         private readonly string heistUsefullChestContains = "HeistChestSecondary";
         private readonly string heistAllChestStarting = "Metadata/Chests/LeagueHeist";
         private readonly Dictionary<uint, string> heistChestCache = new();
@@ -511,7 +514,15 @@ namespace Radar
                 {
                     if (isDiesAfterTime)
                     {
-                        continue;
+                        if (this.diesAfterTimeCache.Contains(entity.Value.Id))
+                        {
+                            continue;
+                        }
+                        else if (entity.Value.Path.StartsWith(diesAfterTimeIgnore))
+                        {
+                            this.diesAfterTimeCache.Add(entity.Value.Id);
+                            continue;
+                        }
                     }
 
                     if (!(hasVital || isChest || isPlayer))
@@ -767,6 +778,7 @@ namespace Radar
                 this.heistChestCache.Clear();
                 this.deliriumHiddenMonster.Clear();
                 this.delveChestCache.Clear();
+                this.diesAfterTimeCache.Clear();
                 this.currentAreaName = Core.States.InGameStateObject.CurrentAreaInstance.AreaDetails.Id;
                 this.isAzuriteMine = this.currentAreaName == "Delve_Main";
                 this.GenerateMapTexture();
