@@ -100,7 +100,7 @@ namespace Radar
         /// </summary>
         /// <param name="x">map walkable data array index.</param>
         /// <returns></returns>
-        private static (int valA, int valB) NibbleHandler(int x)
+        private static (int oneIfFirstNibbleZeroIfNot, int zeroIfFirstNibbleOneIfNot) NibbleHandler(int x)
             => x % 2 == 0 ? (1, 0) : (0, 1);
 
         private int GetTileValueAt(int index, int shiftAmount)
