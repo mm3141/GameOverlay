@@ -1,12 +1,10 @@
-namespace GameOffsets.Objects.States
-{
+namespace GameOffsets.Objects.States {
     using System;
     using System.Numerics;
     using System.Runtime.InteropServices;
 
     [StructLayout(LayoutKind.Explicit, Pack = 1)]
-    public struct InGameStateOffset
-    {
+    public struct InGameStateOffset {
         [FieldOffset(0x18)] public IntPtr LocalData;
         [FieldOffset(0x4F8)] public IntPtr UiRootPtr;
         [FieldOffset(0x870)] public CameraStructure CameraData;
@@ -14,8 +12,7 @@ namespace GameOffsets.Objects.States
     }
 
     [StructLayout(LayoutKind.Explicit, Pack = 1)]
-    public struct CameraStructure
-    {
+    public struct CameraStructure {
         [FieldOffset(0x00)] public IntPtr CodePtr;
         // [FieldOffset(0x8)] public int Width;
         // [FieldOffset(0xC)] public int Height;

@@ -2,15 +2,14 @@
 // Copyright (c) None. All rights reserved.
 // </copyright>
 
-namespace GameOffsets.Natives
-{
+namespace GameOffsets.Natives {
     using System;
     using System.Runtime.InteropServices;
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public struct StdWString
-    {
+    public struct StdWString {
         public IntPtr Buffer;
+
         //// There is an optimization in std::wstring, where
         //// if a Capacity is less than or equal to 8
         //// then the wstring is stored locally (without a pointer).
@@ -22,10 +21,9 @@ namespace GameOffsets.Natives
         public int Capacity; // according to debugger this is long but for now int is working fine.
         public int PAD_1C;
 
-        public override string ToString()
-        {
+        public override string ToString() {
             return $"Buffer: {Buffer.ToInt64():X}, ReservedBytes: {ReservedBytes.ToInt64():X}, " +
-                $"Length: {Length}, Capacity: {Capacity}";
+                   $"Length: {Length}, Capacity: {Capacity}";
         }
     }
 }
