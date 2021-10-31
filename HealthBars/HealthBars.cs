@@ -2,6 +2,9 @@
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
+using HealthBars.View;
+using HealthBars.View.Entities;
+
 namespace HealthBars
 {
     using System.Collections.Concurrent;
@@ -25,14 +28,10 @@ namespace HealthBars
     /// </summary>
     public sealed class HealthBars : PCore<HealthBarsSettings>
     {
-        /// <summary>
-        /// Sprites for HealthBars.
-        /// </summary>
-        private readonly Dictionary<string, IconPicker> sprites = new();
-
         private ActiveCoroutine onAreaChange;
         private ConcurrentDictionary<uint, Vector2> bPositions;
 
+        private SpriteController spriteController = new SpriteController();
         private string SettingPathname => Path.Join(this.DllDirectory, "config", "settings.txt");
 
         /// <inheritdoc/>
@@ -153,16 +152,46 @@ namespace HealthBars
 
             foreach (var awakeEntity in cAreaInstance.AwakeEntities)
             {
-                if ((!this.Settings.ShowInTown && cAreaInstance.AreaDetails.IsTown) ||
-                    (!this.Settings.ShowInHideout && cAreaInstance.AreaDetails.IsHideout))
+                if (!Settings.ShowInTown && cAreaInstance.AreaDetails.IsTown ||
+                    !Settings.ShowInHideout && cAreaInstance.AreaDetails.IsHideout)
                 {
                     continue;
                 }
 
-                if (awakeEntity.Value.IsValid)
+                if (!awakeEntity.Value.IsValid)
                 {
-                    this.DrawEntityHealth(awakeEntity);
+                    continue;
                 }
+
+                var hasRender = awakeEntity.Value.TryGetComponent<Render>(out var render);
+                if (!hasRender)
+                {
+                    return;
+                }
+
+                var curPos = render.WorldPosition;
+                curPos.X += 11.25f;
+                curPos.Z -= 1.4f * render.ModelBounds.Z;
+                var location = Core.States.InGameStateObject.WorldToScreen(curPos);
+
+                if (bPositions.TryGetValue(awakeEntity.Key.id, out var prevLocation))
+                {
+                    location = MathHelper.Lerp(prevLocation, location, 0.2f);
+                    bPositions.TryUpdate(awakeEntity.Key.id, location, prevLocation);
+                }
+                else
+                {
+                    bPositions.TryAdd(awakeEntity.Key.id, location);
+                }
+
+                var entity = EntityFactory.GetEntity(awakeEntity, Settings);
+                if (entity == null)
+                {
+                    continue;
+                }
+
+                var entityParams = new EntityParams(Settings, location, awakeEntity.Value);
+                entity.Draw(entityParams, spriteController);
             }
         }
 
@@ -182,7 +211,8 @@ namespace HealthBars
                 this.Settings = JsonConvert.DeserializeObject<HealthBarsSettings>(content);
             }
 
-            this.AddSpriteSheet();
+            var spriteSheetPathName = Path.Join(this.DllDirectory, "spritesheet.png");
+            spriteController.AddSprites(spriteSheetPathName);
 
             this.bPositions = new ConcurrentDictionary<uint, Vector2>();
 
@@ -197,253 +227,6 @@ namespace HealthBars
             File.WriteAllText(this.SettingPathname, settingsData);
         }
 
-        private void DrawEntityHealth(KeyValuePair<EntityNodeKey, Entity> entity)
-        {
-            var hasVital = entity.Value.TryGetComponent<Life>(out var entityLife);
-            if (!hasVital || !entityLife.IsAlive)
-            {
-                return;
-            }
-            var isBlockage = entity.Value.TryGetComponent<TriggerableBlockage>(out _);
-            if (isBlockage)
-            {
-                return;
-            }
-            var hasRender = entity.Value.TryGetComponent<Render>(out var render);
-            if (!hasRender)
-            {
-                return;
-            }
-            var hasPositioned = entity.Value.TryGetComponent<Positioned>(out var positioned);
-            if (!hasPositioned)
-            {
-                return;
-            }
-            var isPlayer = entity.Value.TryGetComponent<Player>(out _);
-            var hasMagicProperties = entity.Value.TryGetComponent<ObjectMagicProperties>(out var magicProperties);
-            if (!hasMagicProperties && !isPlayer)
-            {
-                return;
-            }
-            var willDieAfterTime = entity.Value.TryGetComponent<DiesAfterTime>(out _);
-            if (willDieAfterTime)
-            {
-                return;
-            }
-            var isFriendly = positioned.IsFriendly;
-            var rarity = hasMagicProperties ? magicProperties.Rarity : Rarity.Normal;
-            var isCurrentPlayer =
-                entity.Value.Address == Core.States.InGameStateObject.CurrentAreaInstance.Player.Address;
-            var drawBar = (isPlayer && isCurrentPlayer && this.Settings.ShowPlayerBars) ||
-                          (isFriendly && this.Settings.ShowFriendlyBars && !isCurrentPlayer) ||
-                          (!isFriendly && hasMagicProperties && (
-                                  (rarity == Rarity.Normal) && this.Settings.ShowNormalBar ||
-                                  (rarity == Rarity.Magic) && this.Settings.ShowMagicBar ||
-                                  (rarity == Rarity.Rare) && this.Settings.ShowRareBar ||
-                                  (rarity == Rarity.Unique) && this.Settings.ShowUniqueBar
-                              )
-                          );
-
-            if (!drawBar)
-            {
-                return;
-            }
-
-            var drawBorder = hasMagicProperties && this.Settings.ShowRarityBorders && (
-                (rarity == Rarity.Normal) && this.Settings.ShowNormalBorders ||
-                (rarity == Rarity.Magic) && this.Settings.ShowMagicBorders ||
-                (rarity == Rarity.Rare) && this.Settings.ShowRareBorders ||
-                (rarity == Rarity.Unique) && this.Settings.ShowUniqueBorders
-            );
-            var borderColor = hasMagicProperties && drawBorder ? this.RarityColor(rarity) : 0;
-
-            var curPos = render.WorldPosition;
-            curPos.X += 11.25f;
-            curPos.Z -= 1.4f * render.ModelBounds.Z;
-            var location = Core.States.InGameStateObject.WorldToScreen(curPos);
-
-            if (!this.bPositions.TryGetValue(entity.Key.id, out Vector2 prevLocation))
-            {
-                this.bPositions.TryAdd(entity.Key.id, location);
-            }
-            else
-            {
-                location = MathHelper.Lerp(prevLocation, location, 0.2f);
-                this.bPositions.TryUpdate(entity.Key.id, location, prevLocation);
-            }
-
-            var hpReserved = (float)entityLife.Health.ReservedPercent / 100;
-            var hpPercent = entityLife.Health.CurrentInPercent() * ((100 - hpReserved) / 100);
-
-            var esReserved = (float)entityLife.EnergyShield.ReservedPercent / 100;
-            var esPercent = entityLife.EnergyShield.CurrentInPercent() * ((100 - esReserved) / 100);
-
-            var manaReserved = (float)entityLife.Mana.ReservedPercent / 100;
-            var manaPercent = entityLife.Mana.CurrentInPercent() * ((100 - manaReserved) / 100);
-
-            var scale = this.RarityBarScale(rarity, isPlayer, isFriendly);
-
-            var hpOffset = new Vector2(0, 1) * scale;
-            var manaOffset = new Vector2(0, 10) * scale;
-
-            var showCulling = hasMagicProperties && this.Settings.ShowCullRange && (
-                (rarity == Rarity.Normal) && this.Settings.ShowNormalCull ||
-                (rarity == Rarity.Magic) && this.Settings.ShowMagicCull ||
-                (rarity == Rarity.Rare) && this.Settings.ShowRareCull ||
-                (rarity == Rarity.Unique) && this.Settings.ShowUniqueCull
-            );
-            var inCullingRange = hpPercent > 0 && hpPercent < this.Settings.CullingRange && showCulling;
-            var cullingColor = UiHelper.Color(this.Settings.CullRangeColor * 255f);
-
-
-            if (isFriendly)
-            {
-                if (isCurrentPlayer)
-                {
-                    this.DrawSprite("EmptyDoubleBar", scale, 1, 68, 108, 19, 110, 88, location, 108, 19, -1, -1, false);
-
-                    var manaPos = location + manaOffset;
-                    this.DrawSprite("EmptyMana", scale, 1, 19, 1, 8, 110, 88, manaPos, 104, 8,
-                        100f - manaReserved, -1, false);
-                    this.DrawSprite("Mana", scale, 1, 47, 1, 8, 110, 88, manaPos, 104, 8, manaPercent, -1,
-                        false);
-                }
-                else
-                {
-                    this.DrawSprite("EmptyBar", scale, 1, 57, 108, 9, 110, 88, location, 108, 9, -1, -1, false);
-                }
-
-                this.DrawSprite("EmptyHP", scale, 1, 10, 1, 7, 110, 88, location + hpOffset, 104, 7, 100f - hpReserved,
-                    -1,
-                    false);
-                this.DrawSprite("HP", scale, 1, 38, 1, 7, 110, 88, location + hpOffset, 104, 7, hpPercent, -1,
-                    this.Settings.ShowFriendlyGradationMarks);
-            }
-            else
-            {
-                if (this.Settings.ShowEnemyMana)
-                {
-                    this.DrawSprite("EmptyDoubleBar", scale, 1, 68, 108, 19, 110, 88, location, 108, 19, -1, -1, false,
-                        drawBorder, borderColor);
-
-                    this.DrawSprite("EmptyMana", scale, 1, 19, 1, 8, 110, 88, location + manaOffset, 104, 8,
-                        100f - manaReserved, -1, false);
-                    this.DrawSprite("Mana", scale, 1, 47, 1, 8, 110, 88, location + manaOffset, 104, 8, manaPercent, -1,
-                        false);
-                }
-                else
-                {
-                    this.DrawSprite("EmptyBar", scale, 1, 57, 108, 9, 110, 88, location, 108, 9, -1, -1, false,
-                        drawBorder,
-                        borderColor);
-                }
-
-                this.DrawSprite("EmptyHP", scale, 1, 10, 1, 7, 110, 88, location + hpOffset, 104, 7, 100f - hpReserved,
-                    -1,
-                    false);
-                this.DrawSprite("EnemyHP", scale, 1, 29, 1, 7, 110, 88, location + hpOffset, 104, 7, hpPercent, -1,
-                    this.Settings.ShowEnemyGradationMarks, inCullingRange, cullingColor, true, true);
-            }
-
-            if (entityLife.EnergyShield.Total > 0)
-            {
-                this.DrawSprite("ES", scale, 1, 1, 1, 7, 110, 88, location + hpOffset, 104, 7, esPercent, -1, false);
-            }
-        }
-
-        private void DrawSprite(
-            string spriteName,
-            float scale,
-            float sx,
-            float sy,
-            float sw,
-            float sh,
-            float ssw,
-            float ssh,
-            Vector2 t,
-            float tw,
-            float th,
-            float mulw,
-            float mulh,
-            bool marks,
-            bool border = false,
-            uint borderColor = 0,
-            bool inner = false,
-            bool fill = false)
-        {
-            var draw = ImGui.GetBackgroundDrawList();
-            var uv0 = new Vector2(sx / ssw, sy / ssh);
-            var uv1 = new Vector2((sx + sw) / ssw, (sy + sh) / ssh);
-            var sprite = this.sprites[spriteName];
-            var bounds = new Vector2(tw * (((mulw < 0) ? 100 : mulw) / 100), th * (((mulh < 0) ? 100 : mulh) / 100)) *
-                         scale;
-            var vBounds = new Vector2(tw, th) * scale;
-            var half = new Vector2(10 + vBounds.X / 2, 0);
-            var pos = t - half;
-
-            draw.AddImage(sprite.TexturePtr, pos, pos + bounds, uv0, uv1);
-
-            if (marks)
-            {
-                var markColor = UiHelper.Color(255, 255, 255, 100);
-                Vector2 markLine = new(0, vBounds.Y - 1.5f);
-                Vector2 mark25 = new(vBounds.X * 0.25f, 0);
-                Vector2 mark50 = new(vBounds.X * 0.5f, 0);
-                Vector2 mark75 = new(vBounds.X * 0.75f, 0);
-
-                draw.AddLine(pos + mark25, pos + markLine + mark25, markColor);
-                draw.AddLine(pos + mark50, pos + markLine + mark50, markColor);
-                draw.AddLine(pos + mark75, pos + markLine + mark75, markColor);
-            }
-
-            if (border)
-            {
-                var b1 = pos;
-                var b2 = pos + (inner ? bounds : vBounds);
-
-                if (fill)
-                {
-                    draw.AddRectFilled(b1, b2, borderColor);
-                }
-                else
-                {
-                    draw.AddRect(b1, b2, borderColor);
-                }
-            }
-        }
-
-        private uint RarityColor(Rarity rarity)
-        {
-            return rarity switch
-            {
-                Rarity.Unique => UiHelper.Color(this.Settings.UniqueColor * 255f),
-                Rarity.Rare => UiHelper.Color(this.Settings.RareColor * 255f),
-                Rarity.Magic => UiHelper.Color(this.Settings.MagicColor * 255f),
-                _ => UiHelper.Color(this.Settings.NormalColor * 255f),
-            };
-        }
-
-        private float RarityBarScale(Rarity rarity, bool isPlayer, bool isFriendly)
-        {
-            if (isPlayer)
-            {
-                return this.Settings.PlayerBarScale;
-            }
-
-            if (isFriendly)
-            {
-                return this.Settings.FriendlyBarScale;
-            }
-
-            return rarity switch
-            {
-                Rarity.Unique => this.Settings.UniqueBarScale,
-                Rarity.Rare => this.Settings.RareBarScale,
-                Rarity.Magic => this.Settings.MagicBarScale,
-                _ => this.Settings.NormalBarScale,
-            };
-        }
-
         private IEnumerator<Wait> ClearData()
         {
             while (true)
@@ -451,27 +234,6 @@ namespace HealthBars
                 yield return new Wait(RemoteEvents.AreaChanged);
                 this.bPositions.Clear();
             }
-        }
-
-        /// <summary>
-        /// Adds the default icons if the setting file isn't available.
-        /// </summary>
-        private void AddSpriteSheet()
-        {
-            var spriteSheetPathName = Path.Join(this.DllDirectory, "spritesheet.png");
-            this.AddSprites(spriteSheetPathName);
-        }
-
-        private void AddSprites(string spriteSheetPathName)
-        {
-            this.sprites.TryAdd("ES", new IconPicker(spriteSheetPathName, 1, 8, 108, 19, 1));
-            this.sprites.TryAdd("EmptyHP", new IconPicker(spriteSheetPathName, 1, 8, 108, 19, 1));
-            this.sprites.TryAdd("EmptyMana", new IconPicker(spriteSheetPathName, 1, 8, 108, 19, 1));
-            this.sprites.TryAdd("EnemyHP", new IconPicker(spriteSheetPathName, 1, 8, 108, 19, 1));
-            this.sprites.TryAdd("HP", new IconPicker(spriteSheetPathName, 1, 8, 108, 19, 1));
-            this.sprites.TryAdd("Mana", new IconPicker(spriteSheetPathName, 1, 8, 108, 19, 1));
-            this.sprites.TryAdd("EmptyBar", new IconPicker(spriteSheetPathName, 1, 8, 108, 19, 1));
-            this.sprites.TryAdd("EmptyDoubleBar", new IconPicker(spriteSheetPathName, 1, 8, 108, 19, 1));
         }
     }
 }
