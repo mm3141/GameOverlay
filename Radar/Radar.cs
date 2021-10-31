@@ -7,6 +7,7 @@ namespace Radar
     using System;
     using System.Collections.Generic;
     using System.IO;
+    using System.Linq;
     using System.Numerics;
     using System.Threading.Tasks;
     using Coroutine;
@@ -29,7 +30,11 @@ namespace Radar
         // Legion Cache.
         private readonly Dictionary<uint, byte> frozenInTimeEntities = new();
 
-        private readonly string diesAfterTimeIgnore = "Metadata/Monsters/AtlasExiles/CrusaderInfluenceMonsters/CrusaderArcaneRune";
+        private readonly List<string> diesAfterTimeIgnore = new()
+        {
+            "Metadata/Monsters/AtlasExiles/CrusaderInfluenceMonsters/CrusaderArcaneRune",
+            "Metadata/Monsters/Daemon/DaemonLaboratoryBlackhole",
+        };
         private readonly HashSet<uint> diesAfterTimeCache = new();
 
         private readonly string heistUsefullChestContains = "HeistChestSecondary";
@@ -518,7 +523,8 @@ namespace Radar
                         {
                             continue;
                         }
-                        else if (entity.Value.Path.StartsWith(diesAfterTimeIgnore))
+                        else if (diesAfterTimeIgnore.Any(ignorePath =>
+                        entity.Value.Path.StartsWith(ignorePath)))
                         {
                             this.diesAfterTimeCache.Add(entity.Value.Id);
                             continue;

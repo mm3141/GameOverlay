@@ -136,6 +136,13 @@ namespace GameHelper.Settings
                     {
                         MiscHelper.KillTCPConnectionForProcess(Core.Process.Pid);
                     }
+#if DEBUG
+                    if (ImGui.Button("Reload Plugins"))
+                    {
+                        PManager.CleanUpAllPlugins();
+                        PManager.InitializePlugins();
+                    }
+#endif
 
                     ImGui.NewLine();
                     if (ImGui.CollapsingHeader("Thank you for your support! Means a lot to me!"))
