@@ -4,9 +4,33 @@ namespace HealthBars {
     using GameHelper.Utils;
     using ImGuiNET;
 
+    /// <summary>
+    /// 
+    /// </summary>
     public class SpriteController {
         private readonly Dictionary<string, IconPicker> sprites = new();
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="spriteName"></param>
+        /// <param name="scale"></param>
+        /// <param name="sx"></param>
+        /// <param name="sy"></param>
+        /// <param name="sw"></param>
+        /// <param name="sh"></param>
+        /// <param name="ssw"></param>
+        /// <param name="ssh"></param>
+        /// <param name="t"></param>
+        /// <param name="tw"></param>
+        /// <param name="th"></param>
+        /// <param name="mulw"></param>
+        /// <param name="mulh"></param>
+        /// <param name="marks"></param>
+        /// <param name="border"></param>
+        /// <param name="borderColor"></param>
+        /// <param name="inner"></param>
+        /// <param name="fill"></param>
         public void DrawSprite(
             string spriteName,
             float scale,
@@ -25,7 +49,8 @@ namespace HealthBars {
             bool border = false,
             uint borderColor = 0,
             bool inner = false,
-            bool fill = false) {
+            bool fill = false
+        ) {
             var draw = ImGui.GetBackgroundDrawList();
             var uv0 = new Vector2(sx / ssw, sy / ssh);
             var uv1 = new Vector2((sx + sw) / ssw, (sy + sh) / ssh);
@@ -63,6 +88,10 @@ namespace HealthBars {
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="spriteSheetPathName"></param>
         public void AddSprites(string spriteSheetPathName) {
             sprites.TryAdd("ES", new IconPicker(spriteSheetPathName, 1, 8, 108, 19, 1));
             sprites.TryAdd("EmptyHP", new IconPicker(spriteSheetPathName, 1, 8, 108, 19, 1));

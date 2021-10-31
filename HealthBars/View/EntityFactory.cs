@@ -5,7 +5,15 @@ namespace HealthBars.View {
     using GameHelper.RemoteObjects.Components;
     using GameHelper.RemoteObjects.States.InGameStateObjects;
 
+    /// <summary>
+    /// 
+    /// </summary>
     public static class EntityFactory {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
         public static IEntity? GetEntity(Entity entity) {
             var hasVital = entity.TryGetComponent<Life>(out var entityLife);
             if (!hasVital || !entityLife.IsAlive) {

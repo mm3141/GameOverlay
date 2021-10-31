@@ -5,19 +5,58 @@ namespace HealthBars.View.Entities {
     using GameHelper.RemoteObjects.States.InGameStateObjects;
     using GameHelper.Utils;
 
+    /// <summary>
+    /// 
+    /// </summary>
     public class EntityParams {
-        public readonly float ESPercent;
-        public readonly float ESTotal;
+        /// <summary>
+        /// 
+        /// </summary>
+        public readonly float EsPercent;
+        /// <summary>
+        /// 
+        /// </summary>
+        public readonly float EsTotal;
+        /// <summary>
+        /// 
+        /// </summary>
         public readonly bool HasMagicProperties;
+        /// <summary>
+        /// 
+        /// </summary>
         public readonly float HpPercent;
+        /// <summary>
+        /// 
+        /// </summary>
         public readonly float HpReserved;
+        /// <summary>
+        /// 
+        /// </summary>
         public readonly float ManaPercent;
+        /// <summary>
+        /// 
+        /// </summary>
         public readonly float ManaReserved;
+        /// <summary>
+        /// 
+        /// </summary>
         public readonly Vector2 Pos;
+        /// <summary>
+        /// 
+        /// </summary>
         public readonly Rarity Rarity;
+        /// <summary>
+        /// 
+        /// </summary>
         public readonly HealthBarsSettings Settings;
 
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="settings"></param>
+        /// <param name="pos"></param>
+        /// <param name="entity"></param>
         public EntityParams(HealthBarsSettings settings, Vector2 pos, Entity entity) {
             Settings = settings;
             Pos = pos;
@@ -33,12 +72,18 @@ namespace HealthBars.View.Entities {
             ManaPercent = entityLife.Mana.CurrentInPercent() * ((100 - ManaReserved) / 100);
 
             var esReserved = entityLife.EnergyShield.ReservedPercent / 100f;
-            ESPercent = entityLife.EnergyShield.CurrentInPercent() * ((100 - esReserved) / 100);
-            ESTotal = entityLife.EnergyShield.Total;
+            EsPercent = entityLife.EnergyShield.CurrentInPercent() * ((100 - esReserved) / 100);
+            EsTotal = entityLife.EnergyShield.Total;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public uint BorderColor => HasMagicProperties && DrawBorder ? RarityColor(Rarity) : 0;
 
+        /// <summary>
+        /// 
+        /// </summary>
         public bool DrawBorder => HasMagicProperties && Settings.ShowRarityBorders && (
             Rarity == Rarity.Normal && Settings.ShowNormalBorders ||
             Rarity == Rarity.Magic && Settings.ShowMagicBorders ||
@@ -46,6 +91,9 @@ namespace HealthBars.View.Entities {
             Rarity == Rarity.Unique && Settings.ShowUniqueBorders
         );
 
+        /// <summary>
+        /// 
+        /// </summary>
         public bool ShowCulling => HasMagicProperties && Settings.ShowCullRange && (
             Rarity == Rarity.Normal && Settings.ShowNormalCull ||
             Rarity == Rarity.Magic && Settings.ShowMagicCull ||

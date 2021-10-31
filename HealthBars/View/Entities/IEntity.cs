@@ -1,6 +1,19 @@
 namespace HealthBars.View.Entities {
+    /// <summary>
+    /// 
+    /// </summary>
     public interface IEntity {
-        public void Draw(EntityParams entityParams, SpriteController spriteController);
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="eP"></param>
+        /// <param name="spriteController"></param>
+        public void Draw(EntityParams eP, SpriteController spriteController);
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="entityParams"></param>
+        /// <returns></returns>
         public bool ShouldDraw(EntityParams entityParams);
     }
 }
