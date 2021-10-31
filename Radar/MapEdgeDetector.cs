@@ -1,7 +1,7 @@
-using System.Linq;
-
 namespace Radar
 {
+    using System.Linq;
+
     /// <summary>
     /// Detects if the current map location is map edge or not.
     /// </summary>
@@ -71,7 +71,6 @@ namespace Radar
             return CanWalk(rightTile);
         }
 
-
         /// <summary>
         /// Checks if (ImageX,ImageY) coordinate is within the width and height of the map.
         /// </summary>
@@ -94,15 +93,15 @@ namespace Radar
         /// <param name="tileValue">map tile walkable value</param>
         /// <returns></returns>
         private static bool CanWalk(int tileValue)
-        {
-            return tileValue != 0;
-        }
+            => tileValue != 0;
 
-        private static (int oneIfFirstNibbleZeroIfNot, int zeroIfFirstNibbleOneIfNot) NibbleHandler(int x)
-        {
-            var wantsFirstNibble = x % 2 == 0;
-            return wantsFirstNibble ? (1, 0) : (0, 1);
-        }
+        /// <summary>
+        /// returns 1, 0 if x lies in first nibble otherwise 0, 1.
+        /// </summary>
+        /// <param name="x">map walkable data array index.</param>
+        /// <returns></returns>
+        private static (int valA, int valB) NibbleHandler(int x)
+            => x % 2 == 0 ? (1, 0) : (0, 1);
 
         private int GetTileValueAt(int index, int shiftAmount)
         {
