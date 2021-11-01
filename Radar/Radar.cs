@@ -34,6 +34,7 @@ namespace Radar
         {
             "Metadata/Monsters/AtlasExiles/CrusaderInfluenceMonsters/CrusaderArcaneRune",
             "Metadata/Monsters/Daemon/DaemonLaboratoryBlackhole",
+            "Metadata/Monsters/AtlasExiles/AtlasExile",
         };
         private readonly HashSet<uint> diesAfterTimeCache = new();
 
