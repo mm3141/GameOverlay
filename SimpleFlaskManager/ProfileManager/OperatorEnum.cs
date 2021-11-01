@@ -2,11 +2,13 @@
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
-namespace SimpleFlaskManager.ProfileManager {
+namespace SimpleFlaskManager.ProfileManager
+{
     /// <summary>
     ///     Different type of operators available to use on the Conditions.
     /// </summary>
-    public enum OperatorEnum {
+    public enum OperatorEnum
+    {
         /// <summary>
         ///     Equal To Operator.
         /// </summary>

@@ -1,8 +1,10 @@
-﻿namespace GameOffsets.Objects.Components {
-    using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 
+namespace GameOffsets.Objects.Components
+{
     [StructLayout(LayoutKind.Explicit, Pack = 1)]
-    public struct PositionedOffsets {
+    public struct PositionedOffsets
+    {
         [FieldOffset(0x000)] public ComponentHeader Header;
 
         [FieldOffset(0x159)] public byte Reaction;

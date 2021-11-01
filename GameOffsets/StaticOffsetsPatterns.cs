@@ -1,6 +1,9 @@
-﻿namespace GameOffsets {
-    public struct StaticOffsetsPatterns {
-        public static Pattern[] patterns = {
+﻿namespace GameOffsets
+{
+    public struct StaticOffsetsPatterns
+    {
+        public static readonly Pattern[] Patterns =
+        {
             // <HowToFindIt>
             // 1: Open CheatEngine and Attach to POE Game
             // 2: Search for String: "InGameState", type: UTF-16 (use case insensitive if you don't find anything in the first try)

@@ -2,18 +2,20 @@
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
-namespace SimpleFlaskManager.ProfileManager.Conditions {
-    using System.Linq;
-    using GameHelper;
-    using GameHelper.RemoteObjects.Components;
-    using GameHelper.Utils;
-    using ImGuiNET;
+using System.Linq;
+using GameHelper;
+using GameHelper.RemoteObjects.Components;
+using GameHelper.Utils;
+using ImGuiNET;
 
+namespace SimpleFlaskManager.ProfileManager.Conditions
+{
     /// <summary>
     ///     For triggering a flask on player Status Effect changes.
     /// </summary>
     public class AilmentCondition
-        : BaseCondition<string> {
+        : BaseCondition<string>
+    {
         private static string statusEffectGroupKeyStatic = string.Empty;
 
         /// <summary>
@@ -24,7 +26,9 @@ namespace SimpleFlaskManager.ProfileManager.Conditions {
         ///     <see cref="JsonDataHelper.StatusEffectGroups" />.
         /// </param>
         public AilmentCondition(string statusEffectGroupKey)
-            : base(OperatorEnum.CONTAINS, statusEffectGroupKey) { }
+            : base(OperatorEnum.CONTAINS, statusEffectGroupKey)
+        {
+        }
 
         /// <summary>
         ///     Draws the ImGui widget for adding the condition.
@@ -32,38 +36,38 @@ namespace SimpleFlaskManager.ProfileManager.Conditions {
         /// <returns>
         ///     <see cref="ICondition" /> if user wants to add the condition, otherwise null.
         /// </returns>
-        public new static AilmentCondition Add() {
+        public new static AilmentCondition Add()
+        {
             ToImGui(ref statusEffectGroupKeyStatic);
             ImGui.SameLine();
             if (ImGui.Button("Add##StatusEffect") &&
-                !string.IsNullOrEmpty(statusEffectGroupKeyStatic)) {
+                !string.IsNullOrEmpty(statusEffectGroupKeyStatic))
                 return new AilmentCondition(statusEffectGroupKeyStatic);
-            }
 
             return null;
         }
 
         /// <inheritdoc />
-        public override void Display(int index = 0) {
+        public override void Display(int index = 0)
+        {
             ToImGui(ref rightHandOperand);
             base.Display(index);
         }
 
         /// <inheritdoc />
-        public override bool Evaluate() {
+        public override bool Evaluate()
+        {
             var player = Core.States.InGameStateObject.CurrentAreaInstance.Player;
-            if (JsonDataHelper.StatusEffectGroups.TryGetValue(rightHandOperand, out var statusEffects)) {
-                if (player.TryGetComponent<Buffs>(out var buffComponent)) {
-                    if (statusEffects.Any(statusEffect => buffComponent.StatusEffects.ContainsKey(statusEffect))) {
+            if (JsonDataHelper.StatusEffectGroups.TryGetValue(rightHandOperand, out var statusEffects))
+                if (player.TryGetComponent<Buffs>(out var buffComponent))
+                    if (statusEffects.Any(statusEffect => buffComponent.StatusEffects.ContainsKey(statusEffect)))
                         return true && EvaluateNext();
-                    }
-                }
-            }
 
             return false;
         }
 
-        private static void ToImGui(ref string statusEffectGroupKey) {
+        private static void ToImGui(ref string statusEffectGroupKey)
+        {
             ImGui.Text("Player has");
             ImGui.SameLine();
             UiHelper.IEnumerableComboBox(

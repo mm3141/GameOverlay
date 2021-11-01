@@ -1,16 +1,19 @@
-﻿namespace GameOffsets.Objects.Components {
-    using System;
-    using System.Runtime.InteropServices;
-    using Natives;
+﻿using System;
+using System.Runtime.InteropServices;
+using GameOffsets.Natives;
 
+namespace GameOffsets.Objects.Components
+{
     [StructLayout(LayoutKind.Explicit, Pack = 1)]
-    public struct BuffsOffsets {
+    public struct BuffsOffsets
+    {
         [FieldOffset(0x000)] public ComponentHeader Header;
         [FieldOffset(0x158)] public StdVector StatusEffectPtr;
     }
 
     [StructLayout(LayoutKind.Explicit, Pack = 1)]
-    public struct StatusEffectStruct {
+    public struct StatusEffectStruct
+    {
         [FieldOffset(0x0008)] public IntPtr BuffDefinationPtr; //// BuffDefination.DAT file
         [FieldOffset(0x0018)] public float TotalTime;
 
@@ -23,7 +26,8 @@
         //[FieldOffset(0x0038)] public int unknown2;
         [FieldOffset(0x003E)] public ushort Charges; // 2 bytes long but 1 is enough
 
-        public override string ToString() {
+        public override string ToString()
+        {
             var maxTime = float.IsInfinity(TotalTime) ? "Inf" : TotalTime.ToString();
             var timeLeft = float.IsInfinity(TimeLeft) ? "Inf" : TimeLeft.ToString();
             return $"BuffDefinationPtr: {BuffDefinationPtr.ToInt64():X}, MaxTime: {maxTime}, " +

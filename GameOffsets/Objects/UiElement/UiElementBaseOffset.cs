@@ -1,10 +1,12 @@
-namespace GameOffsets.Objects.UiElement {
-    using System;
-    using System.Runtime.InteropServices;
-    using Natives;
+using System;
+using System.Runtime.InteropServices;
+using GameOffsets.Natives;
 
+namespace GameOffsets.Objects.UiElement
+{
     [StructLayout(LayoutKind.Explicit, Pack = 1)]
-    public struct UiElementBaseOffset {
+    public struct UiElementBaseOffset
+    {
         [FieldOffset(0x000)] public IntPtr Vtable;
         [FieldOffset(0x028)] public IntPtr Self;
 
@@ -31,7 +33,8 @@ namespace GameOffsets.Objects.UiElement {
         // Tooltip????
     }
 
-    public static class UiElementBaseFuncs {
+    public static class UiElementBaseFuncs
+    {
         private const int SHOULD_MODIFY_BINARY_POS = 0x0A;
         private const int IS_VISIBLE_BINARY_POS = 0x0B;
 
@@ -39,11 +42,13 @@ namespace GameOffsets.Objects.UiElement {
         public const int SCALE_INDEX_2 = 0x04;
         public const int SCALE_INDEX_3 = 0x00;
 
-        public static Func<uint, bool> IsVisibleChecker = param => {
+        public static Func<uint, bool> IsVisibleChecker = param =>
+        {
             return Util.isBitSetUint(param, IS_VISIBLE_BINARY_POS);
         };
 
-        public static Func<uint, bool> ShouldModifyPos = param => {
+        public static Func<uint, bool> ShouldModifyPos = param =>
+        {
             return Util.isBitSetUint(param, SHOULD_MODIFY_BINARY_POS);
         };
 

@@ -1,9 +1,11 @@
-namespace GameOffsets.Objects.States {
-    using System.Runtime.InteropServices;
-    using Natives;
+using System.Runtime.InteropServices;
+using GameOffsets.Natives;
 
+namespace GameOffsets.Objects.States
+{
     [StructLayout(LayoutKind.Explicit, Pack = 1)]
-    public struct AreaLoadingStateOffset {
+    public struct AreaLoadingStateOffset
+    {
         [FieldOffset(0xB8)] public int IsLoading;
 
         [FieldOffset(0x350)] public uint TotalLoadingScreenTimeMs;

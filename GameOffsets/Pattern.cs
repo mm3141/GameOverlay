@@ -1,10 +1,12 @@
-﻿namespace GameOffsets {
-    using System;
-    using System.Collections.Generic;
-    using System.Globalization;
-    using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
 
-    public struct Pattern {
+namespace GameOffsets
+{
+    public struct Pattern
+    {
         /// <summary>
         ///     User Friendly name for the pattern.
         /// </summary>
@@ -39,16 +41,20 @@
         /// </summary>
         /// <param name="arrayOfHexBytes">Array of bytes in HEX format.</param>
         /// <returns>byte array and a mask (bool) array for it.</returns>
-        private static (byte[], bool[]) ParseArrayOfHexBytes(List<string> arrayOfHexBytes) {
+        private static (byte[], bool[]) ParseArrayOfHexBytes(List<string> arrayOfHexBytes)
+        {
             List<bool> mask = new();
             List<byte> data = new();
-            for (var i = 0; i < arrayOfHexBytes.Count; i++) {
+            for (var i = 0; i < arrayOfHexBytes.Count; i++)
+            {
                 var hexByte = arrayOfHexBytes[i];
-                if (hexByte.StartsWith("?")) {
+                if (hexByte.StartsWith("?"))
+                {
                     data.Add(0x00);
                     mask.Add(false);
                 }
-                else {
+                else
+                {
                     data.Add(byte.Parse(hexByte, NumberStyles.HexNumber));
                     mask.Add(true);
                 }
@@ -64,7 +70,8 @@
         /// <param name="arrayOfHexBytes">
         ///     Array of HEX Bytes with "^" in it to calculate the bytes to skip.
         /// </param>
-        public Pattern(string name, string arrayOfHexBytes) {
+        public Pattern(string name, string arrayOfHexBytes)
+        {
             Name = name;
             var arrayOfHexBytesList = arrayOfHexBytes.Split(
                 new[] { " ", "," }, StringSplitOptions.RemoveEmptyEntries).ToList();
@@ -82,7 +89,8 @@
         /// <param name="bytesToSkip">
         ///     Number of bytes to skip to reach the static-address offset data.
         /// </param>
-        public Pattern(string name, string arrayOfHexBytes, int bytesToSkip) {
+        public Pattern(string name, string arrayOfHexBytes, int bytesToSkip)
+        {
             Name = name;
             BytesToSkip = bytesToSkip;
             (Data, Mask) = ParseArrayOfHexBytes(arrayOfHexBytes.Split(
@@ -93,16 +101,14 @@
         ///     Pretty prints the Pattern.
         /// </summary>
         /// <returns>Pattern in string format.</returns>
-        public override string ToString() {
+        public override string ToString()
+        {
             var data = $"Name: {Name} Pattern: ";
-            for (var i = 0; i < Data.Length; i++) {
-                if (Mask[i]) {
+            for (var i = 0; i < Data.Length; i++)
+                if (Mask[i])
                     data += $"0x{Data[i]:X} ";
-                }
-                else {
+                else
                     data += "?? ";
-                }
-            }
 
             data += $"BytesToSkip: {BytesToSkip}";
             return data;

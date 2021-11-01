@@ -2,11 +2,13 @@
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
-namespace SimpleFlaskManager.ProfileManager.Conditions {
+namespace SimpleFlaskManager.ProfileManager.Conditions
+{
     /// <summary>
     ///     Interface for the conditions on which flask can trigger.
     /// </summary>
-    public interface ICondition {
+    public interface ICondition
+    {
         /// <summary>
         ///     Evaluates the condition.
         /// </summary>

@@ -1,15 +1,18 @@
-namespace GameOffsets.Objects.States.InGameState {
-    using System;
-    using System.Runtime.InteropServices;
-    using Natives;
+using System;
+using System.Runtime.InteropServices;
+using GameOffsets.Natives;
 
+namespace GameOffsets.Objects.States.InGameState
+{
     [StructLayout(LayoutKind.Explicit, Pack = 1)]
-    public struct PreInventoryStruct {
+    public struct PreInventoryStruct
+    {
         [FieldOffset(0x10)] public IntPtr ptr;
     }
 
     [StructLayout(LayoutKind.Explicit, Pack = 1)]
-    public struct InventoryStruct {
+    public struct InventoryStruct
+    {
         //[FieldOffset(0x00)] public int InventoryType;
         //[FieldOffset(0x04)] public int InventorySlot;
         //[FieldOffset(0x08)] public byte ShouldShowBoxes; // there are some other useless flags right after this byte.
@@ -27,19 +30,22 @@ namespace GameOffsets.Objects.States.InGameState {
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public struct ItemHashKey {
+    public struct ItemHashKey
+    {
         public int ServerRequestCounterSnapShot;
         public int PAD_8;
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public struct ItemHashValue {
+    public struct ItemHashValue
+    {
         public IntPtr InventoryItemStructPtr;
         public IntPtr UselessItemPtr;
     }
 
     [StructLayout(LayoutKind.Explicit, Pack = 1)]
-    public struct InventoryItemStruct {
+    public struct InventoryItemStruct
+    {
         [FieldOffset(0x00)] public IntPtr Item; // ItemStruct in EntityOffsets.cs
         [FieldOffset(0x08)] public StdTuple2D<int> SlotStart;
         [FieldOffset(0x10)] public StdTuple2D<int> SlotEnd;

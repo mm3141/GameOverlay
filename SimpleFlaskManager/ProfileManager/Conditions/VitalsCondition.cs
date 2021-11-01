@@ -2,23 +2,26 @@
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
-namespace SimpleFlaskManager.ProfileManager.Conditions {
-    using System;
-    using GameHelper;
-    using GameHelper.RemoteObjects.Components;
-    using GameHelper.Utils;
-    using ImGuiNET;
-    using Newtonsoft.Json;
+using System;
+using GameHelper;
+using GameHelper.RemoteObjects.Components;
+using GameHelper.Utils;
+using ImGuiNET;
+using Newtonsoft.Json;
 
+namespace SimpleFlaskManager.ProfileManager.Conditions
+{
     /// <summary>
     ///     For triggering a flask on player vitals changes.
     /// </summary>
     public class VitalsCondition
-        : BaseCondition<int> {
+        : BaseCondition<int>
+    {
         /// <summary>
         ///     Different type of player Vitals.
         /// </summary>
-        public enum VitalsEnum {
+        public enum VitalsEnum
+        {
             /// <summary>
             ///     Condition based on player Mana.
             /// </summary>
@@ -63,7 +66,8 @@ namespace SimpleFlaskManager.ProfileManager.Conditions {
         /// <param name="vital">Player vital type to use in this condition.</param>
         /// <param name="threshold">Vital threshold to use in this condition.</param>
         public VitalsCondition(OperatorEnum operator_, VitalsEnum vital, int threshold)
-            : base(operator_, threshold) {
+            : base(operator_, threshold)
+        {
             vitalType = vital;
         }
 
@@ -73,40 +77,43 @@ namespace SimpleFlaskManager.ProfileManager.Conditions {
         /// <returns>
         ///     <see cref="ICondition" /> if user wants to add the condition, otherwise null.
         /// </returns>
-        public new static VitalsCondition Add() {
+        public new static VitalsCondition Add()
+        {
             ToImGui(ref operatorStatic, ref vitalTypeStatic, ref thresholdStatic);
             ImGui.SameLine();
             if (ImGui.Button("Add##Vitals") &&
                 (operatorStatic == OperatorEnum.BIGGER_THAN ||
-                 operatorStatic == OperatorEnum.LESS_THAN)) {
+                 operatorStatic == OperatorEnum.LESS_THAN))
                 return new VitalsCondition(operatorStatic, vitalTypeStatic, thresholdStatic);
-            }
 
             return null;
         }
 
         /// <inheritdoc />
-        public override void Display(int index = 0) {
+        public override void Display(int index = 0)
+        {
             ToImGui(ref conditionOperator, ref vitalType, ref rightHandOperand);
             base.Display(index);
         }
 
         /// <inheritdoc />
-        public override bool Evaluate() {
+        public override bool Evaluate()
+        {
             var player = Core.States.InGameStateObject.CurrentAreaInstance.Player;
-            if (player.TryGetComponent<Life>(out var lifeComponent)) {
-                return conditionOperator switch {
+            if (player.TryGetComponent<Life>(out var lifeComponent))
+                return conditionOperator switch
+                       {
                            OperatorEnum.BIGGER_THAN => GetVitalValue(lifeComponent) > rightHandOperand,
                            OperatorEnum.LESS_THAN => GetVitalValue(lifeComponent) < rightHandOperand,
                            _ => throw new Exception($"VitalCondition doesn't support {conditionOperator}.")
                        }
                        && EvaluateNext();
-            }
 
             return false;
         }
 
-        private static void ToImGui(ref OperatorEnum operator_, ref VitalsEnum vital, ref int threshold) {
+        private static void ToImGui(ref OperatorEnum operator_, ref VitalsEnum vital, ref int threshold)
+        {
             ImGui.Text($"Only {OperatorEnum.BIGGER_THAN} & {OperatorEnum.LESS_THAN} supported.");
             ImGui.Text("Player");
             ImGui.SameLine();
@@ -117,8 +124,10 @@ namespace SimpleFlaskManager.ProfileManager.Conditions {
             ImGui.InputInt("##VitalThreshold", ref threshold);
         }
 
-        private int GetVitalValue(Life component) {
-            return vitalType switch {
+        private int GetVitalValue(Life component)
+        {
+            return vitalType switch
+            {
                 VitalsEnum.MANA => component.Mana.Current,
                 VitalsEnum.MANA_PERCENT => component.Mana.CurrentInPercent(),
                 VitalsEnum.LIFE => component.Health.Current,

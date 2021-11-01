@@ -1,9 +1,11 @@
-﻿namespace GameOffsets.Objects.Components {
-    using System;
-    using System.Runtime.InteropServices;
+﻿using System;
+using System.Runtime.InteropServices;
 
+namespace GameOffsets.Objects.Components
+{
     [StructLayout(LayoutKind.Explicit, Pack = 1)]
-    public struct LifeOffset {
+    public struct LifeOffset
+    {
         [FieldOffset(0x000)] public ComponentHeader Header;
         [FieldOffset(0x1A8)] public VitalStruct Mana;
         [FieldOffset(0x1E0)] public VitalStruct EnergyShield;
@@ -11,7 +13,8 @@
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public struct VitalStruct {
+    public struct VitalStruct
+    {
         public IntPtr PtrToLifeComponent;
 
         //// This is greater than zero if Vital is regenerating
@@ -28,7 +31,8 @@
         //// ReservedFlat does not change this value.
         public int ReservedPercent;
 
-        public int CurrentInPercent() {
+        public int CurrentInPercent()
+        {
             return Total > 0
                 ? (int)Math.Round(100 * Current /
                                   (Total - (ReservedFlat + Math.Round(ReservedPercent * 0.0001 * Total))))

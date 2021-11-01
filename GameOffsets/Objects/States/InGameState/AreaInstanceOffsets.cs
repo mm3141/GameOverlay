@@ -1,10 +1,12 @@
-namespace GameOffsets.Objects.States.InGameState {
-    using System;
-    using System.Runtime.InteropServices;
-    using Natives;
+using System;
+using System.Runtime.InteropServices;
+using GameOffsets.Natives;
 
+namespace GameOffsets.Objects.States.InGameState
+{
     [StructLayout(LayoutKind.Explicit, Pack = 1)]
-    public struct AreaInstanceOffsets {
+    public struct AreaInstanceOffsets
+    {
         [FieldOffset(0x80)] public IntPtr AreaDetailsPtr; // WorldAreaDatOffsets.cs
         [FieldOffset(0xB0)] public byte MonsterLevel;
         [FieldOffset(0x114)] public uint CurrentAreaHash;
@@ -21,7 +23,8 @@ namespace GameOffsets.Objects.States.InGameState {
         [FieldOffset(0x7D8)] public TerrainStruct TerrainMetadata;
     }
 
-    public static class AreaInstanceConstants {
+    public static class AreaInstanceConstants
+    {
         // should be few points less than the real value (2178)
         // real value manually calculating by checking when entity leave the bubble.
         // Updating it to 1630 to remove false positive.
@@ -30,8 +33,10 @@ namespace GameOffsets.Objects.States.InGameState {
         public const int NETWORK_BUBBLE_RADIUS = 1630;
     }
 
-    public static class EntityFilter {
-        public static Func<EntityNodeKey, bool> IgnoreSleepingEntities = param => {
+    public static class EntityFilter
+    {
+        public static Func<EntityNodeKey, bool> IgnoreSleepingEntities = param =>
+        {
             // from the game code
             //     if (0x3fffffff < *(uint *)(lVar1 + 0x60)) {}
             //     CMP    dword ptr [RSI + 0x60],0x40000000
@@ -40,47 +45,54 @@ namespace GameOffsets.Objects.States.InGameState {
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public struct EntityNodeKey {
+    public struct EntityNodeKey
+    {
         public uint id;
         public int pad_0x24;
 
-        public override string ToString() {
+        public override string ToString()
+        {
             return $"id: {id}";
         }
 
-        public override bool Equals(object ob) {
-            if (ob is EntityNodeKey c) {
-                return id == c.id;
-            }
+        public override bool Equals(object ob)
+        {
+            if (ob is EntityNodeKey c) return id == c.id;
 
             return false;
         }
 
-        public override int GetHashCode() {
+        public override int GetHashCode()
+        {
             return id.GetHashCode();
         }
 
-        public static bool operator ==(EntityNodeKey left, EntityNodeKey right) {
+        public static bool operator ==(EntityNodeKey left, EntityNodeKey right)
+        {
             return left.Equals(right);
         }
 
-        public static bool operator !=(EntityNodeKey left, EntityNodeKey right) {
+        public static bool operator !=(EntityNodeKey left, EntityNodeKey right)
+        {
             return !(left == right);
         }
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public struct EntityNodeValue {
+    public struct EntityNodeValue
+    {
         public IntPtr EntityPtr;
         // public int pad_0x30;
 
-        public override string ToString() {
+        public override string ToString()
+        {
             return $"EntityPtr: {EntityPtr.ToInt64():X}";
         }
     }
 
     [StructLayout(LayoutKind.Explicit, Pack = 1)]
-    public struct TerrainStruct {
+    public struct TerrainStruct
+    {
         //[FieldOffset(0x08)] public IntPtr Unknown0;
         [FieldOffset(0x18)] public StdTuple2D<long> TotalTiles;
 
@@ -115,18 +127,21 @@ namespace GameOffsets.Objects.States.InGameState {
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public struct SubTileStruct {
+    public struct SubTileStruct
+    {
         public StdVector SubTileHeight; // tile has 23x23 subtiles.
     }
 
     [StructLayout(LayoutKind.Explicit, Pack = 1)]
-    public struct TgtFileStruct {
+    public struct TgtFileStruct
+    {
         [FieldOffset(0x08)] public StdWString TgtPath;
         [FieldOffset(0x30)] public IntPtr TgtDetailPtr; // TgtDetailStruct
     }
 
     [StructLayout(LayoutKind.Explicit, Pack = 1)]
-    public struct TgtDetailStruct {
+    public struct TgtDetailStruct
+    {
         [FieldOffset(0x00)] public StdWString name;
     }
 }

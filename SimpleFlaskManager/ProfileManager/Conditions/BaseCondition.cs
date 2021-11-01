@@ -2,11 +2,12 @@
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
-namespace SimpleFlaskManager.ProfileManager.Conditions {
-    using System;
-    using ImGuiNET;
-    using Newtonsoft.Json;
+using System;
+using ImGuiNET;
+using Newtonsoft.Json;
 
+namespace SimpleFlaskManager.ProfileManager.Conditions
+{
     /// <summary>
     ///     Abstract class for creating conditions on which flasks can trigger.
     /// </summary>
@@ -14,7 +15,8 @@ namespace SimpleFlaskManager.ProfileManager.Conditions {
     ///     The condition right hand side operand type.
     /// </typeparam>
     public abstract class BaseCondition<T>
-        : ICondition {
+        : ICondition
+    {
         /// <summary>
         ///     The operator to use for the condition.
         /// </summary>
@@ -36,7 +38,8 @@ namespace SimpleFlaskManager.ProfileManager.Conditions {
         /// <param name="rightHandSide">
         ///     Right hand side operand of the Condition.
         /// </param>
-        public BaseCondition(OperatorEnum operator_, T rightHandSide) {
+        public BaseCondition(OperatorEnum operator_, T rightHandSide)
+        {
             next = null;
             conditionOperator = operator_;
             rightHandOperand = rightHandSide;
@@ -46,8 +49,10 @@ namespace SimpleFlaskManager.ProfileManager.Conditions {
         public abstract bool Evaluate();
 
         /// <inheritdoc />
-        public virtual void Display(int index = 0) {
-            if (next != null) {
+        public virtual void Display(int index = 0)
+        {
+            if (next != null)
+            {
                 ImGui.Separator();
                 ImGui.PushID(++index);
                 next.Display(index);
@@ -56,25 +61,24 @@ namespace SimpleFlaskManager.ProfileManager.Conditions {
         }
 
         /// <inheritdoc />
-        public ICondition Next() {
+        public ICondition Next()
+        {
             return next;
         }
 
         /// <inheritdoc />
-        public void Append(ICondition condition) {
-            if (next == null) {
+        public void Append(ICondition condition)
+        {
+            if (next == null)
                 next = condition;
-            }
-            else {
+            else
                 next.Append(condition);
-            }
         }
 
         /// <inheritdoc />
-        public void Delete() {
-            if (next != null) {
-                next.Delete();
-            }
+        public void Delete()
+        {
+            if (next != null) next.Delete();
 
             next = null;
         }
@@ -85,7 +89,8 @@ namespace SimpleFlaskManager.ProfileManager.Conditions {
         /// <returns>
         ///     <see cref="ICondition" /> if user wants to add the condition, otherwise null.
         /// </returns>
-        public static ICondition Add() {
+        public static ICondition Add()
+        {
             throw new NotImplementedException($"{typeof(BaseCondition<T>).Name} " +
                                               "class doesn't have ImGui widget for creating conditions.");
         }
@@ -96,7 +101,8 @@ namespace SimpleFlaskManager.ProfileManager.Conditions {
         /// <returns>
         ///     True if the next condition doesn't exists or is successful otherwise false.
         /// </returns>
-        protected bool EvaluateNext() {
+        protected bool EvaluateNext()
+        {
             return next == null || next.Evaluate();
         }
     }

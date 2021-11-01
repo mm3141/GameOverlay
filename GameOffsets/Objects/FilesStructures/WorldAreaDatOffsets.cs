@@ -1,9 +1,11 @@
-﻿namespace GameOffsets.Objects.FilesStructures {
-    using System;
-    using System.Runtime.InteropServices;
+﻿using System;
+using System.Runtime.InteropServices;
 
+namespace GameOffsets.Objects.FilesStructures
+{
     [StructLayout(LayoutKind.Explicit, Pack = 1)]
-    public struct WorldAreaDatOffsets {
+    public struct WorldAreaDatOffsets
+    {
         [FieldOffset(0x00)] public IntPtr IdPtr;
         [FieldOffset(0x08)] public IntPtr NamePtr;
         [FieldOffset(0x10)] public int Act;

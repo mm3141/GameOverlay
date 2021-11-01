@@ -2,19 +2,21 @@
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
-namespace SimpleFlaskManager.ProfileManager {
-    using System;
-    using System.Collections.Generic;
-    using System.Numerics;
-    using Conditions;
-    using GameHelper;
-    using GameHelper.Utils;
-    using ImGuiNET;
+using System;
+using System.Collections.Generic;
+using System.Numerics;
+using GameHelper;
+using GameHelper.Utils;
+using ImGuiNET;
+using SimpleFlaskManager.ProfileManager.Conditions;
 
+namespace SimpleFlaskManager.ProfileManager
+{
     /// <summary>
     ///     A class containing the rules for drinking the flask.
     /// </summary>
-    public class Profile {
+    public class Profile
+    {
         private ConditionHelper.ConditionEnum newConditionType;
         private int ruleIndexToDelete = -1;
 
@@ -28,41 +30,37 @@ namespace SimpleFlaskManager.ProfileManager {
         ///     A helper function to draw profile settings on ImGui window
         ///     so that user can modify it.
         /// </summary>
-        public void DrawSettings() {
-            if (ImGui.Button("+")) {
-                Rules.Add(RuleStruct.GetNewRule(Rules.Count));
-            }
+        public void DrawSettings()
+        {
+            if (ImGui.Button("+")) Rules.Add(RuleStruct.GetNewRule(Rules.Count));
 
             ImGui.SameLine();
-            if (ImGui.BeginTabBar("Profile Rules", ImGuiTabBarFlags.AutoSelectNewTabs | ImGuiTabBarFlags.Reorderable)) {
-                for (var i = 0; i < Rules.Count; i++) {
+            if (ImGui.BeginTabBar("Profile Rules", ImGuiTabBarFlags.AutoSelectNewTabs | ImGuiTabBarFlags.Reorderable))
+            {
+                for (var i = 0; i < Rules.Count; i++)
+                {
                     var currRule = Rules[i];
                     var shouldNotDelete = true;
-                    if (ImGui.BeginTabItem($"{currRule.Name}###Rule{i}", ref shouldNotDelete)) {
-                        if (ImGui.Checkbox($"Enable##{i}", ref currRule.Enable)) {
-                            Rules[i] = currRule;
-                        }
+                    if (ImGui.BeginTabItem($"{currRule.Name}###Rule{i}", ref shouldNotDelete))
+                    {
+                        if (ImGui.Checkbox($"Enable##{i}", ref currRule.Enable)) Rules[i] = currRule;
 
-                        if (ImGui.InputText($"Name##{i}", ref currRule.Name, 20)) {
-                            Rules[i] = currRule;
-                        }
+                        if (ImGui.InputText($"Name##{i}", ref currRule.Name, 20)) Rules[i] = currRule;
 
-                        if (UiHelper.NonContinuousEnumComboBox("Key", ref currRule.Key)) {
-                            Rules[i] = currRule;
-                        }
+                        if (UiHelper.NonContinuousEnumComboBox("Key", ref currRule.Key)) Rules[i] = currRule;
 
-                        if (ImGui.TreeNodeEx("Add New condition", ImGuiTreeNodeFlags.NoTreePushOnOpen)) {
+                        if (ImGui.TreeNodeEx("Add New condition", ImGuiTreeNodeFlags.NoTreePushOnOpen))
+                        {
                             UiHelper.EnumComboBox("Condition", ref newConditionType);
                             ImGui.PushItemWidth(ImGui.GetContentRegionAvail().X / 6);
                             ImGui.Separator();
                             var newCondition = ConditionHelper.EnumToObject(newConditionType);
-                            if (newCondition != null) {
-                                if (currRule.Condition == null) {
+                            if (newCondition != null)
+                            {
+                                if (currRule.Condition == null)
                                     currRule.Condition = newCondition;
-                                }
-                                else {
+                                else
                                     currRule.Condition.Append(newCondition);
-                                }
 
                                 Rules[i] = currRule;
                             }
@@ -72,7 +70,8 @@ namespace SimpleFlaskManager.ProfileManager {
                         }
 
                         if (ImGui.TreeNodeEx("Existing Conditions (all of them have to be true)",
-                            ImGuiTreeNodeFlags.NoTreePushOnOpen | ImGuiTreeNodeFlags.DefaultOpen)) {
+                            ImGuiTreeNodeFlags.NoTreePushOnOpen | ImGuiTreeNodeFlags.DefaultOpen))
+                        {
                             ImGui.PushItemWidth(ImGui.GetContentRegionAvail().X / 6);
                             Rules[i].Condition?.Display();
                             ImGui.PopItemWidth();
@@ -81,7 +80,8 @@ namespace SimpleFlaskManager.ProfileManager {
                         ImGui.EndTabItem();
                     }
 
-                    if (!shouldNotDelete) {
+                    if (!shouldNotDelete)
+                    {
                         ruleIndexToDelete = i;
                         ImGui.OpenPopup("RuleDeleteConfirmation");
                     }
@@ -92,22 +92,24 @@ namespace SimpleFlaskManager.ProfileManager {
             }
         }
 
-        private void DrawConfirmationPopup() {
+        private void DrawConfirmationPopup()
+        {
             ImGui.SetNextWindowPos(new Vector2(Core.Overlay.Size.X / 3f, Core.Overlay.Size.Y / 3f));
-            if (ImGui.BeginPopup("RuleDeleteConfirmation")) {
+            if (ImGui.BeginPopup("RuleDeleteConfirmation"))
+            {
                 ImGui.Text($"Do you want to delete rule with name: {Rules[ruleIndexToDelete].Name}?");
                 ImGui.Separator();
                 if (ImGui.Button("Yes",
-                    new Vector2(ImGui.GetContentRegionAvail().X / 2f, ImGui.GetTextLineHeight() * 2))) {
+                    new Vector2(ImGui.GetContentRegionAvail().X / 2f, ImGui.GetTextLineHeight() * 2)))
+                {
                     Rules[ruleIndexToDelete].Condition?.Delete();
                     Rules.RemoveAt(ruleIndexToDelete);
                     ImGui.CloseCurrentPopup();
                 }
 
                 ImGui.SameLine();
-                if (ImGui.Button("No", new Vector2(ImGui.GetContentRegionAvail().X, ImGui.GetTextLineHeight() * 2))) {
+                if (ImGui.Button("No", new Vector2(ImGui.GetContentRegionAvail().X, ImGui.GetTextLineHeight() * 2)))
                     ImGui.CloseCurrentPopup();
-                }
 
                 ImGui.EndPopup();
             }
@@ -116,7 +118,8 @@ namespace SimpleFlaskManager.ProfileManager {
         /// <summary>
         ///     A struct for storing condition and the key to press.
         /// </summary>
-        public struct RuleStruct {
+        public struct RuleStruct
+        {
             /// <summary>
             ///     Enable/Disable the rule.
             /// </summary>
@@ -142,7 +145,8 @@ namespace SimpleFlaskManager.ProfileManager {
             /// </summary>
             /// <param name="ruleCounter">Rule number in the profile.</param>
             /// <returns>returns a new rule.</returns>
-            public static RuleStruct GetNewRule(int ruleCounter) {
+            public static RuleStruct GetNewRule(int ruleCounter)
+            {
                 var newrule = default(RuleStruct);
                 newrule.Name = $"{ruleCounter}";
                 return newrule;

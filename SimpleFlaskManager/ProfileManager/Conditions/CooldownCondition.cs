@@ -2,15 +2,17 @@
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
-namespace SimpleFlaskManager.ProfileManager.Conditions {
-    using System.Diagnostics;
-    using ImGuiNET;
+using System.Diagnostics;
+using ImGuiNET;
 
+namespace SimpleFlaskManager.ProfileManager.Conditions
+{
     /// <summary>
     ///     For triggering a flask on number of flask charges the flask got.
     /// </summary>
     public class CooldownCondition
-        : BaseCondition<float> {
+        : BaseCondition<float>
+    {
         private static float cooldownStatic;
 
         private readonly Stopwatch cooldownTimer = Stopwatch.StartNew();
@@ -21,7 +23,8 @@ namespace SimpleFlaskManager.ProfileManager.Conditions {
         /// <param name="cooldown">Cooldown time in seconds.</param>
         public CooldownCondition(float cooldown)
             : base(OperatorEnum.BIGGER_THAN, cooldown) // OperatorEnum is ignored in this condition.
-        { }
+        {
+        }
 
         /// <summary>
         ///     Draws the ImGui widget for adding the condition.
@@ -29,36 +32,39 @@ namespace SimpleFlaskManager.ProfileManager.Conditions {
         /// <returns>
         ///     <see cref="ICondition" /> if user wants to add the condition, otherwise null.
         /// </returns>
-        public new static CooldownCondition Add() {
+        public new static CooldownCondition Add()
+        {
             ToImGui(ref cooldownStatic);
             ImGui.SameLine();
-            if (ImGui.Button("Add##FlaskCharges") && cooldownStatic >= 0.0f) {
+            if (ImGui.Button("Add##FlaskCharges") && cooldownStatic >= 0.0f)
                 return new CooldownCondition(cooldownStatic);
-            }
 
             return null;
         }
 
         /// <inheritdoc />
-        public override void Display(int index = 0) {
+        public override void Display(int index = 0)
+        {
             ToImGui(ref rightHandOperand);
             base.Display(index);
         }
 
         /// <inheritdoc />
-        public override bool Evaluate() {
+        public override bool Evaluate()
+        {
             var elapsedSeconds = cooldownTimer.ElapsedMilliseconds / 1000f;
-            if (elapsedSeconds > rightHandOperand) {
-                if (Next() == null || EvaluateNext()) {
+            if (elapsedSeconds > rightHandOperand)
+                if (Next() == null || EvaluateNext())
+                {
                     cooldownTimer.Restart();
                     return true;
                 }
-            }
 
             return false;
         }
 
-        private static void ToImGui(ref float cooldown) {
+        private static void ToImGui(ref float cooldown)
+        {
             ImGui.Text("Wait for ");
             ImGui.SameLine();
             ImGui.DragFloat("seconds##CooldownConditionCooldown", ref cooldown, 0.1f, 0.0f, 30.0f);

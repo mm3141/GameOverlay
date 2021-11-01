@@ -2,19 +2,21 @@
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
-namespace SimpleFlaskManager.ProfileManager.Conditions {
-    using System;
-    using GameHelper;
-    using GameHelper.RemoteObjects.Components;
-    using GameHelper.Utils;
-    using ImGuiNET;
-    using Newtonsoft.Json;
+using System;
+using GameHelper;
+using GameHelper.RemoteObjects.Components;
+using GameHelper.Utils;
+using ImGuiNET;
+using Newtonsoft.Json;
 
+namespace SimpleFlaskManager.ProfileManager.Conditions
+{
     /// <summary>
     ///     For triggering a flask on number of flask charges the flask got.
     /// </summary>
     public class FlaskChargesCondition
-        : BaseCondition<int> {
+        : BaseCondition<int>
+    {
         private static OperatorEnum operatorStatic = OperatorEnum.BIGGER_THAN;
         private static int flaskSlotStatic = 1;
         private static int chargesStatic = 10;
@@ -28,7 +30,8 @@ namespace SimpleFlaskManager.ProfileManager.Conditions {
         /// <param name="flaskSlot">Flask slot number who's charges to look for.</param>
         /// <param name="charges">Flask charges threshold to use.</param>
         public FlaskChargesCondition(OperatorEnum operator_, int flaskSlot, int charges)
-            : base(operator_, charges) {
+            : base(operator_, charges)
+        {
             slot = flaskSlot;
         }
 
@@ -38,44 +41,45 @@ namespace SimpleFlaskManager.ProfileManager.Conditions {
         /// <returns>
         ///     <see cref="ICondition" /> if user wants to add the condition, otherwise null.
         /// </returns>
-        public new static FlaskChargesCondition Add() {
+        public new static FlaskChargesCondition Add()
+        {
             ToImGui(ref operatorStatic, ref flaskSlotStatic, ref chargesStatic);
             ImGui.SameLine();
             if (ImGui.Button("Add##FlaskCharges") &&
                 (operatorStatic == OperatorEnum.BIGGER_THAN ||
-                 operatorStatic == OperatorEnum.LESS_THAN)) {
+                 operatorStatic == OperatorEnum.LESS_THAN))
                 return new FlaskChargesCondition(operatorStatic, flaskSlotStatic, chargesStatic);
-            }
 
             return null;
         }
 
         /// <inheritdoc />
-        public override void Display(int index = 0) {
+        public override void Display(int index = 0)
+        {
             ToImGui(ref conditionOperator, ref slot, ref rightHandOperand);
             base.Display(index);
         }
 
         /// <inheritdoc />
-        public override bool Evaluate() {
+        public override bool Evaluate()
+        {
             var flask = Core.States.InGameStateObject.CurrentAreaInstance.ServerDataObject.FlaskInventory[0, slot - 1];
-            if (flask.Address == IntPtr.Zero) {
-                return false;
-            }
+            if (flask.Address == IntPtr.Zero) return false;
 
-            if (flask.TryGetComponent<Charges>(out var chargesComponent)) {
-                return conditionOperator switch {
+            if (flask.TryGetComponent<Charges>(out var chargesComponent))
+                return conditionOperator switch
+                       {
                            OperatorEnum.BIGGER_THAN => chargesComponent.Current > rightHandOperand,
                            OperatorEnum.LESS_THAN => chargesComponent.Current < rightHandOperand,
                            _ => throw new Exception($"FlaskChargesCondition doesn't support {conditionOperator}.")
                        }
                        && EvaluateNext();
-            }
 
             return false;
         }
 
-        private static void ToImGui(ref OperatorEnum operator_, ref int flaskSlot, ref int charges) {
+        private static void ToImGui(ref OperatorEnum operator_, ref int flaskSlot, ref int charges)
+        {
             ImGui.Text($"Only {OperatorEnum.BIGGER_THAN} & {OperatorEnum.LESS_THAN} supported.");
             ImGui.Text("Flask");
             ImGui.SameLine();

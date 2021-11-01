@@ -2,12 +2,14 @@
 // Copyright (c) None. All rights reserved.
 // </copyright>
 
-namespace GameOffsets.Natives {
-    using System;
-    using System.Runtime.InteropServices;
+using System;
+using System.Runtime.InteropServices;
 
+namespace GameOffsets.Natives
+{
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public struct StdWString {
+    public struct StdWString
+    {
         public IntPtr Buffer;
 
         //// There is an optimization in std::wstring, where
@@ -21,7 +23,8 @@ namespace GameOffsets.Natives {
         public int Capacity; // according to debugger this is long but for now int is working fine.
         public int PAD_1C;
 
-        public override string ToString() {
+        public override string ToString()
+        {
             return $"Buffer: {Buffer.ToInt64():X}, ReservedBytes: {ReservedBytes.ToInt64():X}, " +
                    $"Length: {Length}, Capacity: {Capacity}";
         }
