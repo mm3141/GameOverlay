@@ -31,13 +31,20 @@
         //// ReservedFlat does not change this value.
         public int ReservedPercent;
 
+        /// <summary>
+        /// Returns current Vital in percentage (excluding the reserved vital) or returns zero in case the Vital
+        /// doesn't exists.
+        /// </summary>
+        /// <returns></returns>
         public int CurrentInPercent()
         {
-            return this.Total > 0
-                ? (int)Math.Round(100 * this.Current /
-                                  (this.Total - (this.ReservedFlat +
-                                                 Math.Round(this.ReservedPercent * 0.0001 * this.Total))))
-                : 0;
+            if (this.Total == 0)
+            {
+                return 0;
+            }
+
+            var reserved = this.Total - this.ReservedFlat + Math.Round(this.ReservedPercent * 0.0001 * this.Total);
+            return (int)Math.Round(100 * this.Current / reserved);
         }
     }
 }
