@@ -11,9 +11,9 @@
     ///     Fill 1 value,
     ///     Use cheat engine on that HelloWorld Program.
     ///     HINT: use cout << &var << endl; to print memory address.
-    ///                                 NOTE: A reader function that uses this datastructure exists
-    ///                                 in SafeMemoryHandle class. If you modify this datastructure
-    ///                                 modify that function too.
+    ///     NOTE: A reader function that uses this datastructure exists
+    ///     in SafeMemoryHandle class. If you modify this datastructure
+    ///     modify that function too.
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct StdBucket

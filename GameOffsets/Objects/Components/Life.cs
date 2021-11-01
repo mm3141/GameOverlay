@@ -32,8 +32,8 @@
         public int ReservedPercent;
 
         /// <summary>
-        /// Returns current Vital in percentage (excluding the reserved vital) or returns zero in case the Vital
-        /// doesn't exists.
+        ///     Returns current Vital in percentage (excluding the reserved vital) or returns zero in case the Vital
+        ///     doesn't exists.
         /// </summary>
         /// <returns></returns>
         public int CurrentInPercent()
