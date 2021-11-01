@@ -1,8 +1,8 @@
-﻿namespace GameOffsets.Objects.FilesStructures
-{
-    using System;
-    using System.Runtime.InteropServices;
+﻿using System;
+using System.Runtime.InteropServices;
 
+namespace GameOffsets.Objects.FilesStructures
+{
     [StructLayout(LayoutKind.Explicit, Pack = 1)]
     public struct WorldAreaDatOffsets
     {

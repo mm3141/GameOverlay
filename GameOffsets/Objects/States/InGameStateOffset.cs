@@ -1,9 +1,9 @@
+using System;
+using System.Numerics;
+using System.Runtime.InteropServices;
+
 namespace GameOffsets.Objects.States
 {
-    using System;
-    using System.Numerics;
-    using System.Runtime.InteropServices;
-
     [StructLayout(LayoutKind.Explicit, Pack = 1)]
     public struct InGameStateOffset
     {

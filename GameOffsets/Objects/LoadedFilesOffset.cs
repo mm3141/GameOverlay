@@ -1,9 +1,9 @@
+using System;
+using System.Runtime.InteropServices;
+using GameOffsets.Natives;
+
 namespace GameOffsets.Objects
 {
-    using GameOffsets.Natives;
-    using System;
-    using System.Runtime.InteropServices;
-
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct LoadedFilesRootObject
     {
@@ -23,6 +23,7 @@ namespace GameOffsets.Objects
     public struct FileInfoValueStruct
     {
         [FieldOffset(0x08)] public StdWString Name;
+
         //[FieldOffset(0x28)] public int FileType;
         //[FieldOffset(0x30)] public IntPtr UnknownPtr;
         [FieldOffset(0x38)] public int AreaChangeCount;

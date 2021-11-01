@@ -1,7 +1,7 @@
-﻿namespace GameOffsets.Objects
-{
-    using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 
+namespace GameOffsets.Objects
+{
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct AreaChangeOffset
     {

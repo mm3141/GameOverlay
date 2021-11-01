@@ -1,8 +1,8 @@
-﻿namespace GameOffsets.Objects.Components
-{
-    using System;
-    using System.Runtime.InteropServices;
+﻿using System;
+using System.Runtime.InteropServices;
 
+namespace GameOffsets.Objects.Components
+{
     [StructLayout(LayoutKind.Explicit, Pack = 1)]
     public struct BaseOffsets
     {
