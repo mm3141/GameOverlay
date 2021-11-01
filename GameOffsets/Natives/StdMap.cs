@@ -4,11 +4,10 @@
     using System.Runtime.InteropServices;
 
     /// <summary>
-    /// A structure to read the c++ stdmap stored in the memory.
-    ///
-    /// NOTE: A reader function that uses this datastructure exists
-    /// in SafeMemoryHandle class. If you modify this datastructure
-    /// modify that too.
+    ///     A structure to read the c++ stdmap stored in the memory.
+    ///     NOTE: A reader function that uses this datastructure exists
+    ///     in SafeMemoryHandle class. If you modify this datastructure
+    ///     modify that too.
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct StdMap
@@ -20,8 +19,8 @@
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct StdMapNode<TKey, TValue>
-    where TKey : struct
-    where TValue : struct
+        where TKey : struct
+        where TValue : struct
     {
         public IntPtr Left; // 0x00
         public IntPtr Parent; // 0x08
@@ -36,8 +35,8 @@
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct StdMapNodeData<TKey, TValue>
-    where TKey : struct
-    where TValue : struct
+        where TKey : struct
+        where TValue : struct
     {
         public TKey Key;
         public TValue Value;
