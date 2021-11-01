@@ -4,11 +4,10 @@
     using System.Runtime.InteropServices;
 
     /// <summary>
-    /// A structure to read the c++ stdlist stored in the memory.
-    ///
-    /// NOTE: A reader function that uses this datastructure exists
-    /// in SafeMemoryHandle class. If you modify this datastructure
-    /// modify that function too.
+    ///     A structure to read the c++ stdlist stored in the memory.
+    ///     NOTE: A reader function that uses this datastructure exists
+    ///     in SafeMemoryHandle class. If you modify this datastructure
+    ///     modify that function too.
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct StdList
