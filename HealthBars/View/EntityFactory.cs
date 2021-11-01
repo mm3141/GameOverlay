@@ -1,60 +1,69 @@
 #nullable enable
-namespace HealthBars.View {
+namespace HealthBars.View
+{
     using Entities;
     using GameHelper;
     using GameHelper.RemoteObjects.Components;
     using GameHelper.RemoteObjects.States.InGameStateObjects;
 
     /// <summary>
-    /// 
     /// </summary>
-    public static class EntityFactory {
+    public static class EntityFactory
+    {
         /// <summary>
-        /// 
         /// </summary>
         /// <param name="entity"></param>
         /// <returns></returns>
-        public static IEntity? GetEntity(Entity entity) {
+        public static IEntity? GetEntity(Entity entity)
+        {
             var hasVital = entity.TryGetComponent<Life>(out var entityLife);
-            if (!hasVital || !entityLife.IsAlive) {
+            if (!hasVital || !entityLife.IsAlive)
+            {
                 return null;
             }
 
             var isBlockage = entity.TryGetComponent<TriggerableBlockage>(out _);
-            if (isBlockage) {
+            if (isBlockage)
+            {
                 return null;
             }
 
             var hasRender = entity.TryGetComponent<Render>(out _);
-            if (!hasRender) {
+            if (!hasRender)
+            {
                 return null;
             }
 
             var hasPositioned = entity.TryGetComponent<Positioned>(out var positioned);
-            if (!hasPositioned) {
+            if (!hasPositioned)
+            {
                 return null;
             }
 
             var isPlayer = entity.TryGetComponent<Player>(out _);
             var hasMagicProperties = entity.TryGetComponent<ObjectMagicProperties>(out _);
-            if (!hasMagicProperties && !isPlayer) {
+            if (!hasMagicProperties && !isPlayer)
+            {
                 return null;
             }
 
             var willDieAfterTime = entity.TryGetComponent<DiesAfterTime>(out _);
-            if (willDieAfterTime) {
+            if (willDieAfterTime)
+            {
                 return null;
             }
 
             var isCurrentPlayer =
                 entity.Address == Core.States.InGameStateObject.CurrentAreaInstance.Player.Address;
 
-            if (isCurrentPlayer) {
+            if (isCurrentPlayer)
+            {
                 return new CurrentPlayer();
             }
 
             var isFriendly = positioned.IsFriendly;
-            if (isFriendly) {
+            if (isFriendly)
+            {
                 return new Friendly();
             }
 

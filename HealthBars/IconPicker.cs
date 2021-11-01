@@ -2,7 +2,8 @@
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
-namespace HealthBars {
+namespace HealthBars
+{
     using System;
     using System.IO;
     using System.Numerics;
@@ -18,7 +19,8 @@ namespace HealthBars {
     ///     (3) There is no padding/margins/buffer-pixel between icon boxes
     ///     (i.e. where 1 box ends, another starts).
     /// </summary>
-    public class IconPicker {
+    public class IconPicker
+    {
         private const ImGuiWindowFlags PopUpFlags = ImGuiWindowFlags.AlwaysHorizontalScrollbar |
                                                     ImGuiWindowFlags.NoSavedSettings | ImGuiWindowFlags.NoBackground;
 
@@ -38,7 +40,8 @@ namespace HealthBars {
             string filePathName,
             Vector2 iconDimension,
             Vector2 clicked,
-            float iconScale) {
+            float iconScale)
+        {
             FilePathName = filePathName;
             Clicked = clicked;
             IconDimension = iconDimension;
@@ -55,7 +58,8 @@ namespace HealthBars {
         /// <param name="x">Default Icon Column number. Note: start from 0.</param>
         /// <param name="y">Default Icon Row number. Note: start from 0.</param>
         /// <param name="s">Default Icon size.</param>
-        public IconPicker(string filePathName, int totalColumns, int totalRows, int x, int y, int s) {
+        public IconPicker(string filePathName, int totalColumns, int totalRows, int x, int y, int s)
+        {
             FilePathName = filePathName;
             IconDimension = new Vector2(1f / totalColumns, 1f / totalRows);
             Clicked = new Vector2(x, y);
@@ -107,7 +111,8 @@ namespace HealthBars {
         ///     Show the Setting Widget for the selection of icon. This function assumes
         ///     that the ImGui window is already created.
         /// </summary>
-        public void ShowSettingWidget() {
+        public void ShowSettingWidget()
+        {
             ImGui.PushID(GetHashCode());
             ImGui.PushItemWidth(200);
             ImGui.InputFloat("##iconscale", ref iconScale, 1f, 1f);
@@ -117,18 +122,22 @@ namespace HealthBars {
             var buttonSize = new Vector2(ImGui.GetFontSize());
             Core.Overlay.AddOrGetImagePointer(FilePathName, out var p, out var w, out var h);
 
-            if (ImGui.ImageButton(TexturePtr, buttonSize, UV0, UV1)) {
+            if (ImGui.ImageButton(TexturePtr, buttonSize, UV0, UV1))
+            {
                 popUpPos = ImGui.GetWindowPos();
                 popUpPos.X += ImGui.GetWindowSize().X;
                 showPopUp = true;
             }
 
-            if (showPopUp) {
+            if (showPopUp)
+            {
                 ImGui.SetNextWindowPos(popUpPos, ImGuiCond.Appearing);
                 ImGui.SetNextWindowSize(new Vector2(400), ImGuiCond.Appearing);
                 var title = "Icon Picker (Double click to select an item)";
-                if (ImGui.Begin(title, ref showPopUp, PopUpFlags)) {
-                    if (ImGui.IsWindowHovered() && ImGui.GetIO().MouseDoubleClicked[0]) {
+                if (ImGui.Begin(title, ref showPopUp, PopUpFlags))
+                {
+                    if (ImGui.IsWindowHovered() && ImGui.GetIO().MouseDoubleClicked[0])
+                    {
                         var clicked = ImGui.GetIO().MouseClickedPos[0] - ImGui.GetCursorScreenPos();
                         var x = (int)(clicked.X / (w * IconDimension.X));
                         var y = (int)(clicked.Y / (h * IconDimension.Y));
@@ -136,7 +145,8 @@ namespace HealthBars {
                         UpdateUV0UV1();
                         showPopUp = false;
                     }
-                    else if (!ImGui.IsWindowFocused()) {
+                    else if (!ImGui.IsWindowFocused())
+                    {
                         showPopUp = false;
                     }
 
@@ -152,23 +162,28 @@ namespace HealthBars {
         /// <summary>
         ///     Uploads the sprite icon file as texture and updates the class data.
         /// </summary>
-        private void Initialize() {
-            if (File.Exists(FilePathName)) {
+        private void Initialize()
+        {
+            if (File.Exists(FilePathName))
+            {
                 UploadIconSpriteFile();
                 UpdateUV0UV1();
             }
-            else {
+            else
+            {
                 var message = $"Missing Icons (sprite) file with name: {FilePathName}";
                 throw new FileNotFoundException(message);
             }
         }
 
-        private void UploadIconSpriteFile() {
+        private void UploadIconSpriteFile()
+        {
             Core.Overlay.AddOrGetImagePointer(FilePathName, out var p, out var _, out var _);
             TexturePtr = p;
         }
 
-        private void UpdateUV0UV1() {
+        private void UpdateUV0UV1()
+        {
             var selected = Clicked;
             var size = IconDimension;
             UV0 = new Vector2(selected.X++ * size.X, selected.Y++ * size.Y);

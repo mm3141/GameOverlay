@@ -2,14 +2,16 @@
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
-namespace HealthBars {
+namespace HealthBars
+{
     using System.Numerics;
     using GameHelper.Plugin;
 
     /// <summary>
     ///     <see cref="HealthBars" /> plugin settings class.
     /// </summary>
-    public sealed class HealthBarsSettings : IPSettings {
+    public sealed class HealthBarsSettings : IPSettings
+    {
         /// <summary>
         ///     Culling range value.
         /// </summary>

@@ -1,19 +1,24 @@
-namespace HealthBars.View.Entities {
+namespace HealthBars.View.Entities
+{
     using System.Numerics;
     using GameHelper.RemoteEnums;
     using GameHelper.Utils;
 
     /// <inheritdoc />
-    public class Enemy : Default {
+    public class Enemy : Default
+    {
         /// <inheritdoc />
-        public override void Draw(EntityParams eP, SpriteController spriteController) {
+        public override void Draw(EntityParams eP, SpriteController spriteController)
+        {
             var scale = RarityBarScale(eP);
 
-            if (eP.Settings.ShowEnemyMana) {
+            if (eP.Settings.ShowEnemyMana)
+            {
                 AddDoubleEmptyBar(spriteController, eP, scale);
                 AddManaBar(spriteController, eP, scale, "Mana");
             }
-            else {
+            else
+            {
                 AddEmptyBar(spriteController, eP, scale);
             }
 
@@ -21,7 +26,8 @@ namespace HealthBars.View.Entities {
         }
 
         /// <inheritdoc />
-        public override bool ShouldDraw(EntityParams entityParams) {
+        public override bool ShouldDraw(EntityParams entityParams)
+        {
             var rarity = entityParams.Rarity;
             var settings = entityParams.Settings;
             return entityParams.HasMagicProperties && (
@@ -32,7 +38,8 @@ namespace HealthBars.View.Entities {
             );
         }
 
-        private static void AddHealthBar(SpriteController spriteController, EntityParams eP, float scale) {
+        private static void AddHealthBar(SpriteController spriteController, EntityParams eP, float scale)
+        {
             var hpPos = eP.Pos + new Vector2(0, 1) * scale;
             spriteController.DrawSprite("EmptyHP", scale, 1, 10, 1, 7, 110, 88, hpPos, 104, 7,
                 100f - eP.HpReserved, -1, false);
@@ -43,8 +50,10 @@ namespace HealthBars.View.Entities {
                 eP.HpPercent, -1, eP.Settings.ShowEnemyGradationMarks, inCullingRange, cullingColor, true, true);
         }
 
-        private static float RarityBarScale(EntityParams entityParams) {
-            return entityParams.Rarity switch {
+        private static float RarityBarScale(EntityParams entityParams)
+        {
+            return entityParams.Rarity switch
+            {
                 Rarity.Unique => entityParams.Settings.UniqueBarScale,
                 Rarity.Rare => entityParams.Settings.RareBarScale,
                 Rarity.Magic => entityParams.Settings.MagicBarScale,
@@ -52,7 +61,8 @@ namespace HealthBars.View.Entities {
             };
         }
 
-        private static bool InCullingRange(EntityParams entityParams, float hpPercent) {
+        private static bool InCullingRange(EntityParams entityParams, float hpPercent)
+        {
             return entityParams.ShowCulling && hpPercent > 0 &&
                    hpPercent < entityParams.Settings.CullingRange;
         }

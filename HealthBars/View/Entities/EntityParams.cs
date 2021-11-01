@@ -1,4 +1,5 @@
-namespace HealthBars.View.Entities {
+namespace HealthBars.View.Entities
+{
     using System.Numerics;
     using GameHelper.RemoteEnums;
     using GameHelper.RemoteObjects.Components;
@@ -6,58 +7,57 @@ namespace HealthBars.View.Entities {
     using GameHelper.Utils;
 
     /// <summary>
-    /// 
     /// </summary>
-    public class EntityParams {
+    public class EntityParams
+    {
         /// <summary>
-        /// 
         /// </summary>
         public readonly float EsPercent;
+
         /// <summary>
-        /// 
         /// </summary>
         public readonly float EsTotal;
+
         /// <summary>
-        /// 
         /// </summary>
         public readonly bool HasMagicProperties;
+
         /// <summary>
-        /// 
         /// </summary>
         public readonly float HpPercent;
+
         /// <summary>
-        /// 
         /// </summary>
         public readonly float HpReserved;
+
         /// <summary>
-        /// 
         /// </summary>
         public readonly float ManaPercent;
+
         /// <summary>
-        /// 
         /// </summary>
         public readonly float ManaReserved;
+
         /// <summary>
-        /// 
         /// </summary>
         public readonly Vector2 Pos;
+
         /// <summary>
-        /// 
         /// </summary>
         public readonly Rarity Rarity;
+
         /// <summary>
-        /// 
         /// </summary>
         public readonly HealthBarsSettings Settings;
 
 
         /// <summary>
-        /// 
         /// </summary>
         /// <param name="settings"></param>
         /// <param name="pos"></param>
         /// <param name="entity"></param>
-        public EntityParams(HealthBarsSettings settings, Vector2 pos, Entity entity) {
+        public EntityParams(HealthBarsSettings settings, Vector2 pos, Entity entity)
+        {
             Settings = settings;
             Pos = pos;
             HasMagicProperties = entity.TryGetComponent<ObjectMagicProperties>(out var magicProperties);
@@ -77,12 +77,10 @@ namespace HealthBars.View.Entities {
         }
 
         /// <summary>
-        /// 
         /// </summary>
         public uint BorderColor => HasMagicProperties && DrawBorder ? RarityColor(Rarity) : 0;
 
         /// <summary>
-        /// 
         /// </summary>
         public bool DrawBorder => HasMagicProperties && Settings.ShowRarityBorders && (
             Rarity == Rarity.Normal && Settings.ShowNormalBorders ||
@@ -92,7 +90,6 @@ namespace HealthBars.View.Entities {
         );
 
         /// <summary>
-        /// 
         /// </summary>
         public bool ShowCulling => HasMagicProperties && Settings.ShowCullRange && (
             Rarity == Rarity.Normal && Settings.ShowNormalCull ||
@@ -101,8 +98,10 @@ namespace HealthBars.View.Entities {
             Rarity == Rarity.Unique && Settings.ShowUniqueCull
         );
 
-        private uint RarityColor(Rarity rarity) {
-            return rarity switch {
+        private uint RarityColor(Rarity rarity)
+        {
+            return rarity switch
+            {
                 Rarity.Unique => UiHelper.Color(Settings.UniqueColor * 255f),
                 Rarity.Rare => UiHelper.Color(Settings.RareColor * 255f),
                 Rarity.Magic => UiHelper.Color(Settings.MagicColor * 255f),

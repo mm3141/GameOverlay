@@ -1,17 +1,17 @@
-namespace HealthBars {
+namespace HealthBars
+{
     using System.Collections.Generic;
     using System.Numerics;
     using GameHelper.Utils;
     using ImGuiNET;
 
     /// <summary>
-    /// 
     /// </summary>
-    public class SpriteController {
+    public class SpriteController
+    {
         private readonly Dictionary<string, IconPicker> sprites = new();
 
         /// <summary>
-        /// 
         /// </summary>
         /// <param name="spriteName"></param>
         /// <param name="scale"></param>
@@ -50,7 +50,8 @@ namespace HealthBars {
             uint borderColor = 0,
             bool inner = false,
             bool fill = false
-        ) {
+        )
+        {
             var draw = ImGui.GetBackgroundDrawList();
             var uv0 = new Vector2(sx / ssw, sy / ssh);
             var uv1 = new Vector2((sx + sw) / ssw, (sy + sh) / ssh);
@@ -63,7 +64,8 @@ namespace HealthBars {
 
             draw.AddImage(sprite.TexturePtr, pos, pos + bounds, uv0, uv1);
 
-            if (marks) {
+            if (marks)
+            {
                 var markColor = UiHelper.Color(255, 255, 255, 100);
                 Vector2 markLine = new(0, vBounds.Y - 1.5f);
                 Vector2 mark25 = new(vBounds.X * 0.25f, 0);
@@ -75,24 +77,27 @@ namespace HealthBars {
                 draw.AddLine(pos + mark75, pos + markLine + mark75, markColor);
             }
 
-            if (border) {
+            if (border)
+            {
                 var b1 = pos;
                 var b2 = pos + (inner ? bounds : vBounds);
 
-                if (fill) {
+                if (fill)
+                {
                     draw.AddRectFilled(b1, b2, borderColor);
                 }
-                else {
+                else
+                {
                     draw.AddRect(b1, b2, borderColor);
                 }
             }
         }
 
         /// <summary>
-        /// 
         /// </summary>
         /// <param name="spriteSheetPathName"></param>
-        public void AddSprites(string spriteSheetPathName) {
+        public void AddSprites(string spriteSheetPathName)
+        {
             sprites.TryAdd("ES", new IconPicker(spriteSheetPathName, 1, 8, 108, 19, 1));
             sprites.TryAdd("EmptyHP", new IconPicker(spriteSheetPathName, 1, 8, 108, 19, 1));
             sprites.TryAdd("EmptyMana", new IconPicker(spriteSheetPathName, 1, 8, 108, 19, 1));
