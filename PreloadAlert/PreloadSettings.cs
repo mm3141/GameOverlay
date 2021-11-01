@@ -2,14 +2,16 @@
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
-namespace PreloadAlert {
+namespace PreloadAlert
+{
     using System.Numerics;
     using GameHelper.Plugin;
 
     /// <summary>
     ///     Preload GUI settings.
     /// </summary>
-    public sealed class PreloadSettings : IPSettings {
+    public sealed class PreloadSettings : IPSettings
+    {
         /// <summary>
         ///     Background color of the preload alert window.
         /// </summary>
