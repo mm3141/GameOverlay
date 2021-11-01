@@ -1,8 +1,8 @@
-using System;
-using System.Runtime.InteropServices;
-
 namespace GameOffsets.Objects.States.InGameState
 {
+    using System;
+    using System.Runtime.InteropServices;
+
     /// <summary>
     ///     All offsets over here are UiElements.
     /// </summary>

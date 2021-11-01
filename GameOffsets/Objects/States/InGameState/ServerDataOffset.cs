@@ -1,9 +1,9 @@
-using System;
-using System.Runtime.InteropServices;
-using GameOffsets.Natives;
-
 namespace GameOffsets.Objects.States.InGameState
 {
+    using System;
+    using System.Runtime.InteropServices;
+    using Natives;
+
     [StructLayout(LayoutKind.Explicit, Pack = 1)]
     public struct ServerDataStructure
     {

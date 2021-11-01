@@ -1,8 +1,8 @@
-﻿using System;
-using System.Runtime.InteropServices;
-
-namespace GameOffsets.Natives
+﻿namespace GameOffsets.Natives
 {
+    using System;
+    using System.Runtime.InteropServices;
+
     /// <summary>
     ///     A structure to read the c++ stdlist stored in the memory.
     ///     NOTE: A reader function that uses this datastructure exists

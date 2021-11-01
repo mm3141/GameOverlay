@@ -1,8 +1,8 @@
-using System.Runtime.InteropServices;
-using GameOffsets.Natives;
-
 namespace GameOffsets.Objects.Components
 {
+    using System.Runtime.InteropServices;
+    using Natives;
+
     [StructLayout(LayoutKind.Explicit, Pack = 1)]
     public struct RenderOffsets
     {

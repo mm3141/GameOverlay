@@ -1,8 +1,8 @@
-﻿using System;
-using System.Runtime.InteropServices;
-
-namespace GameOffsets.Objects.Components
+﻿namespace GameOffsets.Objects.Components
 {
+    using System;
+    using System.Runtime.InteropServices;
+
     [StructLayout(LayoutKind.Explicit, Pack = 1)]
     public struct ChestOffsets
     {

@@ -1,8 +1,8 @@
-﻿using System;
-using System.Runtime.InteropServices;
-
-namespace GameOffsets.Natives
+﻿namespace GameOffsets.Natives
 {
+    using System;
+    using System.Runtime.InteropServices;
+
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct StdVector
     {
@@ -17,14 +17,14 @@ namespace GameOffsets.Natives
         /// <returns></returns>
         public long TotalElements(int elementSize)
         {
-            return (Last.ToInt64() - First.ToInt64()) / elementSize;
+            return (this.Last.ToInt64() - this.First.ToInt64()) / elementSize;
         }
 
         public override string ToString()
         {
-            return $"First: {First.ToInt64():X} - " +
-                   $"Last: {Last.ToInt64():X} - " +
-                   $"Size (bytes): {TotalElements(1)}";
+            return $"First: {this.First.ToInt64():X} - " +
+                   $"Last: {this.Last.ToInt64():X} - " +
+                   $"Size (bytes): {this.TotalElements(1)}";
         }
     }
 }

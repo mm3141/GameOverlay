@@ -2,11 +2,11 @@
 // Copyright (c) None. All rights reserved.
 // </copyright>
 
-using System;
-using System.Runtime.InteropServices;
-
 namespace GameOffsets.Natives
 {
+    using System;
+    using System.Runtime.InteropServices;
+
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct StdWString
     {
@@ -25,8 +25,8 @@ namespace GameOffsets.Natives
 
         public override string ToString()
         {
-            return $"Buffer: {Buffer.ToInt64():X}, ReservedBytes: {ReservedBytes.ToInt64():X}, " +
-                   $"Length: {Length}, Capacity: {Capacity}";
+            return $"Buffer: {this.Buffer.ToInt64():X}, ReservedBytes: {this.ReservedBytes.ToInt64():X}, " +
+                   $"Length: {this.Length}, Capacity: {this.Capacity}";
         }
     }
 }

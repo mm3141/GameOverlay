@@ -1,7 +1,7 @@
-﻿using System.Runtime.InteropServices;
-
-namespace GameOffsets.Natives
+﻿namespace GameOffsets.Natives
 {
+    using System.Runtime.InteropServices;
+
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct StdTuple3D<T>
     {
@@ -11,7 +11,7 @@ namespace GameOffsets.Natives
 
         public override string ToString()
         {
-            return $"X: {X}, Y: {Y}, Z: {Z}";
+            return $"X: {this.X}, Y: {this.Y}, Z: {this.Z}";
         }
     }
 }

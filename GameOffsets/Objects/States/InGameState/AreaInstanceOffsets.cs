@@ -1,9 +1,9 @@
-using System;
-using System.Runtime.InteropServices;
-using GameOffsets.Natives;
-
 namespace GameOffsets.Objects.States.InGameState
 {
+    using System;
+    using System.Runtime.InteropServices;
+    using Natives;
+
     [StructLayout(LayoutKind.Explicit, Pack = 1)]
     public struct AreaInstanceOffsets
     {
@@ -52,19 +52,19 @@ namespace GameOffsets.Objects.States.InGameState
 
         public override string ToString()
         {
-            return $"id: {id}";
+            return $"id: {this.id}";
         }
 
         public override bool Equals(object ob)
         {
-            if (ob is EntityNodeKey c) return id == c.id;
+            if (ob is EntityNodeKey c) return this.id == c.id;
 
             return false;
         }
 
         public override int GetHashCode()
         {
-            return id.GetHashCode();
+            return this.id.GetHashCode();
         }
 
         public static bool operator ==(EntityNodeKey left, EntityNodeKey right)
@@ -86,7 +86,7 @@ namespace GameOffsets.Objects.States.InGameState
 
         public override string ToString()
         {
-            return $"EntityPtr: {EntityPtr.ToInt64():X}";
+            return $"EntityPtr: {this.EntityPtr.ToInt64():X}";
         }
     }
 

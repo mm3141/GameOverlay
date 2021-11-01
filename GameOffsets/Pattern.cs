@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-
-namespace GameOffsets
+﻿namespace GameOffsets
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Globalization;
+    using System.Linq;
+
     public struct Pattern
     {
         /// <summary>
@@ -72,12 +72,12 @@ namespace GameOffsets
         /// </param>
         public Pattern(string name, string arrayOfHexBytes)
         {
-            Name = name;
+            this.Name = name;
             var arrayOfHexBytesList = arrayOfHexBytes.Split(
                 new[] { " ", "," }, StringSplitOptions.RemoveEmptyEntries).ToList();
 
-            BytesToSkip = arrayOfHexBytesList.FindIndex("^".Equals);
-            (Data, Mask) = ParseArrayOfHexBytes(
+            this.BytesToSkip = arrayOfHexBytesList.FindIndex("^".Equals);
+            (this.Data, this.Mask) = ParseArrayOfHexBytes(
                 arrayOfHexBytesList.Where(hex => hex != "^").ToList());
         }
 
@@ -91,9 +91,9 @@ namespace GameOffsets
         /// </param>
         public Pattern(string name, string arrayOfHexBytes, int bytesToSkip)
         {
-            Name = name;
-            BytesToSkip = bytesToSkip;
-            (Data, Mask) = ParseArrayOfHexBytes(arrayOfHexBytes.Split(
+            this.Name = name;
+            this.BytesToSkip = bytesToSkip;
+            (this.Data, this.Mask) = ParseArrayOfHexBytes(arrayOfHexBytes.Split(
                 new[] { " ", "," }, StringSplitOptions.RemoveEmptyEntries).ToList());
         }
 
@@ -103,14 +103,14 @@ namespace GameOffsets
         /// <returns>Pattern in string format.</returns>
         public override string ToString()
         {
-            var data = $"Name: {Name} Pattern: ";
-            for (var i = 0; i < Data.Length; i++)
-                if (Mask[i])
-                    data += $"0x{Data[i]:X} ";
+            var data = $"Name: {this.Name} Pattern: ";
+            for (var i = 0; i < this.Data.Length; i++)
+                if (this.Mask[i])
+                    data += $"0x{this.Data[i]:X} ";
                 else
                     data += "?? ";
 
-            data += $"BytesToSkip: {BytesToSkip}";
+            data += $"BytesToSkip: {this.BytesToSkip}";
             return data;
         }
     }

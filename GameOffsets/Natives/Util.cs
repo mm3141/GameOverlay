@@ -1,7 +1,7 @@
-﻿using System;
-
-namespace GameOffsets.Natives
+﻿namespace GameOffsets.Natives
 {
+    using System;
+
     public static class Util
     {
         /// <summary>

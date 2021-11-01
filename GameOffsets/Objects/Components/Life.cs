@@ -1,8 +1,8 @@
-﻿using System;
-using System.Runtime.InteropServices;
-
-namespace GameOffsets.Objects.Components
+﻿namespace GameOffsets.Objects.Components
 {
+    using System;
+    using System.Runtime.InteropServices;
+
     [StructLayout(LayoutKind.Explicit, Pack = 1)]
     public struct LifeOffset
     {
@@ -33,9 +33,10 @@ namespace GameOffsets.Objects.Components
 
         public int CurrentInPercent()
         {
-            return Total > 0
-                ? (int)Math.Round(100 * Current /
-                                  (Total - (ReservedFlat + Math.Round(ReservedPercent * 0.0001 * Total))))
+            return this.Total > 0
+                ? (int)Math.Round(100 * this.Current /
+                                  (this.Total - (this.ReservedFlat +
+                                                 Math.Round(this.ReservedPercent * 0.0001 * this.Total))))
                 : 0;
         }
     }

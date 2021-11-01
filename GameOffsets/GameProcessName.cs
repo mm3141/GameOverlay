@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
-
-namespace GameOffsets
+﻿namespace GameOffsets
 {
+    using System.Collections.Generic;
+
     public struct GameProcessDetails
     {
         /// <summary>

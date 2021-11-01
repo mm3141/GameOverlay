@@ -1,9 +1,9 @@
-﻿using System;
-using System.Runtime.InteropServices;
-using GameOffsets.Natives;
-
-namespace GameOffsets.Objects
+﻿namespace GameOffsets.Objects
 {
+    using System;
+    using System.Runtime.InteropServices;
+    using Natives;
+
     [StructLayout(LayoutKind.Explicit, Pack = 1)]
     public struct GameStateStaticOffset
     {

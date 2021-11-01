@@ -1,9 +1,9 @@
-﻿using System;
-using System.Runtime.InteropServices;
-using GameOffsets.Natives;
-
-namespace GameOffsets.Objects.Components
+﻿namespace GameOffsets.Objects.Components
 {
+    using System;
+    using System.Runtime.InteropServices;
+    using Natives;
+
     [StructLayout(LayoutKind.Explicit, Pack = 1)]
     public struct BuffsOffsets
     {
@@ -28,11 +28,11 @@ namespace GameOffsets.Objects.Components
 
         public override string ToString()
         {
-            var maxTime = float.IsInfinity(TotalTime) ? "Inf" : TotalTime.ToString();
-            var timeLeft = float.IsInfinity(TimeLeft) ? "Inf" : TimeLeft.ToString();
-            return $"BuffDefinationPtr: {BuffDefinationPtr.ToInt64():X}, MaxTime: {maxTime}, " +
-                   $"TimeLeft: {timeLeft}, Charges: {Charges}, " +
-                   $"Source Entity Id: {SourceEntityId}";
+            var maxTime = float.IsInfinity(this.TotalTime) ? "Inf" : this.TotalTime.ToString();
+            var timeLeft = float.IsInfinity(this.TimeLeft) ? "Inf" : this.TimeLeft.ToString();
+            return $"BuffDefinationPtr: {this.BuffDefinationPtr.ToInt64():X}, MaxTime: {maxTime}, " +
+                   $"TimeLeft: {timeLeft}, Charges: {this.Charges}, " +
+                   $"Source Entity Id: {this.SourceEntityId}";
         }
     }
 }

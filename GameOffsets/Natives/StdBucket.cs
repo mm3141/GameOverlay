@@ -1,8 +1,8 @@
-﻿using System;
-using System.Runtime.InteropServices;
-
-namespace GameOffsets.Natives
+﻿namespace GameOffsets.Natives
 {
+    using System;
+    using System.Runtime.InteropServices;
+
     /// <summary>
     ///     Not sure the name of this structure. POE game uses it in a lot of different places
     ///     it might be a stdbucket, std unordered_set or std_unordered_multiset.
