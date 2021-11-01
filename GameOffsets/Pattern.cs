@@ -105,10 +105,16 @@
         {
             var data = $"Name: {this.Name} Pattern: ";
             for (var i = 0; i < this.Data.Length; i++)
+            {
                 if (this.Mask[i])
+                {
                     data += $"0x{this.Data[i]:X} ";
+                }
                 else
+                {
                     data += "?? ";
+                }
+            }
 
             data += $"BytesToSkip: {this.BytesToSkip}";
             return data;

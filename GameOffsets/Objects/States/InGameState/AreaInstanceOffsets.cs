@@ -57,7 +57,10 @@ namespace GameOffsets.Objects.States.InGameState
 
         public override bool Equals(object ob)
         {
-            if (ob is EntityNodeKey c) return this.id == c.id;
+            if (ob is EntityNodeKey c)
+            {
+                return this.id == c.id;
+            }
 
             return false;
         }
