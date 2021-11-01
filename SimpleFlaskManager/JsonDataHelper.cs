@@ -2,23 +2,25 @@
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
-namespace SimpleFlaskManager {
+namespace SimpleFlaskManager
+{
     using System.Collections.Generic;
 
     /// <summary>
-    ///     A helper class that reads JSON data and provides useful functions.
+    /// A helper class that reads JSON data and provides useful functions.
     /// </summary>
-    public static class JsonDataHelper {
+    public static class JsonDataHelper
+    {
         /// <summary>
-        ///     Gets or sets the flask buff name by looking at flask base name.
+        /// Gets or sets the flask buff name by looking at flask base name.
         /// </summary>
         public static Dictionary<string, List<string>> FlaskNameToBuffGroups { get; set; } =
-            new();
+            new Dictionary<string, List<string>>();
 
         /// <summary>
-        ///     Gets or sets the status effects in a group and the group name.
+        /// Gets or sets the status effects in a group and the group name.
         /// </summary>
         public static Dictionary<string, List<string>> StatusEffectGroups { get; set; } =
-            new();
+            new Dictionary<string, List<string>>();
     }
 }

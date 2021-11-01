@@ -1,191 +1,51 @@
 {
-  "Small Life Flask": [
-    "flask_effect_life"
-  ],
-  "Medium Life Flask": [
-    "flask_effect_life"
-  ],
-  "Large Life Flask": [
-    "flask_effect_life"
-  ],
-  "Greater Life Flask": [
-    "flask_effect_life"
-  ],
-  "Grand Life Flask": [
-    "flask_effect_life"
-  ],
-  "Giant Life Flask": [
-    "flask_effect_life"
-  ],
-  "Colossal Life Flask": [
-    "flask_effect_life"
-  ],
-  "Sacred Life Flask": [
-    "flask_effect_life"
-  ],
-  "Hallowed Life Flask": [
-    "flask_effect_life"
-  ],
-  "Sanctified Life Flask": [
-    "flask_effect_life"
-  ],
-  "Divine Life Flask": [
-    "flask_effect_life"
-  ],
-  "Eternal Life Flask": [
-    "flask_effect_life"
-  ],
-  "Small Mana Flask": [
-    "flask_effect_mana",
-    "flask_effect_mana_not_removed_when_full",
-    "flask_instant_mana_recovery_at_end_of_effect"
-  ],
-  "Medium Mana Flask": [
-    "flask_effect_mana",
-    "flask_effect_mana_not_removed_when_full",
-    "flask_instant_mana_recovery_at_end_of_effect"
-  ],
-  "Large Mana Flask": [
-    "flask_effect_mana",
-    "flask_effect_mana_not_removed_when_full",
-    "flask_instant_mana_recovery_at_end_of_effect"
-  ],
-  "Greater Mana Flask": [
-    "flask_effect_mana",
-    "flask_effect_mana_not_removed_when_full",
-    "flask_instant_mana_recovery_at_end_of_effect"
-  ],
-  "Grand Mana Flask": [
-    "flask_effect_mana",
-    "flask_effect_mana_not_removed_when_full",
-    "flask_instant_mana_recovery_at_end_of_effect"
-  ],
-  "Giant Mana Flask": [
-    "flask_effect_mana",
-    "flask_effect_mana_not_removed_when_full",
-    "flask_instant_mana_recovery_at_end_of_effect"
-  ],
-  "Colossal Mana Flask": [
-    "flask_effect_mana",
-    "flask_effect_mana_not_removed_when_full",
-    "flask_instant_mana_recovery_at_end_of_effect"
-  ],
-  "Sacred Mana Flask": [
-    "flask_effect_mana",
-    "flask_effect_mana_not_removed_when_full",
-    "flask_instant_mana_recovery_at_end_of_effect"
-  ],
-  "Hallowed Mana Flask": [
-    "flask_effect_mana",
-    "flask_effect_mana_not_removed_when_full",
-    "flask_instant_mana_recovery_at_end_of_effect"
-  ],
-  "Sanctified Mana Flask": [
-    "flask_effect_mana",
-    "flask_effect_mana_not_removed_when_full",
-    "flask_instant_mana_recovery_at_end_of_effect"
-  ],
-  "Divine Mana Flask": [
-    "flask_effect_mana",
-    "flask_effect_mana_not_removed_when_full",
-    "flask_instant_mana_recovery_at_end_of_effect"
-  ],
-  "Eternal Mana Flask": [
-    "flask_effect_mana",
-    "flask_effect_mana_not_removed_when_full",
-    "flask_instant_mana_recovery_at_end_of_effect"
-  ],
-  "Small Hybrid Flask": [
-    "flask_effect_life",
-    "flask_effect_mana",
-    "flask_effect_mana_not_removed_when_full",
-    "flask_instant_mana_recovery_at_end_of_effect"
-  ],
-  "Medium Hybrid Flask": [
-    "flask_effect_life",
-    "flask_effect_mana",
-    "flask_effect_mana_not_removed_when_full",
-    "flask_instant_mana_recovery_at_end_of_effect"
-  ],
-  "Large Hybrid Flask": [
-    "flask_effect_life",
-    "flask_effect_mana",
-    "flask_effect_mana_not_removed_when_full",
-    "flask_instant_mana_recovery_at_end_of_effect"
-  ],
-  "Colossal Hybrid Flask": [
-    "flask_effect_life",
-    "flask_effect_mana",
-    "flask_effect_mana_not_removed_when_full",
-    "flask_instant_mana_recovery_at_end_of_effect"
-  ],
-  "Sacred Hybrid Flask": [
-    "flask_effect_life",
-    "flask_effect_mana",
-    "flask_effect_mana_not_removed_when_full",
-    "flask_instant_mana_recovery_at_end_of_effect"
-  ],
-  "Hallowed Hybrid Flask": [
-    "flask_effect_life",
-    "flask_effect_mana",
-    "flask_effect_mana_not_removed_when_full",
-    "flask_instant_mana_recovery_at_end_of_effect"
-  ],
-  "Diamond Flask": [
-    "flask_utility_critical_strike_chance"
-  ],
-  "Ruby Flask": [
-    "flask_utility_resist_fire"
-  ],
-  "Sapphire Flask": [
-    "flask_utility_resist_cold"
-  ],
-  "Topaz Flask": [
-    "flask_utility_resist_lightning"
-  ],
-  "Granite Flask": [
-    "flask_utility_ironskin"
-  ],
-  "Quicksilver Flask": [
-    "flask_utility_sprint"
-  ],
-  "Amethyst Flask": [
-    "flask_utility_resist_chaos"
-  ],
-  "Quartz Flask": [
-    "flask_utility_phase"
-  ],
-  "Jade Flask": [
-    "flask_utility_evasion"
-  ],
-  "Basalt Flask": [
-    "flask_utility_stone"
-  ],
-  "Aquamarine Flask": [
-    "flask_utility_aquamarine"
-  ],
-  "Stibnite Flask": [
-    "flask_utility_smoke"
-  ],
-  "Sulphur Flask": [
-    "flask_utility_consecrate"
-  ],
-  "Silver Flask": [
-    "flask_utility_haste"
-  ],
-  "Bismuth Flask": [
-    "flask_utility_prismatic"
-  ],
-  "Gold Flask": [
-    "flask_utility_rarity"
-  ],
-  "Corundum Flask": [
-    "flask_utility_stun_protection"
-  ],
-  "Iron Flask": [
-    "flask_utility_ward"
-  ],
-  "Steel Flask": [
-    "flask_utility_adaptation"
-  ]
+  "Small Life Flask": [ "flask_effect_life" ],
+  "Medium Life Flask": [ "flask_effect_life" ],
+  "Large Life Flask": [ "flask_effect_life" ],
+  "Greater Life Flask": [ "flask_effect_life" ],
+  "Grand Life Flask": [ "flask_effect_life" ],
+  "Giant Life Flask": [ "flask_effect_life" ],
+  "Colossal Life Flask": [ "flask_effect_life" ],
+  "Sacred Life Flask": [ "flask_effect_life" ],
+  "Hallowed Life Flask": [ "flask_effect_life" ],
+  "Sanctified Life Flask": [ "flask_effect_life" ],
+  "Divine Life Flask": [ "flask_effect_life" ],
+  "Eternal Life Flask": [ "flask_effect_life" ],
+  "Small Mana Flask": [ "flask_effect_mana", "flask_effect_mana_not_removed_when_full", "flask_instant_mana_recovery_at_end_of_effect" ],
+  "Medium Mana Flask": [ "flask_effect_mana", "flask_effect_mana_not_removed_when_full", "flask_instant_mana_recovery_at_end_of_effect" ],
+  "Large Mana Flask": [ "flask_effect_mana", "flask_effect_mana_not_removed_when_full", "flask_instant_mana_recovery_at_end_of_effect" ],
+  "Greater Mana Flask": [ "flask_effect_mana", "flask_effect_mana_not_removed_when_full", "flask_instant_mana_recovery_at_end_of_effect" ],
+  "Grand Mana Flask": [ "flask_effect_mana", "flask_effect_mana_not_removed_when_full", "flask_instant_mana_recovery_at_end_of_effect" ],
+  "Giant Mana Flask": [ "flask_effect_mana", "flask_effect_mana_not_removed_when_full", "flask_instant_mana_recovery_at_end_of_effect" ],
+  "Colossal Mana Flask": [ "flask_effect_mana", "flask_effect_mana_not_removed_when_full", "flask_instant_mana_recovery_at_end_of_effect" ],
+  "Sacred Mana Flask": [ "flask_effect_mana", "flask_effect_mana_not_removed_when_full", "flask_instant_mana_recovery_at_end_of_effect" ],
+  "Hallowed Mana Flask": [ "flask_effect_mana", "flask_effect_mana_not_removed_when_full", "flask_instant_mana_recovery_at_end_of_effect" ],
+  "Sanctified Mana Flask": [ "flask_effect_mana", "flask_effect_mana_not_removed_when_full", "flask_instant_mana_recovery_at_end_of_effect" ],
+  "Divine Mana Flask": [ "flask_effect_mana", "flask_effect_mana_not_removed_when_full", "flask_instant_mana_recovery_at_end_of_effect" ],
+  "Eternal Mana Flask": [ "flask_effect_mana", "flask_effect_mana_not_removed_when_full", "flask_instant_mana_recovery_at_end_of_effect" ],
+  "Small Hybrid Flask": [ "flask_effect_life", "flask_effect_mana", "flask_effect_mana_not_removed_when_full", "flask_instant_mana_recovery_at_end_of_effect" ],
+  "Medium Hybrid Flask": [ "flask_effect_life", "flask_effect_mana", "flask_effect_mana_not_removed_when_full", "flask_instant_mana_recovery_at_end_of_effect" ],
+  "Large Hybrid Flask": [ "flask_effect_life", "flask_effect_mana", "flask_effect_mana_not_removed_when_full", "flask_instant_mana_recovery_at_end_of_effect" ],
+  "Colossal Hybrid Flask": [ "flask_effect_life", "flask_effect_mana", "flask_effect_mana_not_removed_when_full", "flask_instant_mana_recovery_at_end_of_effect" ],
+  "Sacred Hybrid Flask": [ "flask_effect_life", "flask_effect_mana", "flask_effect_mana_not_removed_when_full", "flask_instant_mana_recovery_at_end_of_effect" ],
+  "Hallowed Hybrid Flask": [ "flask_effect_life", "flask_effect_mana", "flask_effect_mana_not_removed_when_full", "flask_instant_mana_recovery_at_end_of_effect" ],
+  "Diamond Flask": [ "flask_utility_critical_strike_chance" ],
+  "Ruby Flask": [ "flask_utility_resist_fire" ],
+  "Sapphire Flask": [ "flask_utility_resist_cold" ],
+  "Topaz Flask": [ "flask_utility_resist_lightning" ],
+  "Granite Flask": [ "flask_utility_ironskin" ],
+  "Quicksilver Flask": [ "flask_utility_sprint" ],
+  "Amethyst Flask": [ "flask_utility_resist_chaos" ],
+  "Quartz Flask": [ "flask_utility_phase" ],
+  "Jade Flask": [ "flask_utility_evasion" ],
+  "Basalt Flask": [ "flask_utility_stone" ],
+  "Aquamarine Flask": [ "flask_utility_aquamarine" ],
+  "Stibnite Flask": [ "flask_utility_smoke" ],
+  "Sulphur Flask": [ "flask_utility_consecrate" ],
+  "Silver Flask": [ "flask_utility_haste" ],
+  "Bismuth Flask": [ "flask_utility_prismatic" ],
+  "Gold Flask": [ "flask_utility_rarity" ],
+  "Corundum Flask": [ "flask_utility_stun_protection" ],
+  "Iron Flask": [ "flask_utility_ward" ],
+  "Steel Flask": [ "flask_utility_adaptation" ]
 }
