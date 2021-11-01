@@ -87,5 +87,10 @@ namespace GameHelper.Settings
         /// when in town/hideout.
         /// </summary>
         public bool DisableEntityProcessingInTownOrHideout = false;
+
+        /// <summary>
+        /// Gets a value indicating whether user wants to hide the overlay on start or not.
+        /// </summary>
+        public bool HideSettingWindowOnStart = false;
     }
 }
