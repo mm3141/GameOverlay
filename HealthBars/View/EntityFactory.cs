@@ -10,51 +10,54 @@ namespace HealthBars.View
     /// </summary>
     public class EntityFactory
     {
-        private readonly Enemy _enemy = new();
-        private readonly Friendly _friendly = new();
-        private readonly CurrentPlayer _player = new();
+        private readonly Invalid invalid = new();
+        private readonly Enemy enemy = new();
+        private readonly Friendly friendly = new();
+        private readonly CurrentPlayer player = new();
 
         /// <summary>
         /// </summary>
         /// <param name="entity"></param>
+        /// <param name="drawEntity"></param>
         /// <returns></returns>
-        public IEntity? GetEntity(Entity entity)
+        public bool TryGetEntity(Entity entity, out IEntity drawEntity)
         {
+            drawEntity = this.invalid;
             var hasVital = entity.TryGetComponent<Life>(out var entityLife);
             if (!hasVital || !entityLife.IsAlive)
             {
-                return null;
+                return false;
             }
 
             var isBlockage = entity.TryGetComponent<TriggerableBlockage>(out _);
             if (isBlockage)
             {
-                return null;
+                return false;
             }
 
             var hasRender = entity.TryGetComponent<Render>(out _);
             if (!hasRender)
             {
-                return null;
+                return false;
             }
 
             var hasPositioned = entity.TryGetComponent<Positioned>(out var positioned);
             if (!hasPositioned)
             {
-                return null;
+                return false;
             }
 
             var isPlayer = entity.TryGetComponent<Player>(out _);
             var hasMagicProperties = entity.TryGetComponent<ObjectMagicProperties>(out _);
             if (!hasMagicProperties && !isPlayer)
             {
-                return null;
+                return false;
             }
 
             var willDieAfterTime = entity.TryGetComponent<DiesAfterTime>(out _);
             if (willDieAfterTime)
             {
-                return null;
+                return false;
             }
 
             var isCurrentPlayer =
@@ -62,16 +65,19 @@ namespace HealthBars.View
 
             if (isCurrentPlayer)
             {
-                return this._player;
+                drawEntity = this.player;
+                return true;
             }
 
             var isFriendly = positioned.IsFriendly;
             if (isFriendly)
             {
-                return this._friendly;
+                drawEntity = this.friendly;
+                return true;
             }
 
-            return this._enemy;
+            drawEntity = this.enemy;
+            return true;
         }
     }
 }
