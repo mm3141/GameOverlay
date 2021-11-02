@@ -1,4 +1,6 @@
-﻿namespace HealthBars
+﻿// ReSharper disable All
+#pragma warning disable 1591
+namespace HealthBars
 {
     using System.Collections.Concurrent;
     using System.Text.Json.Serialization;
