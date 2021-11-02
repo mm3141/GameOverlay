@@ -19,8 +19,8 @@ namespace HealthBars.View.Entities
         /// <param name="scale"></param>
         protected static void AddEmptyBar(SpriteController spriteController, EntityParams eP, float scale)
         {
-            spriteController.DrawSprite("EmptyBar", scale, 1, 57, 108, 9, 110, 88, eP.Pos, 108, 9, -1, -1,
-                false, eP.DrawBorder, eP.BorderColor);
+            spriteController.DrawSprite("MonsterBar", eP.Pos, 108, 9, scale,
+                -1, -1, false, eP.DrawBorder, eP.BorderColor);
         }
 
         /// <summary>
@@ -31,8 +31,8 @@ namespace HealthBars.View.Entities
         /// <param name="scale"></param>
         protected static void AddDoubleEmptyBar(SpriteController spriteController, EntityParams eP, float scale)
         {
-            spriteController.DrawSprite("EmptyDoubleBar", scale, 1, 68, 108, 19, 110, 88, eP.Pos, 108, 19, -1,
-                -1, false, eP.DrawBorder, eP.BorderColor);
+            spriteController.DrawSprite("PlayerBars", eP.Pos, 108, 19, scale,
+                -1, -1, false, eP.DrawBorder, eP.BorderColor);
         }
 
 
@@ -46,9 +46,9 @@ namespace HealthBars.View.Entities
         {
             var manaPos = eP.Pos + new Vector2(0, 10) * scale;
 
-            spriteController.DrawSprite("EmptyMana", scale, 1, 19, 1, 8, 110, 88, manaPos, 104, 8,
+            spriteController.DrawSprite("EmptyMana", manaPos, 104, 8, scale,
                 100f - eP.ManaReserved, -1, false);
-            spriteController.DrawSprite("Mana", scale, 1, 47, 1, 8, 110, 88, manaPos, 104, 8,
+            spriteController.DrawSprite("Mana", manaPos, 104, 8, scale,
                 eP.ManaPercent, -1, false);
         }
     }
