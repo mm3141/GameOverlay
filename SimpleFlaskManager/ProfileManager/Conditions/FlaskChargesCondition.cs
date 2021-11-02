@@ -29,8 +29,7 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
         /// <param name="operator_"><see cref="OperatorEnum" /> to use in this condition.</param>
         /// <param name="flaskSlot">Flask slot number who's charges to look for.</param>
         /// <param name="charges">Flask charges threshold to use.</param>
-        public FlaskChargesCondition(OperatorEnum operator_, int flaskSlot, int charges)
-            : base(operator_, charges)
+        public FlaskChargesCondition(OperatorEnum operator_, int flaskSlot, int charges) : base(operator_, charges)
         {
             this.slot = flaskSlot;
         }
@@ -46,8 +45,7 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
             ToImGui(ref operatorStatic, ref flaskSlotStatic, ref chargesStatic);
             ImGui.SameLine();
             if (ImGui.Button("Add##FlaskCharges") &&
-                (operatorStatic == OperatorEnum.BIGGER_THAN ||
-                 operatorStatic == OperatorEnum.LESS_THAN))
+                (operatorStatic == OperatorEnum.BIGGER_THAN || operatorStatic == OperatorEnum.LESS_THAN))
             {
                 return new FlaskChargesCondition(operatorStatic, flaskSlotStatic, chargesStatic);
             }
@@ -65,8 +63,7 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
         /// <inheritdoc />
         public override bool Evaluate()
         {
-            var flask =
-                Core.States.InGameStateObject.CurrentAreaInstance.ServerDataObject.FlaskInventory[0, this.slot - 1];
+            var flask = Core.States.InGameStateObject.CurrentAreaInstance.ServerDataObject.FlaskInventory[0, this.slot - 1];
             if (flask.Address == IntPtr.Zero)
             {
                 return false;
