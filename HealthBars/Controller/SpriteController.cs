@@ -1,6 +1,5 @@
 namespace HealthBars
 {
-    using System.Collections.Generic;
     using System.Numerics;
     using GameHelper.Utils;
     using ImGuiNET;
@@ -9,7 +8,6 @@ namespace HealthBars
     /// </summary>
     public class SpriteController
     {
-        private readonly Dictionary<string, IconPicker> sprites = new();
         private readonly SpriteAtlas spriteAtlas;
 
         /// <summary>
