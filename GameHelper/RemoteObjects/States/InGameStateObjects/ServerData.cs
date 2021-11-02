@@ -7,20 +7,20 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
     using System;
     using System.Collections.Generic;
     using Coroutine;
-    using GameHelper.RemoteEnums;
-    using GameHelper.Utils;
     using GameOffsets.Objects.States.InGameState;
     using ImGuiNET;
+    using RemoteEnums;
+    using Utils;
 
     /// <summary>
-    /// Points to the InGameState -> ServerData object.
+    ///     Points to the InGameState -> ServerData object.
     /// </summary>
     public class ServerData : RemoteObjectBase
     {
         private InventoryName selectedInvName = InventoryName.NoInvSelected;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ServerData"/> class.
+        ///     Initializes a new instance of the <see cref="ServerData" /> class.
         /// </summary>
         /// <param name="address">address of the remote memory object.</param>
         internal ServerData(IntPtr address)
@@ -31,42 +31,30 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
         }
 
         /// <summary>
-        /// Gets an object that points to the flask inventory.
+        ///     Gets an object that points to the flask inventory.
         /// </summary>
-        public Inventory FlaskInventory
-        {
-            get;
-            private set;
-        }
+        public Inventory FlaskInventory { get; }
 
-        = new Inventory(IntPtr.Zero, "Flask");
+            = new(IntPtr.Zero, "Flask");
 
         /// <summary>
-        /// Gets the inventory to debug.
+        ///     Gets the inventory to debug.
         /// </summary>
-        internal Inventory SelectedInv
-        {
-            get;
-            private set;
-        }
+        internal Inventory SelectedInv { get; }
 
-        = new Inventory(IntPtr.Zero, "CurrentlySelected");
+            = new(IntPtr.Zero, "CurrentlySelected");
 
         /// <summary>
-        /// Gets the inventories associated with the player.
+        ///     Gets the inventories associated with the player.
         /// </summary>
-        internal Dictionary<InventoryName, IntPtr> PlayerInventories
-        {
-            get;
-            private set;
-        }
+        internal Dictionary<InventoryName, IntPtr> PlayerInventories { get; }
 
-        = new Dictionary<InventoryName, IntPtr>();
+            = new();
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         internal override void ToImGui()
         {
-            if (((int)this.selectedInvName) > this.PlayerInventories.Count)
+            if ((int)this.selectedInvName > this.PlayerInventories.Count)
             {
                 this.ClearCurrentlySelectedInventory();
             }
@@ -103,7 +91,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             }
         }
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         protected override void CleanUpData()
         {
             this.ClearCurrentlySelectedInventory();
@@ -111,7 +99,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             this.FlaskInventory.Address = IntPtr.Zero;
         }
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         protected override void UpdateData(bool hasAddressChanged)
         {
             // only happens when area is changed.
@@ -124,17 +112,15 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             var data = reader.ReadMemory<ServerDataStructure>(this.Address + ServerDataStructure.SKIP);
             var inventoryData = reader.ReadStdVector<InventoryArrayStruct>(data.PlayerInventories);
             this.PlayerInventories.Clear();
-            for (int i = 0; i < inventoryData.Length; i++)
+            for (var i = 0; i < inventoryData.Length; i++)
             {
-                InventoryName invName = (InventoryName)inventoryData[i].InventoryId;
-                IntPtr invAddr = inventoryData[i].InventoryPtr0;
+                var invName = (InventoryName)inventoryData[i].InventoryId;
+                var invAddr = inventoryData[i].InventoryPtr0;
                 this.PlayerInventories[invName] = invAddr;
                 switch (invName)
                 {
                     case InventoryName.Flask1:
                         this.FlaskInventory.Address = invAddr;
-                        break;
-                    default:
                         break;
                 }
             }

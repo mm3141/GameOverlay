@@ -9,26 +9,24 @@ namespace GameHelper.RemoteObjects.Components
     using ImGuiNET;
 
     /// <summary>
-    /// The <see cref="Chest"/> component in the entity.
+    ///     The <see cref="Chest" /> component in the entity.
     /// </summary>
     public class Player : RemoteObjectBase
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="Player"/> class.
+        ///     Initializes a new instance of the <see cref="Player" /> class.
         /// </summary>
-        /// <param name="address">address of the <see cref="Chest"/> component.</param>
+        /// <param name="address">address of the <see cref="Chest" /> component.</param>
         public Player(IntPtr address)
-            : base(address, true)
-        {
-        }
+            : base(address, true) { }
 
         /// <summary>
-        /// Gets the name of the player.
+        ///     Gets the name of the player.
         /// </summary>
         public string Name { get; private set; }
 
         /// <summary>
-        /// Converts the <see cref="Player"/> class data to ImGui.
+        ///     Converts the <see cref="Player" /> class data to ImGui.
         /// </summary>
         internal override void ToImGui()
         {
@@ -36,13 +34,13 @@ namespace GameHelper.RemoteObjects.Components
             ImGui.Text($"Player Name: {this.Name}");
         }
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         protected override void CleanUpData()
         {
             throw new Exception("Component Address should never be Zero.");
         }
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         protected override void UpdateData(bool hasAddressChanged)
         {
             if (!hasAddressChanged)

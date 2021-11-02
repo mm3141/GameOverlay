@@ -5,31 +5,29 @@
 namespace GameHelper.RemoteObjects.Components
 {
     using System;
-    using GameHelper.RemoteEnums;
     using GameOffsets.Objects.Components;
     using ImGuiNET;
+    using RemoteEnums;
 
     /// <summary>
-    /// The <see cref="Actor"/> component in the entity.
+    ///     The <see cref="Actor" /> component in the entity.
     /// </summary>
     public class Actor : RemoteObjectBase
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="Actor"/> class.
+        ///     Initializes a new instance of the <see cref="Actor" /> class.
         /// </summary>
-        /// <param name="address">address of the <see cref="Actor"/> component.</param>
+        /// <param name="address">address of the <see cref="Actor" /> component.</param>
         public Actor(IntPtr address)
-            : base(address, true)
-        {
-        }
+            : base(address, true) { }
 
         /// <summary>
-        /// Gets a value indicating what the player is doing.
+        ///     Gets a value indicating what the player is doing.
         /// </summary>
         public Animation Animation { get; private set; } = Animation.Idle;
 
         /// <summary>
-        /// Converts the <see cref="Actor"/> class data to ImGui.
+        ///     Converts the <see cref="Actor" /> class data to ImGui.
         /// </summary>
         internal override void ToImGui()
         {
@@ -37,13 +35,13 @@ namespace GameHelper.RemoteObjects.Components
             ImGui.Text($"AnimationId: {(int)this.Animation}, Animation: {this.Animation}");
         }
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         protected override void CleanUpData()
         {
             throw new Exception("Component Address should never be Zero.");
         }
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         protected override void UpdateData(bool hasAddressChanged)
         {
             var reader = Core.Process.Handle;

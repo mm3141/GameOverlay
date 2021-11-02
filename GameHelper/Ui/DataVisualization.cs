@@ -7,19 +7,18 @@ namespace GameHelper.Ui
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Reflection;
     using Coroutine;
-    using GameHelper.CoroutineEvents;
-    using GameHelper.Utils;
+    using CoroutineEvents;
     using ImGuiNET;
+    using Utils;
 
     /// <summary>
-    /// Visualize the <see cref="RemoteObjects"/> and other miscellaneous data.
+    ///     Visualize the <see cref="RemoteObjects" /> and other miscellaneous data.
     /// </summary>
     public static class DataVisualization
     {
         /// <summary>
-        /// Initializes the co-routines.
+        ///     Initializes the co-routines.
         /// </summary>
         internal static void InitializeCoroutines()
         {
@@ -27,7 +26,7 @@ namespace GameHelper.Ui
         }
 
         /// <summary>
-        /// Draws the window for Data Visualization.
+        ///     Draws the window for Data Visualization.
         /// </summary>
         /// <returns>co-routine IWait.</returns>
         private static IEnumerator<Wait> DataVisualizationRenderCoRoutine()
@@ -45,9 +44,9 @@ namespace GameHelper.Ui
                     if (ImGui.CollapsingHeader("Settings"))
                     {
                         var fields = Core.GHSettings.GetType().GetFields().ToList();
-                        for (int i = 0; i < fields.Count; i++)
+                        for (var i = 0; i < fields.Count; i++)
                         {
-                            FieldInfo field = fields[i];
+                            var field = fields[i];
                             ImGui.Text($"{field.Name}: {field.GetValue(Core.GHSettings)}");
                         }
                     }
@@ -72,7 +71,7 @@ namespace GameHelper.Ui
                         }
                         else
                         {
-                            ImGui.Text($"Game not found.");
+                            ImGui.Text("Game not found.");
                         }
                     }
 

@@ -10,24 +10,22 @@ namespace GameHelper
     using System.Drawing;
     using System.Runtime.InteropServices;
     using Coroutine;
-    using GameHelper.CoroutineEvents;
-    using GameHelper.Utils;
+    using CoroutineEvents;
     using GameOffsets;
+    using Utils;
 
     /// <summary>
-    /// Allows process manipulation. It uses the (time/event based) co-routines
-    /// to continuously monitor and open a process with the specific name. It exposes
-    /// variables/events for the caller to use.
-    ///
-    /// Base class OnControllerReady is only triggered when all static addresses are found.
-    ///
-    /// Limitation: This class will not open a game process if multiple processes match
-    /// the name because it does not know which process to select.
+    ///     Allows process manipulation. It uses the (time/event based) co-routines
+    ///     to continuously monitor and open a process with the specific name. It exposes
+    ///     variables/events for the caller to use.
+    ///     Base class OnControllerReady is only triggered when all static addresses are found.
+    ///     Limitation: This class will not open a game process if multiple processes match
+    ///     the name because it does not know which process to select.
     /// </summary>
     public class GameProcess
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="GameProcess"/> class.
+        ///     Initializes a new instance of the <see cref="GameProcess" /> class.
         /// </summary>
         internal GameProcess()
         {
@@ -36,7 +34,7 @@ namespace GameHelper
         }
 
         /// <summary>
-        /// Gets the Pid of the game or zero in case game isn't running..
+        ///     Gets the Pid of the game or zero in case game isn't running..
         /// </summary>
         public uint Pid
         {
@@ -54,17 +52,17 @@ namespace GameHelper
         }
 
         /// <summary>
-        /// Gets a value indicating whether the game is foreground or not.
+        ///     Gets a value indicating whether the game is foreground or not.
         /// </summary>
-        public bool Foreground { get; private set; } = false;
+        public bool Foreground { get; private set; }
 
         /// <summary>
-        /// Gets the game size and position with respect to the monitor screen.
+        ///     Gets the game size and position with respect to the monitor screen.
         /// </summary>
         public Rectangle WindowArea { get; private set; } = Rectangle.Empty;
 
         /// <summary>
-        /// Gets the Base Address of the game.
+        ///     Gets the Base Address of the game.
         /// </summary>
         internal IntPtr Address
         {
@@ -86,39 +84,37 @@ namespace GameHelper
                 }
             }
 
-            private set
-            {
-            }
+            private set { }
         }
 
         /// <summary>
-        /// Gets the event which is triggered when GameProcess
-        /// has found all the static offset patterns.
+        ///     Gets the event which is triggered when GameProcess
+        ///     has found all the static offset patterns.
         /// </summary>
-        internal Event OnStaticAddressFound { get; private set; } = new Event();
+        internal Event OnStaticAddressFound { get; } = new();
 
         /// <summary>
-        /// Gets the static addresses (along with their names) found in the GameProcess
-        /// based on the GameOffsets.StaticOffsets file.
+        ///     Gets the static addresses (along with their names) found in the GameProcess
+        ///     based on the GameOffsets.StaticOffsets file.
         /// </summary>
-        internal Dictionary<string, IntPtr> StaticAddresses { get; private set; } =
-            new Dictionary<string, IntPtr>();
+        internal Dictionary<string, IntPtr> StaticAddresses { get; } =
+            new();
 
         /// <summary>
-        /// Gets the game diagnostics information.
+        ///     Gets the game diagnostics information.
         /// </summary>
-        internal Process Information { get; private set; } = null;
+        internal Process Information { get; private set; }
 
         /// <summary>
-        /// Gets the game handle.
+        ///     Gets the game handle.
         /// </summary>
-        internal SafeMemoryHandle Handle { get; private set; } = null;
+        internal SafeMemoryHandle Handle { get; private set; }
 
         /// <summary>
-        /// Closes the handle for the game and releases all the resources.
+        ///     Closes the handle for the game and releases all the resources.
         /// </summary>
         /// <param name="monitorForNewGame">
-        /// Set to true if caller wants to start monitoring for new game process after closing.
+        ///     Set to true if caller wants to start monitoring for new game process after closing.
         /// </param>
         internal void Close(bool monitorForNewGame = true)
         {
@@ -134,11 +130,11 @@ namespace GameHelper
         }
 
         /// <summary>
-        /// Finds the list of processes from the list of processes running on the system
-        /// based on the GameOffsets.GameProcessName class.
+        ///     Finds the list of processes from the list of processes running on the system
+        ///     based on the GameOffsets.GameProcessName class.
         /// </summary>
         /// <returns>
-        /// co-routine IWait.
+        ///     co-routine IWait.
         /// </returns>
         private IEnumerator<Wait> FindAndOpen()
         {
@@ -170,7 +166,7 @@ namespace GameHelper
         }
 
         /// <summary>
-        /// Monitors the game process for changes.
+        ///     Monitors the game process for changes.
         /// </summary>
         /// <returns>co-routine IWait.</returns>
         private IEnumerator<Wait> Monitor()
@@ -185,19 +181,17 @@ namespace GameHelper
                     this.Close();
                     break;
                 }
-                else
-                {
-                    this.UpdateIsForeground();
-                    this.UpdateWindowRectangle();
-                }
+
+                this.UpdateIsForeground();
+                this.UpdateWindowRectangle();
 
                 yield return new Wait(1d);
             }
         }
 
         /// <summary>
-        /// Finds the static addresses in the GameProcess based on the
-        /// GameOffsets.StaticOffsetsPatterns file.
+        ///     Finds the static addresses in the GameProcess based on the
+        ///     GameOffsets.StaticOffsetsPatterns file.
         /// </summary>
         /// <returns>co-routine IWait.</returns>
         private IEnumerator<Wait> FindStaticAddresses()
@@ -210,8 +204,8 @@ namespace GameHelper
                 var patternsInfo = PatternFinder.Find(this.Handle, baseAddress, procSize);
                 foreach (var patternInfo in patternsInfo)
                 {
-                    int offsetDataValue = this.Handle.ReadMemory<int>(baseAddress + patternInfo.Value);
-                    IntPtr address = baseAddress + patternInfo.Value + offsetDataValue + 0x04;
+                    var offsetDataValue = this.Handle.ReadMemory<int>(baseAddress + patternInfo.Value);
+                    var address = baseAddress + patternInfo.Value + offsetDataValue + 0x04;
                     this.StaticAddresses[patternInfo.Key] = address;
                 }
 
@@ -220,7 +214,7 @@ namespace GameHelper
         }
 
         /// <summary>
-        /// Opens the handle for the game process.
+        ///     Opens the handle for the game process.
         /// </summary>
         private bool Open()
         {
@@ -237,11 +231,11 @@ namespace GameHelper
         }
 
         /// <summary>
-        /// Updates the Foreground Property of the GameProcess class.
+        ///     Updates the Foreground Property of the GameProcess class.
         /// </summary>
         private void UpdateIsForeground()
         {
-            bool foreground = GetForegroundWindow() == this.Information.MainWindowHandle;
+            var foreground = GetForegroundWindow() == this.Information.MainWindowHandle;
             if (foreground != this.Foreground)
             {
                 this.Foreground = foreground;
@@ -250,13 +244,13 @@ namespace GameHelper
         }
 
         /// <summary>
-        /// Gets the game process window area with reference to the monitor screen.
+        ///     Gets the game process window area with reference to the monitor screen.
         /// </summary>
         private void UpdateWindowRectangle()
         {
             GetClientRect(this.Information.MainWindowHandle, out var size);
             ClientToScreen(this.Information.MainWindowHandle, out var pos);
-            Rectangle sizePos = size.ToRectangle(pos);
+            var sizePos = size.ToRectangle(pos);
             if (sizePos != this.WindowArea && sizePos.Size != Size.Empty)
             {
                 this.WindowArea = sizePos;
@@ -264,14 +258,11 @@ namespace GameHelper
             }
         }
 
-        [DllImport("user32.dll")]
-        private static extern IntPtr GetForegroundWindow();
+        [DllImport("user32.dll")] private static extern IntPtr GetForegroundWindow();
 
-        [DllImport("user32.dll")]
-        private static extern bool GetClientRect(IntPtr hWnd, out RECT lpRect);
+        [DllImport("user32.dll")] private static extern bool GetClientRect(IntPtr hWnd, out RECT lpRect);
 
-        [DllImport("user32.dll")]
-        private static extern bool ClientToScreen(IntPtr hWnd, out Point lpPoint);
+        [DllImport("user32.dll")] private static extern bool ClientToScreen(IntPtr hWnd, out Point lpPoint);
 
         [StructLayout(LayoutKind.Sequential)]
         private struct RECT

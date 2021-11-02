@@ -5,28 +5,28 @@
 namespace GameHelper.RemoteEnums
 {
     /// <summary>
-    /// Read Rarity.dat file for Rarity to integer mapping.
+    ///     Read Rarity.dat file for Rarity to integer mapping.
     /// </summary>
     public enum Rarity
     {
         /// <summary>
-        /// Normal Item/Monster.
+        ///     Normal Item/Monster.
         /// </summary>
         Normal,
 
         /// <summary>
-        /// Magic Item/Monster.
+        ///     Magic Item/Monster.
         /// </summary>
         Magic,
 
         /// <summary>
-        /// Rare Item/Monster.
+        ///     Rare Item/Monster.
         /// </summary>
         Rare,
 
         /// <summary>
-        /// Unique Item/Monster.
+        ///     Unique Item/Monster.
         /// </summary>
-        Unique,
+        Unique
     }
 }

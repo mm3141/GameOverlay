@@ -5,74 +5,74 @@
 namespace GameHelper.RemoteEnums
 {
     /// <summary>
-    /// Gets all known states of the game.
+    ///     Gets all known states of the game.
     /// </summary>
     public enum GameStateTypes
     {
         /// <summary>
-        /// When user is in Area Loading Screen.
+        ///     When user is in Area Loading Screen.
         /// </summary>
         AreaLoadingState,
 
         /// <summary>
-        /// Game state.
+        ///     Game state.
         /// </summary>
         WaitingState,
 
         /// <summary>
-        /// When user is in Login Screen.
+        ///     When user is in Login Screen.
         /// </summary>
         CreditsState,
 
         /// <summary>
-        /// Game State.
+        ///     Game State.
         /// </summary>
         EscapeState,
 
         /// <summary>
-        /// When User is in Town/Hideout/Area/Zone etc.
+        ///     When User is in Town/Hideout/Area/Zone etc.
         /// </summary>
         InGameState,
 
         /// <summary>
-        /// Game State.
+        ///     Game State.
         /// </summary>
         ChangePasswordState,
 
         /// <summary>
-        /// Game State.
+        ///     Game State.
         /// </summary>
         LoginState,
 
         /// <summary>
-        /// Game State.
+        ///     Game State.
         /// </summary>
         PreGameState,
 
         /// <summary>
-        /// Game State.
+        ///     Game State.
         /// </summary>
         CreateCharacterState,
 
         /// <summary>
-        /// Game State.
+        ///     Game State.
         /// </summary>
         SelectCharacterState,
 
         /// <summary>
-        /// Game State.
+        ///     Game State.
         /// </summary>
         DeleteCharacterState,
 
         /// <summary>
-        /// Game State.
+        ///     Game State.
         /// </summary>
         LoadingState,
 
         /// <summary>
-        /// This is a special State, it will not trigger State Change Event.
-        /// This is just for displaying purposes. It means Game isn't stared.
+        ///     This is a special State, it will not trigger State Change Event.
+        ///     This is just for displaying purposes. It means Game isn't stared.
         /// </summary>
-        GameNotLoaded,
+        GameNotLoaded
     }
 }

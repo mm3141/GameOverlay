@@ -12,24 +12,24 @@ namespace GameHelper.RemoteObjects
     using System.Numerics;
     using System.Threading.Tasks;
     using Coroutine;
-    using GameHelper.CoroutineEvents;
-    using GameHelper.Utils;
+    using CoroutineEvents;
     using GameOffsets.Objects;
     using ImGuiNET;
+    using Utils;
 
     /// <summary>
-    /// Gathers the files loaded in the game for the current area.
+    ///     Gathers the files loaded in the game for the current area.
     /// </summary>
     public class LoadedFiles : RemoteObjectBase
     {
+        private bool areaAlreadyDone;
         private string areaHashCache = string.Empty;
-        private bool areaAlreadyDone = false;
         private string filename = string.Empty;
         private string searchText = string.Empty;
         private string[] searchTextSplit = Array.Empty<string>();
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="LoadedFiles"/> class.
+        ///     Initializes a new instance of the <see cref="LoadedFiles" /> class.
         /// </summary>
         /// <param name="address">address of the remote memory object.</param>
         internal LoadedFiles(IntPtr address)
@@ -40,28 +40,24 @@ namespace GameHelper.RemoteObjects
         }
 
         /// <summary>
-        /// Gets the pathname of the files.
+        ///     Gets the pathname of the files.
         /// </summary>
-        public ConcurrentDictionary<string, int> PathNames
-        {
-            get;
-            private set;
-        }
+        public ConcurrentDictionary<string, int> PathNames { get; }
 
-        = new ConcurrentDictionary<string, int>();
+            = new();
 
         /// <summary>
-        /// Converts the <see cref="LoadedFiles"/> class data to ImGui.
+        ///     Converts the <see cref="LoadedFiles" /> class data to ImGui.
         /// </summary>
         internal override void ToImGui()
         {
             base.ToImGui();
             ImGui.Text($"Total Loaded Files in current area: {this.PathNames.Count}");
             ImGui.TextWrapped("NOTE: The Overlay caches the preloads when you enter a new map. " +
-                "This cache is only cleared & updated when you enter a new Map. Going to town or " +
-                "hideout isn't considered a new Map. So basically you can find important preloads " +
-                "even after you have completed the whole map/gone to town/hideouts and " +
-                "entered the same Map again.");
+                              "This cache is only cleared & updated when you enter a new Map. Going to town or " +
+                              "hideout isn't considered a new Map. So basically you can find important preloads " +
+                              "even after you have completed the whole map/gone to town/hideouts and " +
+                              "entered the same Map again.");
 
             ImGui.Text("File Name: ");
             ImGui.SameLine();
@@ -71,7 +67,7 @@ namespace GameHelper.RemoteObjects
             {
                 if (ImGui.Button("Save"))
                 {
-                    string dir_name = "preload_dumps";
+                    var dir_name = "preload_dumps";
                     Directory.CreateDirectory(dir_name);
                     var dataToWrite = this.PathNames.Keys.ToList();
                     dataToWrite.Sort();
@@ -100,8 +96,8 @@ namespace GameHelper.RemoteObjects
                 ImGui.PushStyleColor(ImGuiCol.Button, new Vector4(0, 0, 0, 0));
                 foreach (var kv in this.PathNames)
                 {
-                    bool containsAll = true;
-                    for (int i = 0; i < this.searchTextSplit.Length; i++)
+                    var containsAll = true;
+                    for (var i = 0; i < this.searchTextSplit.Length; i++)
                     {
                         if (!kv.Key.ToLower().Contains(this.searchTextSplit[i]))
                         {
@@ -123,7 +119,7 @@ namespace GameHelper.RemoteObjects
             }
         }
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         protected override void CleanUpData()
         {
             this.PathNames.Clear();
@@ -133,12 +129,10 @@ namespace GameHelper.RemoteObjects
         }
 
         /// <summary>
-        /// this function is overrided to do nothing because it's done @ AreaChange event.
+        ///     this function is overrided to do nothing because it's done @ AreaChange event.
         /// </summary>
         /// <param name="hasAddressChanged">ignore me.</param>
-        protected override void UpdateData(bool hasAddressChanged)
-        {
-        }
+        protected override void UpdateData(bool hasAddressChanged) { }
 
         private LoadedFilesRootObject[] GetAllPointers()
         {
@@ -150,7 +144,7 @@ namespace GameHelper.RemoteObjects
         private void ScanForFilesParallel(SafeMemoryHandle reader, LoadedFilesRootObject filesRootObj)
         {
             var filesPtr = reader.ReadStdBucket<FilesPointerStructure>(filesRootObj.LoadedFiles);
-            Parallel.For(0, filesPtr.Count, (index) =>
+            Parallel.For(0, filesPtr.Count, index =>
             {
                 var fileNode = filesPtr[index];
                 this.AddFileIfLoadedInCurrentArea(reader, fileNode.FilesPointer);
@@ -161,13 +155,11 @@ namespace GameHelper.RemoteObjects
         {
             var information = reader.ReadMemory<FileInfoValueStruct>(address);
             if (information.AreaChangeCount > FileInfoValueStruct.IGNORE_FIRST_X_AREAS &&
-            information.AreaChangeCount == Core.AreaChangeCounter.Value)
+                information.AreaChangeCount == Core.AreaChangeCounter.Value)
             {
                 var name = reader.ReadStdWString(information.Name).Split('@')[0];
-                this.PathNames.AddOrUpdate(name, information.AreaChangeCount, (key, oldValue) =>
-                {
-                    return Math.Max(oldValue, information.AreaChangeCount);
-                });
+                this.PathNames.AddOrUpdate(name, information.AreaChangeCount,
+                    (key, oldValue) => { return Math.Max(oldValue, information.AreaChangeCount); });
             }
         }
 
@@ -194,7 +186,7 @@ namespace GameHelper.RemoteObjects
 
                     var filesRootObjs = this.GetAllPointers();
                     var reader = Core.Process.Handle;
-                    for (int i = 0; i < filesRootObjs.Length; i++)
+                    for (var i = 0; i < filesRootObjs.Length; i++)
                     {
                         this.ScanForFilesParallel(reader, filesRootObjs[i]);
                         yield return new Wait(0d);

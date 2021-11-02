@@ -8,12 +8,12 @@ namespace GameHelper.RemoteObjects
     using ImGuiNET;
 
     /// <summary>
-    /// Contains the static data for calculating the terrain height.
+    ///     Contains the static data for calculating the terrain height.
     /// </summary>
     public class TerrainHeightHelper : RemoteObjectBase
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="TerrainHeightHelper"/> class.
+        ///     Initializes a new instance of the <see cref="TerrainHeightHelper" /> class.
         /// </summary>
         /// <param name="address">address of the remote memory object.</param>
         /// <param name="size">expected size of this remote memory object.</param>
@@ -24,27 +24,27 @@ namespace GameHelper.RemoteObjects
         }
 
         /// <summary>
-        /// Gets the values associated with this class.
+        ///     Gets the values associated with this class.
         /// </summary>
         public byte[] Values { get; private set; }
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         internal override void ToImGui()
         {
             base.ToImGui();
             ImGui.Text(string.Join(' ', this.Values));
         }
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         protected override void CleanUpData()
         {
-            for (int i = 0; i < this.Values.Length; i++)
+            for (var i = 0; i < this.Values.Length; i++)
             {
                 this.Values[i] = 0;
             }
         }
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         protected override void UpdateData(bool hasAddressChanged)
         {
             var reader = Core.Process.Handle;

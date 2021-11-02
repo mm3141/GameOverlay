@@ -7,28 +7,24 @@ namespace GameHelper.RemoteObjects.Components
     using System;
 
     /// <summary>
-    /// The <see cref="MinimapIcon"/> component in the entity.
+    ///     The <see cref="MinimapIcon" /> component in the entity.
     /// </summary>
     public class MinimapIcon : RemoteObjectBase
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="MinimapIcon"/> class.
+        ///     Initializes a new instance of the <see cref="MinimapIcon" /> class.
         /// </summary>
-        /// <param name="address">address of the <see cref="MinimapIcon"/> component.</param>
+        /// <param name="address">address of the <see cref="MinimapIcon" /> component.</param>
         public MinimapIcon(IntPtr address)
-            : base(address, true)
-        {
-        }
+            : base(address, true) { }
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         protected override void CleanUpData()
         {
             throw new Exception("Component Address should never be Zero.");
         }
 
-        /// <inheritdoc/>
-        protected override void UpdateData(bool hasAddressChanged)
-        {
-        }
+        /// <inheritdoc />
+        protected override void UpdateData(bool hasAddressChanged) { }
     }
 }
