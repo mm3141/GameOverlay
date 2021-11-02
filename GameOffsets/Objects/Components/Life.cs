@@ -51,8 +51,8 @@
                 return 0;
             }
 
-            var vitalAfterReservedPercent = Math.Round((this.ReservedPercent / 100f) * this.Total);
-            var vitalExcludingReserved = this.Total - this.ReservedFlat + vitalAfterReservedPercent;
+            var reservedPercentToFlat = Math.Round(this.ReservedPercent / 10000f * this.Total);
+            var vitalExcludingReserved = this.Total - this.ReservedFlat - reservedPercentToFlat;
             return (int)Math.Round(100 * this.Current / vitalExcludingReserved);
         }
     }
