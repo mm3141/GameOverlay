@@ -11,6 +11,7 @@ namespace GameOffsets.Natives
     public struct StdWString
     {
         public IntPtr Buffer;
+
         //// There is an optimization in std::wstring, where
         //// if a Capacity is less than or equal to 8
         //// then the wstring is stored locally (without a pointer).
@@ -24,8 +25,8 @@ namespace GameOffsets.Natives
 
         public override string ToString()
         {
-            return $"Buffer: {Buffer.ToInt64():X}, ReservedBytes: {ReservedBytes.ToInt64():X}, " +
-                $"Length: {Length}, Capacity: {Capacity}";
+            return $"Buffer: {this.Buffer.ToInt64():X}, ReservedBytes: {this.ReservedBytes.ToInt64():X}, " +
+                   $"Length: {this.Length}, Capacity: {this.Capacity}";
         }
     }
 }

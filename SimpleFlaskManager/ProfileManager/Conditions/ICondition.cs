@@ -5,38 +5,38 @@
 namespace SimpleFlaskManager.ProfileManager.Conditions
 {
     /// <summary>
-    /// Interface for the conditions on which flask can trigger.
+    ///     Interface for the conditions on which flask can trigger.
     /// </summary>
     public interface ICondition
     {
         /// <summary>
-        /// Evaluates the condition.
+        ///     Evaluates the condition.
         /// </summary>
         /// <returns>true if the condition is successful, otherwise false.</returns>
         public bool Evaluate();
 
         /// <summary>
-        /// Displays the condition to the user via ImGui.
+        ///     Displays the condition to the user via ImGui.
         /// </summary>
         /// <param name="index">Condition sequence number.</param>
         public void Display(int index = 0);
 
         /// <summary>
-        /// Appends another condition to this condition.
+        ///     Appends another condition to this condition.
         /// </summary>
         /// <param name="condition">
-        /// condition to append.
+        ///     condition to append.
         /// </param>
         public void Append(ICondition condition);
 
         /// <summary>
-        /// Gets the next in line condition.
+        ///     Gets the next in line condition.
         /// </summary>
-        /// <returns><see cref="ICondition"/> if it exists, otherwise null.</returns>
+        /// <returns><see cref="ICondition" /> if it exists, otherwise null.</returns>
         public ICondition Next();
 
         /// <summary>
-        /// Deletes all the conditions in the rule.
+        ///     Deletes all the conditions in the rule.
         /// </summary>
         public void Delete();
     }
