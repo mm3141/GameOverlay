@@ -7,21 +7,21 @@ namespace GameHelper.Ui
     using System;
     using System.Collections.Generic;
     using Coroutine;
-    using GameHelper.CoroutineEvents;
-    using GameHelper.RemoteEnums;
-    using GameHelper.RemoteObjects.UiElement;
-    using GameHelper.Utils;
+    using CoroutineEvents;
     using ImGuiNET;
+    using RemoteEnums;
+    using RemoteObjects.UiElement;
+    using Utils;
 
     /// <summary>
-    /// Explore (visualize) the Game Ui Elements.
+    ///     Explore (visualize) the Game Ui Elements.
     /// </summary>
     public static class GameUiExplorer
     {
         private static readonly List<UiElement> Elements = new();
 
         /// <summary>
-        /// Initializes the co-routines.
+        ///     Initializes the co-routines.
         /// </summary>
         internal static void InitializeCoroutines()
         {
@@ -30,7 +30,7 @@ namespace GameHelper.Ui
         }
 
         /// <summary>
-        /// Adds the UiElementBase to GameUiExplorer.
+        ///     Adds the UiElementBase to GameUiExplorer.
         /// </summary>
         /// <param name="element">UiElementBase to investigate.</param>
         internal static void AddUiElement(UiElementBase element)
@@ -46,10 +46,10 @@ namespace GameHelper.Ui
                 CurrentChildIndex = -1,
                 CurrentChildPreview = string.Empty,
                 Element = element,
-                Children = new List<UiElementBase>(),
+                Children = new List<UiElementBase>()
             };
 
-            for (int i = 0; i < element.TotalChildrens; i++)
+            for (var i = 0; i < element.TotalChildrens; i++)
             {
                 eleStruct.Children.Add(element[i]);
             }
@@ -65,14 +65,14 @@ namespace GameHelper.Ui
 
         private static void RemoveAllUiElements()
         {
-            for (int i = Elements.Count - 1; i >= 0; i--)
+            for (var i = Elements.Count - 1; i >= 0; i--)
             {
                 RemoveUiElement(i);
             }
         }
 
         /// <summary>
-        /// Draws the window to display the Game UiExplorer.
+        ///     Draws the window to display the Game UiExplorer.
         /// </summary>
         /// <returns>co-routine IWait.</returns>
         private static IEnumerator<Wait> GameUiExplorerRenderCoRoutine()
@@ -91,14 +91,14 @@ namespace GameHelper.Ui
                     {
                         ImGui.BulletText("Closing the game will remove all objects.");
                         ImGui.BulletText("To add element in this window go to any UiElement " +
-                            "in\nData Visualization window and click Explore button.");
+                                         "in\nData Visualization window and click Explore button.");
                         ImGui.BulletText("To check currently loaded element bounds,\n" +
-                            "hover over the element header in blue.");
+                                         "hover over the element header in blue.");
                         ImGui.BulletText("To check bounds of all the children hover\n" +
-                            "over the Children box.");
+                                         "over the Children box.");
                         ImGui.BulletText("Feel free to add same element more than once.");
                         ImGui.BulletText("When children combo box is opened feel free\n" +
-                            "to use the up/down arrow key.");
+                                         "to use the up/down arrow key.");
                         ImGui.BulletText("Children bounds are drawn with RED color.");
                         ImGui.BulletText("Current element bounds are drawn with Yellow Color.");
 
@@ -112,13 +112,13 @@ namespace GameHelper.Ui
                     }
 
                     ImGui.Separator();
-                    for (int i = 0; i < Elements.Count; i++)
+                    for (var i = 0; i < Elements.Count; i++)
                     {
                         var current = Elements[i];
-                        string eleName = $"{current.Element.Id}";
-                        bool isRequired = true;
-                        bool isCurrentModified = false;
-                        bool isEnterPressed = false;
+                        var eleName = $"{current.Element.Id}";
+                        var isRequired = true;
+                        var isCurrentModified = false;
+                        var isEnterPressed = false;
                         if (ImGui.CollapsingHeader(eleName + $"##{i}", ref isRequired))
                         {
                             if (ImGui.IsItemHovered())
@@ -182,9 +182,9 @@ namespace GameHelper.Ui
                                     isEnterPressed = true;
                                 }
 
-                                for (int j = 0; j < current.Children.Count; j++)
+                                for (var j = 0; j < current.Children.Count; j++)
                                 {
-                                    bool selected = j == current.CurrentChildIndex;
+                                    var selected = j == current.CurrentChildIndex;
                                     var child = current.Children[j];
                                     child.Address = child.Address;
 
@@ -229,7 +229,7 @@ namespace GameHelper.Ui
 
                             if (ImGui.IsItemHovered())
                             {
-                                for (int j = 0; j < current.Children.Count; j++)
+                                for (var j = 0; j < current.Children.Count; j++)
                                 {
                                     var child = current.Children[j];
                                     child.Address = child.Address;

@@ -11,43 +11,41 @@ namespace GameHelper.RemoteObjects.Components
     using ImGuiNET;
 
     /// <summary>
-    /// The <see cref="Base"/> component in the entity.
+    ///     The <see cref="Base" /> component in the entity.
     /// </summary>
     public class Base : RemoteObjectBase
     {
         /// <summary>
-        /// Cache the BaseItemType.Dat data to save few reads per frame.
+        ///     Cache the BaseItemType.Dat data to save few reads per frame.
         /// </summary>
         private static readonly ConcurrentDictionary<IntPtr, string> BaseItemTypeDatCache = new();
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Base"/> class.
+        ///     Initializes a new instance of the <see cref="Base" /> class.
         /// </summary>
-        /// <param name="address">address of the <see cref="Base"/> component.</param>
+        /// <param name="address">address of the <see cref="Base" /> component.</param>
         public Base(IntPtr address)
-            : base(address, true)
-        {
-        }
+            : base(address, true) { }
 
         /// <summary>
-        /// Gets the items base name.
+        ///     Gets the items base name.
         /// </summary>
         public string ItemBaseName { get; private set; } = string.Empty;
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         internal override void ToImGui()
         {
             base.ToImGui();
             ImGui.Text($"Base Name: {this.ItemBaseName}");
         }
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         protected override void CleanUpData()
         {
             throw new Exception("Component Address should never be Zero.");
         }
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         protected override void UpdateData(bool hasAddressChanged)
         {
             var reader = Core.Process.Handle;
@@ -59,7 +57,7 @@ namespace GameHelper.RemoteObjects.Components
             else
             {
                 var baseItemTypeDatRow = reader.ReadMemory<BaseItemTypesDatOffsets>(data.BaseInternalPtr);
-                string name = reader.ReadStdWString(baseItemTypeDatRow.BaseNamePtr);
+                var name = reader.ReadStdWString(baseItemTypeDatRow.BaseNamePtr);
                 if (!string.IsNullOrEmpty(name))
                 {
                     BaseItemTypeDatCache[data.BaseInternalPtr] = name;

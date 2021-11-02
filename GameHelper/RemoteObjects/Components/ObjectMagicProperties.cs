@@ -5,31 +5,29 @@
 namespace GameHelper.RemoteObjects.Components
 {
     using System;
-    using GameHelper.RemoteEnums;
     using GameOffsets.Objects.Components;
     using ImGuiNET;
+    using RemoteEnums;
 
     /// <summary>
-    /// ObjectMagicProperties component of the entity.
+    ///     ObjectMagicProperties component of the entity.
     /// </summary>
     public class ObjectMagicProperties : RemoteObjectBase
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="ObjectMagicProperties"/> class.
+        ///     Initializes a new instance of the <see cref="ObjectMagicProperties" /> class.
         /// </summary>
-        /// <param name="address">address of the <see cref="ObjectMagicProperties"/> component.</param>
+        /// <param name="address">address of the <see cref="ObjectMagicProperties" /> component.</param>
         public ObjectMagicProperties(IntPtr address)
-            : base(address, true)
-        {
-        }
+            : base(address, true) { }
 
         /// <summary>
-        /// Gets a value indicating entity rarity information.
+        ///     Gets a value indicating entity rarity information.
         /// </summary>
         public Rarity Rarity { get; private set; } = Rarity.Normal;
 
         /// <summary>
-        /// Converts the <see cref="ObjectMagicProperties"/> class data to ImGui.
+        ///     Converts the <see cref="ObjectMagicProperties" /> class data to ImGui.
         /// </summary>
         internal override void ToImGui()
         {
@@ -37,13 +35,13 @@ namespace GameHelper.RemoteObjects.Components
             ImGui.Text($"Rarity: {this.Rarity}");
         }
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         protected override void CleanUpData()
         {
             throw new Exception("Component Address should never be Zero.");
         }
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         protected override void UpdateData(bool hasAddressChanged)
         {
             if (hasAddressChanged)

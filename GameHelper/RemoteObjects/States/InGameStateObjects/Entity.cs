@@ -6,14 +6,14 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
 {
     using System;
     using System.Collections.Generic;
-    using GameHelper.RemoteObjects.Components;
-    using GameHelper.Utils;
+    using Components;
     using GameOffsets.Objects.States.InGameState;
     using ImGuiNET;
+    using Utils;
 
     /// <summary>
-    /// Points to an Entity/Object in the game.
-    /// Entity is basically item/monster/effect/player/etc on the ground.
+    ///     Points to an Entity/Object in the game.
+    ///     Entity is basically item/monster/effect/player/etc on the ground.
     /// </summary>
     public class Entity : RemoteObjectBase
     {
@@ -21,46 +21,42 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
         private readonly Dictionary<string, RemoteObjectBase> componentCache = new();
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Entity"/> class.
+        ///     Initializes a new instance of the <see cref="Entity" /> class.
         /// </summary>
         /// <param name="address">address of the Entity.</param>
         internal Entity(IntPtr address)
-            : base(address, true)
-        {
-        }
+            : base(address, true) { }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Entity"/> class.
-        /// NOTE: Without providing an address, only invalid and empty entity is created.
+        ///     Initializes a new instance of the <see cref="Entity" /> class.
+        ///     NOTE: Without providing an address, only invalid and empty entity is created.
         /// </summary>
         internal Entity()
-            : base(IntPtr.Zero, true)
-        {
-        }
+            : base(IntPtr.Zero, true) { }
 
         /// <summary>
-        /// Gets the Path (e.g. Metadata/Character/int/int) assocaited to the entity.
+        ///     Gets the Path (e.g. Metadata/Character/int/int) assocaited to the entity.
         /// </summary>
         public string Path { get; private set; } = string.Empty;
 
         /// <summary>
-        /// Gets the Id associated to the entity. This is unique per map/Area.
+        ///     Gets the Id associated to the entity. This is unique per map/Area.
         /// </summary>
-        public uint Id { get; private set; } = 0x00;
+        public uint Id { get; private set; }
 
         /// <summary>
-        /// Gets or Sets a value indicating whether the entity
-        /// exists in the game or not.
+        ///     Gets or Sets a value indicating whether the entity
+        ///     exists in the game or not.
         /// </summary>
-        public bool IsValid { get; set; } = false;
+        public bool IsValid { get; set; }
 
         /// <summary>
-        /// Calculate the distance from the other entity.
+        ///     Calculate the distance from the other entity.
         /// </summary>
         /// <param name="other">Other entity object.</param>
         /// <returns>
-        /// the distance from the other entity
-        /// if it can calculate; otherwise, return 0.
+        ///     the distance from the other entity
+        ///     if it can calculate; otherwise, return 0.
         /// </returns>
         public int DistanceFrom(Entity other)
         {
@@ -69,17 +65,15 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             {
                 var dx = myPosComp.WorldPosition.X - otherPosComp.WorldPosition.X;
                 var dy = myPosComp.WorldPosition.Y - otherPosComp.WorldPosition.Y;
-                return (int)Math.Sqrt((dx * dx) + (dy * dy));
+                return (int)Math.Sqrt(dx * dx + dy * dy);
             }
-            else
-            {
-                Console.WriteLine($"Position Component missing in {this.Path} or {other.Path}");
-                return 0;
-            }
+
+            Console.WriteLine($"Position Component missing in {this.Path} or {other.Path}");
+            return 0;
         }
 
         /// <summary>
-        /// Gets the Component data associated with the entity.
+        ///     Gets the Component data associated with the entity.
         /// </summary>
         /// <typeparam name="T">Component type to get.</typeparam>
         /// <param name="component">component data.</param>
@@ -94,7 +88,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
                 return true;
             }
 
-            if (this.componentAddresses.TryGetValue(componenName, out IntPtr compAddr))
+            if (this.componentAddresses.TryGetValue(componenName, out var compAddr))
             {
                 if (compAddr != IntPtr.Zero)
                 {
@@ -109,8 +103,8 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
         }
 
         /// <summary>
-        /// Calling this function will make sure entity isn't deleted
-        /// in the very next frame even if GameHelper consider it invalid.
+        ///     Calling this function will make sure entity isn't deleted
+        ///     in the very next frame even if GameHelper consider it invalid.
         /// </summary>
         public void ForceKeepEntity()
         {
@@ -118,7 +112,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
         }
 
         /// <summary>
-        /// Converts the <see cref="Entity"/> class data to ImGui.
+        ///     Converts the <see cref="Entity" /> class data to ImGui.
         /// </summary>
         internal override void ToImGui()
         {
@@ -126,7 +120,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             ImGui.Text($"Path: {this.Path}");
             ImGui.Text($"Id: {this.Id}");
             ImGui.Text($"Is Valid: {this.IsValid}");
-            if (ImGui.TreeNode($"Components"))
+            if (ImGui.TreeNode("Components"))
             {
                 foreach (var kv in this.componentAddresses)
                 {
@@ -149,7 +143,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
         }
 
         /// <summary>
-        /// Updates the component data associated with the Entity base object (i.e. item).
+        ///     Updates the component data associated with the Entity base object (i.e. item).
         /// </summary>
         /// <param name="idata">Entity base (i.e. item) data.</param>
         /// <param name="hasAddressChanged">has this class Address changed or not.</param>
@@ -167,7 +161,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
                     entityDetails.ComponentLookUpPtr);
 
                 var namesAndIndexes = reader.ReadStdBucket<ComponentNameAndIndexStruct>(lookupPtr.ComponentsNameAndIndex);
-                for (int i = 0; i < namesAndIndexes.Count; i++)
+                for (var i = 0; i < namesAndIndexes.Count; i++)
                 {
                     var nameAndIndex = namesAndIndexes[i];
                     var name = reader.ReadString(nameAndIndex.NamePtr);
@@ -186,16 +180,14 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             }
         }
 
-        /// <inheritdoc/>
-        protected override void CleanUpData()
-        {
-        }
+        /// <inheritdoc />
+        protected override void CleanUpData() { }
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         protected override void UpdateData(bool hasAddressChanged)
         {
             var reader = Core.Process.Handle;
-            EntityOffsets entityData = reader.ReadMemory<EntityOffsets>(this.Address);
+            var entityData = reader.ReadMemory<EntityOffsets>(this.Address);
             this.IsValid = EntityHelper.IsValidEntity(entityData.IsValid);
             if (!this.IsValid)
             {

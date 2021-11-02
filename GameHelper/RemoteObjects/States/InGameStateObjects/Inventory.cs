@@ -15,20 +15,20 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
     using ImGuiNET;
 
     /// <summary>
-    /// Knows how to parse player, NPC, Crafting, stash inventories available in ServerData
-    /// and get the items available in them.
+    ///     Knows how to parse player, NPC, Crafting, stash inventories available in ServerData
+    ///     and get the items available in them.
     /// </summary>
     public class Inventory : RemoteObjectBase
     {
         /// <summary>
-        /// This array stores items addresses in a given inventory.
-        /// Items addresses are in order w.r.t inventory slots. There might be duplicates or IntPtr.Zero
-        /// in case an item holds 2 slots or there is no item in the slot respectively.
+        ///     This array stores items addresses in a given inventory.
+        ///     Items addresses are in order w.r.t inventory slots. There might be duplicates or IntPtr.Zero
+        ///     in case an item holds 2 slots or there is no item in the slot respectively.
         /// </summary>
-        private IntPtr[] itemsToInventorySlotMapping = null;
+        private IntPtr[] itemsToInventorySlotMapping;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Inventory"/> class.
+        ///     Initializes a new instance of the <see cref="Inventory" /> class.
         /// </summary>
         /// <param name="address">address of the remote memory object.</param>
         /// <param name="name">name of the inventory for displaying purposes.</param>
@@ -40,25 +40,25 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
         }
 
         /// <summary>
-        /// Gets a value indicating total number of boxes in the inventory.
+        ///     Gets a value indicating total number of boxes in the inventory.
         /// </summary>
-        public StdTuple2D<int> TotalBoxes { get; private set; } = default;
+        public StdTuple2D<int> TotalBoxes { get; private set; }
 
         /// <summary>
-        /// Gets a value indicating total number of requests send to the server for this inventory.
+        ///     Gets a value indicating total number of requests send to the server for this inventory.
         /// </summary>
-        public int ServerRequestCounter { get; private set; } = default;
+        public int ServerRequestCounter { get; private set; }
 
         /// <summary>
-        /// Gets all the items in the inventory.
+        ///     Gets all the items in the inventory.
         /// </summary>
-        public ConcurrentDictionary<IntPtr, Item> Items { get; private set; } =
-            new ConcurrentDictionary<IntPtr, Item>();
+        public ConcurrentDictionary<IntPtr, Item> Items { get; } =
+            new();
 
         /// <summary>
-        /// Gets the item at the specific slot in the inventory.
-        /// Always check if the returned item IsValid or not by comparing
-        /// Item Address with IntPtr.Zero.
+        ///     Gets the item at the specific slot in the inventory.
+        ///     Always check if the returned item IsValid or not by comparing
+        ///     Item Address with IntPtr.Zero.
         /// </summary>
         /// <param name="y">Inventory slot row, starting from 0.</param>
         /// <param name="x">Inventory slot column, starting from 0.</param>
@@ -72,13 +72,13 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
                     return new Item(IntPtr.Zero);
                 }
 
-                int index = (y * this.TotalBoxes.X) + x;
+                var index = y * this.TotalBoxes.X + x;
                 if (index >= this.itemsToInventorySlotMapping.Length)
                 {
                     return new Item(IntPtr.Zero);
                 }
 
-                IntPtr itemAddr = this.itemsToInventorySlotMapping[index];
+                var itemAddr = this.itemsToInventorySlotMapping[index];
                 if (itemAddr == IntPtr.Zero)
                 {
                     return new Item(IntPtr.Zero);
@@ -93,7 +93,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             }
         }
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         internal override void ToImGui()
         {
             base.ToImGui();
@@ -101,12 +101,12 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             ImGui.Text($"Server Request Counter: {this.ServerRequestCounter}");
             if (ImGui.TreeNode("Inventory Slots"))
             {
-                for (int y = 0; y < this.TotalBoxes.Y; y++)
+                for (var y = 0; y < this.TotalBoxes.Y; y++)
                 {
                     var data = string.Empty;
-                    for (int x = 0; x < this.TotalBoxes.X; x++)
+                    for (var x = 0; x < this.TotalBoxes.X; x++)
                     {
-                        if (this.itemsToInventorySlotMapping[(y * this.TotalBoxes.X) + x] != IntPtr.Zero)
+                        if (this.itemsToInventorySlotMapping[y * this.TotalBoxes.X + x] != IntPtr.Zero)
                         {
                             data += " 1";
                         }
@@ -137,7 +137,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             }
         }
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         protected override void CleanUpData()
         {
             this.TotalBoxes = default;
@@ -146,7 +146,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             this.Items.Clear();
         }
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         protected override void UpdateData(bool hasAddressChanged)
         {
             var reader = Core.Process.Handle;
@@ -172,7 +172,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
                 item.Value.IsValid = false;
             }
 
-            Parallel.ForEach(this.itemsToInventorySlotMapping.Distinct(), (invItemPtr) =>
+            Parallel.ForEach(this.itemsToInventorySlotMapping.Distinct(), invItemPtr =>
             {
                 if (invItemPtr != IntPtr.Zero)
                 {

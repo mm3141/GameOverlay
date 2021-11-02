@@ -6,62 +6,62 @@ namespace GameHelper.RemoteObjects.UiElement
 {
     using System;
     using System.Numerics;
-    using GameHelper.Ui;
-    using GameHelper.Utils;
     using GameOffsets.Objects.UiElement;
     using ImGuiNET;
+    using Ui;
+    using Utils;
 
     /// <summary>
-    /// Points to the Ui Element of the game and reads its data.
+    ///     Points to the Ui Element of the game and reads its data.
     /// </summary>
     public class UiElementBase : RemoteObjectBase
     {
         /// <summary>
-        /// Flags associated with the UiElement.
-        /// They contains IsVisible and ShouldModifyPostion information.
+        ///     Gets the children addresses of this Ui Element.
         /// </summary>
-        protected uint flags = 0x00;
+        protected IntPtr[] childrenAddresses = Array.Empty<IntPtr>();
 
         /// <summary>
-        /// Local multiplier to apply to the scale value.
+        ///     Flags associated with the UiElement.
+        ///     They contains IsVisible and ShouldModifyPostion information.
         /// </summary>
-        protected float localScaleMultiplier = 0x00;
+        protected uint flags;
+
+        private string id = string.Empty;
 
         /// <summary>
-        /// Position of the UiElement, relative to the parent position.
+        ///     Local multiplier to apply to the scale value.
+        /// </summary>
+        protected float localScaleMultiplier;
+
+        private Vector2 positionModifier = Vector2.Zero;
+
+        /// <summary>
+        ///     Position of the UiElement, relative to the parent position.
         /// </summary>
         protected Vector2 relativePosition = Vector2.Zero;
 
         /// <summary>
-        /// Size of the ui element without applying the scale multiplier/modifier.
+        ///     Index of the List of scale values.
+        /// </summary>
+        protected byte scaleIndex;
+
+        private bool show;
+
+        /// <summary>
+        ///     Size of the ui element without applying the scale multiplier/modifier.
         /// </summary>
         protected Vector2 unScaledSize = Vector2.Zero;
 
         /// <summary>
-        /// Index of the List of scale values.
-        /// </summary>
-        protected byte scaleIndex = 0x00;
-
-        /// <summary>
-        /// Gets the children addresses of this Ui Element.
-        /// </summary>
-        protected IntPtr[] childrenAddresses = Array.Empty<IntPtr>();
-
-        private string id = string.Empty;
-        private Vector2 positionModifier = Vector2.Zero;
-        private bool show = false;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="UiElementBase"/> class.
+        ///     Initializes a new instance of the <see cref="UiElementBase" /> class.
         /// </summary>
         /// <param name="address">address to the Ui Element of the game.</param>
         internal UiElementBase(IntPtr address)
-            : base(address, true)
-        {
-        }
+            : base(address, true) { }
 
         /// <summary>
-        /// Gets the Id of the Ui Element.
+        ///     Gets the Id of the Ui Element.
         /// </summary>
         public string Id
         {
@@ -71,19 +71,15 @@ namespace GameHelper.RemoteObjects.UiElement
                 {
                     return string.Join('.', this.Parent.Id, this.id);
                 }
-                else
-                {
-                    return this.id;
-                }
+
+                return this.id;
             }
 
-            private set
-            {
-            }
+            private set { }
         }
 
         /// <summary>
-        /// Gets the position of the Ui Element w.r.t the game UI.
+        ///     Gets the position of the Ui Element w.r.t the game UI.
         /// </summary>
         public virtual Vector2 Postion
         {
@@ -97,13 +93,11 @@ namespace GameHelper.RemoteObjects.UiElement
                 return pos;
             }
 
-            private set
-            {
-            }
+            private set { }
         }
 
         /// <summary>
-        /// Gets the size of the Ui Element w.r.t the game UI.
+        ///     Gets the size of the Ui Element w.r.t the game UI.
         /// </summary>
         public virtual Vector2 Size
         {
@@ -117,13 +111,11 @@ namespace GameHelper.RemoteObjects.UiElement
                 return size;
             }
 
-            private set
-            {
-            }
+            private set { }
         }
 
         /// <summary>
-        /// Gets a value indicating whether the Ui Element is visible or not.
+        ///     Gets a value indicating whether the Ui Element is visible or not.
         /// </summary>
         public bool IsVisible
         {
@@ -133,31 +125,27 @@ namespace GameHelper.RemoteObjects.UiElement
                 {
                     return UiElementBaseFuncs.IsVisibleChecker(this.flags);
                 }
-                else
-                {
-                    return UiElementBaseFuncs.IsVisibleChecker(this.flags) &&
-                        this.Parent.IsVisible;
-                }
+
+                return UiElementBaseFuncs.IsVisibleChecker(this.flags) &&
+                       this.Parent.IsVisible;
             }
 
-            private set
-            {
-            }
+            private set { }
         }
 
         /// <summary>
-        /// Gets the total number of childrens this Ui Element has.
+        ///     Gets the total number of childrens this Ui Element has.
         /// </summary>
         public int TotalChildrens => this.childrenAddresses.Length;
 
         /// <summary>
-        /// Gets the parent of the UiElement. Will be null in case of no parent.
+        ///     Gets the parent of the UiElement. Will be null in case of no parent.
         /// </summary>
-        public UiElementBase Parent { get; private set; } = null;
+        public UiElementBase Parent { get; private set; }
 
         /// <summary>
-        /// Gets the child Ui Element at specified index.
-        /// returns null in case of invalid index.
+        ///     Gets the child Ui Element at specified index.
+        ///     returns null in case of invalid index.
         /// </summary>
         /// <param name="i">index of the child Ui Element.</param>
         /// <returns>the child Ui Element.</returns>
@@ -175,7 +163,7 @@ namespace GameHelper.RemoteObjects.UiElement
         }
 
         /// <summary>
-        /// Converts the <see cref="UiElementBase"/> class data to ImGui.
+        ///     Converts the <see cref="UiElementBase" /> class data to ImGui.
         /// </summary>
         internal override void ToImGui()
         {
@@ -204,7 +192,7 @@ namespace GameHelper.RemoteObjects.UiElement
             ImGui.Text($"Flags: {this.flags:X}");
         }
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         protected override void CleanUpData()
         {
             this.Parent = null;
@@ -216,7 +204,7 @@ namespace GameHelper.RemoteObjects.UiElement
             this.scaleIndex = 0x00;
         }
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         protected override void UpdateData(bool hasAddressChanged)
         {
             var reader = Core.Process.Handle;
@@ -224,7 +212,7 @@ namespace GameHelper.RemoteObjects.UiElement
             if (data.Self != IntPtr.Zero && data.Self != this.Address)
             {
                 throw new Exception($"This (address: {this.Address.ToInt64():X})" +
-                    $"is not a Ui Element. Self Address = {data.Self.ToInt64():X}");
+                                    $"is not a Ui Element. Self Address = {data.Self.ToInt64():X}");
             }
 
             if (data.ParentPtr != IntPtr.Zero)
@@ -260,9 +248,9 @@ namespace GameHelper.RemoteObjects.UiElement
         }
 
         /// <summary>
-        /// This function was basically parsed/read/decompiled from the game.
-        /// To find this function in the game, follow the data used in this function.
-        /// Although, this function haven't changed since last 3-4 years.
+        ///     This function was basically parsed/read/decompiled from the game.
+        ///     To find this function in the game, follow the data used in this function.
+        ///     Although, this function haven't changed since last 3-4 years.
         /// </summary>
         /// <returns>Returns position without applying current element scaling values.</returns>
         private Vector2 GetUnScaledPosition()
@@ -283,19 +271,17 @@ namespace GameHelper.RemoteObjects.UiElement
             {
                 return parentPos + this.relativePosition;
             }
-            else
-            {
-                var (parentScaleW, parentScaleH) = Core.GameScale.GetScaleValue(
-                    this.Parent.scaleIndex, this.Parent.localScaleMultiplier);
-                var (myScaleW, myScaleH) = Core.GameScale.GetScaleValue(
-                    this.scaleIndex, this.localScaleMultiplier);
-                Vector2 myPos;
-                myPos.X = (parentPos.X * parentScaleW / myScaleW)
-                    + this.relativePosition.X;
-                myPos.Y = (parentPos.Y * parentScaleH / myScaleH)
-                    + this.relativePosition.Y;
-                return myPos;
-            }
+
+            var (parentScaleW, parentScaleH) = Core.GameScale.GetScaleValue(
+                this.Parent.scaleIndex, this.Parent.localScaleMultiplier);
+            var (myScaleW, myScaleH) = Core.GameScale.GetScaleValue(
+                this.scaleIndex, this.localScaleMultiplier);
+            Vector2 myPos;
+            myPos.X = parentPos.X * parentScaleW / myScaleW
+                      + this.relativePosition.X;
+            myPos.Y = parentPos.Y * parentScaleH / myScaleH
+                      + this.relativePosition.Y;
+            return myPos;
         }
     }
 }

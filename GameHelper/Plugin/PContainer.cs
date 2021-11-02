@@ -7,30 +7,19 @@ namespace GameHelper.Plugin
     using Newtonsoft.Json;
 
     /// <summary>
-    /// Container for storing plugin and its metadata.
+    ///     Container for storing plugin and its metadata.
     /// </summary>
     internal struct PContainer
     {
-        private bool enable;
-        private IPCore plugin;
-
         /// <summary>
-        /// Gets or sets a value indicating whether the plugin is enabled or not.
+        ///     Gets or sets a value indicating whether the plugin is enabled or not.
         /// </summary>
-        public bool Enable
-        {
-            get => this.enable;
-            set => this.enable = value;
-        }
+        public bool Enable { get; set; }
 
         /// <summary>
-        /// Gets or sets the plugin.
+        ///     Gets or sets the plugin.
         /// </summary>
         [JsonIgnore]
-        public IPCore Plugin
-        {
-            get => this.plugin;
-            set => this.plugin = value;
-        }
+        public IPCore Plugin { get; set; }
     }
 }

@@ -9,134 +9,76 @@ namespace GameHelper
     using System.IO;
     using System.Reflection;
     using Coroutine;
-    using GameHelper.CoroutineEvents;
-    using GameHelper.RemoteObjects;
-    using GameHelper.Settings;
-    using GameHelper.Utils;
+    using CoroutineEvents;
     using ImGuiNET;
+    using RemoteObjects;
+    using Settings;
+    using Utils;
 
     /// <summary>
-    /// Main Class that depends on the GameProcess Events
-    /// and updates the RemoteObjects. It also manages the
-    /// GameHelper settings.
+    ///     Main Class that depends on the GameProcess Events
+    ///     and updates the RemoteObjects. It also manages the
+    ///     GameHelper settings.
     /// </summary>
     public static class Core
     {
         /// <summary>
-        /// Gets the GameHelper version.
+        ///     Gets the GameHelper version.
         /// </summary>
         private static string version;
 
         /// <summary>
-        /// Gets the GameHelper Overlay.
+        ///     Gets the GameHelper Overlay.
         /// </summary>
-        public static GameOverlay Overlay
-        {
-            get;
-            internal set;
-        }
-
-        = null;
+        public static GameOverlay Overlay { get; internal set; } = null;
 
         /// <summary>
-        /// Gets the list of active coroutines.
+        ///     Gets the list of active coroutines.
         /// </summary>
-        public static List<ActiveCoroutine> CoroutinesRegistrar
-        {
-            get;
-            private set;
-        }
-
-        = new();
+        public static List<ActiveCoroutine> CoroutinesRegistrar { get; } = new();
 
         /// <summary>
-        /// Gets the GameStates instance. For details read class description.
+        ///     Gets the GameStates instance. For details read class description.
         /// </summary>
-        public static GameStates States
-        {
-            get;
-            private set;
-        }
-
-        = new(IntPtr.Zero);
+        public static GameStates States { get; } = new(IntPtr.Zero);
 
         /// <summary>
-        /// Gets the files loaded for the current area.
+        ///     Gets the files loaded for the current area.
         /// </summary>
-        public static LoadedFiles CurrentAreaLoadedFiles
-        {
-            get;
-            private set;
-        }
-
-        = new(IntPtr.Zero);
+        public static LoadedFiles CurrentAreaLoadedFiles { get; } = new(IntPtr.Zero);
 
         /// <summary>
-        /// Gets the GameProcess instance. For details read class description.
+        ///     Gets the GameProcess instance. For details read class description.
         /// </summary>
-        public static GameProcess Process
-        {
-            get; private set;
-        }
-
-        = new();
+        public static GameProcess Process { get; } = new();
 
         /// <summary>
-        /// Gets the AreaChangeCounter instance. For details read class description.
+        ///     Gets the AreaChangeCounter instance. For details read class description.
         /// </summary>
-        internal static AreaChangeCounter AreaChangeCounter
-        {
-            get;
-            private set;
-        }
-
-        = new(IntPtr.Zero);
+        internal static AreaChangeCounter AreaChangeCounter { get; } = new(IntPtr.Zero);
 
         /// <summary>
-        /// Gets the values associated with the Game Window Scale.
+        ///     Gets the values associated with the Game Window Scale.
         /// </summary>
-        internal static GameWindowScale GameScale
-        {
-            get;
-            private set;
-        }
-
-        = new(IntPtr.Zero);
+        internal static GameWindowScale GameScale { get; } = new(IntPtr.Zero);
 
         /// <summary>
-        /// Gets the values associated with the terrain rotation selector.
+        ///     Gets the values associated with the terrain rotation selector.
         /// </summary>
-        internal static TerrainHeightHelper RotationSelector
-        {
-            get;
-            private set;
-        }
-
-        = new(IntPtr.Zero, 8);
+        internal static TerrainHeightHelper RotationSelector { get; } = new(IntPtr.Zero, 8);
 
         /// <summary>
-        /// Gets the values associated with the terrain rotator helper.
+        ///     Gets the values associated with the terrain rotator helper.
         /// </summary>
-        internal static TerrainHeightHelper RotatorHelper
-        {
-            get;
-            private set;
-        }
-
-        = new(IntPtr.Zero, 24);
+        internal static TerrainHeightHelper RotatorHelper { get; } = new(IntPtr.Zero, 24);
 
         /// <summary>
-        /// Gets the GameHelper settings.
+        ///     Gets the GameHelper settings.
         /// </summary>
-        internal static State GHSettings
-        {
-            get;
-        }
-
-        = JsonHelper.CreateOrLoadJsonFile<State>(State.CoreSettingFile);
+        internal static State GHSettings { get; } = JsonHelper.CreateOrLoadJsonFile<State>(State.CoreSettingFile);
 
         /// <summary>
-        /// Initializes the <see cref="Core"/> class.
+        ///     Initializes the <see cref="Core" /> class.
         /// </summary>
         public static void Initialize()
         {
@@ -151,7 +93,7 @@ namespace GameHelper
         }
 
         /// <summary>
-        /// Get GameHelper version.
+        ///     Get GameHelper version.
         /// </summary>
         /// <returns>GameHelper version.</returns>
         public static string GetVersion()
@@ -160,7 +102,7 @@ namespace GameHelper
         }
 
         /// <summary>
-        /// Initializes the <see cref="Core"/> class coroutines.
+        ///     Initializes the <see cref="Core" /> class coroutines.
         /// </summary>
         internal static void InitializeCororutines()
         {
@@ -174,7 +116,7 @@ namespace GameHelper
         }
 
         /// <summary>
-        /// Cleans up all the resources taken by the application core.
+        ///     Cleans up all the resources taken by the application core.
         /// </summary>
         internal static void Dispose()
         {
@@ -182,11 +124,11 @@ namespace GameHelper
         }
 
         /// <summary>
-        /// Converts the RemoteObjects to ImGui Widgets.
+        ///     Converts the RemoteObjects to ImGui Widgets.
         /// </summary>
         internal static void RemoteObjectsToImGuiCollapsingHeader()
         {
-            var propertyFlags = BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static;
+            const BindingFlags propertyFlags = BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static;
             foreach (var property in UiHelper.GetToImGuiMethods(typeof(Core), propertyFlags, null))
             {
                 if (ImGui.CollapsingHeader(property.Name))
@@ -197,8 +139,8 @@ namespace GameHelper
         }
 
         /// <summary>
-        /// Co-routine to update the address where the
-        /// Game Window Values are loaded in the game memory.
+        ///     Co-routine to update the address where the
+        ///     Game Window Values are loaded in the game memory.
         /// </summary>
         /// <returns>co-routine IWait.</returns>
         private static IEnumerator<Wait> UpdateScaleData()
@@ -211,7 +153,7 @@ namespace GameHelper
         }
 
         /// <summary>
-        /// Co-routine to update the address where AreaChange object is loaded in the game memory.
+        ///     Co-routine to update the address where AreaChange object is loaded in the game memory.
         /// </summary>
         /// <returns>co-routine IWait.</returns>
         private static IEnumerator<Wait> UpdateAreaChangeData()
@@ -224,7 +166,7 @@ namespace GameHelper
         }
 
         /// <summary>
-        /// Co-routine to update the address where the Files are loaded in the game memory.
+        ///     Co-routine to update the address where the Files are loaded in the game memory.
         /// </summary>
         /// <returns>co-routine IWait.</returns>
         private static IEnumerator<Wait> UpdateFilesData()
@@ -237,7 +179,7 @@ namespace GameHelper
         }
 
         /// <summary>
-        /// Co-routine to update the address where the Game States are loaded in the game memory.
+        ///     Co-routine to update the address where the Game States are loaded in the game memory.
         /// </summary>
         /// <returns>co-routine IWait.</returns>
         private static IEnumerator<Wait> UpdateStatesData()
@@ -250,7 +192,7 @@ namespace GameHelper
         }
 
         /// <summary>
-        /// Co-routine to update the address where the Rotation Selector values are loaded in the game memory.
+        ///     Co-routine to update the address where the Rotation Selector values are loaded in the game memory.
         /// </summary>
         /// <returns>co-routine IWait.</returns>
         private static IEnumerator<Wait> UpdateRotationSelectorData()
@@ -263,7 +205,7 @@ namespace GameHelper
         }
 
         /// <summary>
-        /// Co-routine to update the address where the rotator helper values are loaded in the game memory.
+        ///     Co-routine to update the address where the rotator helper values are loaded in the game memory.
         /// </summary>
         /// <returns>co-routine IWait.</returns>
         private static IEnumerator<Wait> UpdateRotatorHelperData()
@@ -276,8 +218,8 @@ namespace GameHelper
         }
 
         /// <summary>
-        /// Co-routine to set All controllers addresses to Zero,
-        /// once the game closes.
+        ///     Co-routine to set All controllers addresses to Zero,
+        ///     once the game closes.
         /// </summary>
         /// <returns>co-routine IWait.</returns>
         private static IEnumerator<Wait> GameClosedActions()

@@ -9,54 +9,62 @@ namespace GameHelper.Utils
     using System.Linq;
     using System.Numerics;
     using System.Reflection;
-    using GameHelper.RemoteObjects;
     using GameOffsets.Natives;
     using ImGuiNET;
+    using RemoteObjects;
 
     /// <summary>
-    /// Has helper functions to DRY out the Ui creation.
+    ///     Has helper functions to DRY out the Ui creation.
     /// </summary>
     public static class UiHelper
     {
         /// <summary>
-        /// Flags associated with transparent ImGui window.
+        ///     Flags associated with transparent ImGui window.
         /// </summary>
         public const ImGuiWindowFlags TransparentWindowFlags = ImGuiWindowFlags.NoInputs |
-            ImGuiWindowFlags.NoBringToFrontOnFocus | ImGuiWindowFlags.NoCollapse |
-            ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoScrollbar |
-            ImGuiWindowFlags.NoSavedSettings | ImGuiWindowFlags.AlwaysAutoResize |
-            ImGuiWindowFlags.NoTitleBar;
+                                                               ImGuiWindowFlags.NoBringToFrontOnFocus | ImGuiWindowFlags.NoCollapse |
+                                                               ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoScrollbar |
+                                                               ImGuiWindowFlags.NoSavedSettings | ImGuiWindowFlags.AlwaysAutoResize |
+                                                               ImGuiWindowFlags.NoTitleBar;
 
         /// <summary>
-        /// Converts rgba color information to uint32 color format.
+        ///     Converts rgba color information to uint32 color format.
         /// </summary>
         /// <param name="r">red color number between 0 - 255.</param>
         /// <param name="g">green color number between 0 - 255.</param>
         /// <param name="b">blue color number between 0 - 255.</param>
         /// <param name="a">alpha number between 0 - 255.</param>
         /// <returns>color in uint32 format.</returns>
-        public static uint Color(uint r, uint g, uint b, uint a) => a << 24 | b << 16 | g << 8 | r;
+        public static uint Color(uint r, uint g, uint b, uint a)
+        {
+            return (a << 24) | (b << 16) | (g << 8) | r;
+        }
 
         /// <summary>
-        /// Converts rgba color information to uint32 color format.
+        ///     Converts rgba color information to uint32 color format.
         /// </summary>
         /// <param name="color">x,y,z,w = alpha number between 0 - 255.</param>
         /// <returns>color in uint32 format.</returns>
-        public static uint Color(Vector4 color) => (uint)color.W << 24 | (uint)color.Z << 16 | (uint)color.Y << 8 | (uint)color.X;
+        public static uint Color(Vector4 color)
+        {
+            return ((uint)color.W << 24) | ((uint)color.Z << 16) | ((uint)color.Y << 8) | (uint)color.X;
+        }
 
         /// <summary>
-        /// Draws the Rectangle on the screen.
+        ///     Draws the Rectangle on the screen.
         /// </summary>
         /// <param name="pos">Postion of the rectange.</param>
         /// <param name="size">Size of the rectange.</param>
         /// <param name="r">color selector red 0 - 255.</param>
         /// <param name="g">color selector green 0 - 255.</param>
         /// <param name="b">color selector blue 0 - 255.</param>
-        public static void DrawRect(Vector2 pos, Vector2 size, byte r, byte g, byte b) =>
-            ImGui.GetForegroundDrawList().AddRect(pos, pos + size, UiHelper.Color(r, g, b, 255), 0f, ImDrawCornerFlags.None, 2f);
+        public static void DrawRect(Vector2 pos, Vector2 size, byte r, byte g, byte b)
+        {
+            ImGui.GetForegroundDrawList().AddRect(pos, pos + size, Color(r, g, b, 255), 0f, ImDrawCornerFlags.None, 2f);
+        }
 
         /// <summary>
-        /// Draws the text on the screen.
+        ///     Draws the text on the screen.
         /// </summary>
         /// <param name="pos">world location to draw the text.</param>
         /// <param name="text">text to draw.</param>
@@ -73,12 +81,12 @@ namespace GameHelper.Utils
         }
 
         /// <summary>
-        /// Draws the disabled button on the ImGui.
+        ///     Draws the disabled button on the ImGui.
         /// </summary>
         /// <param name="buttonLabel">text to write on the button.</param>
         public static void DrawDisabledButton(string buttonLabel)
         {
-            uint col = UiHelper.Color(204, 204, 204, 128);
+            var col = Color(204, 204, 204, 128);
             ImGui.PushStyleColor(ImGuiCol.Button, col);
             ImGui.PushStyleColor(ImGuiCol.ButtonActive, col);
             ImGui.PushStyleColor(ImGuiCol.ButtonHovered, col);
@@ -87,7 +95,7 @@ namespace GameHelper.Utils
         }
 
         /// <summary>
-        /// Helps convert address to ImGui Widget.
+        ///     Helps convert address to ImGui Widget.
         /// </summary>
         /// <param name="name">name of the object whos address it is.</param>
         /// <param name="address">address of the object in the game.</param>
@@ -106,8 +114,8 @@ namespace GameHelper.Utils
         }
 
         /// <summary>
-        /// Helps convert the text into ImGui widget that display the text
-        /// and copy it if user click on it.
+        ///     Helps convert the text into ImGui widget that display the text
+        ///     and copy it if user click on it.
         /// </summary>
         /// <param name="displayText">text to display on the ImGui.</param>
         /// <param name="copyText">text to copy when user click.</param>
@@ -123,7 +131,7 @@ namespace GameHelper.Utils
         }
 
         /// <summary>
-        /// Creates a ImGui ComboBox for C# Enums.
+        ///     Creates a ImGui ComboBox for C# Enums.
         /// </summary>
         /// <typeparam name="T">Enum type to display in the ComboBox.</typeparam>
         /// <param name="displayText">Text to display along the ComboBox.</param>
@@ -132,9 +140,9 @@ namespace GameHelper.Utils
         public static bool EnumComboBox<T>(string displayText, ref T selected)
             where T : Enum
         {
-            Type enumType = typeof(T);
-            string[] enumNames = Enum.GetNames(enumType);
-            int selectedIndex = (int)Convert.ChangeType(selected, typeof(int));
+            var enumType = typeof(T);
+            var enumNames = Enum.GetNames(enumType);
+            var selectedIndex = (int)Convert.ChangeType(selected, typeof(int));
             if (ImGui.Combo(displayText, ref selectedIndex, enumNames, enumNames.Length))
             {
                 selected = (T)Enum.Parse(enumType, enumNames[selectedIndex]);
@@ -145,7 +153,7 @@ namespace GameHelper.Utils
         }
 
         /// <summary>
-        /// Creates a ImGui ComboBox for C# Enums whos values are not continous.
+        ///     Creates a ImGui ComboBox for C# Enums whos values are not continous.
         /// </summary>
         /// <typeparam name="T">Enum type to display in the ComboBox.</typeparam>
         /// <param name="displayText">Text to display along the ComboBox.</param>
@@ -154,9 +162,9 @@ namespace GameHelper.Utils
         public static bool NonContinuousEnumComboBox<T>(string displayText, ref T selected)
             where T : Enum
         {
-            Type enumType = typeof(T);
-            string[] enumNames = Enum.GetNames(enumType);
-            int selectedIndex = Array.IndexOf(enumNames, $"{selected}");
+            var enumType = typeof(T);
+            var enumNames = Enum.GetNames(enumType);
+            var selectedIndex = Array.IndexOf(enumNames, $"{selected}");
             if (ImGui.Combo(displayText, ref selectedIndex, enumNames, enumNames.Length))
             {
                 selected = (T)Enum.Parse(enumType, enumNames[selectedIndex]);
@@ -167,7 +175,7 @@ namespace GameHelper.Utils
         }
 
         /// <summary>
-        /// Creates a ImGui ComboBox for C# IEnumerable.
+        ///     Creates a ImGui ComboBox for C# IEnumerable.
         /// </summary>
         /// <typeparam name="T">The type of objects in the IEnumerable.</typeparam>
         /// <param name="displayText">Text to display along the ComboBox.</param>
@@ -176,12 +184,12 @@ namespace GameHelper.Utils
         /// <returns>Returns a value indicating whether user has selected an item or not.</returns>
         public static bool IEnumerableComboBox<T>(string displayText, IEnumerable<T> items, ref T current)
         {
-            bool ret = false;
+            var ret = false;
             if (ImGui.BeginCombo(displayText, $"{current}"))
             {
                 foreach (var item in items)
                 {
-                    bool selected = item.Equals(current);
+                    var selected = item.Equals(current);
                     if (ImGui.IsWindowAppearing() && selected)
                     {
                         ImGui.SetScrollHereY();
@@ -201,48 +209,49 @@ namespace GameHelper.Utils
         }
 
         /// <summary>
-        /// Iterates over properties of the given class via reflection
-        /// and yields the <see cref="RemoteObjectBase"/> property name and its
-        /// <see cref="RemoteObjectBase.ToImGui"/> method. Any property
-        /// that doesn't have both the getter and setter method are ignored.
+        ///     Iterates over properties of the given class via reflection
+        ///     and yields the <see cref="RemoteObjectBase" /> property name and its
+        ///     <see cref="RemoteObjectBase.ToImGui" /> method. Any property
+        ///     that doesn't have both the getter and setter method are ignored.
         /// </summary>
         /// <param name="classType">Type of the class to traverse.</param>
         /// <param name="propertyFlags">flags to filter the class properties.</param>
         /// <param name="classObject">Class object, or null for static class.</param>
-        /// <returns>Yield the <see cref="RemoteObjectBase.ToImGui"/> method.</returns>
+        /// <returns>Yield the <see cref="RemoteObjectBase.ToImGui" /> method.</returns>
         internal static IEnumerable<RemoteObjectPropertyDetail> GetToImGuiMethods(
             Type classType,
             BindingFlags propertyFlags,
-            object classObject)
+            object classObject
+        )
         {
             var methodFlags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public;
             var properties = classType.GetProperties(propertyFlags).ToList();
-            for (int i = 0; i < properties.Count; i++)
+            for (var i = 0; i < properties.Count; i++)
             {
-                PropertyInfo property = properties[i];
+                var property = properties[i];
                 if (property.SetMethod == null)
                 {
                     continue;
                 }
 
-                object propertyValue = property.GetValue(classObject);
+                var propertyValue = property.GetValue(classObject);
                 if (propertyValue == null)
                 {
                     continue;
                 }
 
-                Type propertyType = propertyValue.GetType();
+                var propertyType = propertyValue.GetType();
 
                 if (!typeof(RemoteObjectBase).IsAssignableFrom(propertyType))
                 {
                     continue;
                 }
 
-                yield return new RemoteObjectPropertyDetail()
+                yield return new RemoteObjectPropertyDetail
                 {
                     Name = property.Name,
                     Value = propertyValue,
-                    ToImGui = propertyType.GetMethod("ToImGui", methodFlags),
+                    ToImGui = propertyType.GetMethod("ToImGui", methodFlags)
                 };
             }
         }
