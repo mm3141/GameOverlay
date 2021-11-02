@@ -8,20 +8,20 @@ namespace GameHelper.Ui
     using System.Diagnostics;
     using System.Numerics;
     using Coroutine;
-    using GameHelper.CoroutineEvents;
+    using CoroutineEvents;
     using ImGuiNET;
 
     /// <summary>
-    /// Kills the overlay.
+    ///     Kills the overlay.
     /// </summary>
     public static class OverlayKiller
     {
         private static readonly Stopwatch Sw = Stopwatch.StartNew();
         private static readonly int Timelimit = 20;
-        private static Vector2 size = new(400);
+        private static readonly Vector2 size = new(400);
 
         /// <summary>
-        /// Initializes the co-routines.
+        ///     Initializes the co-routines.
         /// </summary>
         internal static void InitializeCoroutines()
         {
@@ -43,8 +43,8 @@ namespace GameHelper.Ui
                 ImGui.SetNextWindowSize(size);
                 ImGui.Begin("Player Vs Player (PVP) Detected");
                 ImGui.TextWrapped("Please don't cheat in PvP mode. GameHelper was not " +
-                    "created for PvP cheating. Overlay will close " +
-                    $"in {Timelimit - (int)Sw.Elapsed.TotalSeconds} seconds.");
+                                  "created for PvP cheating. Overlay will close " +
+                                  $"in {Timelimit - (int)Sw.Elapsed.TotalSeconds} seconds.");
                 ImGui.End();
 
                 if (Sw.Elapsed.TotalSeconds > Timelimit)

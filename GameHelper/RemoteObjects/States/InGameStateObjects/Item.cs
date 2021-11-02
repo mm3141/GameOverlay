@@ -8,21 +8,19 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
     using GameOffsets.Objects.States.InGameState;
 
     /// <summary>
-    /// Points to the item in the game.
-    /// Item is basically anything that can be put in the inventory/stash.
+    ///     Points to the item in the game.
+    ///     Item is basically anything that can be put in the inventory/stash.
     /// </summary>
     public class Item : Entity
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="Item"/> class.
+        ///     Initializes a new instance of the <see cref="Item" /> class.
         /// </summary>
         /// <param name="address">address of the Entity.</param>
         internal Item(IntPtr address)
-            : base(address)
-        {
-        }
+            : base(address) { }
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         protected override void UpdateData(bool hasAddressChanged)
         {
             var reader = Core.Process.Handle;

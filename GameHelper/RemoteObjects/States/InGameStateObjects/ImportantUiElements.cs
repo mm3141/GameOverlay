@@ -7,30 +7,30 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
     using System;
     using System.Collections.Generic;
     using Coroutine;
-    using GameHelper.CoroutineEvents;
-    using GameHelper.RemoteEnums;
-    using GameHelper.RemoteObjects.UiElement;
+    using CoroutineEvents;
     using GameOffsets.Objects.States.InGameState;
+    using RemoteEnums;
+    using UiElement;
 
     /// <summary>
-    /// This is actually UiRoot main child which contains
-    /// all the UiElements (100+). Normally it's at index 1 of UiRoot.
-    /// This class is created because traversing childrens of
-    /// UiRoot is a slow process that requires lots of memory reads.
-    /// Drawback:
-    ///    1: Every league/patch the offsets needs to be updated.
-    ///       Offsets used over here are very unstable.
-    ///    2: More UiElements we are tracking = More memory read
-    ///       every X seconds just to update IsVisible :(.
+    ///     This is actually UiRoot main child which contains
+    ///     all the UiElements (100+). Normally it's at index 1 of UiRoot.
+    ///     This class is created because traversing childrens of
+    ///     UiRoot is a slow process that requires lots of memory reads.
+    ///     Drawback:
+    ///     1: Every league/patch the offsets needs to be updated.
+    ///     Offsets used over here are very unstable.
+    ///     2: More UiElements we are tracking = More memory read
+    ///     every X seconds just to update IsVisible :(.
     /// </summary>
     public class ImportantUiElements : RemoteObjectBase
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="ImportantUiElements"/> class.
+        ///     Initializes a new instance of the <see cref="ImportantUiElements" /> class.
         /// </summary>
         /// <param name="address">
-        /// UiRoot 1st child address (starting from 0)
-        /// or <see cref="IntPtr.Zero"/> in case UiRoot has no child.
+        ///     UiRoot 1st child address (starting from 0)
+        ///     or <see cref="IntPtr.Zero" /> in case UiRoot has no child.
         /// </param>
         internal ImportantUiElements(IntPtr address)
             : base(address)
@@ -41,37 +41,29 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
         }
 
         /// <summary>
-        /// Gets the LargeMap UiElement.
-        /// UiRoot -> MainChild -> 3rd index -> 1nd index.
+        ///     Gets the LargeMap UiElement.
+        ///     UiRoot -> MainChild -> 3rd index -> 1nd index.
         /// </summary>
-        public LargeMapUiElement LargeMap
-        {
-            get;
-            private set;
-        }
+        public LargeMapUiElement LargeMap { get; }
 
-        = new LargeMapUiElement(IntPtr.Zero);
+            = new(IntPtr.Zero);
 
         /// <summary>
-        /// Gets the MiniMap UiElement.
-        /// UiRoot -> MainChild -> 3rd index -> 2nd index.
+        ///     Gets the MiniMap UiElement.
+        ///     UiRoot -> MainChild -> 3rd index -> 2nd index.
         /// </summary>
-        public MiniMapUiElement MiniMap
-        {
-            get;
-            private set;
-        }
+        public MiniMapUiElement MiniMap { get; }
 
-        = new MiniMapUiElement(IntPtr.Zero);
+            = new(IntPtr.Zero);
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         protected override void CleanUpData()
         {
             this.MiniMap.Address = IntPtr.Zero;
             this.LargeMap.Address = IntPtr.Zero;
         }
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         protected override void UpdateData(bool hasAddressChanged)
         {
             var reader = Core.Process.Handle;

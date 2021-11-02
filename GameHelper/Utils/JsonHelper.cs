@@ -8,12 +8,12 @@ namespace GameHelper.Utils
     using Newtonsoft.Json;
 
     /// <summary>
-    /// Utility functions to help read/write to Json files.
+    ///     Utility functions to help read/write to Json files.
     /// </summary>
     internal static class JsonHelper
     {
         /// <summary>
-        /// Creates new instance or load from the file if file exists.
+        ///     Creates new instance or load from the file if file exists.
         /// </summary>
         /// <typeparam name="T">Class name to (De)serialize.</typeparam>
         /// <param name="file">file to load from.</param>
@@ -27,16 +27,14 @@ namespace GameHelper.Utils
                 var content = File.ReadAllText(file.FullName);
                 return JsonConvert.DeserializeObject<T>(content);
             }
-            else
-            {
-                T obj = new();
-                JsonHelper.SafeToFile(obj, file);
-                return obj;
-            }
+
+            T obj = new();
+            SafeToFile(obj, file);
+            return obj;
         }
 
         /// <summary>
-        /// Save the class object into the file.
+        ///     Save the class object into the file.
         /// </summary>
         /// <param name="classObject">class object to save in the file.</param>
         /// <param name="file">file to save in.</param>

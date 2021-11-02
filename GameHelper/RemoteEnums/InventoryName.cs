@@ -5,9 +5,9 @@
 namespace GameHelper.RemoteEnums
 {
     /// <summary>
-    /// Read Inventories.dat file for inventory name and index mapping.
-    /// Remember, in the game, inventory index starts from 0x01.
-    /// In the Inventories.dat file, inventory index starts from 0x00.
+    ///     Read Inventories.dat file for inventory name and index mapping.
+    ///     Remember, in the game, inventory index starts from 0x01.
+    ///     In the Inventories.dat file, inventory index starts from 0x00.
     /// </summary>
     public enum InventoryName
     {

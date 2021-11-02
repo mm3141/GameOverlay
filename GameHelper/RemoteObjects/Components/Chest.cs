@@ -9,36 +9,34 @@ namespace GameHelper.RemoteObjects.Components
     using ImGuiNET;
 
     /// <summary>
-    /// The <see cref="Chest"/> component in the entity.
+    ///     The <see cref="Chest" /> component in the entity.
     /// </summary>
     public class Chest : RemoteObjectBase
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="Chest"/> class.
+        ///     Initializes a new instance of the <see cref="Chest" /> class.
         /// </summary>
-        /// <param name="address">address of the <see cref="Chest"/> component.</param>
+        /// <param name="address">address of the <see cref="Chest" /> component.</param>
         public Chest(IntPtr address)
-            : base(address, true)
-        {
-        }
+            : base(address, true) { }
 
         /// <summary>
-        /// Gets a value indicating whether chest is opened or not.
+        ///     Gets a value indicating whether chest is opened or not.
         /// </summary>
-        public bool IsOpened { get; private set; } = false;
+        public bool IsOpened { get; private set; }
 
         /// <summary>
-        /// Gets a value indicating whether chest is a strongbox or not.
+        ///     Gets a value indicating whether chest is a strongbox or not.
         /// </summary>
-        public bool IsStrongbox { get; private set; } = false;
+        public bool IsStrongbox { get; private set; }
 
         /// <summary>
-        /// Gets a value indicating whether chest is a breach chest or not.
+        ///     Gets a value indicating whether chest is a breach chest or not.
         /// </summary>
-        public bool IsBreachOrLarge { get; private set; } = false;
+        public bool IsBreachOrLarge { get; private set; }
 
         /// <summary>
-        /// Converts the <see cref="Chest"/> class data to ImGui.
+        ///     Converts the <see cref="Chest" /> class data to ImGui.
         /// </summary>
         internal override void ToImGui()
         {
@@ -48,13 +46,13 @@ namespace GameHelper.RemoteObjects.Components
             ImGui.Text($"IsBreachOrLarge: {this.IsBreachOrLarge}");
         }
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         protected override void CleanUpData()
         {
             throw new Exception("Component Address should never be Zero.");
         }
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         protected override void UpdateData(bool hasAddressChanged)
         {
             var reader = Core.Process.Handle;

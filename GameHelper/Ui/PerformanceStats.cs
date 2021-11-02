@@ -8,21 +8,21 @@ namespace GameHelper.Ui
     using System.Collections.Generic;
     using System.Numerics;
     using Coroutine;
-    using GameHelper.CoroutineEvents;
-    using GameHelper.Utils;
+    using CoroutineEvents;
     using ImGuiNET;
+    using Utils;
 
     /// <summary>
-    /// Visualize the co-routines stats.
+    ///     Visualize the co-routines stats.
     /// </summary>
     public static class PerformanceStats
     {
         private static readonly Dictionary<string, MovingAverage> MovingAverageValue = new();
 
-        private static bool isPerformanceWindowHovered = false;
+        private static bool isPerformanceWindowHovered;
 
         /// <summary>
-        /// Initializes the co-routines.
+        ///     Initializes the co-routines.
         /// </summary>
         internal static void InitializeCoroutines()
         {
@@ -30,7 +30,7 @@ namespace GameHelper.Ui
         }
 
         /// <summary>
-        /// Draws the window to display the perf stats.
+        ///     Draws the window to display the perf stats.
         /// </summary>
         /// <returns>co-routine IWait.</returns>
         private static IEnumerator<Wait> PerformanceStatRenderCoRoutine()
@@ -66,7 +66,7 @@ namespace GameHelper.Ui
                         ImGui.PushStyleColor(ImGuiCol.Text, Vector4.Zero);
                     }
 
-                    ImGui.Text($"Performance Related Stats");
+                    ImGui.Text("Performance Related Stats");
                     ImGui.Text($"Total Used Memory: {GC.GetTotalMemory(false) / (1024 * 1024)} (MB)");
                     ImGui.Text($"Total Event Coroutines: {CoroutineHandler.EventCount}");
                     ImGui.Text($"Total Tick Coroutines: {CoroutineHandler.TickingCount}");
@@ -77,7 +77,7 @@ namespace GameHelper.Ui
                     ImGui.Text($"FPS: {fps}");
                     ImGui.NewLine();
                     ImGui.Text($"==Average of last {(int)(1440 / fps)} seconds==");
-                    for (int i = 0; i < Core.CoroutinesRegistrar.Count; i++)
+                    for (var i = 0; i < Core.CoroutinesRegistrar.Count; i++)
                     {
                         var coroutine = Core.CoroutinesRegistrar[i];
                         if (coroutine.IsFinished)
@@ -112,13 +112,13 @@ namespace GameHelper.Ui
         {
             private readonly Queue<double> samples = new();
             private readonly int windowSize = 144 * 10; // 10 seconds moving average @ 144 FPS.
+            private int lastIterationNumber;
             private double sampleAccumulator;
-            private int lastIterationNumber = 0;
 
             public double Average { get; private set; }
 
             /// <summary>
-            /// Computes a new windowed average each time a new sample arrives.
+            ///     Computes a new windowed average each time a new sample arrives.
             /// </summary>
             /// <param name="newSample">new sample to add into the moving average.</param>
             /// <param name="iterationNumber">iteration number who's sample you are adding.</param>

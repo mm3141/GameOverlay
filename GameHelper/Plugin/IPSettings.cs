@@ -5,9 +5,7 @@
 namespace GameHelper.Plugin
 {
     /// <summary>
-    /// Interface for loading/saving plugin settings.
+    ///     Interface for loading/saving plugin settings.
     /// </summary>
-    public interface IPSettings
-    {
-    }
+    public interface IPSettings { }
 }
