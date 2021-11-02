@@ -8,13 +8,17 @@ namespace HealthBars.View
 
     /// <summary>
     /// </summary>
-    public static class EntityFactory
+    public class EntityFactory
     {
+        private readonly Friendly _friendly = new();
+        private readonly Enemy _enemy = new();
+        private readonly CurrentPlayer _player = new();
+
         /// <summary>
         /// </summary>
         /// <param name="entity"></param>
         /// <returns></returns>
-        public static IEntity? GetEntity(Entity entity)
+        public IEntity? GetEntity(Entity entity)
         {
             var hasVital = entity.TryGetComponent<Life>(out var entityLife);
             if (!hasVital || !entityLife.IsAlive)
@@ -58,16 +62,16 @@ namespace HealthBars.View
 
             if (isCurrentPlayer)
             {
-                return new CurrentPlayer();
+                return this._player;
             }
 
             var isFriendly = positioned.IsFriendly;
             if (isFriendly)
             {
-                return new Friendly();
+                return this._friendly;
             }
 
-            return new Enemy();
+            return this._enemy;
         }
     }
 }
