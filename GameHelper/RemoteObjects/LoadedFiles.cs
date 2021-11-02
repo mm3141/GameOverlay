@@ -144,9 +144,8 @@ namespace GameHelper.RemoteObjects
         private void ScanForFilesParallel(SafeMemoryHandle reader, LoadedFilesRootObject filesRootObj)
         {
             var filesPtr = reader.ReadStdBucket<FilesPointerStructure>(filesRootObj.LoadedFiles);
-            Parallel.For(0, filesPtr.Count, index =>
+            Parallel.ForEach(filesPtr, fileNode =>
             {
-                var fileNode = filesPtr[index];
                 this.AddFileIfLoadedInCurrentArea(reader, fileNode.FilesPointer);
             });
         }
