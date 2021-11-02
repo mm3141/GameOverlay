@@ -52,7 +52,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
         ///     Gets the MiniMap UiElement.
         ///     UiRoot -> MainChild -> 3rd index -> 2nd index.
         /// </summary>
-        public MiniMapUiElement MiniMap { get; }
+        public MapUiElement MiniMap { get; }
 
             = new(IntPtr.Zero);
 
