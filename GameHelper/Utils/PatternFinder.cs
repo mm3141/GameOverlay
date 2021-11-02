@@ -127,7 +127,7 @@ namespace GameHelper.Utils
                             continue;
                         }
 
-                        for (var l = 0; l < patternLength / 2; l++)
+                        for (var l = 0; l < patternLength / 2 && !isAnyByteDifferent; l++)
                         {
                             if (pattern.Mask[l] && processData[j + l] != pattern.Data[l])
                             {
