@@ -17,18 +17,26 @@
     {
         public IntPtr PtrToLifeComponent;
 
-        //// This is greater than zero if Vital is regenerating
-        //// For value = 0 or less than 0, Vital isn't regenerating
+        /// <summary>
+        ///     This is greater than zero if Vital is regenerating
+        ///     For value = 0 or less than 0, Vital isn't regenerating
+        /// </summary>
         public float Regeneration;
+
         public int Total;
 
         public int Current;
 
-        //// e.g. Clarity reserve flat Vital
+        /// <summary>
+        ///     e.g. Clarity reserve flat Vital
+        /// </summary>
         public int ReservedFlat;
 
-        //// e.g. HERALD reserve % Vital.
-        //// ReservedFlat does not change this value.
+        /// <summary>
+        ///     e.g. Heralds reserve % Vital.
+        ///     ReservedFlat does not change this value.
+        ///     Note that it's an integer, this is due to 20.23% is stored as 2023
+        /// </summary>
         public int ReservedPercent;
 
         /// <summary>
@@ -43,8 +51,9 @@
                 return 0;
             }
 
-            var reserved = this.Total - this.ReservedFlat + Math.Round(this.ReservedPercent * 0.0001 * this.Total);
-            return (int)Math.Round(100 * this.Current / reserved);
+            var vitalAfterReservedPercent = Math.Round((this.ReservedPercent / 100f) * this.Total);
+            var vitalExcludingReserved = this.Total - this.ReservedFlat + vitalAfterReservedPercent;
+            return (int)Math.Round(100 * this.Current / vitalExcludingReserved);
         }
     }
 }
