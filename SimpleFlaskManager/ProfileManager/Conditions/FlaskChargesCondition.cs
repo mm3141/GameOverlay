@@ -21,8 +21,7 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
         private static int flaskSlotStatic = 1;
         private static int chargesStatic = 10;
 
-        [JsonProperty]
-        private int slot = 1;
+        [JsonProperty] private int slot = 1;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="FlaskChargesCondition" /> class.

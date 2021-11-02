@@ -21,8 +21,7 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
         private static string buffIdStatic = string.Empty;
         private static int buffChargesStatic;
 
-        [JsonProperty]
-        private int charges;
+        [JsonProperty] private int charges;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="StatusEffectCondition" /> class.

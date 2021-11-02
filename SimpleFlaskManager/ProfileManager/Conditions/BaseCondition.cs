@@ -20,17 +20,14 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
         /// <summary>
         ///     The operator to use for the condition.
         /// </summary>
-        [JsonProperty]
-        protected OperatorEnum conditionOperator;
+        [JsonProperty] protected OperatorEnum conditionOperator;
 
-        [JsonProperty]
-        private ICondition next;
+        [JsonProperty] private ICondition next;
 
         /// <summary>
         ///     Right hand side operand of the condition.
         /// </summary>
-        [JsonProperty]
-        protected T rightHandOperand;
+        [JsonProperty] protected T rightHandOperand;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="BaseCondition{T}" /> class.

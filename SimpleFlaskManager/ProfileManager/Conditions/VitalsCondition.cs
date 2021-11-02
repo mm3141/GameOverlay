@@ -57,8 +57,7 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
         private static VitalsEnum vitalTypeStatic = VitalsEnum.MANA;
         private static int thresholdStatic;
 
-        [JsonProperty]
-        private VitalsEnum vitalType;
+        [JsonProperty] private VitalsEnum vitalType;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="VitalsCondition" /> class.
