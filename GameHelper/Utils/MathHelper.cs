@@ -15,8 +15,8 @@ namespace GameHelper.Utils
         ///     Linearly interpolates between two points.
         ///     Interpolates between the points a and b by the interpolant t.
         ///     The parameter t is clamped to the range[0, 1].
-        ///     This is most commonly used to find a point some fraction of the way along a line between two endpoints (e.g.to move
-        ///     an object gradually between those points).
+        ///     This is most commonly used to find a point some fraction of the way along a line between two endpoints
+        ///     (e.g.to move an object gradually between those points).
         ///     The value returned equals a + (b - a) * t (which can also be written a * (1-t) + b*t).
         ///     When t = 0, Lerp(a, b, t) returns a.
         ///     When t = 1, Lerp(a, b, t) returns b.
@@ -35,8 +35,8 @@ namespace GameHelper.Utils
         ///     Linearly interpolates between two vectors.
         ///     Interpolates between the vectors a and b by the interpolant t.
         ///     The parameter t is clamped to the range[0, 1].
-        ///     This is most commonly used to find a point some fraction of the way along a line between two endpoints (e.g.to move
-        ///     an object gradually between those points).
+        ///     This is most commonly used to find a point some fraction of the way along a line between two endpoints
+        ///     (e.g.to move an object gradually between those points).
         ///     Similar to <see cref="Lerp(float, float, float)" />.
         /// </summary>
         /// <param name="a">Starting point.</param>
