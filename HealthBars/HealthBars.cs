@@ -144,24 +144,22 @@ namespace HealthBars
         public override void DrawUI()
         {
             var cAreaInstance = Core.States.InGameStateObject.CurrentAreaInstance;
+            if (!this.Settings.ShowInTown && cAreaInstance.AreaDetails.IsTown ||
+                !this.Settings.ShowInHideout && cAreaInstance.AreaDetails.IsHideout)
+            {
+                return;
+            }
 
             foreach (var (gameEntityNodeKey, gameEntity) in cAreaInstance.AwakeEntities)
             {
-                if (!this.Settings.ShowInTown && cAreaInstance.AreaDetails.IsTown ||
-                    !this.Settings.ShowInHideout && cAreaInstance.AreaDetails.IsHideout)
-                {
-                    continue;
-                }
-
                 if (!gameEntity.IsValid)
                 {
                     continue;
                 }
 
-                var hasRender = gameEntity.TryGetComponent<Render>(out var render);
-                if (!hasRender)
+                if (!gameEntity.TryGetComponent<Render>(out var render))
                 {
-                    return;
+                    continue;
                 }
 
                 var curPos = render.WorldPosition;
@@ -179,8 +177,7 @@ namespace HealthBars
                     this.bPositions.TryAdd(gameEntityNodeKey.id, location);
                 }
 
-                var drawEntity = this.entityFactory.GetEntity(gameEntity);
-                if (drawEntity == null)
+                if (!this.entityFactory.TryGetEntity(gameEntity, out var drawEntity))
                 {
                     continue;
                 }

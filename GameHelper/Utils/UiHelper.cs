@@ -231,7 +231,7 @@ namespace GameHelper.Utils
                 var property = properties[i];
                 if (property.SetMethod == null)
                 {
-                    continue;
+                    //continue;
                 }
 
                 var propertyValue = property.GetValue(classObject);
