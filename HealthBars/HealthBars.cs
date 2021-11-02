@@ -25,9 +25,9 @@ namespace HealthBars
     public sealed class HealthBars : PCore<HealthBarsSettings>
     {
         private readonly EntityFactory entityFactory = new();
-        private SpriteController spriteController;
         private ConcurrentDictionary<uint, Vector2> bPositions;
         private ActiveCoroutine onAreaChange;
+        private SpriteController spriteController;
         private string SettingPathname => Path.Join(this.DllDirectory, "config", "settings.txt");
 
         /// <inheritdoc />

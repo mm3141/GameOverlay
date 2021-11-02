@@ -16,6 +16,7 @@ namespace HealthBars
     public class SpriteAtlas
     {
         private readonly Dictionary<string, Sprite> sprites = new();
+
         /// <summary>
         ///     Spritesheet size.
         /// </summary>
@@ -109,7 +110,7 @@ namespace HealthBars
         /// <returns></returns>
         public Sprite GetSprite(string spriteName)
         {
-            var hasSprite = this.sprites.TryGetValue(spriteName, out Sprite sprite);
+            var hasSprite = this.sprites.TryGetValue(spriteName, out var sprite);
 
             return hasSprite ? sprite : null;
         }

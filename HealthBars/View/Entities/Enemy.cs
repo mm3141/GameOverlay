@@ -47,8 +47,8 @@ namespace HealthBars.View.Entities
 
             var inCullingRange = InCullingRange(eP, eP.HpPercent);
             var cullingColor = UiHelper.Color(eP.Settings.CullRangeColor * 255f);
-            spriteController.DrawSprite("EnemyHP", hpPos, 104, 7, scale, 
-                eP.HpPercent, -1, eP.Settings.ShowEnemyGradationMarks, 
+            spriteController.DrawSprite("EnemyHP", hpPos, 104, 7, scale,
+                eP.HpPercent, -1, eP.Settings.ShowEnemyGradationMarks,
                 inCullingRange, cullingColor, true, true);
         }
 

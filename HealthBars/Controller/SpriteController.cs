@@ -59,7 +59,7 @@ namespace HealthBars
             {
                 return;
             }
-            
+
             var draw = ImGui.GetBackgroundDrawList();
 
             var bounds = new Vector2(
