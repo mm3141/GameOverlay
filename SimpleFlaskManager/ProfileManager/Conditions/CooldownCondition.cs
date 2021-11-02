@@ -2,11 +2,11 @@
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
-using System.Diagnostics;
-using ImGuiNET;
-
 namespace SimpleFlaskManager.ProfileManager.Conditions
 {
+    using System.Diagnostics;
+    using ImGuiNET;
+
     /// <summary>
     ///     For triggering a flask on number of flask charges the flask got.
     /// </summary>
@@ -37,7 +37,9 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
             ToImGui(ref cooldownStatic);
             ImGui.SameLine();
             if (ImGui.Button("Add##FlaskCharges") && cooldownStatic >= 0.0f)
+            {
                 return new CooldownCondition(cooldownStatic);
+            }
 
             return null;
         }
@@ -45,20 +47,22 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
         /// <inheritdoc />
         public override void Display(int index = 0)
         {
-            ToImGui(ref rightHandOperand);
+            ToImGui(ref this.rightHandOperand);
             base.Display(index);
         }
 
         /// <inheritdoc />
         public override bool Evaluate()
         {
-            var elapsedSeconds = cooldownTimer.ElapsedMilliseconds / 1000f;
-            if (elapsedSeconds > rightHandOperand)
-                if (Next() == null || EvaluateNext())
+            var elapsedSeconds = this.cooldownTimer.ElapsedMilliseconds / 1000f;
+            if (elapsedSeconds > this.rightHandOperand)
+            {
+                if (this.Next() == null || this.EvaluateNext())
                 {
-                    cooldownTimer.Restart();
+                    this.cooldownTimer.Restart();
                     return true;
                 }
+            }
 
             return false;
         }

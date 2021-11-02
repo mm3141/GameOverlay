@@ -2,15 +2,15 @@
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
-using System;
-using GameHelper;
-using GameHelper.RemoteObjects.Components;
-using GameHelper.Utils;
-using ImGuiNET;
-using Newtonsoft.Json;
-
 namespace SimpleFlaskManager.ProfileManager.Conditions
 {
+    using System;
+    using GameHelper;
+    using GameHelper.RemoteObjects.Components;
+    using GameHelper.Utils;
+    using ImGuiNET;
+    using Newtonsoft.Json;
+
     /// <summary>
     ///     For triggering a flask on player vitals changes.
     /// </summary>
@@ -68,7 +68,7 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
         public VitalsCondition(OperatorEnum operator_, VitalsEnum vital, int threshold)
             : base(operator_, threshold)
         {
-            vitalType = vital;
+            this.vitalType = vital;
         }
 
         /// <summary>
@@ -84,7 +84,9 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
             if (ImGui.Button("Add##Vitals") &&
                 (operatorStatic == OperatorEnum.BIGGER_THAN ||
                  operatorStatic == OperatorEnum.LESS_THAN))
+            {
                 return new VitalsCondition(operatorStatic, vitalTypeStatic, thresholdStatic);
+            }
 
             return null;
         }
@@ -92,7 +94,7 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
         /// <inheritdoc />
         public override void Display(int index = 0)
         {
-            ToImGui(ref conditionOperator, ref vitalType, ref rightHandOperand);
+            ToImGui(ref this.conditionOperator, ref this.vitalType, ref this.rightHandOperand);
             base.Display(index);
         }
 
@@ -101,13 +103,15 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
         {
             var player = Core.States.InGameStateObject.CurrentAreaInstance.Player;
             if (player.TryGetComponent<Life>(out var lifeComponent))
-                return conditionOperator switch
+            {
+                return this.conditionOperator switch
                        {
-                           OperatorEnum.BIGGER_THAN => GetVitalValue(lifeComponent) > rightHandOperand,
-                           OperatorEnum.LESS_THAN => GetVitalValue(lifeComponent) < rightHandOperand,
-                           _ => throw new Exception($"VitalCondition doesn't support {conditionOperator}.")
+                           OperatorEnum.BIGGER_THAN => this.GetVitalValue(lifeComponent) > this.rightHandOperand,
+                           OperatorEnum.LESS_THAN => this.GetVitalValue(lifeComponent) < this.rightHandOperand,
+                           _ => throw new Exception($"VitalCondition doesn't support {this.conditionOperator}.")
                        }
-                       && EvaluateNext();
+                       && this.EvaluateNext();
+            }
 
             return false;
         }
@@ -126,7 +130,7 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
 
         private int GetVitalValue(Life component)
         {
-            return vitalType switch
+            return this.vitalType switch
             {
                 VitalsEnum.MANA => component.Mana.Current,
                 VitalsEnum.MANA_PERCENT => component.Mana.CurrentInPercent(),
@@ -134,7 +138,7 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
                 VitalsEnum.LIFE_PERCENT => component.Health.CurrentInPercent(),
                 VitalsEnum.ENERGYSHIELD => component.EnergyShield.Current,
                 VitalsEnum.ENERGYSHIELD_PERCENT => component.EnergyShield.CurrentInPercent(),
-                _ => throw new Exception($"Invalid Vital Type {vitalType}")
+                _ => throw new Exception($"Invalid Vital Type {this.vitalType}")
             };
         }
     }

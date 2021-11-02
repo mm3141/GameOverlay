@@ -2,13 +2,13 @@
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
-using System.Collections.Generic;
-using GameHelper.Plugin;
-using SimpleFlaskManager.ProfileManager;
-using SimpleFlaskManager.ProfileManager.Conditions;
-
 namespace SimpleFlaskManager
 {
+    using System.Collections.Generic;
+    using GameHelper.Plugin;
+    using ProfileManager;
+    using ProfileManager.Conditions;
+
     /// <summary>
     ///     <see cref="SimpleFlaskManager" /> plugin settings class.
     /// </summary>

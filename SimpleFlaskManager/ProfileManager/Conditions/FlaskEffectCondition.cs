@@ -2,15 +2,15 @@
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using GameHelper;
-using GameHelper.RemoteObjects.Components;
-using ImGuiNET;
-
 namespace SimpleFlaskManager.ProfileManager.Conditions
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using GameHelper;
+    using GameHelper.RemoteObjects.Components;
+    using ImGuiNET;
+
     /// <summary>
     ///     For triggering a flask when flask effect is not active on player.
     ///     NOTE: will not trigger a flask if flask isn't available on the slot.
@@ -41,7 +41,10 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
         {
             ToImGui(OperatorEnum.NOT_CONTAINS, ref flaskSlotStatic);
             ImGui.SameLine();
-            if (ImGui.Button("Add##FlaskEffect")) return new FlaskEffectCondition(flaskSlotStatic);
+            if (ImGui.Button("Add##FlaskEffect"))
+            {
+                return new FlaskEffectCondition(flaskSlotStatic);
+            }
 
             return null;
         }
@@ -49,7 +52,7 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
         /// <inheritdoc />
         public override void Display(int index = 0)
         {
-            ToImGui(conditionOperator, ref rightHandOperand);
+            ToImGui(this.conditionOperator, ref this.rightHandOperand);
             base.Display(index);
         }
 
@@ -58,17 +61,21 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
         {
             var flask =
                 Core.States.InGameStateObject.CurrentAreaInstance.ServerDataObject.FlaskInventory[0,
-                    rightHandOperand - 1];
-            if (flask.Address == IntPtr.Zero) return false;
+                    this.rightHandOperand - 1];
+            if (flask.Address == IntPtr.Zero)
+            {
+                return false;
+            }
 
-            if (flask.Address != flaskAddressCache)
+            if (flask.Address != this.flaskAddressCache)
+            {
                 if (flask.TryGetComponent<Base>(out var baseComponent))
                 {
                     if (JsonDataHelper.FlaskNameToBuffGroups.TryGetValue(baseComponent.ItemBaseName,
                         out var buffNames))
                     {
-                        flaskBuffsCache = buffNames;
-                        flaskAddressCache = flask.Address;
+                        this.flaskBuffsCache = buffNames;
+                        this.flaskAddressCache = flask.Address;
                     }
                     else
                     {
@@ -76,11 +83,16 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
                                             "Please let the developer know.");
                     }
                 }
+            }
 
             var player = Core.States.InGameStateObject.CurrentAreaInstance.Player;
             if (player.TryGetComponent<Buffs>(out var buffComponent))
-                if (!flaskBuffsCache.Any(buffName => buffComponent.StatusEffects.ContainsKey(buffName)))
-                    return true && EvaluateNext();
+            {
+                if (!this.flaskBuffsCache.Any(buffName => buffComponent.StatusEffects.ContainsKey(buffName)))
+                {
+                    return true && this.EvaluateNext();
+                }
+            }
 
             return false;
         }

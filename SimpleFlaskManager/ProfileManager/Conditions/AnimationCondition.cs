@@ -2,17 +2,17 @@
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
-using System;
-using System.Diagnostics;
-using GameHelper;
-using GameHelper.RemoteEnums;
-using GameHelper.RemoteObjects.Components;
-using GameHelper.Utils;
-using ImGuiNET;
-using Newtonsoft.Json;
-
 namespace SimpleFlaskManager.ProfileManager.Conditions
 {
+    using System;
+    using System.Diagnostics;
+    using GameHelper;
+    using GameHelper.RemoteEnums;
+    using GameHelper.RemoteObjects.Components;
+    using GameHelper.Utils;
+    using ImGuiNET;
+    using Newtonsoft.Json;
+
     /// <summary>
     ///     For triggering a flask on player animation changes.
     /// </summary>
@@ -35,8 +35,8 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
         public AnimationCondition(OperatorEnum operator_, Animation animation, int duration)
             : base(operator_, animation)
         {
-            durationMs = duration;
-            sw = Stopwatch.StartNew();
+            this.durationMs = duration;
+            this.sw = Stopwatch.StartNew();
         }
 
         /// <summary>
@@ -52,7 +52,9 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
             if (ImGui.Button("Add##Animation") &&
                 (operatorStatic == OperatorEnum.EQUAL_TO ||
                  operatorStatic == OperatorEnum.NOT_EQUAL_TO))
+            {
                 return new AnimationCondition(operatorStatic, selectedStatic, durationMsStatic);
+            }
 
             return null;
         }
@@ -60,7 +62,7 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
         /// <inheritdoc />
         public override void Display(int index = 0)
         {
-            ToImGui(ref conditionOperator, ref rightHandOperand, ref durationMs);
+            ToImGui(ref this.conditionOperator, ref this.rightHandOperand, ref this.durationMs);
             base.Display(index);
         }
 
@@ -70,20 +72,23 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
             var player = Core.States.InGameStateObject.CurrentAreaInstance.Player;
             if (player.TryGetComponent<Actor>(out var actorComponent))
             {
-                var isConditionValid = conditionOperator switch
+                var isConditionValid = this.conditionOperator switch
                 {
-                    OperatorEnum.EQUAL_TO => actorComponent.Animation == rightHandOperand,
-                    OperatorEnum.NOT_EQUAL_TO => actorComponent.Animation != rightHandOperand,
-                    _ => throw new Exception($"AnimationCondition doesn't support {conditionOperator}.")
+                    OperatorEnum.EQUAL_TO => actorComponent.Animation == this.rightHandOperand,
+                    OperatorEnum.NOT_EQUAL_TO => actorComponent.Animation != this.rightHandOperand,
+                    _ => throw new Exception($"AnimationCondition doesn't support {this.conditionOperator}.")
                 };
 
                 if (isConditionValid)
                 {
-                    if (sw.ElapsedMilliseconds >= durationMs) return true && EvaluateNext();
+                    if (this.sw.ElapsedMilliseconds >= this.durationMs)
+                    {
+                        return true && this.EvaluateNext();
+                    }
                 }
                 else
                 {
-                    sw.Restart();
+                    this.sw.Restart();
                 }
             }
 

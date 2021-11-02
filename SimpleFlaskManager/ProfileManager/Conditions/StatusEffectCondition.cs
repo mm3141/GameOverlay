@@ -2,15 +2,15 @@
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
-using System;
-using GameHelper;
-using GameHelper.RemoteObjects.Components;
-using GameHelper.Utils;
-using ImGuiNET;
-using Newtonsoft.Json;
-
 namespace SimpleFlaskManager.ProfileManager.Conditions
 {
+    using System;
+    using GameHelper;
+    using GameHelper.RemoteObjects.Components;
+    using GameHelper.Utils;
+    using ImGuiNET;
+    using Newtonsoft.Json;
+
     /// <summary>
     ///     For triggering a flask on player Status Effect changes.
     /// </summary>
@@ -32,7 +32,7 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
         public StatusEffectCondition(OperatorEnum operator_, string buffId, int buffCharges)
             : base(operator_, buffId)
         {
-            charges = buffCharges;
+            this.charges = buffCharges;
         }
 
         /// <summary>
@@ -50,7 +50,9 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
                  operatorStatic == OperatorEnum.NOT_CONTAINS ||
                  operatorStatic == OperatorEnum.BIGGER_THAN ||
                  operatorStatic == OperatorEnum.LESS_THAN))
+            {
                 return new StatusEffectCondition(operatorStatic, buffIdStatic, buffChargesStatic);
+            }
 
             return null;
         }
@@ -58,7 +60,7 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
         /// <inheritdoc />
         public override void Display(int index = 0)
         {
-            ToImGui(ref conditionOperator, ref rightHandOperand, ref charges);
+            ToImGui(ref this.conditionOperator, ref this.rightHandOperand, ref this.charges);
             base.Display(index);
         }
 
@@ -67,17 +69,21 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
         {
             var player = Core.States.InGameStateObject.CurrentAreaInstance.Player;
             if (player.TryGetComponent<Buffs>(out var buffComponent))
-                return conditionOperator switch
+            {
+                return this.conditionOperator switch
                        {
-                           OperatorEnum.CONTAINS => buffComponent.StatusEffects.ContainsKey(rightHandOperand),
-                           OperatorEnum.NOT_CONTAINS => !buffComponent.StatusEffects.ContainsKey(rightHandOperand),
-                           OperatorEnum.BIGGER_THAN => buffComponent.StatusEffects.ContainsKey(rightHandOperand) &&
-                                                       buffComponent.StatusEffects[rightHandOperand].Charges > charges,
-                           OperatorEnum.LESS_THAN => buffComponent.StatusEffects.ContainsKey(rightHandOperand) &&
-                                                     buffComponent.StatusEffects[rightHandOperand].Charges < charges,
-                           _ => throw new Exception($"BuffCondition doesn't support {conditionOperator}.")
+                           OperatorEnum.CONTAINS => buffComponent.StatusEffects.ContainsKey(this.rightHandOperand),
+                           OperatorEnum.NOT_CONTAINS => !buffComponent.StatusEffects.ContainsKey(this.rightHandOperand),
+                           OperatorEnum.BIGGER_THAN => buffComponent.StatusEffects.ContainsKey(this.rightHandOperand) &&
+                                                       buffComponent.StatusEffects[this.rightHandOperand].Charges >
+                                                       this.charges,
+                           OperatorEnum.LESS_THAN => buffComponent.StatusEffects.ContainsKey(this.rightHandOperand) &&
+                                                     buffComponent.StatusEffects[this.rightHandOperand].Charges <
+                                                     this.charges,
+                           _ => throw new Exception($"BuffCondition doesn't support {this.conditionOperator}.")
                        }
-                       && EvaluateNext();
+                       && this.EvaluateNext();
+            }
 
             return false;
         }

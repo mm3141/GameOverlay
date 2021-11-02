@@ -2,10 +2,10 @@
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
-using System.Collections.Generic;
-
 namespace SimpleFlaskManager
 {
+    using System.Collections.Generic;
+
     /// <summary>
     ///     A helper class that reads JSON data and provides useful functions.
     /// </summary>

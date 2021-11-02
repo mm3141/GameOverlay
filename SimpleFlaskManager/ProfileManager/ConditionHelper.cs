@@ -2,12 +2,12 @@
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
-using System;
-using ImGuiNET;
-using SimpleFlaskManager.ProfileManager.Conditions;
-
 namespace SimpleFlaskManager.ProfileManager
 {
+    using System;
+    using Conditions;
+    using ImGuiNET;
+
     /// <summary>
     ///     A helper class to add new conditions.
     /// </summary>

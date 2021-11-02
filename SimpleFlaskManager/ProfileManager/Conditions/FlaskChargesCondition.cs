@@ -2,15 +2,15 @@
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
-using System;
-using GameHelper;
-using GameHelper.RemoteObjects.Components;
-using GameHelper.Utils;
-using ImGuiNET;
-using Newtonsoft.Json;
-
 namespace SimpleFlaskManager.ProfileManager.Conditions
 {
+    using System;
+    using GameHelper;
+    using GameHelper.RemoteObjects.Components;
+    using GameHelper.Utils;
+    using ImGuiNET;
+    using Newtonsoft.Json;
+
     /// <summary>
     ///     For triggering a flask on number of flask charges the flask got.
     /// </summary>
@@ -32,7 +32,7 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
         public FlaskChargesCondition(OperatorEnum operator_, int flaskSlot, int charges)
             : base(operator_, charges)
         {
-            slot = flaskSlot;
+            this.slot = flaskSlot;
         }
 
         /// <summary>
@@ -48,7 +48,9 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
             if (ImGui.Button("Add##FlaskCharges") &&
                 (operatorStatic == OperatorEnum.BIGGER_THAN ||
                  operatorStatic == OperatorEnum.LESS_THAN))
+            {
                 return new FlaskChargesCondition(operatorStatic, flaskSlotStatic, chargesStatic);
+            }
 
             return null;
         }
@@ -56,24 +58,30 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
         /// <inheritdoc />
         public override void Display(int index = 0)
         {
-            ToImGui(ref conditionOperator, ref slot, ref rightHandOperand);
+            ToImGui(ref this.conditionOperator, ref this.slot, ref this.rightHandOperand);
             base.Display(index);
         }
 
         /// <inheritdoc />
         public override bool Evaluate()
         {
-            var flask = Core.States.InGameStateObject.CurrentAreaInstance.ServerDataObject.FlaskInventory[0, slot - 1];
-            if (flask.Address == IntPtr.Zero) return false;
+            var flask =
+                Core.States.InGameStateObject.CurrentAreaInstance.ServerDataObject.FlaskInventory[0, this.slot - 1];
+            if (flask.Address == IntPtr.Zero)
+            {
+                return false;
+            }
 
             if (flask.TryGetComponent<Charges>(out var chargesComponent))
-                return conditionOperator switch
+            {
+                return this.conditionOperator switch
                        {
-                           OperatorEnum.BIGGER_THAN => chargesComponent.Current > rightHandOperand,
-                           OperatorEnum.LESS_THAN => chargesComponent.Current < rightHandOperand,
-                           _ => throw new Exception($"FlaskChargesCondition doesn't support {conditionOperator}.")
+                           OperatorEnum.BIGGER_THAN => chargesComponent.Current > this.rightHandOperand,
+                           OperatorEnum.LESS_THAN => chargesComponent.Current < this.rightHandOperand,
+                           _ => throw new Exception($"FlaskChargesCondition doesn't support {this.conditionOperator}.")
                        }
-                       && EvaluateNext();
+                       && this.EvaluateNext();
+            }
 
             return false;
         }

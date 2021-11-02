@@ -2,12 +2,12 @@
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
-using System;
-using ImGuiNET;
-using Newtonsoft.Json;
-
 namespace SimpleFlaskManager.ProfileManager.Conditions
 {
+    using System;
+    using ImGuiNET;
+    using Newtonsoft.Json;
+
     /// <summary>
     ///     Abstract class for creating conditions on which flasks can trigger.
     /// </summary>
@@ -40,9 +40,9 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
         /// </param>
         public BaseCondition(OperatorEnum operator_, T rightHandSide)
         {
-            next = null;
-            conditionOperator = operator_;
-            rightHandOperand = rightHandSide;
+            this.next = null;
+            this.conditionOperator = operator_;
+            this.rightHandOperand = rightHandSide;
         }
 
         /// <inheritdoc />
@@ -51,11 +51,11 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
         /// <inheritdoc />
         public virtual void Display(int index = 0)
         {
-            if (next != null)
+            if (this.next != null)
             {
                 ImGui.Separator();
                 ImGui.PushID(++index);
-                next.Display(index);
+                this.next.Display(index);
                 ImGui.PopID();
             }
         }
@@ -63,24 +63,31 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
         /// <inheritdoc />
         public ICondition Next()
         {
-            return next;
+            return this.next;
         }
 
         /// <inheritdoc />
         public void Append(ICondition condition)
         {
-            if (next == null)
-                next = condition;
+            if (this.next == null)
+            {
+                this.next = condition;
+            }
             else
-                next.Append(condition);
+            {
+                this.next.Append(condition);
+            }
         }
 
         /// <inheritdoc />
         public void Delete()
         {
-            if (next != null) next.Delete();
+            if (this.next != null)
+            {
+                this.next.Delete();
+            }
 
-            next = null;
+            this.next = null;
         }
 
         /// <summary>
@@ -103,7 +110,7 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
         /// </returns>
         protected bool EvaluateNext()
         {
-            return next == null || next.Evaluate();
+            return this.next == null || this.next.Evaluate();
         }
     }
 }

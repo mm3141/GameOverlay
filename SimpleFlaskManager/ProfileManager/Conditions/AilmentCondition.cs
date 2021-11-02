@@ -2,14 +2,14 @@
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
-using System.Linq;
-using GameHelper;
-using GameHelper.RemoteObjects.Components;
-using GameHelper.Utils;
-using ImGuiNET;
-
 namespace SimpleFlaskManager.ProfileManager.Conditions
 {
+    using System.Linq;
+    using GameHelper;
+    using GameHelper.RemoteObjects.Components;
+    using GameHelper.Utils;
+    using ImGuiNET;
+
     /// <summary>
     ///     For triggering a flask on player Status Effect changes.
     /// </summary>
@@ -42,7 +42,9 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
             ImGui.SameLine();
             if (ImGui.Button("Add##StatusEffect") &&
                 !string.IsNullOrEmpty(statusEffectGroupKeyStatic))
+            {
                 return new AilmentCondition(statusEffectGroupKeyStatic);
+            }
 
             return null;
         }
@@ -50,7 +52,7 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
         /// <inheritdoc />
         public override void Display(int index = 0)
         {
-            ToImGui(ref rightHandOperand);
+            ToImGui(ref this.rightHandOperand);
             base.Display(index);
         }
 
@@ -58,10 +60,16 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
         public override bool Evaluate()
         {
             var player = Core.States.InGameStateObject.CurrentAreaInstance.Player;
-            if (JsonDataHelper.StatusEffectGroups.TryGetValue(rightHandOperand, out var statusEffects))
+            if (JsonDataHelper.StatusEffectGroups.TryGetValue(this.rightHandOperand, out var statusEffects))
+            {
                 if (player.TryGetComponent<Buffs>(out var buffComponent))
+                {
                     if (statusEffects.Any(statusEffect => buffComponent.StatusEffects.ContainsKey(statusEffect)))
-                        return true && EvaluateNext();
+                    {
+                        return true && this.EvaluateNext();
+                    }
+                }
+            }
 
             return false;
         }
