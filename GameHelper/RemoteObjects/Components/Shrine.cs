@@ -9,26 +9,24 @@ namespace GameHelper.RemoteObjects.Components
     using ImGuiNET;
 
     /// <summary>
-    /// The <see cref="Shrine"/> component in the entity.
+    ///     The <see cref="Shrine" /> component in the entity.
     /// </summary>
     public class Shrine : RemoteObjectBase
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="Shrine"/> class.
+        ///     Initializes a new instance of the <see cref="Shrine" /> class.
         /// </summary>
-        /// <param name="address">address of the <see cref="Shrine"/> component.</param>
+        /// <param name="address">address of the <see cref="Shrine" /> component.</param>
         public Shrine(IntPtr address)
-            : base(address, true)
-        {
-        }
+            : base(address, true) { }
 
         /// <summary>
-        /// Gets a value indicating whether chest is opened or not.
+        ///     Gets a value indicating whether chest is opened or not.
         /// </summary>
-        public bool IsUsed { get; private set; } = false;
+        public bool IsUsed { get; private set; }
 
         /// <summary>
-        /// Converts the <see cref="Chest"/> class data to ImGui.
+        ///     Converts the <see cref="Chest" /> class data to ImGui.
         /// </summary>
         internal override void ToImGui()
         {
@@ -36,13 +34,13 @@ namespace GameHelper.RemoteObjects.Components
             ImGui.Text($"Is Shrine Used: {this.IsUsed}");
         }
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         protected override void CleanUpData()
         {
             throw new Exception("Component Address should never be Zero.");
         }
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         protected override void UpdateData(bool hasAddressChanged)
         {
             var reader = Core.Process.Handle;

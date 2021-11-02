@@ -10,14 +10,14 @@ namespace GameHelper.Settings
     using System.Numerics;
     using ClickableTransparentOverlay;
     using Coroutine;
-    using GameHelper.CoroutineEvents;
-    using GameHelper.Plugin;
-    using GameHelper.Utils;
+    using CoroutineEvents;
     using GameOffsets;
     using ImGuiNET;
+    using Plugin;
+    using Utils;
 
     /// <summary>
-    /// Creates the MainMenu on the UI.
+    ///     Creates the MainMenu on the UI.
     /// </summary>
     internal static class SettingsWindow
     {
@@ -26,7 +26,7 @@ namespace GameHelper.Settings
         private static string currentlySelectedPlugin = "Core";
 
         /// <summary>
-        /// Initializes the Main Menu.
+        ///     Initializes the Main Menu.
         /// </summary>
         internal static void InitializeCoroutines()
         {
@@ -41,7 +41,7 @@ namespace GameHelper.Settings
         }
 
         /// <summary>
-        /// Draws the (core/plugins) names as ImGui buttons in a single group.
+        ///     Draws the (core/plugins) names as ImGui buttons in a single group.
         /// </summary>
         private static void DrawNames()
         {
@@ -49,7 +49,7 @@ namespace GameHelper.Settings
             var buttonSize = new Vector2(totalWidthAvailable, 0);
             ImGui.PushItemWidth(totalWidthAvailable);
             ImGui.BeginGroup();
-            bool tmp = true;
+            var tmp = true;
             ImGui.Checkbox("##CoreEnableCheckBox", ref tmp);
             ImGui.SameLine();
             if (ImGui.Button("Core##ShowSettingsButton", buttonSize))
@@ -88,29 +88,29 @@ namespace GameHelper.Settings
         }
 
         /// <summary>
-        /// Draws the currently selected settings on ImGui.
+        ///     Draws the currently selected settings on ImGui.
         /// </summary>
         private static void DrawCurrentlySelectedSettings()
         {
-            ImGui.PushItemWidth(ImGui.GetContentRegionAvail().X - (8f * ImGui.GetFontSize()));
+            ImGui.PushItemWidth(ImGui.GetContentRegionAvail().X - 8f * ImGui.GetFontSize());
             switch (currentlySelectedPlugin)
             {
                 case "Core":
                     ImGui.BeginGroup();
                     ImGui.TextWrapped("Developer of this software is not responsible for " +
-                        "any loss that may happen due to the usage of this software. Use this " +
-                        "software at your own risk. This is a free software, do not pay anyone " +
-                        "to get it.");
+                                      "any loss that may happen due to the usage of this software. Use this " +
+                                      "software at your own risk. This is a free software, do not pay anyone " +
+                                      "to get it.");
                     ImGui.NewLine();
                     ImGui.TextWrapped("When GameOverlay press a key in the game, the key " +
-                        "has to go to the GGG server for it to work. This process takes " +
-                        "time equal to your latency. During this time GameOverlay might " +
-                        "press that key again. Set the following timeout value to " +
-                        "latency x 2 so this doesn't happen. e.g. for 30ms latency, " +
-                        "set it to 60ms.");
+                                      "has to go to the GGG server for it to work. This process takes " +
+                                      "time equal to your latency. During this time GameOverlay might " +
+                                      "press that key again. Set the following timeout value to " +
+                                      "latency x 2 so this doesn't happen. e.g. for 30ms latency, " +
+                                      "set it to 60ms.");
                     ImGui.DragInt("Key Timeout", ref Core.GHSettings.KeyPressTimeout, 0.2f, 30, 300);
                     ImGui.TextWrapped("NOTE: (Plugins/Core) Settings are saved automatically " +
-                        $"when you close the overlay or hide it via {Core.GHSettings.MainMenuHotKey} button.");
+                                      $"when you close the overlay or hide it via {Core.GHSettings.MainMenuHotKey} button.");
                     ImGui.NewLine();
                     ImGui.Text($"Current Game State: {Core.States.GameCurrentState}");
                     ImGui.NewLine();
@@ -131,7 +131,8 @@ namespace GameHelper.Settings
                     ImGui.Checkbox("Game UiExplorer (GE)", ref Core.GHSettings.ShowGameUiExplorer);
                     ImGui.Checkbox("Data Visualization (DV)", ref Core.GHSettings.ShowDataVisualization);
                     ImGui.Checkbox("Do not save entities outside the network bubble", ref Core.GHSettings.RemoveAllInvalidEntities);
-                    ImGui.Checkbox("Disable entity processing when in town or hideout", ref Core.GHSettings.DisableEntityProcessingInTownOrHideout);
+                    ImGui.Checkbox("Disable entity processing when in town or hideout",
+                        ref Core.GHSettings.DisableEntityProcessingInTownOrHideout);
                     ImGui.Checkbox("Hide overlay settings upon start", ref Core.GHSettings.HideSettingWindowOnStart);
                     ImGui.NewLine();
                     if (ImGui.Button("Test Disconnect POE"))
@@ -172,7 +173,7 @@ namespace GameHelper.Settings
         }
 
         /// <summary>
-        /// Draws the closing confirmation popup on ImGui.
+        ///     Draws the closing confirmation popup on ImGui.
         /// </summary>
         private static void DrawConfirmationPopup()
         {
@@ -200,7 +201,7 @@ namespace GameHelper.Settings
         }
 
         /// <summary>
-        /// Draws the Settings Window.
+        ///     Draws the Settings Window.
         /// </summary>
         /// <returns>co-routine IWait.</returns>
         private static IEnumerator<Wait> DrawSettingsWindowRenderCoroutine()
@@ -252,7 +253,7 @@ namespace GameHelper.Settings
         }
 
         /// <summary>
-        /// Saves the GameHelper settings to disk.
+        ///     Saves the GameHelper settings to disk.
         /// </summary>
         /// <returns>co-routine IWait.</returns>
         private static IEnumerator<Wait> SaveGameHelperSettings()

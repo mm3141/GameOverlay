@@ -5,8 +5,8 @@
 namespace GameHelper.RemoteEnums
 {
     /// <summary>
-    /// Read Animation.dat file for updating this enum.
-    /// This enum helps convert AnimationId into a readable name.
+    ///     Read Animation.dat file for updating this enum.
+    ///     This enum helps convert AnimationId into a readable name.
     /// </summary>
     public enum Animation
     {

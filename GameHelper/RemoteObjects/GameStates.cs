@@ -7,24 +7,24 @@ namespace GameHelper.RemoteObjects
     using System;
     using System.Collections.Generic;
     using Coroutine;
-    using GameHelper.CoroutineEvents;
-    using GameHelper.RemoteEnums;
-    using GameHelper.RemoteObjects.States;
-    using GameHelper.Utils;
+    using CoroutineEvents;
     using GameOffsets.Objects;
     using ImGuiNET;
+    using RemoteEnums;
+    using States;
+    using Utils;
 
     /// <summary>
-    /// Reads and stores the global states of the game.
+    ///     Reads and stores the global states of the game.
     /// </summary>
     public class GameStates : RemoteObjectBase
     {
-        private GameStateStaticOffset myStaticObj = default;
         private IntPtr currentStateAddress = IntPtr.Zero;
         private GameStateTypes currentStateName = GameStateTypes.GameNotLoaded;
+        private GameStateStaticOffset myStaticObj;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GameStates"/> class.
+        ///     Initializes a new instance of the <see cref="GameStates" /> class.
         /// </summary>
         /// <param name="address">address of the remote memory object.</param>
         internal GameStates(IntPtr address)
@@ -34,40 +34,22 @@ namespace GameHelper.RemoteObjects
         }
 
         /// <summary>
-        /// Gets a dictionary containing all the Game States addresses.
+        ///     Gets a dictionary containing all the Game States addresses.
         /// </summary>
-        public Dictionary<string, IntPtr> AllStates
-        {
-            get;
-            private set;
-        }
-
-        = new Dictionary<string, IntPtr>();
+        public Dictionary<string, IntPtr> AllStates { get; } = new();
 
         /// <summary>
-        /// Gets the AreaLoadingState object.
+        ///     Gets the AreaLoadingState object.
         /// </summary>
-        public AreaLoadingState AreaLoading
-        {
-            get;
-            private set;
-        }
-
-        = new AreaLoadingState(IntPtr.Zero);
+        public AreaLoadingState AreaLoading { get; } = new(IntPtr.Zero);
 
         /// <summary>
-        /// Gets the InGameState Object.
+        ///     Gets the InGameState Object.
         /// </summary>
-        public InGameState InGameStateObject
-        {
-            get;
-            private set;
-        }
-
-        = new InGameState(IntPtr.Zero);
+        public InGameState InGameStateObject { get; } = new(IntPtr.Zero);
 
         /// <summary>
-        /// Gets the current state the game is in.
+        ///     Gets the current state the game is in.
         /// </summary>
         public GameStateTypes GameCurrentState
         {
@@ -86,7 +68,7 @@ namespace GameHelper.RemoteObjects
         }
 
         /// <summary>
-        /// Converts the <see cref="GameStates"/> class data to ImGui.
+        ///     Converts the <see cref="GameStates" /> class data to ImGui.
         /// </summary>
         internal override void ToImGui()
         {
@@ -104,7 +86,7 @@ namespace GameHelper.RemoteObjects
             ImGui.Text($"Current State: {this.GameCurrentState}");
         }
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         protected override void UpdateData(bool hasAddressChanged)
         {
             var reader = Core.Process.Handle;
@@ -113,10 +95,10 @@ namespace GameHelper.RemoteObjects
                 this.myStaticObj = reader.ReadMemory<GameStateStaticOffset>(this.Address);
                 var data = reader.ReadMemory<GameStateOffset>(this.myStaticObj.GameState);
                 var states = reader.ReadStdList<StateInternalStructure>(data.States);
-                for (int i = 0; i < states.Count; i++)
+                for (var i = 0; i < states.Count; i++)
                 {
                     var state = states[i];
-                    string name = $"{(GameStateTypes)state.StateEnumToName}";
+                    var name = $"{(GameStateTypes)state.StateEnumToName}";
                     this.UpdateKnownStatesObjects(name, state.StatePtr);
                     if (this.AllStates.ContainsKey(name))
                     {
@@ -147,7 +129,7 @@ namespace GameHelper.RemoteObjects
             }
         }
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         protected override void CleanUpData()
         {
             this.myStaticObj = default;
@@ -159,7 +141,7 @@ namespace GameHelper.RemoteObjects
         }
 
         /// <summary>
-        /// Updates the known states Objects and silently skips the unknown ones.
+        ///     Updates the known states Objects and silently skips the unknown ones.
         /// </summary>
         /// <param name="name">State name.</param>
         /// <param name="address">State address.</param>
@@ -173,8 +155,6 @@ namespace GameHelper.RemoteObjects
                 case "InGameState":
                     this.InGameStateObject.Address = address;
                     break;
-                default:
-                    break;
             }
         }
 
@@ -184,10 +164,8 @@ namespace GameHelper.RemoteObjects
             {
                 return result;
             }
-            else
-            {
-                throw new Exception($"New GameStateTypes discovered: {data}");
-            }
+
+            throw new Exception($"New GameStateTypes discovered: {data}");
         }
 
         private IEnumerator<Wait> OnPerFrame()

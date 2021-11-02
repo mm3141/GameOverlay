@@ -8,20 +8,20 @@ namespace GameHelper.RemoteObjects.States
     using System.Collections.Generic;
     using System.Numerics;
     using Coroutine;
-    using GameHelper.CoroutineEvents;
-    using GameHelper.RemoteObjects.States.InGameStateObjects;
-    using GameHelper.RemoteObjects.UiElement;
+    using CoroutineEvents;
     using GameOffsets.Natives;
     using GameOffsets.Objects.States;
     using ImGuiNET;
+    using InGameStateObjects;
+    using UiElement;
 
     /// <summary>
-    /// Reads InGameState Game Object.
+    ///     Reads InGameState Game Object.
     /// </summary>
     public class InGameState : RemoteObjectBase
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="InGameState"/> class.
+        ///     Initializes a new instance of the <see cref="InGameState" /> class.
         /// </summary>
         /// <param name="address">address of the remote memory object.</param>
         internal InGameState(IntPtr address)
@@ -32,57 +32,41 @@ namespace GameHelper.RemoteObjects.States
         }
 
         /// <summary>
-        /// Gets the data related to the current area instance.
+        ///     Gets the data related to the current area instance.
         /// </summary>
-        public AreaInstance CurrentAreaInstance
-        {
-            get;
-            private set;
-        }
+        public AreaInstance CurrentAreaInstance { get; }
 
-        = new AreaInstance(IntPtr.Zero);
+            = new(IntPtr.Zero);
 
         /// <summary>
-        /// Gets the World to Screen Matrix.
+        ///     Gets the World to Screen Matrix.
         /// </summary>
-        public Matrix4x4 WorldToScreenMatrix
-        {
-            get;
-            private set;
-        }
+        public Matrix4x4 WorldToScreenMatrix { get; private set; }
 
-        = Matrix4x4.Identity;
+            = Matrix4x4.Identity;
 
         /// <summary>
-        /// Gets the UiRoot main child which contains all the UiElements of the game.
+        ///     Gets the UiRoot main child which contains all the UiElements of the game.
         /// </summary>
-        public ImportantUiElements GameUi
-        {
-            get;
-            private set;
-        }
+        public ImportantUiElements GameUi { get; }
 
-        = new ImportantUiElements(IntPtr.Zero);
+            = new(IntPtr.Zero);
 
         /// <summary>
-        /// Gets the data related to the root ui element.
+        ///     Gets the data related to the root ui element.
         /// </summary>
-        internal UiElementBase UiRoot
-        {
-            get;
-            private set;
-        }
+        internal UiElementBase UiRoot { get; }
 
-        = new UiElementBase(IntPtr.Zero);
+            = new(IntPtr.Zero);
 
         /// <summary>
-        /// Converts the World position to Screen location.
+        ///     Converts the World position to Screen location.
         /// </summary>
         /// <param name="worldPosition">3D world position of the entity.</param>
         /// <returns>screen location of the entity.</returns>
         public Vector2 WorldToScreen(StdTuple3D<float> worldPosition)
         {
-            Vector2 result = Vector2.Zero;
+            var result = Vector2.Zero;
             if (this.Address == IntPtr.Zero)
             {
                 return result;
@@ -97,7 +81,7 @@ namespace GameHelper.RemoteObjects.States
         }
 
         /// <summary>
-        /// Converts the <see cref="InGameState"/> class data to ImGui.
+        ///     Converts the <see cref="InGameState" /> class data to ImGui.
         /// </summary>
         internal override void ToImGui()
         {
@@ -113,7 +97,7 @@ namespace GameHelper.RemoteObjects.States
             }
         }
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         protected override void CleanUpData()
         {
             this.CurrentAreaInstance.Address = IntPtr.Zero;
@@ -122,7 +106,7 @@ namespace GameHelper.RemoteObjects.States
             this.WorldToScreenMatrix = Matrix4x4.Identity;
         }
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         protected override void UpdateData(bool hasAddressChanged)
         {
             var reader = Core.Process.Handle;

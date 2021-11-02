@@ -14,12 +14,12 @@ namespace GameHelper.Utils
     using ProcessMemoryUtilities.Native;
 
     /// <summary>
-    /// Handle to a process.
+    ///     Handle to a process.
     /// </summary>
     internal class SafeMemoryHandle : SafeHandleZeroOrMinusOneIsInvalid
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="SafeMemoryHandle"/> class.
+        ///     Initializes a new instance of the <see cref="SafeMemoryHandle" /> class.
         /// </summary>
         internal SafeMemoryHandle()
             : base(true)
@@ -28,7 +28,7 @@ namespace GameHelper.Utils
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SafeMemoryHandle"/> class.
+        ///     Initializes a new instance of the <see cref="SafeMemoryHandle" /> class.
         /// </summary>
         /// <param name="processId">processId you want to access.</param>
         internal SafeMemoryHandle(int processId)
@@ -38,7 +38,7 @@ namespace GameHelper.Utils
             if (NativeWrapper.HasError)
             {
                 Console.WriteLine($"Failed to open a new handle 0x{handle:X}" +
-                    $" due to ErrorNo: {NativeWrapper.LastError}");
+                                  $" due to ErrorNo: {NativeWrapper.LastError}");
             }
             else
             {
@@ -49,7 +49,7 @@ namespace GameHelper.Utils
         }
 
         /// <summary>
-        /// Reads the process memory as type T.
+        ///     Reads the process memory as type T.
         /// </summary>
         /// <typeparam name="T">type of data structure to read.</typeparam>
         /// <param name="address">address to read the data from.</param>
@@ -67,8 +67,8 @@ namespace GameHelper.Utils
             {
                 if (!NativeWrapper.ReadProcessMemory(this.handle, address, ref result))
                 {
-                    throw new Exception($"Failed To Read the Memory" +
-                        $" due to Error Number: 0x{NativeWrapper.LastError:X}");
+                    throw new Exception("Failed To Read the Memory" +
+                                        $" due to Error Number: 0x{NativeWrapper.LastError:X}");
                 }
 
                 return result;
@@ -81,7 +81,7 @@ namespace GameHelper.Utils
         }
 
         /// <summary>
-        /// Reads the std::vector into an array.
+        ///     Reads the std::vector into an array.
         /// </summary>
         /// <typeparam name="T">Object type to read.</typeparam>
         /// <param name="nativeContainer">StdVector address to read from.</param>
@@ -100,13 +100,13 @@ namespace GameHelper.Utils
         }
 
         /// <summary>
-        /// Reads the process memory as an array.
+        ///     Reads the process memory as an array.
         /// </summary>
         /// <typeparam name="T">Array type to read.</typeparam>
         /// <param name="address">memory address to read from.</param>
         /// <param name="nsize">total array elements to read.</param>
         /// <returns>
-        /// An array of type T and of size nsize. In case or any error it returns empty array.
+        ///     An array of type T and of size nsize. In case or any error it returns empty array.
         /// </returns>
         internal T[] ReadMemoryArray<T>(IntPtr address, int nsize)
             where T : unmanaged
@@ -119,16 +119,16 @@ namespace GameHelper.Utils
             var buffer = new T[nsize];
             try
             {
-                if (!NativeWrapper.ReadProcessMemoryArray<T>(
-                    this.handle, address, buffer, out IntPtr numBytesRead))
+                if (!NativeWrapper.ReadProcessMemoryArray(
+                    this.handle, address, buffer, out var numBytesRead))
                 {
-                    throw new Exception($"Failed To Read the Memory" +
-                        $" due to Error Number: 0x{NativeWrapper.LastError:X}");
+                    throw new Exception("Failed To Read the Memory" +
+                                        $" due to Error Number: 0x{NativeWrapper.LastError:X}");
                 }
 
                 if (numBytesRead.ToInt32() < nsize)
                 {
-                    throw new Exception($"Number of bytes read is less than the passed nsize.");
+                    throw new Exception("Number of bytes read is less than the passed nsize.");
                 }
 
                 return buffer;
@@ -141,7 +141,7 @@ namespace GameHelper.Utils
         }
 
         /// <summary>
-        /// Reads the std::wstring. String read is in unicode format.
+        ///     Reads the std::wstring. String read is in unicode format.
         /// </summary>
         /// <param name="nativecontainer">native object of std::wstring.</param>
         /// <returns>string.</returns>
@@ -164,49 +164,47 @@ namespace GameHelper.Utils
 
             if (nativecontainer.Capacity <= 8)
             {
-                byte[] buffer = BitConverter.GetBytes(nativecontainer.Buffer.ToInt64());
-                string ret = Encoding.Unicode.GetString(buffer);
+                var buffer = BitConverter.GetBytes(nativecontainer.Buffer.ToInt64());
+                var ret = Encoding.Unicode.GetString(buffer);
                 buffer = BitConverter.GetBytes(nativecontainer.ReservedBytes.ToInt64());
                 ret += Encoding.Unicode.GetString(buffer);
-                return ret[0 ..nativecontainer.Length];
+                return ret[..nativecontainer.Length];
             }
             else
             {
-                byte[] buffer = this.ReadMemoryArray<byte>(nativecontainer.Buffer, nativecontainer.Length * 2);
+                var buffer = this.ReadMemoryArray<byte>(nativecontainer.Buffer, nativecontainer.Length * 2);
                 return Encoding.Unicode.GetString(buffer);
             }
         }
 
         /// <summary>
-        /// Reads the string.
+        ///     Reads the string.
         /// </summary>
         /// <param name="address">pointer to the string.</param>
         /// <returns>string read.</returns>
         internal string ReadString(IntPtr address)
         {
             var buffer = this.ReadMemoryArray<byte>(address, 128);
-            int count = Array.IndexOf<byte>(buffer, 0x00, 0);
+            var count = Array.IndexOf<byte>(buffer, 0x00, 0);
             if (count > 0)
             {
                 return Encoding.ASCII.GetString(buffer, 0, count);
             }
-            else
-            {
-                return string.Empty;
-            }
+
+            return string.Empty;
         }
 
         /// <summary>
-        /// Reads Unicode string when string length isn't know.
-        /// Use  <see cref="ReadStdWString"/> if string length is known.
+        ///     Reads Unicode string when string length isn't know.
+        ///     Use  <see cref="ReadStdWString" /> if string length is known.
         /// </summary>
         /// <param name="address">points to the Unicode string pointer.</param>
         /// <returns>string read from the memory.</returns>
         internal string ReadUnicodeString(IntPtr address)
         {
             var buffer = this.ReadMemoryArray<byte>(address, 256);
-            int count = 0x00;
-            for (int i = 0; i < buffer.Length - 2; i++)
+            var count = 0x00;
+            for (var i = 0; i < buffer.Length - 2; i++)
             {
                 if (buffer[i] == 0x00 && buffer[i + 1] == 0x00 && buffer[i + 2] == 0x00)
                 {
@@ -226,7 +224,7 @@ namespace GameHelper.Utils
         }
 
         /// <summary>
-        /// Reads the std::map into a List.
+        ///     Reads the std::map into a List.
         /// </summary>
         /// <typeparam name="TKey">key type of the stdmap.</typeparam>
         /// <typeparam name="TValue">value type of the stdmap.</typeparam>
@@ -234,7 +232,9 @@ namespace GameHelper.Utils
         /// <param name="keyfilter">Filter the keys based on the function return value.</param>
         /// <returns>a list containing the keys and the values of the stdmap as named tuple.</returns>
         internal List<(TKey Key, TValue Value)> ReadStdMapAsList<TKey, TValue>(
-            StdMap nativeContainer, Func<TKey, bool> keyfilter = null)
+            StdMap nativeContainer,
+            Func<TKey, bool> keyfilter = null
+        )
             where TKey : unmanaged
             where TValue : unmanaged
         {
@@ -249,7 +249,7 @@ namespace GameHelper.Utils
             var head = this.ReadMemory<StdMapNode<TKey, TValue>>(nativeContainer.Head);
             var parent = this.ReadMemory<StdMapNode<TKey, TValue>>(head.Parent);
             childrens.Push(parent);
-            int counter = 0;
+            var counter = 0;
             while (childrens.Count != 0)
             {
                 var cur = childrens.Pop();
@@ -281,7 +281,7 @@ namespace GameHelper.Utils
         }
 
         /// <summary>
-        /// Reads the StdList into a List.
+        ///     Reads the StdList into a List.
         /// </summary>
         /// <typeparam name="TValue">StdList element structure.</typeparam>
         /// <param name="nativeContainer">native object of the std::list.</param>
@@ -297,8 +297,8 @@ namespace GameHelper.Utils
                 if (currNodeAddress == IntPtr.Zero)
                 {
                     Console.WriteLine("Terminating reading of list next nodes because of" +
-                        "unexpected 0x00 found. This is normal if it happens " +
-                        "after closing the game, otherwise report it.");
+                                      "unexpected 0x00 found. This is normal if it happens " +
+                                      "after closing the game, otherwise report it.");
                     break;
                 }
 
@@ -310,7 +310,7 @@ namespace GameHelper.Utils
         }
 
         /// <summary>
-        /// Reads the std::bucket into a list.
+        ///     Reads the std::bucket into a list.
         /// </summary>
         /// <typeparam name="TValue">value type that the std bucket contains.</typeparam>
         /// <param name="nativeContainer">native object of the std::bucket.</param>
@@ -324,10 +324,10 @@ namespace GameHelper.Utils
                 return new List<TValue>();
             }
 
-            int size = ((int)nativeContainer.Capacity + 1) / 8;
+            var size = ((int)nativeContainer.Capacity + 1) / 8;
             var ret = new List<TValue>();
             var dataArray = this.ReadMemoryArray<StdBucketNode<TValue>>(nativeContainer.Data, size);
-            for (int i = 0; i < dataArray.Length; i++)
+            for (var i = 0; i < dataArray.Length; i++)
             {
                 var data = dataArray[i];
                 if (data.Flag0 != StdBucketNode<TValue>.InValidPointerFlagValue)
@@ -375,11 +375,11 @@ namespace GameHelper.Utils
         }
 
         /// <summary>
-        /// When overridden in a derived class, executes the code required to free the handle.
+        ///     When overridden in a derived class, executes the code required to free the handle.
         /// </summary>
         /// <returns>
-        /// true if the handle is released successfully; otherwise, in the event of a catastrophic failure, false.
-        /// In this case, it generates a releaseHandleFailed MDA Managed Debugging Assistant.
+        ///     true if the handle is released successfully; otherwise, in the event of a catastrophic failure, false.
+        ///     In this case, it generates a releaseHandleFailed MDA Managed Debugging Assistant.
         /// </returns>
         protected override bool ReleaseHandle()
         {

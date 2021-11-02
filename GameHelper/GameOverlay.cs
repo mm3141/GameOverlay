@@ -8,17 +8,18 @@ namespace GameHelper
     using System.Threading.Tasks;
     using ClickableTransparentOverlay;
     using Coroutine;
-    using GameHelper.CoroutineEvents;
-    using GameHelper.Plugin;
-    using GameHelper.Settings;
-    using GameHelper.Ui;
+    using CoroutineEvents;
     using ImGuiNET;
+    using Plugin;
+    using Settings;
+    using Ui;
+    using Veldrid;
 
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public sealed class GameOverlay : Overlay
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="GameOverlay"/> class.
+        ///     Initializes a new instance of the <see cref="GameOverlay" /> class.
         /// </summary>
         internal GameOverlay()
             : base(true)
@@ -32,11 +33,11 @@ namespace GameHelper
         }
 
         /// <summary>
-        /// Gets the fonts loaded in the overlay.
+        ///     Gets the fonts loaded in the overlay.
         /// </summary>
         public ImFontPtr[] Fonts { get; private set; }
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         public override async Task Run()
         {
             Core.Initialize();
@@ -44,14 +45,14 @@ namespace GameHelper
             await base.Run();
         }
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         public override void Dispose()
         {
             base.Dispose();
             Core.Dispose();
         }
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         protected override void AddFonts()
         {
             base.AddFonts();
@@ -62,13 +63,13 @@ namespace GameHelper
             this.Fonts[3] = ImGui.GetIO().Fonts.AddFontFromFileTTF(@"C:\Windows\Fonts\segoeui.ttf", 36);
         }
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         protected override void PostStart()
         {
             PManager.InitializePlugins();
         }
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         protected override Task Render()
         {
             CoroutineHandler.Tick(ImGui.GetIO().DeltaTime);
@@ -87,8 +88,8 @@ namespace GameHelper
             while (true)
             {
                 yield return new Wait(GameHelperEvents.OnMoved);
-                this.Position = new Veldrid.Point(Core.Process.WindowArea.Location.X, Core.Process.WindowArea.Location.Y);
-                this.Size = new Veldrid.Point(Core.Process.WindowArea.Size.Width, Core.Process.WindowArea.Size.Height);
+                this.Position = new Point(Core.Process.WindowArea.Location.X, Core.Process.WindowArea.Location.Y);
+                this.Size = new Point(Core.Process.WindowArea.Size.Width, Core.Process.WindowArea.Size.Height);
             }
         }
     }

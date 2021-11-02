@@ -10,32 +10,30 @@ namespace GameHelper.RemoteObjects.Components
     using ImGuiNET;
 
     /// <summary>
-    /// The <see cref="Positioned"/> component in the entity.
+    ///     The <see cref="Positioned" /> component in the entity.
     /// </summary>
     public class Positioned : RemoteObjectBase
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="Positioned"/> class.
+        ///     Initializes a new instance of the <see cref="Positioned" /> class.
         /// </summary>
-        /// <param name="address">address of the <see cref="Positioned"/> component.</param>
+        /// <param name="address">address of the <see cref="Positioned" /> component.</param>
         public Positioned(IntPtr address)
-            : base(address, true)
-        {
-        }
+            : base(address, true) { }
 
         /// <summary>
-        /// Gets the flags related to the entity from the positioned component.
-        /// NOTE: This flag contains the information if the entity is friendly or not.
+        ///     Gets the flags related to the entity from the positioned component.
+        ///     NOTE: This flag contains the information if the entity is friendly or not.
         /// </summary>
-        public byte Flags { get; private set; } = 0x00;
+        public byte Flags { get; private set; }
 
         /// <summary>
-        /// Gets a value indicating whether the entity is friendly or not.
+        ///     Gets a value indicating whether the entity is friendly or not.
         /// </summary>
-        public bool IsFriendly { get; private set; } = false;
+        public bool IsFriendly { get; private set; }
 
         /// <summary>
-        /// Converts the <see cref="Positioned"/> class data to ImGui.
+        ///     Converts the <see cref="Positioned" /> class data to ImGui.
         /// </summary>
         internal override void ToImGui()
         {
@@ -44,7 +42,7 @@ namespace GameHelper.RemoteObjects.Components
             ImGui.Text($"IsFriendly: {this.IsFriendly}");
         }
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         protected override void UpdateData(bool hasAddressChanged)
         {
             var reader = Core.Process.Handle;
@@ -53,7 +51,7 @@ namespace GameHelper.RemoteObjects.Components
             this.IsFriendly = EntityHelper.IsFriendly(data.Reaction);
         }
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         protected override void CleanUpData()
         {
             throw new Exception("Component Address should never be Zero.");
