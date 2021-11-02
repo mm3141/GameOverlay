@@ -15,7 +15,7 @@ namespace HealthBars
     /// </summary>
     public class SpriteAtlas
     {
-        private readonly Dictionary<string, CubeObject> sprites = new();
+        private readonly Dictionary<string, Sprite> sprites = new();
         /// <summary>
         ///     Spritesheet size.
         /// </summary>
@@ -86,7 +86,7 @@ namespace HealthBars
                 foreach (var (frameKey, frameObject) in metadata.Frames)
                 {
                     var frameName = frameKey.Substring(0, frameKey.IndexOf(".png", StringComparison.Ordinal));
-                    this.sprites.Add(frameName, frameObject.Frame);
+                    this.sprites.Add(frameName, new Sprite(frameObject.Frame, this.SpritesheetSize));
                 }
             }
         }
@@ -107,9 +107,9 @@ namespace HealthBars
         /// </summary>
         /// <param name="spriteName"></param>
         /// <returns></returns>
-        public CubeObject GetSprite(string spriteName)
+        public Sprite GetSprite(string spriteName)
         {
-            var hasSprite = this.sprites.TryGetValue(spriteName, out CubeObject sprite);
+            var hasSprite = this.sprites.TryGetValue(spriteName, out Sprite sprite);
 
             return hasSprite ? sprite : null;
         }

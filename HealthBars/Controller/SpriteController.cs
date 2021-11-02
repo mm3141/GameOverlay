@@ -62,15 +62,6 @@ namespace HealthBars
             
             var draw = ImGui.GetBackgroundDrawList();
 
-            var uv0 = new Vector2(
-                sprite.X / this.spriteAtlas.SpritesheetSize.W,
-                sprite.Y / this.spriteAtlas.SpritesheetSize.H
-            );
-            var uv1 = new Vector2(
-                (sprite.X + sprite.W) / this.spriteAtlas.SpritesheetSize.W,
-                (sprite.Y + sprite.H) / this.spriteAtlas.SpritesheetSize.H
-            );
-
             var bounds = new Vector2(
                 virtualWidth * ((multiplyWidth < 0 ? 100 : multiplyWidth) / 100),
                 virtualHeight * ((multiplyHeight < 0 ? 100 : multiplyHeight) / 100)
@@ -79,7 +70,7 @@ namespace HealthBars
             var half = new Vector2(offsetX + vBounds.X / 2, offsetY);
             var pos = drawCoordinates - half;
 
-            draw.AddImage(this.spriteAtlas.TexturePtr, pos, pos + bounds, uv0, uv1);
+            draw.AddImage(this.spriteAtlas.TexturePtr, pos, pos + bounds, sprite.Uv[0], sprite.Uv[1]);
 
             if (marks)
             {
