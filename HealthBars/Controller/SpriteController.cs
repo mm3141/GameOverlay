@@ -55,7 +55,7 @@ namespace HealthBars
             var draw = ImGui.GetBackgroundDrawList();
             var uv0 = new Vector2(sx / ssw, sy / ssh);
             var uv1 = new Vector2((sx + sw) / ssw, (sy + sh) / ssh);
-            var sprite = sprites[spriteName];
+            var sprite = this.sprites[spriteName];
             var bounds = new Vector2(tw * ((mulw < 0 ? 100 : mulw) / 100), th * ((mulh < 0 ? 100 : mulh) / 100)) *
                          scale;
             var vBounds = new Vector2(tw, th) * scale;
@@ -98,14 +98,14 @@ namespace HealthBars
         /// <param name="spriteSheetPathName"></param>
         public void AddSprites(string spriteSheetPathName)
         {
-            sprites.TryAdd("ES", new IconPicker(spriteSheetPathName, 1, 8, 108, 19, 1));
-            sprites.TryAdd("EmptyHP", new IconPicker(spriteSheetPathName, 1, 8, 108, 19, 1));
-            sprites.TryAdd("EmptyMana", new IconPicker(spriteSheetPathName, 1, 8, 108, 19, 1));
-            sprites.TryAdd("EnemyHP", new IconPicker(spriteSheetPathName, 1, 8, 108, 19, 1));
-            sprites.TryAdd("HP", new IconPicker(spriteSheetPathName, 1, 8, 108, 19, 1));
-            sprites.TryAdd("Mana", new IconPicker(spriteSheetPathName, 1, 8, 108, 19, 1));
-            sprites.TryAdd("EmptyBar", new IconPicker(spriteSheetPathName, 1, 8, 108, 19, 1));
-            sprites.TryAdd("EmptyDoubleBar", new IconPicker(spriteSheetPathName, 1, 8, 108, 19, 1));
+            this.sprites.TryAdd("ES", new IconPicker(spriteSheetPathName, 1, 8, 108, 19, 1));
+            this.sprites.TryAdd("EmptyHP", new IconPicker(spriteSheetPathName, 1, 8, 108, 19, 1));
+            this.sprites.TryAdd("EmptyMana", new IconPicker(spriteSheetPathName, 1, 8, 108, 19, 1));
+            this.sprites.TryAdd("EnemyHP", new IconPicker(spriteSheetPathName, 1, 8, 108, 19, 1));
+            this.sprites.TryAdd("HP", new IconPicker(spriteSheetPathName, 1, 8, 108, 19, 1));
+            this.sprites.TryAdd("Mana", new IconPicker(spriteSheetPathName, 1, 8, 108, 19, 1));
+            this.sprites.TryAdd("EmptyBar", new IconPicker(spriteSheetPathName, 1, 8, 108, 19, 1));
+            this.sprites.TryAdd("EmptyDoubleBar", new IconPicker(spriteSheetPathName, 1, 8, 108, 19, 1));
         }
     }
 }

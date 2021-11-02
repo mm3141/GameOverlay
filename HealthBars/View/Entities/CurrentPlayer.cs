@@ -9,7 +9,7 @@ namespace HealthBars.View.Entities
             var scale = RarityBarScale(eP);
 
             AddDoubleEmptyBar(spriteController, eP, scale);
-            AddManaBar(spriteController, eP, scale, "Mana");
+            this.AddManaBar(spriteController, eP, scale, "Mana");
             AddHealthBar(spriteController, eP, scale);
             if (eP.EsTotal > 0)
             {
