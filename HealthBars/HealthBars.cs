@@ -24,10 +24,10 @@ namespace HealthBars
     /// </summary>
     public sealed class HealthBars : PCore<HealthBarsSettings>
     {
-        private readonly SpriteController _spriteController = new();
-        private ConcurrentDictionary<uint, Vector2> _bPositions;
-        private ActiveCoroutine _onAreaChange;
-        private readonly EntityFactory _entityFactory = new();
+        private readonly EntityFactory entityFactory = new();
+        private readonly SpriteController spriteController = new();
+        private ConcurrentDictionary<uint, Vector2> bPositions;
+        private ActiveCoroutine onAreaChange;
         private string SettingPathname => Path.Join(this.DllDirectory, "config", "settings.txt");
 
         /// <inheritdoc />
@@ -169,17 +169,17 @@ namespace HealthBars
                 curPos.Z -= 1.4f * render.ModelBounds.Z;
                 var location = Core.States.InGameStateObject.WorldToScreen(curPos);
 
-                if (this._bPositions.TryGetValue(gameEntityNodeKey.id, out var prevLocation))
+                if (this.bPositions.TryGetValue(gameEntityNodeKey.id, out var prevLocation))
                 {
                     location = MathHelper.Lerp(prevLocation, location, 0.2f);
-                    this._bPositions.TryUpdate(gameEntityNodeKey.id, location, prevLocation);
+                    this.bPositions.TryUpdate(gameEntityNodeKey.id, location, prevLocation);
                 }
                 else
                 {
-                    this._bPositions.TryAdd(gameEntityNodeKey.id, location);
+                    this.bPositions.TryAdd(gameEntityNodeKey.id, location);
                 }
 
-                var drawEntity = this._entityFactory.GetEntity(gameEntity);
+                var drawEntity = this.entityFactory.GetEntity(gameEntity);
                 if (drawEntity == null)
                 {
                     continue;
@@ -188,7 +188,7 @@ namespace HealthBars
                 var entityParams = new EntityParams(this.Settings, location, gameEntity);
                 if (drawEntity.ShouldDraw(entityParams))
                 {
-                    drawEntity.Draw(entityParams, this._spriteController);
+                    drawEntity.Draw(entityParams, this.spriteController);
                 }
             }
         }
@@ -196,8 +196,8 @@ namespace HealthBars
         /// <inheritdoc />
         public override void OnDisable()
         {
-            this._onAreaChange?.Cancel();
-            this._onAreaChange = null;
+            this.onAreaChange?.Cancel();
+            this.onAreaChange = null;
         }
 
         /// <inheritdoc />
@@ -210,9 +210,9 @@ namespace HealthBars
             }
 
             var spriteSheetPathName = Path.Join(this.DllDirectory, "spritesheet.png");
-            this._spriteController.AddSprites(spriteSheetPathName);
-            this._bPositions = new ConcurrentDictionary<uint, Vector2>();
-            this._onAreaChange = CoroutineHandler.Start(this.ClearData());
+            this.spriteController.AddSprites(spriteSheetPathName);
+            this.bPositions = new ConcurrentDictionary<uint, Vector2>();
+            this.onAreaChange = CoroutineHandler.Start(this.ClearData());
         }
 
         /// <inheritdoc />
@@ -228,7 +228,7 @@ namespace HealthBars
             while (true)
             {
                 yield return new Wait(RemoteEvents.AreaChanged);
-                this._bPositions.Clear();
+                this.bPositions.Clear();
             }
         }
     }

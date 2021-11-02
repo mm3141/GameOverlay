@@ -15,7 +15,7 @@ namespace HealthBars.View.Entities
             if (eP.Settings.ShowEnemyMana)
             {
                 AddDoubleEmptyBar(spriteController, eP, scale);
-                this.AddManaBar(spriteController, eP, scale, "Mana");
+                AddManaBar(spriteController, eP, scale);
             }
             else
             {

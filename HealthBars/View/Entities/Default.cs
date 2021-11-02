@@ -42,14 +42,13 @@ namespace HealthBars.View.Entities
         /// <param name="spriteController"></param>
         /// <param name="eP"></param>
         /// <param name="scale"></param>
-        /// <param name="manaSprite"></param>
-        protected void AddManaBar(SpriteController spriteController, EntityParams eP, float scale, string manaSprite)
+        protected static void AddManaBar(SpriteController spriteController, EntityParams eP, float scale)
         {
             var manaPos = eP.Pos + new Vector2(0, 10) * scale;
 
             spriteController.DrawSprite("EmptyMana", scale, 1, 19, 1, 8, 110, 88, manaPos, 104, 8,
                 100f - eP.ManaReserved, -1, false);
-            spriteController.DrawSprite(manaSprite, scale, 1, 47, 1, 8, 110, 88, manaPos, 104, 8,
+            spriteController.DrawSprite("Mana", scale, 1, 47, 1, 8, 110, 88, manaPos, 104, 8,
                 eP.ManaPercent, -1, false);
         }
     }

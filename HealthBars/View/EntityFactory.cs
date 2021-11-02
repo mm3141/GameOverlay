@@ -10,8 +10,8 @@ namespace HealthBars.View
     /// </summary>
     public class EntityFactory
     {
-        private readonly Friendly _friendly = new();
         private readonly Enemy _enemy = new();
+        private readonly Friendly _friendly = new();
         private readonly CurrentPlayer _player = new();
 
         /// <summary>
