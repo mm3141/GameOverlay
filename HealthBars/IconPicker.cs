@@ -12,12 +12,12 @@ namespace HealthBars
     using Newtonsoft.Json;
 
     /// <summary>
-    /// A class to store the currently selected icon.
-    /// This class assumes that the icon sprite (png) file has:
-    ///   (1) Arranged icons in the center of the Icon box.
-    ///   (2) All icon boxes are of exact same size.
-    ///   (3) There is no padding/margins/buffer-pixel between icon boxes
-    ///       (i.e. where 1 box ends, another starts).
+    ///     A class to store the currently selected icon.
+    ///     This class assumes that the icon sprite (png) file has:
+    ///     (1) Arranged icons in the center of the Icon box.
+    ///     (2) All icon boxes are of exact same size.
+    ///     (3) There is no padding/margins/buffer-pixel between icon boxes
+    ///     (i.e. where 1 box ends, another starts).
     /// </summary>
     public class IconPicker
     {
@@ -28,10 +28,10 @@ namespace HealthBars
 
         private float iconScale = 10;
         private Vector2 popUpPos = Vector2.Zero;
-        private bool showPopUp = false;
+        private bool showPopUp;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="IconPicker"/> class.
+        ///     Initializes a new instance of the <see cref="IconPicker" /> class.
         /// </summary>
         /// <param name="filepathname">file pathname to the icon sprite file.</param>
         /// <param name="iconDimension">dimension of the icon in the sprite.</param>
@@ -52,7 +52,7 @@ namespace HealthBars
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="IconPicker"/> class.
+        ///     Initializes a new instance of the <see cref="IconPicker" /> class.
         /// </summary>
         /// <param name="filepathname">file pathname to the icon sprite file.</param>
         /// <param name="totalRows">total number of rows in icon sprite file.</param>
@@ -70,54 +70,54 @@ namespace HealthBars
         }
 
         /// <summary>
-        /// Gets a value indicating which icon user has clicked.
+        ///     Gets a value indicating which icon user has clicked.
         /// </summary>
         public Vector2 Clicked { get; private set; } = Vector2.Zero;
 
         /// <summary>
-        /// Gets a value indicating how big you want to display the icon.
+        ///     Gets a value indicating how big you want to display the icon.
         /// </summary>
         public float IconScale => this.iconScale;
 
         /// <summary>
-        /// Gets a value indicating dimension of the icon in the sprite.
-        /// This value is between 0f and 1f, where 0f means 0% of the width/height
-        /// and 1f means 100% of the width/height.
+        ///     Gets a value indicating dimension of the icon in the sprite.
+        ///     This value is between 0f and 1f, where 0f means 0% of the width/height
+        ///     and 1f means 100% of the width/height.
         /// </summary>
-        public Vector2 IconDimension { get; private set; } = Vector2.One;
+        public Vector2 IconDimension { get; } = Vector2.One;
 
         /// <summary>
-        /// Gets the icon sprite file pathname.
+        ///     Gets the icon sprite file pathname.
         /// </summary>
-        public string FilePathName { get; private set; } = string.Empty;
+        public string FilePathName { get; } = string.Empty;
 
         /// <summary>
-        /// Gets the texture pointer.
+        ///     Gets the texture pointer.
         /// </summary>
         [JsonIgnore]
         public IntPtr TexturePtr { get; private set; } = IntPtr.Zero;
 
         /// <summary>
-        /// Gets the vector pointing to start (top left) of the Box.
+        ///     Gets the vector pointing to start (top left) of the Box.
         /// </summary>
         [JsonIgnore]
         public Vector2 UV0 { get; private set; } = Vector2.Zero;
 
         /// <summary>
-        /// Gets the vector pointing to end ( bottom right ) of the Box.
+        ///     Gets the vector pointing to end ( bottom right ) of the Box.
         /// </summary>
         [JsonIgnore]
         public Vector2 UV1 { get; private set; } = Vector2.Zero;
 
         /// <summary>
-        /// Show the Setting Widget for the selection of icon. This function assumes
-        /// that the ImGui window is already created.
+        ///     Show the Setting Widget for the selection of icon. This function assumes
+        ///     that the ImGui window is already created.
         /// </summary>
         public void ShowSettingWidget()
         {
             ImGui.PushID(this.GetHashCode());
             ImGui.PushItemWidth(200);
-            ImGui.InputFloat($"##iconscale", ref this.iconScale, 1f, 1f);
+            ImGui.InputFloat("##iconscale", ref this.iconScale, 1f, 1f);
             ImGui.PopItemWidth();
             ImGui.SameLine();
 
@@ -135,7 +135,7 @@ namespace HealthBars
             {
                 ImGui.SetNextWindowPos(this.popUpPos, ImGuiCond.Appearing);
                 ImGui.SetNextWindowSize(new Vector2(400), ImGuiCond.Appearing);
-                var title = $"Icon Picker (Double click to select an item)";
+                var title = "Icon Picker (Double click to select an item)";
                 if (ImGui.Begin(title, ref this.showPopUp, PopUpFlags))
                 {
                     if (ImGui.IsWindowHovered() && ImGui.GetIO().MouseDoubleClicked[0])
@@ -162,7 +162,7 @@ namespace HealthBars
         }
 
         /// <summary>
-        /// Uploads the sprite icon file as texture and updates the class data.
+        ///     Uploads the sprite icon file as texture and updates the class data.
         /// </summary>
         private void Initialize()
         {
@@ -173,7 +173,7 @@ namespace HealthBars
             }
             else
             {
-                string message = $"Missing Icons (sprite) file with name: {this.FilePathName}";
+                var message = $"Missing Icons (sprite) file with name: {this.FilePathName}";
                 throw new FileNotFoundException(message);
             }
         }
