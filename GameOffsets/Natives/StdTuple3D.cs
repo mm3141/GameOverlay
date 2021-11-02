@@ -11,7 +11,7 @@
 
         public override string ToString()
         {
-            return $"X: {X}, Y: {Y}, Z: {Z}";
+            return $"X: {this.X}, Y: {this.Y}, Z: {this.Z}";
         }
     }
 }
