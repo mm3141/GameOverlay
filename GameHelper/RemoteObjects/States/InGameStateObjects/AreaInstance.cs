@@ -7,6 +7,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
     using System;
     using System.Collections.Concurrent;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Threading.Tasks;
     using Components;
     using Coroutine;
@@ -296,9 +297,9 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
                 });
             }
 
-            Parallel.For(0, entitiesInNetworkBubble.Count, index =>
+            Parallel.ForEach(entitiesInNetworkBubble, e =>
             {
-                var (key, value) = entitiesInNetworkBubble[index];
+                var (key, value) = e;
                 if (this.AwakeEntities.ContainsKey(key))
                 {
                     this.AwakeEntities[key].Address = value.EntityPtr;
@@ -415,19 +416,14 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             var rotatorMetrixHelper = Core.RotatorHelper.Values;
             var reader = Core.Process.Handle;
             var tileData = reader.ReadStdVector<TileStructure>(this.TerrainMetadata.TileDetailsPtr);
-            var tileHeightCache = new ConcurrentDictionary<IntPtr, sbyte[]>();
-            Parallel.For(0, tileData.Length, index =>
-            {
-                var val = tileData[index];
-                tileHeightCache.AddOrUpdate(
-                    val.SubTileDetailsPtr,
-                    addr =>
-                    {
-                        var subTileData = reader.ReadMemory<SubTileStruct>(addr);
-                        return reader.ReadStdVector<sbyte>(subTileData.SubTileHeight);
-                    },
-                    (addr, data) => data);
-            });
+            var tileHeightCache = tileData
+                                 .Select(x => x.SubTileDetailsPtr)
+                                 .Distinct()
+                                 .ToDictionary(addr => addr, addr =>
+                                  {
+                                      var subTileData = reader.ReadMemory<SubTileStruct>(addr);
+                                      return reader.ReadStdVector<sbyte>(subTileData.SubTileHeight);
+                                  });
 
             var gridSizeX = (int)this.TerrainMetadata.TotalTiles.X * TileStructure.TileToGridConversion;
             var gridSizeY = (int)this.TerrainMetadata.TotalTiles.Y * TileStructure.TileToGridConversion;
