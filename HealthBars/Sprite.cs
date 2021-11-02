@@ -11,8 +11,8 @@
         ///     Initialization of <see cref="Sprite" /> instance.
         /// </summary>
         /// <param name="frame"></param>
-        /// <param name="spritesheetSize"></param>
-        public Sprite(CubeObject frame, CubeObject spritesheetSize)
+        /// <param name="spriteSheetSize"></param>
+        public Sprite(CubeObject frame, CubeObject spriteSheetSize)
         {
             this.X = frame.X;
             this.Y = frame.Y;
@@ -21,8 +21,8 @@
 
             this.Uv = new Vector2[]
             {
-                new(this.X / spritesheetSize.W, this.Y / spritesheetSize.H),
-                new((this.X + this.W) / spritesheetSize.W, (this.Y + this.H) / spritesheetSize.H)
+                new(this.X / spriteSheetSize.W, this.Y / spriteSheetSize.H),
+                new((this.X + this.W) / spriteSheetSize.W, (this.Y + this.H) / spriteSheetSize.H)
             };
         }
 
