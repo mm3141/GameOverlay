@@ -5,6 +5,7 @@
     [StructLayout(LayoutKind.Explicit, Pack = 1)]
     public struct ActorOffset
     {
-        [FieldOffset(0x234)] public int AnimationId;
+        [FieldOffset(0x234)]
+        public int AnimationId;
     }
 }
