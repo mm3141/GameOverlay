@@ -10,9 +10,9 @@ namespace HealthBars.View
     /// </summary>
     public class EntityFactory
     {
-        private readonly Enemy _enemy = new();
-        private readonly Friendly _friendly = new();
-        private readonly CurrentPlayer _player = new();
+        private readonly Enemy enemy = new();
+        private readonly Friendly friendly = new();
+        private readonly CurrentPlayer player = new();
 
         /// <summary>
         /// </summary>
@@ -57,21 +57,20 @@ namespace HealthBars.View
                 return null;
             }
 
-            var isCurrentPlayer =
-                entity.Address == Core.States.InGameStateObject.CurrentAreaInstance.Player.Address;
+            var isCurrentPlayer = entity.Address == Core.States.InGameStateObject.CurrentAreaInstance.Player.Address;
 
             if (isCurrentPlayer)
             {
-                return this._player;
+                return this.player;
             }
 
             var isFriendly = positioned.IsFriendly;
             if (isFriendly)
             {
-                return this._friendly;
+                return this.friendly;
             }
 
-            return this._enemy;
+            return this.enemy;
         }
     }
 }

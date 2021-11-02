@@ -14,8 +14,7 @@ namespace HealthBars.View.Entities
         protected static void AddEnergyShieldBar(SpriteController spriteController, EntityParams eP, float scale)
         {
             var healthPos = eP.Pos + new Vector2(0, 1) * scale;
-            spriteController.DrawSprite("ES", scale, 1, 1, 1, 7, 110, 88, healthPos, 104, 7,
-                eP.EsPercent, -1, false);
+            spriteController.DrawSprite("ES", healthPos, 104, 7, scale, eP.EsPercent, -1, false, eP.DrawBorder, eP.BorderColor);
         }
 
         /// <summary>
@@ -26,10 +25,8 @@ namespace HealthBars.View.Entities
         protected static void AddHealthBar(SpriteController spriteController, EntityParams eP, float scale)
         {
             var hpPos = eP.Pos + new Vector2(0, 1) * scale;
-            spriteController.DrawSprite("EmptyHP", scale, 1, 10, 1, 7, 110, 88, hpPos, 104, 7,
-                100f - eP.HpReserved, -1, false);
-            spriteController.DrawSprite("HP", scale, 1, 38, 1, 7, 110, 88, hpPos, 104, 7, eP.HpPercent, -1,
-                eP.Settings.ShowFriendlyGradationMarks);
+            spriteController.DrawSprite("EmptyHP", hpPos, 104, 7, scale, 100f - eP.HpReserved, -1, false);
+            spriteController.DrawSprite("HP", hpPos, 104, 7, scale, eP.HpPercent, -1, eP.Settings.ShowFriendlyGradationMarks);
         }
     }
 }

@@ -1,6 +1,5 @@
 namespace HealthBars
 {
-    using System.Collections.Generic;
     using System.Numerics;
     using GameHelper.Utils;
     using ImGuiNET;
@@ -9,60 +8,69 @@ namespace HealthBars
     /// </summary>
     public class SpriteController
     {
-        private readonly Dictionary<string, IconPicker> sprites = new();
+        private readonly SpriteAtlas spriteAtlas;
 
         /// <summary>
+        ///     Initialize SpriteController
+        /// </summary>
+        /// <param name="spriteAtlas"></param>
+        public SpriteController(SpriteAtlas spriteAtlas)
+        {
+            this.spriteAtlas = spriteAtlas;
+        }
+
+        /// <summary>
+        ///     Draw sprite from sprite atlas.
         /// </summary>
         /// <param name="spriteName"></param>
+        /// <param name="drawCoordinates"></param>
+        /// <param name="virtualWidth"></param>
+        /// <param name="virtualHeight"></param>
         /// <param name="scale"></param>
-        /// <param name="sx"></param>
-        /// <param name="sy"></param>
-        /// <param name="sw"></param>
-        /// <param name="sh"></param>
-        /// <param name="ssw"></param>
-        /// <param name="ssh"></param>
-        /// <param name="t"></param>
-        /// <param name="tw"></param>
-        /// <param name="th"></param>
-        /// <param name="mulw"></param>
-        /// <param name="mulh"></param>
+        /// <param name="multiplyWidth"></param>
+        /// <param name="multiplyHeight"></param>
         /// <param name="marks"></param>
         /// <param name="border"></param>
         /// <param name="borderColor"></param>
         /// <param name="inner"></param>
         /// <param name="fill"></param>
+        /// <param name="offsetX"></param>
+        /// <param name="offsetY"></param>
         public void DrawSprite(
             string spriteName,
+            Vector2 drawCoordinates,
+            float virtualWidth,
+            float virtualHeight,
             float scale,
-            float sx,
-            float sy,
-            float sw,
-            float sh,
-            float ssw,
-            float ssh,
-            Vector2 t,
-            float tw,
-            float th,
-            float mulw,
-            float mulh,
+            float multiplyWidth,
+            float multiplyHeight,
             bool marks,
             bool border = false,
             uint borderColor = 0,
             bool inner = false,
-            bool fill = false
+            bool fill = false,
+            float offsetX = 10,
+            float offsetY = 0
         )
         {
-            var draw = ImGui.GetBackgroundDrawList();
-            var uv0 = new Vector2(sx / ssw, sy / ssh);
-            var uv1 = new Vector2((sx + sw) / ssw, (sy + sh) / ssh);
-            var sprite = this.sprites[spriteName];
-            var bounds = new Vector2(tw * ((mulw < 0 ? 100 : mulw) / 100), th * ((mulh < 0 ? 100 : mulh) / 100)) *
-                         scale;
-            var vBounds = new Vector2(tw, th) * scale;
-            var half = new Vector2(10 + vBounds.X / 2, 0);
-            var pos = t - half;
+            var sprite = this.spriteAtlas.GetSprite(spriteName);
 
-            draw.AddImage(sprite.TexturePtr, pos, pos + bounds, uv0, uv1);
+            if (sprite == null)
+            {
+                return;
+            }
+
+            var draw = ImGui.GetBackgroundDrawList();
+
+            var bounds = new Vector2(
+                virtualWidth * ((multiplyWidth < 0 ? 100 : multiplyWidth) / 100),
+                virtualHeight * ((multiplyHeight < 0 ? 100 : multiplyHeight) / 100)
+            ) * scale;
+            var vBounds = new Vector2(virtualWidth, virtualHeight) * scale;
+            var half = new Vector2(offsetX + vBounds.X / 2, offsetY);
+            var pos = drawCoordinates - half;
+
+            draw.AddImage(this.spriteAtlas.TexturePtr, pos, pos + bounds, sprite.Uv[0], sprite.Uv[1]);
 
             if (marks)
             {
@@ -91,21 +99,6 @@ namespace HealthBars
                     draw.AddRect(b1, b2, borderColor);
                 }
             }
-        }
-
-        /// <summary>
-        /// </summary>
-        /// <param name="spriteSheetPathName"></param>
-        public void AddSprites(string spriteSheetPathName)
-        {
-            this.sprites.TryAdd("ES", new IconPicker(spriteSheetPathName, 1, 8, 108, 19, 1));
-            this.sprites.TryAdd("EmptyHP", new IconPicker(spriteSheetPathName, 1, 8, 108, 19, 1));
-            this.sprites.TryAdd("EmptyMana", new IconPicker(spriteSheetPathName, 1, 8, 108, 19, 1));
-            this.sprites.TryAdd("EnemyHP", new IconPicker(spriteSheetPathName, 1, 8, 108, 19, 1));
-            this.sprites.TryAdd("HP", new IconPicker(spriteSheetPathName, 1, 8, 108, 19, 1));
-            this.sprites.TryAdd("Mana", new IconPicker(spriteSheetPathName, 1, 8, 108, 19, 1));
-            this.sprites.TryAdd("EmptyBar", new IconPicker(spriteSheetPathName, 1, 8, 108, 19, 1));
-            this.sprites.TryAdd("EmptyDoubleBar", new IconPicker(spriteSheetPathName, 1, 8, 108, 19, 1));
         }
     }
 }
