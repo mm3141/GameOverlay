@@ -366,3 +366,7 @@ Radar.xml
 GameHelper/configs/core_settings.json
 GameHelper/imgui.ini
 GameHelper/configs/plugins.json
+PreloadAlert/preloads.txt
+Radar/important_tgt_files.txt
+
+.idea
