@@ -158,10 +158,9 @@ namespace HealthBars
                     continue;
                 }
 
-                var hasRender = gameEntity.TryGetComponent<Render>(out var render);
-                if (!hasRender)
+                if (!gameEntity.TryGetComponent<Render>(out var render))
                 {
-                    return;
+                    continue;
                 }
 
                 var curPos = render.WorldPosition;
