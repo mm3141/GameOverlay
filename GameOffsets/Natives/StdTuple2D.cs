@@ -7,13 +7,16 @@
     {
         public T X;
         public T Y;
-        public StdTuple2D(T x, T y) {
-            X = x;
-            Y = y;
+
+        public StdTuple2D(T x, T y)
+        {
+            this.X = x;
+            this.Y = y;
         }
+
         public override string ToString()
         {
-            return $"X: {X}, Y: {Y}";
+            return $"X: {this.X}, Y: {this.Y}";
         }
     }
 }

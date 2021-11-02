@@ -69,11 +69,10 @@ namespace HealthBars
             }
 
             ImGui.NewLine();
-
-            ImGui.Checkbox("Normal bars", ref Settings.ShowNormalBar);
-            if (Settings.ShowNormalBar)
+            ImGui.Checkbox("Normal bars", ref this.Settings.ShowNormalBar);
+            if (this.Settings.ShowNormalBar)
             {
-                ImGui.DragFloat("Normal scale", ref Settings.NormalBarScale, 0.01f, 0.3f, 5);
+                ImGui.DragFloat("Normal scale", ref this.Settings.NormalBarScale, 0.01f, 0.3f, 5);
                 ImGui.NewLine();
             }
             else
