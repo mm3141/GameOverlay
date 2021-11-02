@@ -1,7 +1,7 @@
 ﻿namespace GameOffsets.Objects.Components
 {
-    using Natives;
     using System.Runtime.InteropServices;
+    using Natives;
 
     [StructLayout(LayoutKind.Explicit, Pack = 1)]
     public struct PlayerOffsets

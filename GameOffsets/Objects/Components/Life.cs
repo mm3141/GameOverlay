@@ -16,18 +16,44 @@
     public struct VitalStruct
     {
         public IntPtr PtrToLifeComponent;
-        //// This is greater than zero if Vital is regenerating
-        //// For value = 0 or less than 0, Vital isn't regenerating
+
+        /// <summary>
+        ///     This is greater than zero if Vital is regenerating
+        ///     For value = 0 or less than 0, Vital isn't regenerating
+        /// </summary>
         public float Regeneration;
+
         public int Total;
+
         public int Current;
-        //// e.g. Clarity reserve flat Vital
+
+        /// <summary>
+        ///     e.g. Clarity reserve flat Vital
+        /// </summary>
         public int ReservedFlat;
-        //// e.g. HERALD reserve % Vital.
-        //// ReservedFlat does not change this value.
+
+        /// <summary>
+        ///     e.g. Heralds reserve % Vital.
+        ///     ReservedFlat does not change this value.
+        ///     Note that it's an integer, this is due to 20.23% is stored as 2023
+        /// </summary>
         public int ReservedPercent;
 
-        public int CurrentInPercent() =>
-            Total > 0 ? (int)Math.Round(100 * Current / (Total - (ReservedFlat + Math.Round(ReservedPercent * 0.0001 * Total)))) : 0;
+        /// <summary>
+        ///     Returns current Vital in percentage (excluding the reserved vital) or returns zero in case the Vital
+        ///     doesn't exists.
+        /// </summary>
+        /// <returns></returns>
+        public int CurrentInPercent()
+        {
+            if (this.Total == 0)
+            {
+                return 0;
+            }
+
+            var reservedPercentToFlat = Math.Round(this.ReservedPercent / 10000f * this.Total);
+            var vitalExcludingReserved = this.Total - this.ReservedFlat - reservedPercentToFlat;
+            return (int)Math.Round(100 * this.Current / vitalExcludingReserved);
+        }
     }
 }

@@ -11,13 +11,13 @@
         public IntPtr End;
 
         /// <summary>
-        /// Counts the number of elements in the StdVector.
+        ///     Counts the number of elements in the StdVector.
         /// </summary>
         /// <param name="elementSize">Number of bytes in 1 element.</param>
         /// <returns></returns>
         public long TotalElements(int elementSize)
         {
-            return (Last.ToInt64() - First.ToInt64()) / elementSize;
+            return (this.Last.ToInt64() - this.First.ToInt64()) / elementSize;
         }
 
         public override string ToString()

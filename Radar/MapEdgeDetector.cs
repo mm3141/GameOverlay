@@ -14,7 +14,7 @@ namespace Radar
         /// Amount of rows for the map
         /// </summary>
         public readonly int TotalRows;
-        
+
         /// <summary>
         /// Class that helps with map edge detection.
         /// </summary>
@@ -29,7 +29,7 @@ namespace Radar
 
         /// <summary>
         /// Detects if the current tile is a border.
-        /// 
+        ///
         /// The current tile is a border if it itself is not walkable and at least one adjacent tile is walkable.
         /// At least one adjacent tile has to be walkable to avoid not just drawing all non-walkable tiles.
         /// </summary>

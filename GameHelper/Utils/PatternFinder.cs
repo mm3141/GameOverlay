@@ -41,7 +41,7 @@ namespace GameHelper.Utils
         /// All patterns are read from the GameOffsets library so that users just have to update
         /// GameOffsets lib once there is a new patch.
         /// </summary>
-        private static Pattern[] Patterns => StaticOffsetsPatterns.patterns;
+        private static Pattern[] Patterns => StaticOffsetsPatterns.Patterns;
 
         /// <summary>
         /// Tries to find all the patterns given in the GameOffsets StaticOffsetsPatterns class.
