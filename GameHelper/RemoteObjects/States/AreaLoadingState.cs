@@ -7,19 +7,19 @@ namespace GameHelper.RemoteObjects.States
     using System;
     using System.Collections.Generic;
     using Coroutine;
-    using GameHelper.CoroutineEvents;
+    using CoroutineEvents;
     using GameOffsets.Objects.States;
     using ImGuiNET;
 
     /// <summary>
-    /// Reads AreaLoadingState Game Object.
+    ///     Reads AreaLoadingState Game Object.
     /// </summary>
     public sealed class AreaLoadingState : RemoteObjectBase
     {
-        private AreaLoadingStateOffset lastCache = default;
+        private AreaLoadingStateOffset lastCache;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="AreaLoadingState"/> class.
+        ///     Initializes a new instance of the <see cref="AreaLoadingState" /> class.
         /// </summary>
         /// <param name="address">address of the remote memory object.</param>
         internal AreaLoadingState(IntPtr address)
@@ -29,17 +29,17 @@ namespace GameHelper.RemoteObjects.States
         }
 
         /// <summary>
-        /// Gets the game current Area Name.
+        ///     Gets the game current Area Name.
         /// </summary>
         public string CurrentAreaName { get; private set; } = string.Empty;
 
         /// <summary>
-        /// Gets a value indicating whether the game is in loading screen or not.
+        ///     Gets a value indicating whether the game is in loading screen or not.
         /// </summary>
         internal bool IsLoading { get; private set; }
 
         /// <summary>
-        /// Converts the <see cref="AreaLoadingState"/> class data to ImGui.
+        ///     Converts the <see cref="AreaLoadingState" /> class data to ImGui.
         /// </summary>
         internal override void ToImGui()
         {
@@ -49,25 +49,25 @@ namespace GameHelper.RemoteObjects.States
             ImGui.Text($"Total Loading Time(ms): {this.lastCache.TotalLoadingScreenTimeMs}");
         }
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         protected override void CleanUpData()
         {
             this.lastCache = default;
             this.CurrentAreaName = string.Empty;
         }
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         protected override void UpdateData(bool hasAddressChanged)
         {
             var reader = Core.Process.Handle;
             var data = reader.ReadMemory<AreaLoadingStateOffset>(this.Address);
             this.IsLoading = data.IsLoading == 0x01;
-            bool hasAreaChanged = false;
+            var hasAreaChanged = false;
             if (data.CurrentAreaName.Buffer != IntPtr.Zero &&
                 !this.IsLoading &&
                 data.TotalLoadingScreenTimeMs > this.lastCache.TotalLoadingScreenTimeMs)
             {
-                string areaName = reader.ReadStdWString(data.CurrentAreaName);
+                var areaName = reader.ReadStdWString(data.CurrentAreaName);
                 this.CurrentAreaName = areaName;
                 this.lastCache = data;
                 hasAreaChanged = true;
@@ -75,10 +75,7 @@ namespace GameHelper.RemoteObjects.States
 
             if (hasAreaChanged)
             {
-                CoroutineHandler.InvokeLater(new Wait(0.1d), () =>
-                {
-                    CoroutineHandler.RaiseEvent(RemoteEvents.AreaChanged);
-                });
+                CoroutineHandler.InvokeLater(new Wait(0.1d), () => { CoroutineHandler.RaiseEvent(RemoteEvents.AreaChanged); });
             }
         }
 

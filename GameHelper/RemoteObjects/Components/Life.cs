@@ -5,46 +5,44 @@
 namespace GameHelper.RemoteObjects.Components
 {
     using System;
-    using GameHelper.Utils;
     using GameOffsets.Objects.Components;
     using ImGuiNET;
+    using Utils;
 
     /// <summary>
-    /// The <see cref="Life"/> component in the entity.
+    ///     The <see cref="Life" /> component in the entity.
     /// </summary>
     public class Life : RemoteObjectBase
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="Life"/> class.
+        ///     Initializes a new instance of the <see cref="Life" /> class.
         /// </summary>
-        /// <param name="address">address of the <see cref="Life"/> component.</param>
+        /// <param name="address">address of the <see cref="Life" /> component.</param>
         public Life(IntPtr address)
-            : base(address, true)
-        {
-        }
+            : base(address, true) { }
 
         /// <summary>
-        /// Gets a value indicating whether the entity is alive or not.
+        ///     Gets a value indicating whether the entity is alive or not.
         /// </summary>
         public bool IsAlive { get; private set; } = true;
 
         /// <summary>
-        /// Gets the health related information of the entity.
+        ///     Gets the health related information of the entity.
         /// </summary>
-        public VitalStruct Health { get; private set; } = default;
+        public VitalStruct Health { get; private set; }
 
         /// <summary>
-        /// Gets the energyshield related information of the entity.
+        ///     Gets the energyshield related information of the entity.
         /// </summary>
-        public VitalStruct EnergyShield { get; private set; } = default;
+        public VitalStruct EnergyShield { get; private set; }
 
         /// <summary>
-        /// Gets the mana related information of the entity.
+        ///     Gets the mana related information of the entity.
         /// </summary>
-        public VitalStruct Mana { get; private set; } = default;
+        public VitalStruct Mana { get; private set; }
 
         /// <summary>
-        /// Converts the <see cref="Life"/> class data to ImGui.
+        ///     Converts the <see cref="Life" /> class data to ImGui.
         /// </summary>
         internal override void ToImGui()
         {
@@ -69,13 +67,13 @@ namespace GameHelper.RemoteObjects.Components
             }
         }
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         protected override void CleanUpData()
         {
             throw new Exception("Component Address should never be Zero.");
         }
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         protected override void UpdateData(bool hasAddressChanged)
         {
             var reader = Core.Process.Handle;

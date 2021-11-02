@@ -5,38 +5,38 @@
 namespace GameHelper.Plugin
 {
     /// <summary>
-    /// Interface for creating plugins.
+    ///     Interface for creating plugins.
     /// </summary>
     /// <typeparam name="TSettings">plugin's setting class name.</typeparam>
     public abstract class PCore<TSettings> : IPCore
         where TSettings : IPSettings, new()
     {
         /// <summary>
-        /// Gets or sets the plugin root directory folder.
+        ///     Gets or sets the plugin root directory folder.
         /// </summary>
         public string DllDirectory;
 
         /// <summary>
-        /// Gets or sets the plugin settings.
+        ///     Gets or sets the plugin settings.
         /// </summary>
         public TSettings Settings = new();
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         public abstract void OnDisable();
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         public abstract void OnEnable(bool isGameOpened);
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         public abstract void DrawSettings();
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         public abstract void DrawUI();
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         public abstract void SaveSettings();
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         public void SetPluginDllLocation(string dllLocation)
         {
             this.DllDirectory = dllLocation;

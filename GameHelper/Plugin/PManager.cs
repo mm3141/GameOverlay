@@ -12,31 +12,27 @@ namespace GameHelper.Plugin
     using System.Reflection;
     using System.Threading.Tasks;
     using Coroutine;
-    using GameHelper.CoroutineEvents;
-    using GameHelper.Settings;
-    using GameHelper.Utils;
+    using CoroutineEvents;
+    using Settings;
+    using Utils;
 
     /// <summary>
-    /// Finds, loads and unloads the plugins.
+    ///     Finds, loads and unloads the plugins.
     /// </summary>
     internal static class PManager
     {
         private static readonly ConcurrentBag<KeyValuePair<string, IPCore>> Plugins = new();
 
         /// <summary>
-        /// Gets the loaded plugins.
+        ///     Gets the loaded plugins.
         /// </summary>
-        internal static Dictionary<string, PContainer> AllPlugins
-        {
-            get;
-            private set;
-        }
+        internal static Dictionary<string, PContainer> AllPlugins { get; }
 
-        = JsonHelper.CreateOrLoadJsonFile<Dictionary<string, PContainer>>(
-            State.PluginsMetadataFile);
+            = JsonHelper.CreateOrLoadJsonFile<Dictionary<string, PContainer>>(
+                State.PluginsMetadataFile);
 
         /// <summary>
-        /// Initlizes the plugin manager by loading all the plugins and their Metadata.
+        ///     Initlizes the plugin manager by loading all the plugins and their Metadata.
         /// </summary>
         internal static void InitializePlugins()
         {
@@ -51,7 +47,7 @@ namespace GameHelper.Plugin
         }
 #if DEBUG
         /// <summary>
-        /// Cleans up the already loaded plugins.
+        ///     Cleans up the already loaded plugins.
         /// </summary>
         internal static void CleanUpAllPlugins()
         {
@@ -80,8 +76,8 @@ namespace GameHelper.Plugin
                 if (dllFile == null)
                 {
                     Console.WriteLine($"Couldn't find plugin dll with name {pluginDirectory.Name}" +
-                        $" in directory {pluginDirectory.FullName}." +
-                        $" Please make sure DLL & the plugin got same name.");
+                                      $" in directory {pluginDirectory.FullName}." +
+                                      " Please make sure DLL & the plugin got same name.");
                 }
 
                 var pdbPath = dllFile.FullName.Replace(".dll", ".pdb");
@@ -119,24 +115,24 @@ namespace GameHelper.Plugin
                 if (types.Length <= 0)
                 {
                     Console.WriteLine($"Plugin (in {pluginRootDirectory}) {assembly} doesn't " +
-                        $"contain any types (i.e. classes/stuctures).");
+                                      "contain any types (i.e. classes/stuctures).");
                     return;
                 }
 
                 var iPluginClasses = types.Where(
                     type => typeof(IPCore).IsAssignableFrom(type) &&
-                    type.IsSealed == true).ToList();
+                            type.IsSealed).ToList();
                 if (iPluginClasses.Count != 1)
                 {
                     Console.WriteLine($"Plugin (in {pluginRootDirectory}) {assembly} contains" +
-                        $" {iPluginClasses.Count} sealed classes derived from CoreBase<TSettings>." +
-                        $" It should have one sealed class derived from IPlugin.");
+                                      $" {iPluginClasses.Count} sealed classes derived from CoreBase<TSettings>." +
+                                      " It should have one sealed class derived from IPlugin.");
                     return;
                 }
 
-                IPCore pluginCore = Activator.CreateInstance(iPluginClasses[0]) as IPCore;
+                var pluginCore = Activator.CreateInstance(iPluginClasses[0]) as IPCore;
                 pluginCore.SetPluginDllLocation(pluginRootDirectory);
-                string pluginName = assembly.GetName().Name;
+                var pluginName = assembly.GetName().Name;
                 Plugins.Add(new KeyValuePair<string, IPCore>(pluginName, pluginCore));
             }
             catch (Exception e)
@@ -157,7 +153,7 @@ namespace GameHelper.Plugin
                 }
                 else
                 {
-                    var pC = new PContainer() { Enable = true, Plugin = tmp.Value };
+                    var pC = new PContainer { Enable = true, Plugin = tmp.Value };
                     AllPlugins.Add(tmp.Key, pC);
                 }
             }

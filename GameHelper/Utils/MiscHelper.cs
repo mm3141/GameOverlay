@@ -12,26 +12,13 @@ namespace GameHelper.Utils
     using System.Threading.Tasks;
 
     /// <summary>
-    /// Util class to send keyboard/mouse keys to the game.
+    ///     Util class to send keyboard/mouse keys to the game.
     /// </summary>
     public static class MiscHelper
     {
         private static readonly Random Rand = new();
         private static readonly Stopwatch DelayBetweenKeys = Stopwatch.StartNew();
-        private static Task<IntPtr> sendingMessage = null;
-
-        private enum TcpTableClass
-        {
-            TcpTableBasicListener,
-            TcpTableBasicConnections,
-            TcpTableBasicAll,
-            TcpTableOwnerPidListener,
-            TcpTableOwnerPidConnections,
-            TcpTableOwnerPidAll,
-            TcpTableOwnerModuleListener,
-            TcpTableOwnerModuleConnections,
-            TcpTableOwnerModuleAll,
-        }
+        private static Task<IntPtr> sendingMessage;
 
         /*private static void KeyDown(ConsoleKey key)
         {
@@ -42,9 +29,9 @@ namespace GameHelper.Utils
         }*/
 
         /// <summary>
-        /// Releases the key in the game. There is a hard delay of 30ms - 40ms
-        /// between Key releases to make sure game doesn't kick us for
-        /// too many key-presses.
+        ///     Releases the key in the game. There is a hard delay of 30ms - 40ms
+        ///     between Key releases to make sure game doesn't kick us for
+        ///     too many key-presses.
         /// </summary>
         /// <param name="key">key to release.</param>
         /// <returns>Is the key actually pressed or not.</returns>
@@ -55,7 +42,7 @@ namespace GameHelper.Utils
                 return false;
             }
 
-            if (DelayBetweenKeys.ElapsedMilliseconds >= Core.GHSettings.KeyPressTimeout + (Rand.Next() % 10))
+            if (DelayBetweenKeys.ElapsedMilliseconds >= Core.GHSettings.KeyPressTimeout + Rand.Next() % 10)
             {
                 DelayBetweenKeys.Restart();
             }
@@ -74,7 +61,7 @@ namespace GameHelper.Utils
         }
 
         /// <summary>
-        /// Kills the IPV4 TCP Connection for the process.
+        ///     Kills the IPV4 TCP Connection for the process.
         /// </summary>
         /// <param name="processId">process Id whos tcp connection to kill.</param>
         public static void KillTCPConnectionForProcess(uint processId)
@@ -108,7 +95,7 @@ namespace GameHelper.Utils
             }
 
             // Kill Path Connection
-            MibTcprowOwnerPid pathConnection = table.FirstOrDefault(t => t.OwningPid == processId);
+            var pathConnection = table.FirstOrDefault(t => t.OwningPid == processId);
             if (!EqualityComparer<MibTcprowOwnerPid>.Default.Equals(pathConnection, default))
             {
                 pathConnection.State = 12;
@@ -123,28 +110,51 @@ namespace GameHelper.Utils
         private static extern IntPtr SendMessage(IntPtr hWnd, int msg, int wParam, int lParam);
 
         [DllImport("iphlpapi.dll", SetLastError = true)]
-        private static extern uint GetExtendedTcpTable(IntPtr pTcpTable, ref int dwOutBufLen, bool sort, int ipVersion, TcpTableClass tblClass, uint reserved = 0);
+        private static extern uint GetExtendedTcpTable(
+            IntPtr pTcpTable,
+            ref int dwOutBufLen,
+            bool sort,
+            int ipVersion,
+            TcpTableClass tblClass,
+            uint reserved = 0
+        );
 
-        [DllImport("iphlpapi.dll")]
-        private static extern int SetTcpEntry(IntPtr pTcprow);
+        [DllImport("iphlpapi.dll")] private static extern int SetTcpEntry(IntPtr pTcprow);
+
+        private enum TcpTableClass
+        {
+            TcpTableBasicListener,
+            TcpTableBasicConnections,
+            TcpTableBasicAll,
+            TcpTableOwnerPidListener,
+            TcpTableOwnerPidConnections,
+            TcpTableOwnerPidAll,
+            TcpTableOwnerModuleListener,
+            TcpTableOwnerModuleConnections,
+            TcpTableOwnerModuleAll
+        }
 
         [StructLayout(LayoutKind.Sequential)]
         private struct MibTcprowOwnerPid
         {
             public uint State;
-            public uint LocalAddr;
+            public readonly uint LocalAddr;
+
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
-            public byte[] LocalPort;
-            public uint RemoteAddr;
+            public readonly byte[] LocalPort;
+
+            public readonly uint RemoteAddr;
+
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
-            public byte[] RemotePort;
-            public uint OwningPid;
+            public readonly byte[] RemotePort;
+
+            public readonly uint OwningPid;
         }
 
         [StructLayout(LayoutKind.Sequential)]
         private struct MibTcptableOwnerPid
         {
-            public uint DwNumEntries;
+            public readonly uint DwNumEntries;
             private readonly MibTcprowOwnerPid table;
         }
     }

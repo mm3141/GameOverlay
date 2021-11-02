@@ -9,12 +9,12 @@ namespace GameHelper
     using System.Threading.Tasks;
 
     /// <summary>
-    /// Class executed when the application starts.
+    ///     Class executed when the application starts.
     /// </summary>
     internal class Program
     {
         /// <summary>
-        /// function executed when the application starts.
+        ///     function executed when the application starts.
         /// </summary>
         private static async Task Main()
         {
