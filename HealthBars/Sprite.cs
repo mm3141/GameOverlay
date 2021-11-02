@@ -7,12 +7,6 @@
     /// </summary>
     public class Sprite
     {
-        private readonly CubeObject SpritesheetSize;
-        /// <summary>
-        ///     Precalculated uv.
-        /// </summary>
-        public Vector2[] Uv { get; }
-
         /// <summary>
         ///     Initialization of <see cref="Sprite" /> instance.
         /// </summary>
@@ -25,18 +19,21 @@
             this.W = frame.W;
             this.H = frame.H;
 
-            this.SpritesheetSize = spritesheetSize;
-
             this.Uv = new Vector2[]
             {
-                new(this.X / this.SpritesheetSize.W, this.Y / this.SpritesheetSize.H),
-                new((this.X + this.W) / this.SpritesheetSize.W, (this.Y + this.H) / this.SpritesheetSize.H)
+                new(this.X / spritesheetSize.W, this.Y / spritesheetSize.H),
+                new((this.X + this.W) / spritesheetSize.W, (this.Y + this.H) / spritesheetSize.H)
             };
         }
 
-        public float H { get; }
-        public float W { get; }
-        public float X { get; }
-        public float Y { get; }
+        /// <summary>
+        ///     Precalculated uv.
+        /// </summary>
+        public Vector2[] Uv { get; }
+
+        private float H { get; }
+        private float W { get; }
+        private float X { get; }
+        private float Y { get; }
     }
 }
