@@ -15,37 +15,37 @@ namespace SimpleFlaskManager
     using GameHelper.Utils;
     using ImGuiNET;
     using Newtonsoft.Json;
-    using SimpleFlaskManager.ProfileManager;
+    using ProfileManager;
 
     /// <summary>
-    /// <see cref="SimpleFlaskManager"/> plugin.
+    ///     <see cref="SimpleFlaskManager" /> plugin.
     /// </summary>
     public sealed class SimpleFlaskManagerCore : PCore<SimpleFlaskManagerSettings>
     {
         private readonly List<string> keyPressInfo = new();
-        private Vector2 size = new(400, 200);
+        private readonly Vector2 size = new(400, 200);
         private string debugMessage = "None";
         private string newProfileName = string.Empty;
 
         private string SettingPathname => Path.Join(this.DllDirectory, "config", "settings.txt");
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         public override void DrawSettings()
         {
-            ImGui.TextWrapped($"WARNING: Do not trust FlaskManager Settings.txt file from unknown source. " +
-                $"Bad profiles may get your account banned. Also, they can contain malicious code. " +
-                $"Google SCS0028 and CA2328 for more information.");
+            ImGui.TextWrapped("WARNING: Do not trust FlaskManager Settings.txt file from unknown source. " +
+                              "Bad profiles may get your account banned. Also, they can contain malicious code. " +
+                              "Google SCS0028 and CA2328 for more information.");
 
             ImGui.NewLine();
             ImGui.NewLine();
             ImGui.TextWrapped("WARNING: All the flask rules in all the profiles must have " +
-                "FLASK_EFFECT and FLASK_CHARGES condition, otherwise Flask Manager will spam " +
-                "the flask and you might get kicked or banned.");
+                              "FLASK_EFFECT and FLASK_CHARGES condition, otherwise Flask Manager will spam " +
+                              "the flask and you might get kicked or banned.");
             ImGui.NewLine();
             ImGui.NewLine();
             ImGui.TextWrapped("Debug mode will help you figure out why flask manager is not drinking the flask. " +
-                "It will also help you figure out if flask manager is spamming the flask or not. So create all new " +
-                "profiles with debug mode turned on.");
+                              "It will also help you figure out if flask manager is spamming the flask or not. " +
+                              "So create all new profiles with debug mode turned on.");
             ImGui.Checkbox("Debug Mode", ref this.Settings.DebugMode);
             ImGui.Checkbox("Should Run In Hideout", ref this.Settings.ShouldRunInHideout);
             UiHelper.IEnumerableComboBox("Profile", this.Settings.Profiles.Keys, ref this.Settings.CurrentProfile);
@@ -66,21 +66,21 @@ namespace SimpleFlaskManager
 
             if (ImGui.CollapsingHeader("Profiles"))
             {
-                foreach (var profile in this.Settings.Profiles)
+                foreach (var (key, profile) in this.Settings.Profiles)
                 {
-                    if (ImGui.TreeNode($"{profile.Key}"))
+                    if (ImGui.TreeNode($"{key}"))
                     {
                         ImGui.SameLine();
                         if (ImGui.SmallButton("Delete Profile"))
                         {
-                            this.Settings.Profiles.Remove(profile.Key);
-                            if (this.Settings.CurrentProfile == profile.Key)
+                            this.Settings.Profiles.Remove(key);
+                            if (this.Settings.CurrentProfile == key)
                             {
                                 this.Settings.CurrentProfile = string.Empty;
                             }
                         }
 
-                        profile.Value.DrawSettings();
+                        profile.DrawSettings();
                         ImGui.TreePop();
                     }
                 }
@@ -94,7 +94,7 @@ namespace SimpleFlaskManager
             }
         }
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         public override void DrawUI()
         {
             if (this.Settings.DebugMode)
@@ -108,7 +108,7 @@ namespace SimpleFlaskManager
                 }
 
                 ImGui.BeginChild("KeyPressesInfo");
-                for (int i = 0; i < this.keyPressInfo.Count; i++)
+                for (var i = 0; i < this.keyPressInfo.Count; i++)
                 {
                     ImGui.Text($"{i}-{this.keyPressInfo[i]}");
                 }
@@ -130,7 +130,7 @@ namespace SimpleFlaskManager
 
             if (string.IsNullOrEmpty(this.Settings.CurrentProfile))
             {
-                this.debugMessage = $"No Profile Selected.";
+                this.debugMessage = "No Profile Selected.";
                 return;
             }
 
@@ -152,16 +152,17 @@ namespace SimpleFlaskManager
             }
         }
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         public override void OnDisable()
         {
         }
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         public override void OnEnable(bool isGameOpened)
         {
             var jsonData = File.ReadAllText(this.DllDirectory + @"/FlaskNameToBuff.json");
-            JsonDataHelper.FlaskNameToBuffGroups = JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(jsonData);
+            JsonDataHelper.FlaskNameToBuffGroups =
+                JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(jsonData);
 
             var jsonData2 = File.ReadAllText(this.DllDirectory + @"/StatusEffectGroup.json");
             JsonDataHelper.StatusEffectGroups = JsonConvert.DeserializeObject<
@@ -172,23 +173,22 @@ namespace SimpleFlaskManager
                 var content = File.ReadAllText(this.SettingPathname);
                 this.Settings = JsonConvert.DeserializeObject<SimpleFlaskManagerSettings>(
                     content,
-                    new JsonSerializerSettings()
+                    new JsonSerializerSettings
                     {
-                        TypeNameHandling = TypeNameHandling.Auto,
+                        TypeNameHandling = TypeNameHandling.Auto
                     });
             }
         }
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         public override void SaveSettings()
         {
             Directory.CreateDirectory(Path.GetDirectoryName(this.SettingPathname));
-            var settingsData = JsonConvert.SerializeObject(
-                this.Settings,
+            var settingsData = JsonConvert.SerializeObject(this.Settings,
                 Formatting.Indented,
-                new JsonSerializerSettings()
+                new JsonSerializerSettings
                 {
-                    TypeNameHandling = TypeNameHandling.Auto,
+                    TypeNameHandling = TypeNameHandling.Auto
                 });
             File.WriteAllText(this.SettingPathname, settingsData);
         }
@@ -204,20 +204,20 @@ namespace SimpleFlaskManager
 
             if (!Core.Process.Foreground)
             {
-                this.debugMessage = $"Game is minimized.";
+                this.debugMessage = "Game is minimized.";
                 return false;
             }
 
             var areaDetails = Core.States.InGameStateObject.CurrentAreaInstance.AreaDetails;
             if (areaDetails.IsTown)
             {
-                this.debugMessage = $"Player is in town.";
+                this.debugMessage = "Player is in town.";
                 return false;
             }
 
             if (!this.Settings.ShouldRunInHideout && areaDetails.IsHideout)
             {
-                this.debugMessage = $"Player is in hideout.";
+                this.debugMessage = "Player is in hideout.";
                 return false;
             }
 
@@ -225,13 +225,13 @@ namespace SimpleFlaskManager
             {
                 if (lifeComp.Health.Current <= 0)
                 {
-                    this.debugMessage = $"Player is dead.";
+                    this.debugMessage = "Player is dead.";
                     return false;
                 }
             }
             else
             {
-                this.debugMessage = $"Can not find player Life component.";
+                this.debugMessage = "Can not find player Life component.";
                 return false;
             }
 
@@ -239,19 +239,19 @@ namespace SimpleFlaskManager
             {
                 if (buffComp.StatusEffects.ContainsKey("grace_period"))
                 {
-                    this.debugMessage = $"Player has Grace Period.";
+                    this.debugMessage = "Player has Grace Period.";
                     return false;
                 }
             }
             else
             {
-                this.debugMessage = $"Can not find player Buffs component.";
+                this.debugMessage = "Can not find player Buffs component.";
                 return false;
             }
 
             if (!Core.States.InGameStateObject.CurrentAreaInstance.Player.TryGetComponent<Actor>(out var _))
             {
-                this.debugMessage = $"Can not find player Actor component.";
+                this.debugMessage = "Can not find player Actor component.";
                 return false;
             }
 
