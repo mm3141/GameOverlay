@@ -30,6 +30,7 @@ namespace GameHelper.Settings
         /// </summary>
         internal static void InitializeCoroutines()
         {
+            HideOnStartCheck();
             CoroutineHandler.Start(LoadCurrentlyConfiguredFont());
             CoroutineHandler.Start(SaveGameHelperSettings());
             Core.CoroutinesRegistrar.Add(
@@ -131,6 +132,7 @@ namespace GameHelper.Settings
                     ImGui.Checkbox("Data Visualization (DV)", ref Core.GHSettings.ShowDataVisualization);
                     ImGui.Checkbox("Do not save entities outside the network bubble", ref Core.GHSettings.RemoveAllInvalidEntities);
                     ImGui.Checkbox("Disable entity processing when in town or hideout", ref Core.GHSettings.DisableEntityProcessingInTownOrHideout);
+                    ImGui.Checkbox("Hide overlay settings upon start", ref Core.GHSettings.HideSettingWindowOnStart);
                     ImGui.NewLine();
                     if (ImGui.Button("Test Disconnect POE"))
                     {
@@ -273,6 +275,14 @@ namespace GameHelper.Settings
             unsafe
             {
                 ImGui.GetIO().NativePtr->FontDefault = Core.Overlay.Fonts[Core.GHSettings.CurrentlySelectedFont];
+            }
+        }
+
+        private static void HideOnStartCheck()
+        {
+            if (Core.GHSettings.HideSettingWindowOnStart)
+            {
+                isSettingsWindowVisible = false;
             }
         }
     }
