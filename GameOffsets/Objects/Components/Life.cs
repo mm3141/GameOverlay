@@ -6,10 +6,17 @@
     [StructLayout(LayoutKind.Explicit, Pack = 1)]
     public struct LifeOffset
     {
-        [FieldOffset(0x000)] public ComponentHeader Header;
-        [FieldOffset(0x1A8)] public VitalStruct Mana;
-        [FieldOffset(0x1E0)] public VitalStruct EnergyShield;
-        [FieldOffset(0x240)] public VitalStruct Health;
+        [FieldOffset(0x000)]
+        public ComponentHeader Header;
+
+        [FieldOffset(0x1A8)]
+        public VitalStruct Mana;
+
+        [FieldOffset(0x1E0)]
+        public VitalStruct EnergyShield;
+
+        [FieldOffset(0x240)]
+        public VitalStruct Health;
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
@@ -51,7 +58,7 @@
                 return 0;
             }
 
-            var vitalAfterReservedPercent = Math.Round((this.ReservedPercent / 100f) * this.Total);
+            var vitalAfterReservedPercent = Math.Round(this.ReservedPercent / 100f * this.Total);
             var vitalExcludingReserved = this.Total - this.ReservedFlat + vitalAfterReservedPercent;
             return (int)Math.Round(100 * this.Current / vitalExcludingReserved);
         }

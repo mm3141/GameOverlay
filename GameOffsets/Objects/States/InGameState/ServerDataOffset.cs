@@ -8,16 +8,27 @@ namespace GameOffsets.Objects.States.InGameState
     public struct ServerDataStructure
     {
         public const int SKIP = 0x8B00; // for reducing struct size.
-        [FieldOffset(0x8BE8 - SKIP)] public StdVector PlayerInventories; // InventoryArrayStruct
+
+        [FieldOffset(0x8BE8 - SKIP)]
+        public StdVector PlayerInventories; // InventoryArrayStruct
     }
 
     [StructLayout(LayoutKind.Explicit, Pack = 1)]
     public struct InventoryArrayStruct
     {
-        [FieldOffset(0x00)] public int InventoryId;
-        [FieldOffset(0x04)] public int PAD_0;
-        [FieldOffset(0x08)] public IntPtr InventoryPtr0; // InventoryStruct
-        [FieldOffset(0x10)] public IntPtr InventoryPtr1; // this points to 0x10 bytes before InventoryPtr0
-        [FieldOffset(0x18)] public long PAD_1;
+        [FieldOffset(0x00)]
+        public int InventoryId;
+
+        [FieldOffset(0x04)]
+        public int PAD_0;
+
+        [FieldOffset(0x08)]
+        public IntPtr InventoryPtr0; // InventoryStruct
+
+        [FieldOffset(0x10)]
+        public IntPtr InventoryPtr1; // this points to 0x10 bytes before InventoryPtr0
+
+        [FieldOffset(0x18)]
+        public long PAD_1;
     }
 }

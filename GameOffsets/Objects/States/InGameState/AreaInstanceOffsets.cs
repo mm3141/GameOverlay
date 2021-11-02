@@ -7,20 +7,32 @@ namespace GameOffsets.Objects.States.InGameState
     [StructLayout(LayoutKind.Explicit, Pack = 1)]
     public struct AreaInstanceOffsets
     {
-        [FieldOffset(0x80)] public IntPtr AreaDetailsPtr; // WorldAreaDatOffsets.cs
-        [FieldOffset(0xB0)] public byte MonsterLevel;
-        [FieldOffset(0x114)] public uint CurrentAreaHash;
-        [FieldOffset(0x550)] public StdVector OverlayLeagueMechanic; //int, float.
-        [FieldOffset(0x580)] public IntPtr ServerDataPtr;
+        [FieldOffset(0x80)]
+        public IntPtr AreaDetailsPtr; // WorldAreaDatOffsets.cs
 
-        [FieldOffset(0x588)] public IntPtr LocalPlayerPtr;
+        [FieldOffset(0xB0)]
+        public byte MonsterLevel;
+
+        [FieldOffset(0x114)]
+        public uint CurrentAreaHash;
+
+        [FieldOffset(0x550)]
+        public StdVector OverlayLeagueMechanic; //int, float.
+
+        [FieldOffset(0x580)]
+        public IntPtr ServerDataPtr;
+
+        [FieldOffset(0x588)]
+        public IntPtr LocalPlayerPtr;
 
         // Sleeping is decorations, disabled particles, effects.
         // Awake is objects like Chests, Monsters, Players, Npcs and etc.
-        [FieldOffset(0x638)] public StdMap AwakeEntities;
+        [FieldOffset(0x638)]
+        public StdMap AwakeEntities;
 
         //[FieldOffset(0x5C0)] public StdMap SleepingEntities; // always after awake entities.
-        [FieldOffset(0x7D8)] public TerrainStruct TerrainMetadata;
+        [FieldOffset(0x7D8)]
+        public TerrainStruct TerrainMetadata;
     }
 
     public static class AreaInstanceConstants
@@ -97,19 +109,28 @@ namespace GameOffsets.Objects.States.InGameState
     public struct TerrainStruct
     {
         //[FieldOffset(0x08)] public IntPtr Unknown0;
-        [FieldOffset(0x18)] public StdTuple2D<long> TotalTiles;
+        [FieldOffset(0x18)]
+        public StdTuple2D<long> TotalTiles;
 
-        [FieldOffset(0x28)] public StdVector TileDetailsPtr; // TileStructure
+        [FieldOffset(0x28)]
+        public StdVector TileDetailsPtr; // TileStructure
 
         //[FieldOffset(0x40)] public StdTuple2D<long> TotalTilesPlusOne;
         //[FieldOffset(0x50)] public StdVector Unknown1;
         //[FieldOffset(0x68)] public StdVector Unknown2;
-        [FieldOffset(0x80)] public long TileHeightMultiplier;
+        [FieldOffset(0x80)]
+        public long TileHeightMultiplier;
 
         //[FieldOffset(0x8C)] public StdTuple2D<int> TotalTilesAgain;
-        [FieldOffset(0xD8)] public StdVector GridWalkableData;
-        [FieldOffset(0xF0)] public StdVector GridLandscapeData;
-        [FieldOffset(0x108)] public int BytesPerRow; // for walkable/landscape data.
+        [FieldOffset(0xD8)]
+        public StdVector GridWalkableData;
+
+        [FieldOffset(0xF0)]
+        public StdVector GridLandscapeData;
+
+        [FieldOffset(0x108)]
+        public int BytesPerRow; // for walkable/landscape data.
+
         public static float TileHeightFinalMultiplier = 7.8125f;
     }
 
@@ -138,13 +159,17 @@ namespace GameOffsets.Objects.States.InGameState
     [StructLayout(LayoutKind.Explicit, Pack = 1)]
     public struct TgtFileStruct
     {
-        [FieldOffset(0x08)] public StdWString TgtPath;
-        [FieldOffset(0x30)] public IntPtr TgtDetailPtr; // TgtDetailStruct
+        [FieldOffset(0x08)]
+        public StdWString TgtPath;
+
+        [FieldOffset(0x30)]
+        public IntPtr TgtDetailPtr; // TgtDetailStruct
     }
 
     [StructLayout(LayoutKind.Explicit, Pack = 1)]
     public struct TgtDetailStruct
     {
-        [FieldOffset(0x00)] public StdWString name;
+        [FieldOffset(0x00)]
+        public StdWString name;
     }
 }
