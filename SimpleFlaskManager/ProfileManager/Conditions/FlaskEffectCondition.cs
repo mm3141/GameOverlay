@@ -71,7 +71,8 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
             {
                 if (flask.TryGetComponent<Base>(out var baseComponent))
                 {
-                    if (JsonDataHelper.FlaskNameToBuffGroups.TryGetValue(baseComponent.ItemBaseName,
+                    if (JsonDataHelper.FlaskNameToBuffGroups.TryGetValue(
+                        baseComponent.ItemBaseName,
                         out var buffNames))
                     {
                         this.flaskBuffsCache = buffNames;
