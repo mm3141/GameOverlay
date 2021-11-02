@@ -98,8 +98,8 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
         /// </returns>
         public static ICondition Add()
         {
-            throw new NotImplementedException($"{typeof(BaseCondition<T>).Name} " +
-                                              "class doesn't have ImGui widget for creating conditions.");
+            throw new NotImplementedException(
+                $"{typeof(BaseCondition<T>).Name} class doesn't have ImGui widget for creating conditions.");
         }
 
         /// <summary>
