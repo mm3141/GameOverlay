@@ -30,18 +30,18 @@ namespace PreloadAlert
         private bool isPreloadAlertHovered;
         private ActiveCoroutine onPreloadUpdated;
         private string path = string.Empty;
-        private string PreloadFileName => Path.Join(DllDirectory, "preloads.txt");
-        private string SettingPathname => Path.Join(DllDirectory, "config", "settings.txt");
+        private string PreloadFileName => Path.Join(this.DllDirectory, "preloads.txt");
+        private string SettingPathname => Path.Join(this.DllDirectory, "config", "settings.txt");
 
         /// <summary>
         ///     Clear all the important and found preloads and stops the co-routines.
         /// </summary>
         public override void OnDisable()
         {
-            importantPreloads.Clear();
-            preloadFound.Clear();
-            onPreloadUpdated?.Cancel();
-            onPreloadUpdated = null;
+            this.importantPreloads.Clear();
+            this.preloadFound.Clear();
+            this.onPreloadUpdated?.Cancel();
+            this.onPreloadUpdated = null;
         }
 
         /// <summary>
@@ -51,20 +51,20 @@ namespace PreloadAlert
         /// <param name="isGameOpened">value indicating whether game is opened or not.</param>
         public override void OnEnable(bool isGameOpened)
         {
-            if (File.Exists(SettingPathname))
+            if (File.Exists(this.SettingPathname))
             {
-                var content = File.ReadAllText(SettingPathname);
-                Settings = JsonConvert.DeserializeObject<PreloadSettings>(content);
+                var content = File.ReadAllText(this.SettingPathname);
+                this.Settings = JsonConvert.DeserializeObject<PreloadSettings>(content);
             }
 
-            if (File.Exists(PreloadFileName))
+            if (File.Exists(this.PreloadFileName))
             {
-                var content = File.ReadAllText(PreloadFileName);
-                importantPreloads = JsonConvert.DeserializeObject<
+                var content = File.ReadAllText(this.PreloadFileName);
+                this.importantPreloads = JsonConvert.DeserializeObject<
                     Dictionary<string, PreloadInfo>>(content);
             }
 
-            onPreloadUpdated = CoroutineHandler.Start(OnPreloadsUpdated());
+            this.onPreloadUpdated = CoroutineHandler.Start(this.OnPreloadsUpdated());
         }
 
         /// <summary>
@@ -73,12 +73,12 @@ namespace PreloadAlert
         /// </summary>
         public override void SaveSettings()
         {
-            var lockStatus = Settings.Locked;
-            Settings.Locked = true;
-            Directory.CreateDirectory(Path.GetDirectoryName(SettingPathname));
-            var settingsData = JsonConvert.SerializeObject(Settings, Formatting.Indented);
-            File.WriteAllText(SettingPathname, settingsData);
-            Settings.Locked = lockStatus;
+            var lockStatus = this.Settings.Locked;
+            this.Settings.Locked = true;
+            Directory.CreateDirectory(Path.GetDirectoryName(this.SettingPathname));
+            var settingsData = JsonConvert.SerializeObject(this.Settings, Formatting.Indented);
+            File.WriteAllText(this.SettingPathname, settingsData);
+            this.Settings.Locked = lockStatus;
         }
 
         /// <summary>
@@ -88,15 +88,15 @@ namespace PreloadAlert
         {
             ImGui.TextWrapped("You can also lock it by double clicking the preload window. " +
                               "However, you can only unlock it from here.");
-            ImGui.Checkbox("Lock/Unlock preload window", ref Settings.Locked);
-            ImGui.Checkbox("Hide when locked & not in the game", ref Settings.EnableHideUi);
-            ImGui.Checkbox("Hide when no preload found", ref Settings.HideWindowWhenEmpty);
-            ImGui.Checkbox("Hide when in town or hideout", ref Settings.HideWhenInTownOrHideout);
+            ImGui.Checkbox("Lock/Unlock preload window", ref this.Settings.Locked);
+            ImGui.Checkbox("Hide when locked & not in the game", ref this.Settings.EnableHideUi);
+            ImGui.Checkbox("Hide when no preload found", ref this.Settings.HideWindowWhenEmpty);
+            ImGui.Checkbox("Hide when in town or hideout", ref this.Settings.HideWhenInTownOrHideout);
             ImGui.Separator();
             ImGui.TextWrapped("If you find something new and wants to add it in the preload " +
                               "you can use Core -> Data Visualization -> CurrentAreaLoadedFiles feature.");
-            AddNewPreloadBox();
-            DisplayAllImportantPreloads();
+            this.AddNewPreloadBox();
+            this.DisplayAllImportantPreloads();
         }
 
         /// <summary>
@@ -104,35 +104,35 @@ namespace PreloadAlert
         /// </summary>
         public override void DrawUI()
         {
-            if (Settings.EnableHideUi && Settings.Locked &&
+            if (this.Settings.EnableHideUi && this.Settings.Locked &&
                 (!Core.Process.Foreground || Core.States.GameCurrentState != GameStateTypes.InGameState))
             {
                 return;
             }
 
-            if (Settings.HideWindowWhenEmpty && preloadFound.Count == 0)
+            if (this.Settings.HideWindowWhenEmpty && this.preloadFound.Count == 0)
             {
                 return;
             }
 
             var areaDetails = Core.States.InGameStateObject.CurrentAreaInstance.AreaDetails;
-            if (Settings.HideWhenInTownOrHideout && (areaDetails.IsHideout || areaDetails.IsTown))
+            if (this.Settings.HideWhenInTownOrHideout && (areaDetails.IsHideout || areaDetails.IsTown))
             {
                 return;
             }
 
             const string windowName = "Preload Window";
-            ImGui.PushStyleColor(ImGuiCol.WindowBg, isPreloadAlertHovered ? Vector4.Zero : Settings.BackgroundColor);
-            ImGui.PushStyleVar(ImGuiStyleVar.WindowBorderSize, isPreloadAlertHovered ? 0.0f : 0.5f);
+            ImGui.PushStyleColor(ImGuiCol.WindowBg, this.isPreloadAlertHovered ? Vector4.Zero : this.Settings.BackgroundColor);
+            ImGui.PushStyleVar(ImGuiStyleVar.WindowBorderSize, this.isPreloadAlertHovered ? 0.0f : 0.5f);
 
-            if (Settings.Locked)
+            if (this.Settings.Locked)
             {
-                ImGui.SetNextWindowPos(Settings.Pos);
-                ImGui.SetNextWindowSize(Settings.Size);
+                ImGui.SetNextWindowPos(this.Settings.Pos);
+                ImGui.SetNextWindowSize(this.Settings.Size);
                 ImGui.PushStyleVar(ImGuiStyleVar.WindowBorderSize, 0f);
                 ImGui.Begin(windowName, UiHelper.TransparentWindowFlags);
                 ImGui.PopStyleVar();
-                isPreloadAlertHovered = ImGui.IsMouseHoveringRect(Settings.Pos, Settings.Pos + Settings.Size);
+                this.isPreloadAlertHovered = ImGui.IsMouseHoveringRect(this.Settings.Pos, this.Settings.Pos + this.Settings.Size);
             }
             else
             {
@@ -141,7 +141,7 @@ namespace PreloadAlert
                 ImGui.SameLine();
                 ImGui.ColorEdit4(
                     "Background Color##PreloadAlertBackground",
-                    ref Settings.BackgroundColor,
+                    ref this.Settings.BackgroundColor,
                     ColorEditFlags);
                 ImGui.TextColored(new Vector4(1, 1, 1, 1), "Dummy Preload 1");
                 ImGui.SameLine();
@@ -155,15 +155,15 @@ namespace PreloadAlert
                 ImGui.TextColored(new Vector4(0, 0, 1, 1), "Dummy Preload 7");
                 ImGui.SameLine();
                 ImGui.TextColored(new Vector4(0, 0, 0, 1), "Dummy Preload 8");
-                Settings.Pos = ImGui.GetWindowPos();
-                Settings.Size = ImGui.GetWindowSize();
+                this.Settings.Pos = ImGui.GetWindowPos();
+                this.Settings.Size = ImGui.GetWindowSize();
                 if (ImGui.IsMouseDoubleClicked(ImGuiMouseButton.Left))
                 {
-                    Settings.Locked = true;
+                    this.Settings.Locked = true;
                 }
             }
 
-            if (!isPreloadAlertHovered)
+            if (!this.isPreloadAlertHovered)
             {
                 if (areaDetails.IsHideout)
                 {
@@ -173,9 +173,9 @@ namespace PreloadAlert
                 {
                     ImGui.Text("Preloads are not updated in town.");
                 }
-                else if (Settings.Locked)
+                else if (this.Settings.Locked)
                 {
-                    foreach (var preloadInfo in preloadFound.Keys)
+                    foreach (var preloadInfo in this.preloadFound.Keys)
                     {
                         ImGui.TextColored(preloadInfo.Color, preloadInfo.DisplayName);
                     }
@@ -191,21 +191,21 @@ namespace PreloadAlert
         {
             if (ImGui.CollapsingHeader("Add New Preload"))
             {
-                ImGui.InputText("Path", ref path, 200);
-                ImGui.InputText("Display Name", ref displayName, 50);
-                ImGui.ColorEdit4("Color", ref color, ColorEditFlags);
+                ImGui.InputText("Path", ref this.path, 200);
+                ImGui.InputText("Display Name", ref this.displayName, 50);
+                ImGui.ColorEdit4("Color", ref this.color, ColorEditFlags);
                 ImGui.SameLine();
                 if (ImGui.Button("Add & Save"))
                 {
-                    importantPreloads[path] = new PreloadInfo
+                    this.importantPreloads[this.path] = new PreloadInfo
                     {
-                        Color = color,
-                        DisplayName = displayName
+                        Color = this.color,
+                        DisplayName = this.displayName
                     };
 
-                    path = string.Empty;
-                    displayName = string.Empty;
-                    SaveAllPreloadsToDisk();
+                    this.path = string.Empty;
+                    this.displayName = string.Empty;
+                    this.SaveAllPreloadsToDisk();
                 }
             }
         }
@@ -215,12 +215,12 @@ namespace PreloadAlert
             if (ImGui.CollapsingHeader("All Important Preloads (click path to edit)"))
             {
                 ImGui.Text("Click on the display name to edit that preload.");
-                foreach (var (key, preloadInfo) in importantPreloads)
+                foreach (var (key, preloadInfo) in this.importantPreloads)
                 {
                     if (ImGui.SmallButton($"Delete##{key}"))
                     {
-                        importantPreloads.Remove(key);
-                        SaveAllPreloadsToDisk();
+                        this.importantPreloads.Remove(key);
+                        this.SaveAllPreloadsToDisk();
                     }
 
                     ImGui.SameLine();
@@ -230,9 +230,9 @@ namespace PreloadAlert
                     ImGui.SameLine();
                     if (ImGui.Selectable($"{key}"))
                     {
-                        path = key;
-                        color = preloadInfo.Color;
-                        displayName = preloadInfo.DisplayName;
+                        this.path = key;
+                        this.color = preloadInfo.Color;
+                        this.displayName = preloadInfo.DisplayName;
                     }
                 }
             }
@@ -243,12 +243,12 @@ namespace PreloadAlert
             while (true)
             {
                 yield return new Wait(HybridEvents.PreloadsUpdated);
-                preloadFound.Clear();
-                foreach (var (key, preloadInfo) in importantPreloads)
+                this.preloadFound.Clear();
+                foreach (var (key, preloadInfo) in this.importantPreloads)
                 {
                     if (Core.CurrentAreaLoadedFiles.PathNames.TryGetValue(key, out _))
                     {
-                        preloadFound[preloadInfo] = 1;
+                        this.preloadFound[preloadInfo] = 1;
                     }
                 }
             }
@@ -256,8 +256,8 @@ namespace PreloadAlert
 
         private void SaveAllPreloadsToDisk()
         {
-            var preloadsData = JsonConvert.SerializeObject(importantPreloads, Formatting.Indented);
-            File.WriteAllText(PreloadFileName, preloadsData);
+            var preloadsData = JsonConvert.SerializeObject(this.importantPreloads, Formatting.Indented);
+            File.WriteAllText(this.PreloadFileName, preloadsData);
         }
 
         private struct PreloadInfo
