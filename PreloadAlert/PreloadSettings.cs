@@ -8,43 +8,43 @@ namespace PreloadAlert
     using GameHelper.Plugin;
 
     /// <summary>
-    /// Preload GUI settings.
+    ///     Preload GUI settings.
     /// </summary>
     public sealed class PreloadSettings : IPSettings
     {
         /// <summary>
-        /// Position of the preload alert window.
-        /// </summary>
-        public Vector2 Pos = Vector2.Zero;
-
-        /// <summary>
-        /// Size of the preload alert window.
-        /// </summary>
-        public Vector2 Size = Vector2.Zero;
-
-        /// <summary>
-        /// Background color of the preload alert window.
+        ///     Background color of the preload alert window.
         /// </summary>
         public Vector4 BackgroundColor = new(Vector3.Zero, 0.8f);
 
         /// <summary>
-        /// Gets a value indicating whether the preload alert window should hide when empty.
+        ///     Gets a value indicating whether to hide the Ui when not in the game or game in background.
         /// </summary>
-        public bool HideWindowWhenEmpty = false;
+        public bool EnableHideUi = false;
 
         /// <summary>
-        /// Gets a value indicating whether the preload alert window should hide when in town/hideout.
+        ///     Gets a value indicating whether the preload alert window should hide when in town/hideout.
         /// </summary>
         public bool HideWhenInTownOrHideout = false;
 
         /// <summary>
-        /// Gets a value indicating whether the preload alert window is locked or not.
+        ///     Gets a value indicating whether the preload alert window should hide when empty.
+        /// </summary>
+        public bool HideWindowWhenEmpty = false;
+
+        /// <summary>
+        ///     Gets a value indicating whether the preload alert window is locked or not.
         /// </summary>
         public bool Locked = false;
 
         /// <summary>
-        /// Gets a value indicating whether to hide the Ui when not in the game or game in background.
+        ///     Position of the preload alert window.
         /// </summary>
-        public bool EnableHideUi = false;
+        public Vector2 Pos = Vector2.Zero;
+
+        /// <summary>
+        ///     Size of the preload alert window.
+        /// </summary>
+        public Vector2 Size = Vector2.Zero;
     }
 }
