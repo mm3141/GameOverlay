@@ -2,113 +2,108 @@
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
+using System;
+using ImGuiNET;
+using Newtonsoft.Json;
+
 namespace SimpleFlaskManager.ProfileManager.Conditions
 {
-    using System;
-    using ImGuiNET;
-    using Newtonsoft.Json;
-
     /// <summary>
-    /// Abstract class for creating conditions on which flasks can trigger.
+    ///     Abstract class for creating conditions on which flasks can trigger.
     /// </summary>
     /// <typeparam name="T">
-    /// The condition right hand side operand type.
+    ///     The condition right hand side operand type.
     /// </typeparam>
     public abstract class BaseCondition<T>
         : ICondition
     {
         /// <summary>
-        /// Right hand side operand of the condition.
+        ///     The operator to use for the condition.
         /// </summary>
-        [JsonProperty]
-        protected T rightHandOperand;
+        [JsonProperty] protected OperatorEnum conditionOperator;
+
+        [JsonProperty] private ICondition next;
 
         /// <summary>
-        /// The operator to use for the condition.
+        ///     Right hand side operand of the condition.
         /// </summary>
-        [JsonProperty]
-        protected OperatorEnum conditionOperator;
-
-        [JsonProperty]
-        private ICondition next;
+        [JsonProperty] protected T rightHandOperand;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="BaseCondition{T}"/> class.
+        ///     Initializes a new instance of the <see cref="BaseCondition{T}" /> class.
         /// </summary>
         /// <param name="operator_">
-        /// <see cref="OperatorEnum"/> to use in this condition.
+        ///     <see cref="OperatorEnum" /> to use in this condition.
         /// </param>
         /// <param name="rightHandSide">
-        /// Right hand side operand of the Condition.
+        ///     Right hand side operand of the Condition.
         /// </param>
         public BaseCondition(OperatorEnum operator_, T rightHandSide)
         {
-            this.next = null;
-            this.conditionOperator = operator_;
-            this.rightHandOperand = rightHandSide;
+            next = null;
+            conditionOperator = operator_;
+            rightHandOperand = rightHandSide;
         }
 
-        /// <summary>
-        /// Draws the ImGui widget for adding the condition.
-        /// </summary>
-        /// <returns>
-        /// <see cref="ICondition"/> if user wants to add the condition, otherwise null.
-        /// </returns>
-        public static ICondition Add() =>
-            throw new NotImplementedException($"{typeof(BaseCondition<T>).Name} " +
-                $"class doesn't have ImGui widget for creating conditions.");
-
-        /// <inheritdoc/>
+        /// <inheritdoc />
         public abstract bool Evaluate();
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         public virtual void Display(int index = 0)
         {
-            if (this.next != null)
+            if (next != null)
             {
                 ImGui.Separator();
                 ImGui.PushID(++index);
-                this.next.Display(index);
+                next.Display(index);
                 ImGui.PopID();
             }
         }
 
-        /// <inheritdoc/>
-        public ICondition Next() => this.next;
-
-        /// <inheritdoc/>
-        public void Append(ICondition condition)
+        /// <inheritdoc />
+        public ICondition Next()
         {
-            if (this.next == null)
-            {
-                this.next = condition;
-            }
-            else
-            {
-                this.next.Append(condition);
-            }
+            return next;
         }
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
+        public void Append(ICondition condition)
+        {
+            if (next == null)
+                next = condition;
+            else
+                next.Append(condition);
+        }
+
+        /// <inheritdoc />
         public void Delete()
         {
-            if (this.next != null)
-            {
-                this.next.Delete();
-            }
+            if (next != null) next.Delete();
 
-            this.next = null;
+            next = null;
         }
 
         /// <summary>
-        /// Evaluates the next in line condition.
+        ///     Draws the ImGui widget for adding the condition.
         /// </summary>
         /// <returns>
-        /// True if the next condition doesn't exists or is successful otherwise false.
+        ///     <see cref="ICondition" /> if user wants to add the condition, otherwise null.
+        /// </returns>
+        public static ICondition Add()
+        {
+            throw new NotImplementedException($"{typeof(BaseCondition<T>).Name} " +
+                                              "class doesn't have ImGui widget for creating conditions.");
+        }
+
+        /// <summary>
+        ///     Evaluates the next in line condition.
+        /// </summary>
+        /// <returns>
+        ///     True if the next condition doesn't exists or is successful otherwise false.
         /// </returns>
         protected bool EvaluateNext()
         {
-            return this.next == null || this.next.Evaluate();
+            return next == null || next.Evaluate();
         }
     }
 }
