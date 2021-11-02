@@ -23,8 +23,7 @@ namespace SimpleFlaskManager.ProfileManager
         /// <summary>
         ///     Gets the rules to trigger the flasks on.
         /// </summary>
-        public List<RuleStruct> Rules { get; }
-            = new();
+        public List<RuleStruct> Rules { get; } = new();
 
         /// <summary>
         ///     A helper function to draw profile settings on ImGui window
