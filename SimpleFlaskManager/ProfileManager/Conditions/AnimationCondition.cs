@@ -24,7 +24,8 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
         private static int durationMsStatic;
         private readonly Stopwatch sw;
 
-        [JsonProperty] private int durationMs;
+        [JsonProperty]
+        private int durationMs;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="AnimationCondition" /> class.
