@@ -1,8 +1,8 @@
 namespace GameOffsets.Objects.States.InGameState
 {
-    using GameOffsets.Natives;
     using System;
     using System.Runtime.InteropServices;
+    using Natives;
 
     [StructLayout(LayoutKind.Explicit, Pack = 1)]
     public struct AreaInstanceOffsets
@@ -12,10 +12,13 @@ namespace GameOffsets.Objects.States.InGameState
         [FieldOffset(0x114)] public uint CurrentAreaHash;
         [FieldOffset(0x550)] public StdVector OverlayLeagueMechanic; //int, float.
         [FieldOffset(0x580)] public IntPtr ServerDataPtr;
+
         [FieldOffset(0x588)] public IntPtr LocalPlayerPtr;
+
         // Sleeping is decorations, disabled particles, effects.
         // Awake is objects like Chests, Monsters, Players, Npcs and etc.
         [FieldOffset(0x638)] public StdMap AwakeEntities;
+
         //[FieldOffset(0x5C0)] public StdMap SleepingEntities; // always after awake entities.
         [FieldOffset(0x7D8)] public TerrainStruct TerrainMetadata;
     }
@@ -32,13 +35,13 @@ namespace GameOffsets.Objects.States.InGameState
 
     public static class EntityFilter
     {
-        public static Func<EntityNodeKey, bool> IgnoreSleepingEntities = new ((param) =>
+        public static Func<EntityNodeKey, bool> IgnoreSleepingEntities = param =>
         {
             // from the game code
             //     if (0x3fffffff < *(uint *)(lVar1 + 0x60)) {}
             //     CMP    dword ptr [RSI + 0x60],0x40000000
             return param.id < 0x40000000;
-        });
+        };
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
@@ -49,7 +52,7 @@ namespace GameOffsets.Objects.States.InGameState
 
         public override string ToString()
         {
-            return $"id: {id}";
+            return $"id: {this.id}";
         }
 
         public override bool Equals(object ob)
@@ -58,10 +61,8 @@ namespace GameOffsets.Objects.States.InGameState
             {
                 return this.id == c.id;
             }
-            else
-            {
-                return false;
-            }
+
+            return false;
         }
 
         public override int GetHashCode()
@@ -88,7 +89,7 @@ namespace GameOffsets.Objects.States.InGameState
 
         public override string ToString()
         {
-            return $"EntityPtr: {EntityPtr.ToInt64():X}";
+            return $"EntityPtr: {this.EntityPtr.ToInt64():X}";
         }
     }
 
@@ -97,11 +98,14 @@ namespace GameOffsets.Objects.States.InGameState
     {
         //[FieldOffset(0x08)] public IntPtr Unknown0;
         [FieldOffset(0x18)] public StdTuple2D<long> TotalTiles;
+
         [FieldOffset(0x28)] public StdVector TileDetailsPtr; // TileStructure
+
         //[FieldOffset(0x40)] public StdTuple2D<long> TotalTilesPlusOne;
         //[FieldOffset(0x50)] public StdVector Unknown1;
         //[FieldOffset(0x68)] public StdVector Unknown2;
         [FieldOffset(0x80)] public long TileHeightMultiplier;
+
         //[FieldOffset(0x8C)] public StdTuple2D<int> TotalTilesAgain;
         [FieldOffset(0xD8)] public StdVector GridWalkableData;
         [FieldOffset(0xF0)] public StdVector GridLandscapeData;

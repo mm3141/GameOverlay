@@ -12,8 +12,8 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
     using ImGuiNET;
 
     /// <summary>
-    /// For triggering a flask when flask effect is not active on player.
-    /// NOTE: will not trigger a flask if flask isn't available on the slot.
+    ///     For triggering a flask when flask effect is not active on player.
+    ///     NOTE: will not trigger a flask if flask isn't available on the slot.
     /// </summary>
     public class FlaskEffectCondition
         : BaseCondition<int>
@@ -23,7 +23,7 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
         private List<string> flaskBuffsCache = new();
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="FlaskEffectCondition"/> class.
+        ///     Initializes a new instance of the <see cref="FlaskEffectCondition" /> class.
         /// </summary>
         /// <param name="flaskSlot">flask number whos effect to use in the condition.</param>
         public FlaskEffectCondition(int flaskSlot)
@@ -32,16 +32,16 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
         }
 
         /// <summary>
-        /// Draws the ImGui widget for adding the condition.
+        ///     Draws the ImGui widget for adding the condition.
         /// </summary>
         /// <returns>
-        /// <see cref="ICondition"/> if user wants to add the condition, otherwise null.
+        ///     <see cref="ICondition" /> if user wants to add the condition, otherwise null.
         /// </returns>
-        public static new FlaskEffectCondition Add()
+        public new static FlaskEffectCondition Add()
         {
             ToImGui(OperatorEnum.NOT_CONTAINS, ref flaskSlotStatic);
             ImGui.SameLine();
-            if (ImGui.Button($"Add##FlaskEffect"))
+            if (ImGui.Button("Add##FlaskEffect"))
             {
                 return new FlaskEffectCondition(flaskSlotStatic);
             }
@@ -49,18 +49,19 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
             return null;
         }
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         public override void Display(int index = 0)
         {
             ToImGui(this.conditionOperator, ref this.rightHandOperand);
             base.Display(index);
         }
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         public override bool Evaluate()
         {
-            var flask = Core.States.InGameStateObject.CurrentAreaInstance.ServerDataObject.
-                FlaskInventory[0, this.rightHandOperand - 1];
+            var flask =
+                Core.States.InGameStateObject.CurrentAreaInstance.ServerDataObject.FlaskInventory[0,
+                    this.rightHandOperand - 1];
             if (flask.Address == IntPtr.Zero)
             {
                 return false;
@@ -70,7 +71,8 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
             {
                 if (flask.TryGetComponent<Base>(out var baseComponent))
                 {
-                    if (JsonDataHelper.FlaskNameToBuffGroups.TryGetValue(baseComponent.ItemBaseName, out var buffNames))
+                    if (JsonDataHelper.FlaskNameToBuffGroups.TryGetValue(baseComponent.ItemBaseName,
+                        out var buffNames))
                     {
                         this.flaskBuffsCache = buffNames;
                         this.flaskAddressCache = flask.Address;
@@ -78,7 +80,7 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
                     else
                     {
                         throw new Exception($"New flask base found {baseComponent.ItemBaseName}." +
-                            $"Please let the developer know.");
+                                            "Please let the developer know.");
                     }
                 }
             }
