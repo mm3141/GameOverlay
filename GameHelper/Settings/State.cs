@@ -70,12 +70,6 @@ namespace GameHelper.Settings
         public ConsoleKey MainMenuHotKey = ConsoleKey.F12;
 
         /// <summary>
-        ///     Gets the value indicating whether user wants to keep the entities
-        ///     that are outside of the network bubble.
-        /// </summary>
-        public bool RemoveAllInvalidEntities = false;
-
-        /// <summary>
         ///     Gets or sets a value indicating whether
         ///     to show DataVisualization window or not.
         /// </summary>
