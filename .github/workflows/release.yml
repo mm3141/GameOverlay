@@ -25,7 +25,7 @@ jobs:
       - name: Build
         run: |
           dotnet build --configuration Release --no-restore
-          echo ${{ needs.semver.outputs.new_version }} > GameHelper/bin/Release/net5.0/VERSION.txt
+          echo ${{ needs.upversion.outputs.new_version }} > GameHelper/bin/Release/net5.0/VERSION.txt
 
       - name: Upload the Build Artifact
         uses: actions/upload-artifact@v2
