@@ -149,6 +149,7 @@ namespace GameHelper.RemoteObjects.UiElement
         /// </summary>
         /// <param name="i">index of the child Ui Element.</param>
         /// <returns>the child Ui Element.</returns>
+        [SkipImGuiReflection]
         public UiElementBase this[int i]
         {
             get

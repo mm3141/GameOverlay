@@ -207,53 +207,5 @@ namespace GameHelper.Utils
 
             return ret;
         }
-
-        /// <summary>
-        ///     Iterates over properties of the given class via reflection
-        ///     and yields the <see cref="RemoteObjectBase" /> property name and its
-        ///     <see cref="RemoteObjectBase.ToImGui" /> method. Any property
-        ///     that doesn't have both the getter and setter method are ignored.
-        /// </summary>
-        /// <param name="classType">Type of the class to traverse.</param>
-        /// <param name="propertyFlags">flags to filter the class properties.</param>
-        /// <param name="classObject">Class object, or null for static class.</param>
-        /// <returns>Yield the <see cref="RemoteObjectBase.ToImGui" /> method.</returns>
-        internal static IEnumerable<RemoteObjectPropertyDetail> GetToImGuiMethods(
-            Type classType,
-            BindingFlags propertyFlags,
-            object classObject
-        )
-        {
-            var methodFlags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public;
-            var properties = classType.GetProperties(propertyFlags).ToList();
-            for (var i = 0; i < properties.Count; i++)
-            {
-                var property = properties[i];
-                if (property.SetMethod == null)
-                {
-                    //continue;
-                }
-
-                var propertyValue = property.GetValue(classObject);
-                if (propertyValue == null)
-                {
-                    continue;
-                }
-
-                var propertyType = propertyValue.GetType();
-
-                if (!typeof(RemoteObjectBase).IsAssignableFrom(propertyType))
-                {
-                    continue;
-                }
-
-                yield return new RemoteObjectPropertyDetail
-                {
-                    Name = property.Name,
-                    Value = propertyValue,
-                    ToImGui = propertyType.GetMethod("ToImGui", methodFlags)
-                };
-            }
-        }
     }
 }
