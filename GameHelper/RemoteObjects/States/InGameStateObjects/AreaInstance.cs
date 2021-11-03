@@ -23,6 +23,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
     /// </summary>
     public class AreaInstance : RemoteObjectBase
     {
+        private ActiveCoroutine removeEntitiesJob = null;
         private string entityIdFilter = string.Empty;
         private string entityPathFilter = string.Empty;
         private bool filterByPath;
@@ -43,8 +44,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
         /// <summary>
         ///     Gets the entities that will disappear once overlay league mechanic is gone.
         /// </summary>
-        public ConcurrentDictionary<EntityNodeKey, LeagueMechanicType> DisappearingEntities { get; }
-            = new();
+        public ConcurrentDictionary<EntityNodeKey, LeagueMechanicType> DisappearingEntities { get; } = new();
 
         /// <summary>
         ///     Gets the Monster Level of current Area.
@@ -65,9 +65,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
         /// <summary>
         ///     Gets the data related to the player the user is playing.
         /// </summary>
-        public ServerData ServerDataObject { get; }
-
-            = new(IntPtr.Zero);
+        public ServerData ServerDataObject { get; } = new(IntPtr.Zero);
 
         /// <summary>
         ///     Gets the player Entity.
@@ -80,8 +78,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
         ///     e.g. Monsters, Players, NPC, Chests and etc. Sleeping entities
         ///     are opposite of awake entities e.g. Decorations, Effects, particles and etc.
         /// </summary>
-        public ConcurrentDictionary<EntityNodeKey, Entity> AwakeEntities { get; } =
-            new();
+        public ConcurrentDictionary<EntityNodeKey, Entity> AwakeEntities { get; } = new();
 
         /// <summary>
         ///     Gets the total number of entities in the network bubble.
@@ -106,8 +103,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
         /// <summary>
         ///     Gets the Disctionary of Lists containing only the named tgt tiles locations.
         /// </summary>
-        public Dictionary<string, List<StdTuple2D<int>>> TgtTilesLocations { get; private set; } =
-            new();
+        public Dictionary<string, List<StdTuple2D<int>>> TgtTilesLocations { get; private set; } = new();
 
         /// <summary>
         ///     Converts the <see cref="AreaInstance" /> class data to ImGui.
@@ -229,6 +225,8 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             this.TerrainMetadata = default;
             this.AwakeEntities.Clear();
             this.DisappearingEntities.Clear();
+            this.removeEntitiesJob?.Cancel();
+            this.removeEntitiesJob = null;
         }
 
         /// <inheritdoc />
@@ -242,40 +240,30 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             if (hasAddressChanged)
             {
                 this.AwakeEntities.Clear();
+                this.DisappearingEntities.Clear();
+                this.removeEntitiesJob?.Cancel();
+                this.removeEntitiesJob = null;
                 this.AreaDetails.Address = data.AreaDetailsPtr;
-            }
-
-            this.MonsterLevel = data.MonsterLevel;
-            this.AreaHash = $"{data.CurrentAreaHash:X}";
-            var entitiesInNetworkBubble = this.GetCurrentEntities(data);
-            this.NetworkBubbleEntityCount = entitiesInNetworkBubble.Count;
-            this.Player.Address = data.LocalPlayerPtr;
-            this.TerrainMetadata = data.TerrainMetadata;
-
-            // No point in saving out of NetworkBubble entities when in BattleRoyale.
-            // since other players would have killed that entity anyway. Also, in BR
-            // when you die and teleport to other ppl (i.e. spectate) the AwakeEntities
-            // gets corrupted anyway.
-            if (this.AreaDetails.IsBattleRoyale)
-            {
-                this.AwakeEntities.Clear();
+                this.TerrainMetadata = data.TerrainMetadata;
+                this.MonsterLevel = data.MonsterLevel;
+                this.AreaHash = $"{data.CurrentAreaHash:X}";
+                this.GridWalkableData = reader.ReadStdVector<byte>(
+                    this.TerrainMetadata.GridWalkableData);
+                this.GridHeightData = this.GetTerrainHeight();
+                this.TgtTilesLocations = this.GetTgtFileData();
             }
 
             foreach (var kv in this.AwakeEntities)
             {
                 if (!kv.Value.IsValid)
                 {
-                    if (Core.GHSettings.RemoveAllInvalidEntities ||
-                        this.AreaDetails.IsHideout ||
-                        this.AreaDetails.IsTown ||
-
-                        // This logic isn't perfect in case something happens to the entity before
-                        // we can cache the location of that entity. In that case we will just
-                        // delete that entity anyway. This activity is fine as long as it doesn't
-                        // crash the GameHelper. This logic is to detect if entity exploded due to
-                        // explodi-chest or just left the network bubble since entity leaving network
-                        // bubble is same as entity exploded.
-                        this.Player.DistanceFrom(kv.Value) < AreaInstanceConstants.NETWORK_BUBBLE_RADIUS)
+                    // This logic isn't perfect in case something happens to the entity before
+                    // we can cache the location of that entity. In that case we will just
+                    // delete that entity anyway. This activity is fine as long as it doesn't
+                    // crash the GameHelper. This logic is to detect if entity exploded due to
+                    // explodi-chest or just left the network bubble since entity leaving network
+                    // bubble is same as entity exploded.
+                    if (this.Player.DistanceFrom(kv.Value) < AreaInstanceConstants.NETWORK_BUBBLE_RADIUS)
                     {
                         this.AwakeEntities.TryRemove(kv.Key, out _);
                     }
@@ -284,72 +272,93 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
                 kv.Value.IsValid = false;
             }
 
-            if (!this.isLeagueMechanicActivated && !this.DisappearingEntities.IsEmpty)
+            if (this.removeEntitiesJob == null)
             {
-                CoroutineHandler.InvokeLater(new Wait(0.5d), () =>
+                if (!this.isLeagueMechanicActivated && !this.DisappearingEntities.IsEmpty)
                 {
-                    foreach (var dE in this.DisappearingEntities)
+                    this.removeEntitiesJob = CoroutineHandler.InvokeLater(new Wait(0.5d), () =>
                     {
-                        this.AwakeEntities.TryRemove(dE.Key, out var _);
-                        this.DisappearingEntities.TryRemove(dE.Key, out var _);
+                        foreach (var dE in this.DisappearingEntities)
+                        {
+                            this.AwakeEntities.TryRemove(dE.Key, out var _);
+                            this.DisappearingEntities.TryRemove(dE.Key, out var _);
+                        }
+
+                        this.removeEntitiesJob = null;
+                    });
+                }
+            }
+            else
+            {
+                // at this time we are not differentiating between different league mechanics & their entities
+                // So if any league mechanic is activated, we will delay the deletion job.
+                if (this.isLeagueMechanicActivated)
+                {
+                    this.removeEntitiesJob.Cancel();
+                    this.removeEntitiesJob = null;
+                }
+            }
+
+            this.Player.Address = data.LocalPlayerPtr;
+            if (this.TryGetCurrentEntities(data, out var entities))
+            {
+                this.NetworkBubbleEntityCount = entities.Count;
+                Parallel.For(0, entities.Count, index =>
+                {
+                    var (key, value) = entities[index];
+                    if (this.AwakeEntities.ContainsKey(key))
+                    {
+                        this.AwakeEntities[key].Address = value.EntityPtr;
+                    }
+                    else
+                    {
+                        var entity = new Entity(value.EntityPtr);
+                        if (!string.IsNullOrEmpty(entity.Path))
+                        {
+                            this.AwakeEntities[key] = entity;
+                        }
+
+                        if (this.isLeagueMechanicActivated)
+                        {
+                            if (entity.Path.Contains("Breach"))
+                            {
+                                this.DisappearingEntities[key] = LeagueMechanicType.Breach;
+                            }
+                            else if (entity.Path.Contains("LeagueAffliction"))
+                            {
+                                this.DisappearingEntities[key] = LeagueMechanicType.Delirium;
+                            }
+                            else if (entity.Path.Contains("Hellscape"))
+                            {
+                                this.DisappearingEntities[key] = LeagueMechanicType.Scourge;
+                            }
+                        }
                     }
                 });
             }
-
-            Parallel.For(0, entitiesInNetworkBubble.Count, index =>
+            else
             {
-                var (key, value) = entitiesInNetworkBubble[index];
-                if (this.AwakeEntities.ContainsKey(key))
-                {
-                    this.AwakeEntities[key].Address = value.EntityPtr;
-                }
-                else
-                {
-                    var entity = new Entity(value.EntityPtr);
-                    if (!string.IsNullOrEmpty(entity.Path))
-                    {
-                        this.AwakeEntities[key] = entity;
-                    }
-
-                    if (this.isLeagueMechanicActivated)
-                    {
-                        if (entity.Path.Contains("Breach"))
-                        {
-                            this.DisappearingEntities[key] = LeagueMechanicType.Breach;
-                        }
-                        else if (entity.Path.Contains("LeagueAffliction"))
-                        {
-                            this.DisappearingEntities[key] = LeagueMechanicType.Delirium;
-                        }
-                        else if (entity.Path.Contains("Hellscape"))
-                        {
-                            this.DisappearingEntities[key] = LeagueMechanicType.Scourge;
-                        }
-                    }
-                }
-            });
-
-            if (hasAddressChanged)
-            {
-                this.GridWalkableData = reader.ReadStdVector<byte>(this.TerrainMetadata.GridWalkableData);
-                this.GridHeightData = this.GetTerrainHeight();
-                this.TgtTilesLocations = this.GetTgtFileData();
+                this.NetworkBubbleEntityCount = 0;
             }
         }
 
-        private List<(EntityNodeKey Key, EntityNodeValue Value)> GetCurrentEntities(AreaInstanceOffsets data)
+        private bool TryGetCurrentEntities(AreaInstanceOffsets data,
+            out List<(EntityNodeKey Key, EntityNodeValue Value)> entities)
         {
             var reader = Core.Process.Handle;
             if (Core.GHSettings.DisableEntityProcessingInTownOrHideout &&
                 (this.AreaDetails.IsHideout || this.AreaDetails.IsTown))
             {
-                return new List<(EntityNodeKey Key, EntityNodeValue Value)>();
+                entities = null;
+                return false;
             }
 #if DEBUG
-            return reader.ReadStdMapAsList<EntityNodeKey, EntityNodeValue>(data.AwakeEntities);
+            entities = reader.ReadStdMapAsList<EntityNodeKey, EntityNodeValue>(data.AwakeEntities);
+            return true;
 #else
-            return reader.ReadStdMapAsList<EntityNodeKey, EntityNodeValue>(
+            entities = reader.ReadStdMapAsList<EntityNodeKey, EntityNodeValue>(
                 data.AwakeEntities, EntityFilter.IgnoreSleepingEntities);
+            return true;
 #endif
         }
 

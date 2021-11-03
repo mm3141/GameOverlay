@@ -192,6 +192,7 @@ namespace Radar
             ImGui.Separator();
             ImGui.NewLine();
             ImGui.Checkbox("Hide Entities without Life/Chest component", ref this.Settings.HideUseless);
+            ImGui.Checkbox("Hide Entities outside the network bubble", ref this.Settings.HideOutsideNetworkBubble);
             ImGui.Checkbox("Show Player Names", ref this.Settings.ShowPlayersNames);
             ImGui.InputText("Party Leader Name", ref this.leaderName, 200);
             if (ImGui.CollapsingHeader("Icons Setting"))
@@ -501,6 +502,11 @@ namespace Radar
             var pPos = new Vector2(playerRender.GridPosition.X, playerRender.GridPosition.Y);
             foreach (var entity in currentAreaInstance.AwakeEntities)
             {
+                if (this.Settings.HideOutsideNetworkBubble && !entity.Value.IsValid)
+                {
+                    continue;
+                }
+
                 var hasVital = entity.Value.TryGetComponent<Life>(out var lifeComp);
                 var hasBuffs = entity.Value.TryGetComponent<Buffs>(out var buffsComp);
                 var isChest = entity.Value.TryGetComponent<Chest>(out var chestComp);
