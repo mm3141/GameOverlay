@@ -1,0 +1,42 @@
+name: DeleteGithubActions
+on:
+  delete:
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+    inputs:
+      workflowName:
+        description: 'Name of workflow to delete from'
+        required: true
+        default: 'DeleteGithubActions'
+
+jobs:
+  del_runs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete workflow runs on manual trigger
+        if: github.event_name=='workflow_dispatch'
+        uses: mwigginsdev/delete-oldest-workflow-runs@main
+        with:
+          token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          keep_minimum_runs: '1'
+          workflow_name: ${{ github.event.inputs.workflowName }}
+
+      - name: Delete workflow runs on manual trigger
+        if: github.event_name=='schedule'
+        uses: mwigginsdev/delete-oldest-workflow-runs@main
+        with:
+          token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          keep_minimum_runs: '1'
+          workflow_name: 'Release'
+
+      - name: Delete workflow runs on manual trigger
+        if: github.event_name=='delete'
+        uses: mwigginsdev/delete-oldest-workflow-runs@main
+        with:
+          token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          keep_minimum_runs: '5'
+          workflow_name: 'PullRequest'
