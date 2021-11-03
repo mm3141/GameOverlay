@@ -44,8 +44,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
         /// <summary>
         ///     Gets the entities that will disappear once overlay league mechanic is gone.
         /// </summary>
-        public ConcurrentDictionary<EntityNodeKey, LeagueMechanicType> DisappearingEntities { get; }
-            = new();
+        public ConcurrentDictionary<EntityNodeKey, LeagueMechanicType> DisappearingEntities { get; } = new();
 
         /// <summary>
         ///     Gets the Monster Level of current Area.
@@ -66,9 +65,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
         /// <summary>
         ///     Gets the data related to the player the user is playing.
         /// </summary>
-        public ServerData ServerDataObject { get; }
-
-            = new(IntPtr.Zero);
+        public ServerData ServerDataObject { get; } = new(IntPtr.Zero);
 
         /// <summary>
         ///     Gets the player Entity.
@@ -81,8 +78,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
         ///     e.g. Monsters, Players, NPC, Chests and etc. Sleeping entities
         ///     are opposite of awake entities e.g. Decorations, Effects, particles and etc.
         /// </summary>
-        public ConcurrentDictionary<EntityNodeKey, Entity> AwakeEntities { get; } =
-            new();
+        public ConcurrentDictionary<EntityNodeKey, Entity> AwakeEntities { get; } = new();
 
         /// <summary>
         ///     Gets the total number of entities in the network bubble.
@@ -107,8 +103,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
         /// <summary>
         ///     Gets the Disctionary of Lists containing only the named tgt tiles locations.
         /// </summary>
-        public Dictionary<string, List<StdTuple2D<int>>> TgtTilesLocations { get; private set; } =
-            new();
+        public Dictionary<string, List<StdTuple2D<int>>> TgtTilesLocations { get; private set; } = new();
 
         /// <summary>
         ///     Converts the <see cref="AreaInstance" /> class data to ImGui.
@@ -230,6 +225,8 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             this.TerrainMetadata = default;
             this.AwakeEntities.Clear();
             this.DisappearingEntities.Clear();
+            this.removeEntitiesJob?.Cancel();
+            this.removeEntitiesJob = null;
         }
 
         /// <inheritdoc />
@@ -243,6 +240,9 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             if (hasAddressChanged)
             {
                 this.AwakeEntities.Clear();
+                this.DisappearingEntities.Clear();
+                this.removeEntitiesJob?.Cancel();
+                this.removeEntitiesJob = null;
                 this.AreaDetails.Address = data.AreaDetailsPtr;
                 this.TerrainMetadata = data.TerrainMetadata;
                 this.MonsterLevel = data.MonsterLevel;

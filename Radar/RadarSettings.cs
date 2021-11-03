@@ -38,6 +38,11 @@ namespace Radar
         public bool HideUseless = true;
 
         /// <summary>
+        /// Hides all the entities that are outside the network bubble.
+        /// </summary>
+        public bool HideOutsideNetworkBubble = false;
+
+        /// <summary>
         /// Gets a value indicating whether user wants to modify large map culling window or not.
         /// </summary>
         public bool ModifyCullWindow = true;
