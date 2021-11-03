@@ -177,15 +177,13 @@ namespace HealthBars
                     this.bPositions.TryAdd(gameEntityNodeKey.id, location);
                 }
 
-                if (!this.entityFactory.TryGetEntity(gameEntity, out var drawEntity))
+                if (this.entityFactory.TryGetEntity(gameEntity, out var drawEntity))
                 {
-                    continue;
-                }
-
-                var entityParams = new EntityParams(this.Settings, location, gameEntity);
-                if (drawEntity.ShouldDraw(entityParams))
-                {
-                    drawEntity.Draw(entityParams, this.spriteController);
+                    var entityParams = new EntityParams(this.Settings, location, gameEntity);
+                    if (drawEntity.ShouldDraw(entityParams))
+                    {
+                        drawEntity.Draw(entityParams, this.spriteController);
+                    }
                 }
             }
         }

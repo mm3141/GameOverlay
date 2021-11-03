@@ -436,7 +436,7 @@ namespace Radar
                 foreach (var tgtKV in currentAreaInstance.TgtTilesLocations)
                 {
                     var pNameSizeH = ImGui.CalcTextSize(tgtKV.Key) / 2;
-                    for (int i = 0; i < tgtKV.Value.Count; i++)
+                    for (var i = 0; i < tgtKV.Value.Count; i++)
                     {
                         var val = tgtKV.Value[i];
                         var ePos = new Vector2(val.X, val.Y);
@@ -463,7 +463,7 @@ namespace Radar
                         continue;
                     }
 
-                    for (int i = 0; i < tile.Value.ClustersCount; i++)
+                    for (var i = 0; i < tile.Value.ClustersCount; i++)
                     {
                         float height = 0;
                         var loc = tile.Value.Clusters[i];
@@ -530,7 +530,7 @@ namespace Radar
                         {
                             continue;
                         }
-                        else if (diesAfterTimeIgnore.Any(ignorePath =>
+                        else if (this.diesAfterTimeIgnore.Any(ignorePath =>
                         entity.Value.Path.StartsWith(ignorePath)))
                         {
                             this.diesAfterTimeCache.Add(entity.Value.Id);
@@ -942,7 +942,7 @@ namespace Radar
                     kv.Value.MakeValid();
                     if (kv.Value.ClustersCount == currentArea.TgtTilesLocations[kv.Key].Count)
                     {
-                        for (int i = 0; i < kv.Value.ClustersCount; i++)
+                        for (var i = 0; i < kv.Value.ClustersCount; i++)
                         {
                             kv.Value.Clusters[i].X = currentArea.TgtTilesLocations[kv.Key][i].X;
                             kv.Value.Clusters[i].Y = currentArea.TgtTilesLocations[kv.Key][i].Y;
@@ -951,14 +951,14 @@ namespace Radar
                     else
                     {
                         var tgttile = currentArea.TgtTilesLocations[kv.Key];
-                        double[][] rawData = new double[tgttile.Count][];
-                        double[][] result = new double[kv.Value.ClustersCount][];
-                        for (int i = 0; i < kv.Value.ClustersCount; i++)
+                        var rawData = new double[tgttile.Count][];
+                        var result = new double[kv.Value.ClustersCount][];
+                        for (var i = 0; i < kv.Value.ClustersCount; i++)
                         {
                             result[i] = new double[3] { 0, 0, 0 }; // x-sum, y-sum, total-count.
                         }
 
-                        for (int i = 0; i < tgttile.Count; i++)
+                        for (var i = 0; i < tgttile.Count; i++)
                         {
                             rawData[i] = new double[2];
                             rawData[i][0] = tgttile[i].X;
@@ -966,15 +966,15 @@ namespace Radar
                         }
 
                         var cluster = KMean.Cluster(rawData, kv.Value.ClustersCount);
-                        for (int i = 0; i < tgttile.Count; i++)
+                        for (var i = 0; i < tgttile.Count; i++)
                         {
-                            int result_index = cluster[i];
+                            var result_index = cluster[i];
                             result[result_index][0] += rawData[i][0];
                             result[result_index][1] += rawData[i][1];
                             result[result_index][2] += 1;
                         }
 
-                        for (int i = 0; i < result.Length; i++)
+                        for (var i = 0; i < result.Length; i++)
                         {
                             kv.Value.Clusters[i].X = (float)(result[i][0] / result[i][2]);
                             kv.Value.Clusters[i].Y = (float)(result[i][1] / result[i][2]);
@@ -1028,7 +1028,7 @@ namespace Radar
 
         private string DelveChestPathToIcon(string path)
         {
-            string truncatedPath = path.Replace(
+            var truncatedPath = path.Replace(
                 this.delveChestStarting,
                 null,
                 StringComparison.Ordinal);

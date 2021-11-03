@@ -129,7 +129,7 @@ namespace GameHelper
         internal static void RemoteObjectsToImGuiCollapsingHeader()
         {
             const BindingFlags propertyFlags = BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static;
-            foreach (var property in UiHelper.GetToImGuiMethods(typeof(Core), propertyFlags, null))
+            foreach (var property in RemoteObjectBase.GetToImGuiMethods(typeof(Core), propertyFlags, null))
             {
                 if (ImGui.CollapsingHeader(property.Name))
                 {
