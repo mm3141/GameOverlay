@@ -1,0 +1,33 @@
+name: PullRequest
+
+on:
+  pull_request:
+    branches: [master]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-latest]
+    steps:
+    - uses: actions/checkout@master
+    - uses: goit/setup-resharper@v2.0.0
+      with:
+        version: '2021.2'
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0.x
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Resharper Linter
+      run: InspectCode GameOverlay.sln --build --profile=GameOverlay.sln.DotSettings --output=resharper.html --format=Html
+
+    - name: Upload the Build Artifact
+      uses: actions/upload-artifact@v2
+      with:
+        path: resharper.html
