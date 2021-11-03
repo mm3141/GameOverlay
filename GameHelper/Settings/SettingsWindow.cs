@@ -161,7 +161,15 @@ namespace GameHelper.Settings
                     if (PManager.AllPlugins.TryGetValue(currentlySelectedPlugin, out var pContainer))
                     {
                         ImGui.BeginGroup();
-                        pContainer.Plugin.DrawSettings();
+                        if (pContainer.Enable)
+                        {
+                            pContainer.Plugin.DrawSettings();
+                        }
+                        else
+                        {
+                            ImGui.Text("Enable the plugin to view or modify the plugin settings.");
+                        }
+
                         ImGui.EndGroup();
                     }
 
