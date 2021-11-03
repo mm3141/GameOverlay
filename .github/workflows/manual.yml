@@ -17,4 +17,3 @@ jobs:
           token: ${{ github.token }}
           repository: ${{ github.repository }}
           retain_days: ${{ github.event.inputs.days }}
-          keep_minimum_runs: '1'
