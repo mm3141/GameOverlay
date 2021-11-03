@@ -63,6 +63,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
         /// <param name="y">Inventory slot row, starting from 0.</param>
         /// <param name="x">Inventory slot column, starting from 0.</param>
         /// <returns>Item on the given slot.</returns>
+        [SkipImGuiReflection]
         public Item this[int y, int x]
         {
             get
