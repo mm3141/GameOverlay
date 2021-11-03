@@ -42,6 +42,7 @@ jobs:
           path: GameHelper/bin/Release/net5.0
   semver:
     runs-on: [ubuntu-latest]
+    if: github.ref != 'refs/heads/master'
     outputs:
       new_version: ${{ steps.bump-semver.outputs.new_version }}
     steps:
