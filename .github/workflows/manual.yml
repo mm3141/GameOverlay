@@ -12,6 +12,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Delete workflow runs
-        uses: Mattraks/delete-workflow-runs@v1
+        uses: Mattraks/delete-workflow-runs@main
         with:
           retain_days: ${{ github.event.inputs.days }}
