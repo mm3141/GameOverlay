@@ -1,4 +1,4 @@
-name: .NET
+name: CompileAndLint
 
 on:
   push:
@@ -15,16 +15,26 @@ jobs:
         os: [ubuntu-latest, windows-latest]
     steps:
       - uses: actions/checkout@v2
+      - uses: goit/setup-resharper@v2
+        with:
+          version: '2021.2'
+
       - name: Setup .NET
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: 5.0.x
+
       - name: Restore dependencies
         run: dotnet restore
+
+      - name: ReSharper Linter
+        run: InspectCode GameOverlay.sln
+
       - name: Build
         run: |
           dotnet build --configuration Release --no-restore
           echo ${{ needs.semver.outputs.new_version }} > GameHelper/bin/Release/net5.0/VERSION.txt
+
       - name: Upload the Build Artifact
         uses: actions/upload-artifact@v2
         with:
@@ -32,6 +42,7 @@ jobs:
           path: GameHelper/bin/Release/net5.0
   semver:
     runs-on: [ubuntu-latest]
+    if: github.ref != 'refs/heads/master'
     outputs:
       new_version: ${{ steps.bump-semver.outputs.new_version }}
     steps:
