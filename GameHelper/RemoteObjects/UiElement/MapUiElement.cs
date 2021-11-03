@@ -12,16 +12,16 @@ namespace GameHelper.RemoteObjects.UiElement
     /// <summary>
     ///     Points to the Map UiElement.
     /// </summary>
-    public class MiniMapUiElement : UiElementBase
+    public class MapUiElement : UiElementBase
     {
         private Vector2 defaultShift = Vector2.Zero;
         private Vector2 shift = Vector2.Zero;
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="MiniMapUiElement" /> class.
+        ///     Initializes a new instance of the <see cref="MapUiElement" /> class.
         /// </summary>
         /// <param name="address">address to the Map Ui Element of the game.</param>
-        internal MiniMapUiElement(IntPtr address)
+        internal MapUiElement(IntPtr address)
             : base(address) { }
 
         /// <summary>
