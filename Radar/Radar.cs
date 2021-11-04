@@ -673,7 +673,7 @@ namespace Radar
                           league == LeagueMechanicType.Breach ? this.Settings.BreachIcons["Breach Chest"] :
                         this.Settings.BaseIcons["Large Chest"]
                         : this.Settings.BaseIcons["Mini Breakable Chest"];
-                    if (chestComp.IsStrongbox && !chestComp.IsBreachOrLarge)
+                    if (chestComp.IsStrongbox)
                     {
                         if (entity.Value.Path.StartsWith("Metadata/Chests/StrongBoxes/Arcanist") ||
                             entity.Value.Path.StartsWith("Metadata/Chests/StrongBoxes/Cartographer") ||

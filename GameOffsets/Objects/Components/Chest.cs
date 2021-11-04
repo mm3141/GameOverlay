@@ -15,6 +15,6 @@
     public struct ChestsStructInternal
     {
         [FieldOffset(0x21)] public bool IsLarge;
-        [FieldOffset(0x24)] public bool Strongbox;
+        [FieldOffset(0x50)] public IntPtr StrongboxDatPtr;
     }
 }

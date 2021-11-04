@@ -61,7 +61,7 @@ namespace GameHelper.RemoteObjects.Components
             if (hasAddressChanged)
             {
                 var dataInternal = reader.ReadMemory<ChestsStructInternal>(data.ChestsDataPtr);
-                this.IsStrongbox = dataInternal.Strongbox;
+                this.IsStrongbox = dataInternal.StrongboxDatPtr != IntPtr.Zero;
                 this.IsBreachOrLarge = dataInternal.IsLarge;
             }
         }
