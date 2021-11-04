@@ -7,6 +7,7 @@ namespace GameHelper
     using System;
     using System.IO;
     using System.Threading.Tasks;
+    using Utils;
 
     /// <summary>
     ///     Class executed when the application starts.
@@ -25,7 +26,7 @@ namespace GameHelper
                 Environment.Exit(1);
             };
 
-            using (Core.Overlay = new GameOverlay())
+            using (Core.Overlay = new GameOverlay(StartupUtil.GenerateWindowTitle()))
             {
                 await Core.Overlay.Run();
             }
