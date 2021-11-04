@@ -123,7 +123,7 @@ namespace GameHelper.Ui
                         {
                             if (ImGui.IsItemHovered())
                             {
-                                UiHelper.DrawRect(
+                                ImGuiHelper.DrawRect(
                                     current.Element.Postion,
                                     current.Element.Size,
                                     255,
@@ -131,7 +131,7 @@ namespace GameHelper.Ui
                                     0);
                             }
 
-                            UiHelper.IntPtrToImGui(eleName + ": ", current.Element.Address);
+                            ImGuiHelper.IntPtrToImGui(eleName + ": ", current.Element.Address);
                             current.Element.Address = current.Element.Address;
                             if (ImGui.BeginCombo($"Children##{i}", current.CurrentChildPreview))
                             {
@@ -140,7 +140,7 @@ namespace GameHelper.Ui
                                     if (ImGui.IsItemHovered())
                                     {
                                         var cChild = current.Children[current.CurrentChildIndex];
-                                        UiHelper.DrawRect(
+                                        ImGuiHelper.DrawRect(
                                             cChild.Postion,
                                             cChild.Size,
                                             255,
@@ -215,7 +215,7 @@ namespace GameHelper.Ui
 
                                     if (ImGui.IsItemHovered())
                                     {
-                                        UiHelper.DrawRect(
+                                        ImGuiHelper.DrawRect(
                                             child.Postion,
                                             child.Size,
                                             255,
@@ -233,7 +233,7 @@ namespace GameHelper.Ui
                                 {
                                     var child = current.Children[j];
                                     child.Address = child.Address;
-                                    UiHelper.DrawRect(child.Postion, child.Size, 255, 64, 64);
+                                    ImGuiHelper.DrawRect(child.Postion, child.Size, 255, 64, 64);
                                 }
                             }
 
@@ -246,7 +246,7 @@ namespace GameHelper.Ui
                             }
                             else
                             {
-                                UiHelper.DrawDisabledButton($"Go to child##{i}");
+                                ImGuiHelper.DrawDisabledButton($"Go to child##{i}");
                             }
 
                             ImGui.SameLine();
@@ -259,7 +259,7 @@ namespace GameHelper.Ui
                             }
                             else
                             {
-                                UiHelper.DrawDisabledButton($"Go to parent##{i}");
+                                ImGuiHelper.DrawDisabledButton($"Go to parent##{i}");
                             }
                         }
 

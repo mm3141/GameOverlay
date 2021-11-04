@@ -79,7 +79,7 @@ namespace GameHelper.RemoteObjects
             }
             else
             {
-                UiHelper.DrawDisabledButton("Save");
+                ImGuiHelper.DrawDisabledButton("Save");
             }
 
             ImGui.Text("Search:    ");

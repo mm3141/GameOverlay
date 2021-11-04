@@ -59,7 +59,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
                 this.ClearCurrentlySelectedInventory();
             }
 
-            UiHelper.IntPtrToImGui("Address", this.Address);
+            ImGuiHelper.IntPtrToImGui("Address", this.Address);
             if (ImGui.TreeNode("FlaskInventory"))
             {
                 this.FlaskInventory.ToImGui();
@@ -67,7 +67,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             }
 
             ImGui.Text("please click Clear Selected before leaving this window.");
-            if (UiHelper.IEnumerableComboBox(
+            if (ImGuiHelper.IEnumerableComboBox(
                 "###Inventory Selector",
                 this.PlayerInventories.Keys,
                 ref this.selectedInvName))

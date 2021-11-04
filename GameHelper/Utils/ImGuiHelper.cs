@@ -1,4 +1,4 @@
-﻿// <copyright file="UiHelper.cs" company="None">
+﻿// <copyright file="ImGuiHelper.cs" company="None">
 // Copyright (c) None. All rights reserved.
 // </copyright>
 
@@ -6,17 +6,14 @@ namespace GameHelper.Utils
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
     using System.Numerics;
-    using System.Reflection;
     using GameOffsets.Natives;
     using ImGuiNET;
-    using RemoteObjects;
 
     /// <summary>
     ///     Has helper functions to DRY out the Ui creation.
     /// </summary>
-    public static class UiHelper
+    public static class ImGuiHelper
     {
         /// <summary>
         ///     Flags associated with transparent ImGui window.

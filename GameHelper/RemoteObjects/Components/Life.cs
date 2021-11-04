@@ -86,7 +86,7 @@ namespace GameHelper.RemoteObjects.Components
 
         private void VitalToImGui(VitalStruct data)
         {
-            UiHelper.IntPtrToImGui("PtrToSelf", data.PtrToLifeComponent);
+            ImGuiHelper.IntPtrToImGui("PtrToSelf", data.PtrToLifeComponent);
             ImGui.Text($"Regeneration: {data.Regeneration}");
             ImGui.Text($"Total: {data.Total}");
             ImGui.Text($"ReservedFlat: {data.ReservedFlat}");

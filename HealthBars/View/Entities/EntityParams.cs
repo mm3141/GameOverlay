@@ -102,10 +102,10 @@ namespace HealthBars.View.Entities
         {
             return rarity switch
             {
-                Rarity.Unique => UiHelper.Color(this.Settings.UniqueColor * 255f),
-                Rarity.Rare => UiHelper.Color(this.Settings.RareColor * 255f),
-                Rarity.Magic => UiHelper.Color(this.Settings.MagicColor * 255f),
-                _ => UiHelper.Color(this.Settings.NormalColor * 255f)
+                Rarity.Unique => ImGuiHelper.Color(this.Settings.UniqueColor * 255f),
+                Rarity.Rare => ImGuiHelper.Color(this.Settings.RareColor * 255f),
+                Rarity.Magic => ImGuiHelper.Color(this.Settings.MagicColor * 255f),
+                _ => ImGuiHelper.Color(this.Settings.NormalColor * 255f)
             };
         }
     }

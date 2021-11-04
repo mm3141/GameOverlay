@@ -55,7 +55,7 @@ namespace GameHelper.Ui
                     {
                         if (Core.Process.Address != IntPtr.Zero)
                         {
-                            UiHelper.IntPtrToImGui("Base Address", Core.Process.Address);
+                            ImGuiHelper.IntPtrToImGui("Base Address", Core.Process.Address);
                             ImGui.Text($"Process: {Core.Process.Information}");
                             ImGui.Text($"WindowArea: {Core.Process.WindowArea}");
                             ImGui.Text($"Foreground: {Core.Process.Foreground}");
@@ -63,7 +63,7 @@ namespace GameHelper.Ui
                             {
                                 foreach (var saddr in Core.Process.StaticAddresses)
                                 {
-                                    UiHelper.IntPtrToImGui(saddr.Key, saddr.Value);
+                                    ImGuiHelper.IntPtrToImGui(saddr.Key, saddr.Value);
                                 }
 
                                 ImGui.TreePop();

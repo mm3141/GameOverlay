@@ -98,7 +98,7 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
                               "are valid as well.");
             ImGui.Text("Player");
             ImGui.SameLine();
-            UiHelper.EnumComboBox("##StatusEffectOperator", ref operator_);
+            ImGuiHelper.EnumComboBox("##StatusEffectOperator", ref operator_);
             ImGui.SameLine();
             ImGui.InputText("(de)buff with##StatusEffect", ref buffId, 200);
             ImGui.SameLine();

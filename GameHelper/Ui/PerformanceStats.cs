@@ -52,7 +52,7 @@ namespace GameHelper.Ui
                         ImGui.PushStyleVar(ImGuiStyleVar.WindowBorderSize, 0f);
                     }
 
-                    ImGui.Begin("Perf Stats Window", UiHelper.TransparentWindowFlags);
+                    ImGui.Begin("Perf Stats Window", ImGuiHelper.TransparentWindowFlags);
 
                     if (isPerformanceWindowHovered)
                     {

@@ -134,7 +134,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
                     }
                     else
                     {
-                        UiHelper.IntPtrToImGui(kv.Key, kv.Value);
+                        ImGuiHelper.IntPtrToImGui(kv.Key, kv.Value);
                     }
                 }
 

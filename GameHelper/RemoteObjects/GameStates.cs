@@ -77,7 +77,7 @@ namespace GameHelper.RemoteObjects
             {
                 foreach (var state in this.AllStates)
                 {
-                    UiHelper.IntPtrToImGui(state.Key, state.Value);
+                    ImGuiHelper.IntPtrToImGui(state.Key, state.Value);
                 }
 
                 ImGui.TreePop();

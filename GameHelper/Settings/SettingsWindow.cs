@@ -115,7 +115,7 @@ namespace GameHelper.Settings
                     ImGui.Text($"Current Game State: {Core.States.GameCurrentState}");
                     ImGui.NewLine();
                     ImGui.SetNextItemWidth(ImGui.GetContentRegionAvail().X / 3);
-                    UiHelper.NonContinuousEnumComboBox("Select Show/Hide Key", ref Core.GHSettings.MainMenuHotKey);
+                    ImGuiHelper.NonContinuousEnumComboBox("Select Show/Hide Key", ref Core.GHSettings.MainMenuHotKey);
                     ImGui.SetNextItemWidth(ImGui.GetContentRegionAvail().X / 3);
                     if (ImGui.DragInt("Select Font", ref Core.GHSettings.CurrentlySelectedFont, 0.1f, 0, Core.Overlay.Fonts.Length - 1))
                     {

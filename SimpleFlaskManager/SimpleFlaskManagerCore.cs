@@ -48,7 +48,7 @@ namespace SimpleFlaskManager
                               "So create all new profiles with debug mode turned on.");
             ImGui.Checkbox("Debug Mode", ref this.Settings.DebugMode);
             ImGui.Checkbox("Should Run In Hideout", ref this.Settings.ShouldRunInHideout);
-            UiHelper.IEnumerableComboBox("Profile", this.Settings.Profiles.Keys, ref this.Settings.CurrentProfile);
+            ImGuiHelper.IEnumerableComboBox("Profile", this.Settings.Profiles.Keys, ref this.Settings.CurrentProfile);
             ImGui.NewLine();
             if (ImGui.CollapsingHeader("Add New Profile"))
             {

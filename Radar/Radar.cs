@@ -281,7 +281,7 @@ namespace Radar
                 ImGui.SetNextWindowSize(this.Settings.CullWindowSize);
                 ImGui.SetNextWindowBgAlpha(0f);
                 ImGui.PushStyleVar(ImGuiStyleVar.WindowBorderSize, 0f);
-                ImGui.Begin("Large Map Culling Window", UiHelper.TransparentWindowFlags);
+                ImGui.Begin("Large Map Culling Window", ImGuiHelper.TransparentWindowFlags);
                 ImGui.PopStyleVar();
                 this.DrawLargeMap(largeMapRealCenter);
                 this.DrawTgtFiles(largeMapRealCenter);
@@ -298,7 +298,7 @@ namespace Radar
                 ImGui.SetNextWindowSize(miniMap.Size);
                 ImGui.SetNextWindowBgAlpha(0f);
                 ImGui.PushStyleVar(ImGuiStyleVar.WindowBorderSize, 0f);
-                ImGui.Begin("###minimapRadar", UiHelper.TransparentWindowFlags);
+                ImGui.Begin("###minimapRadar", ImGuiHelper.TransparentWindowFlags);
                 ImGui.PopStyleVar();
                 this.DrawMapIcons(miniMapRealCenter, miniMap.Zoom);
                 ImGui.End();
@@ -408,7 +408,7 @@ namespace Radar
 
         private void DrawTgtFiles(Vector2 mapCenter)
         {
-            var col = UiHelper.Color(
+            var col = ImGuiHelper.Color(
                 (uint)(this.Settings.TgtNameColor.X * 255),
                 (uint)(this.Settings.TgtNameColor.Y * 255),
                 (uint)(this.Settings.TgtNameColor.Z * 255),
@@ -446,7 +446,7 @@ namespace Radar
                         if (this.Settings.TgtNameBackground)
                         {
                             fgDraw.AddRectFilled(mapCenter + fpos - pNameSizeH, mapCenter + fpos + pNameSizeH,
-                                UiHelper.Color(0, 0, 0, 200));
+                                ImGuiHelper.Color(0, 0, 0, 200));
                         }
 
                         fgDraw.AddText(ImGui.GetFont(), ImGui.GetFontSize(), mapCenter + fpos - pNameSizeH, col,
@@ -480,7 +480,7 @@ namespace Radar
                         if (this.Settings.TgtNameBackground)
                         {
                             fgDraw.AddRectFilled(mapCenter + fpos - pNameSizeH, mapCenter + fpos + pNameSizeH,
-                                UiHelper.Color(0, 0, 0, 200));
+                                ImGuiHelper.Color(0, 0, 0, 200));
                         }
 
                         fgDraw.AddText(ImGui.GetFont(), ImGui.GetFontSize(), mapCenter + fpos - pNameSizeH, col,
@@ -571,9 +571,9 @@ namespace Radar
                     {
                         var pNameSizeH = ImGui.CalcTextSize(playerComp.Name) / 2;
                         fgDraw.AddRectFilled(mapCenter + fpos - pNameSizeH, mapCenter + fpos + pNameSizeH,
-                            UiHelper.Color(0, 0, 0, 200));
+                            ImGuiHelper.Color(0, 0, 0, 200));
                         fgDraw.AddText(ImGui.GetFont(), ImGui.GetFontSize(), mapCenter + fpos - pNameSizeH,
-                            UiHelper.Color(255, 128, 128, 255), playerComp.Name);
+                            ImGuiHelper.Color(255, 128, 128, 255), playerComp.Name);
                     }
                     else
                     {
@@ -615,8 +615,8 @@ namespace Radar
                                 {
                                     var s = ImGui.CalcTextSize(iconFinder) / 2;
                                     fgDraw.AddRectFilled(mapCenter + fpos - s, mapCenter + fpos + s,
-                                        UiHelper.Color(0, 0, 0, 255));
-                                    fgDraw.AddText(mapCenter + fpos - s, UiHelper.Color(255, 128, 128, 255),
+                                        ImGuiHelper.Color(0, 0, 0, 255));
+                                    fgDraw.AddText(mapCenter + fpos - s, ImGuiHelper.Color(255, 128, 128, 255),
                                         iconFinder);
                                 }
                                 else
@@ -777,7 +777,7 @@ namespace Radar
                 }
                 else
                 {
-                    fgDraw.AddCircleFilled(mapCenter + fpos, 5f, UiHelper.Color(255, 0, 255, 255));
+                    fgDraw.AddCircleFilled(mapCenter + fpos, 5f, ImGuiHelper.Color(255, 0, 255, 255));
                 }
             }
         }
@@ -1047,7 +1047,7 @@ namespace Radar
             ImGui.Text("Leave display name empty if you want to use tile name as display name.");
             ImGui.PushItemWidth(ImGui.GetContentRegionAvail().X / 1.3f);
             ImGui.InputText("Area Name", ref this.currentAreaName, 200, ImGuiInputTextFlags.ReadOnly);
-            UiHelper.IEnumerableComboBox("Tile Name", tgttilesInArea.Keys, ref this.tmpTileName);
+            ImGuiHelper.IEnumerableComboBox("Tile Name", tgttilesInArea.Keys, ref this.tmpTileName);
             ImGui.InputText("Display Name", ref this.tmpDisplayName, 200);
             ImGui.Text("Set expected tile count to zero to show all tiles of that name.");
             ImGui.DragInt("Expected Tile Count", ref this.tmpExpectedClusters, 0.01f, 0, 10);

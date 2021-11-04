@@ -55,14 +55,14 @@ namespace SimpleFlaskManager.ProfileManager
                             this.Rules[i] = currRule;
                         }
 
-                        if (UiHelper.NonContinuousEnumComboBox("Key", ref currRule.Key))
+                        if (ImGuiHelper.NonContinuousEnumComboBox("Key", ref currRule.Key))
                         {
                             this.Rules[i] = currRule;
                         }
 
                         if (ImGui.TreeNodeEx("Add New condition", ImGuiTreeNodeFlags.NoTreePushOnOpen))
                         {
-                            UiHelper.EnumComboBox("Condition", ref this.newConditionType);
+                            ImGuiHelper.EnumComboBox("Condition", ref this.newConditionType);
                             ImGui.PushItemWidth(ImGui.GetContentRegionAvail().X / 6);
                             ImGui.Separator();
                             var newCondition = ConditionHelper.EnumToObject(this.newConditionType);

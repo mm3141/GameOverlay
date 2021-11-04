@@ -44,7 +44,7 @@ namespace GameHelper.RemoteObjects.Components
             {
                 foreach (var kv in this.StatusEffects)
                 {
-                    UiHelper.DisplayTextAndCopyOnClick($"Name: {kv.Key}", kv.Key);
+                    ImGuiHelper.DisplayTextAndCopyOnClick($"Name: {kv.Key}", kv.Key);
                     ImGui.SameLine();
                     ImGui.Text($" Details: {kv.Value}");
                 }

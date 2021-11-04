@@ -121,9 +121,9 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
             ImGui.Text($"Only {OperatorEnum.BIGGER_THAN} & {OperatorEnum.LESS_THAN} supported.");
             ImGui.Text("Player");
             ImGui.SameLine();
-            UiHelper.EnumComboBox("is##VitalSelector", ref vital);
+            ImGuiHelper.EnumComboBox("is##VitalSelector", ref vital);
             ImGui.SameLine();
-            UiHelper.EnumComboBox("##VitalOperator", ref operator_);
+            ImGuiHelper.EnumComboBox("##VitalOperator", ref operator_);
             ImGui.SameLine();
             ImGui.InputInt("##VitalThreshold", ref threshold);
         }

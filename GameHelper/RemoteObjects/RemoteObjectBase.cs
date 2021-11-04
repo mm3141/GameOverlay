@@ -79,7 +79,7 @@ namespace GameHelper.RemoteObjects
         {
             var propFlags = BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance;
             var properties = RemoteObjectBase.GetToImGuiMethods(this.GetType(), propFlags, this);
-            UiHelper.IntPtrToImGui("Address", this.address);
+            ImGuiHelper.IntPtrToImGui("Address", this.address);
             foreach (var property in properties)
             {
                 if (ImGui.TreeNode(property.Name))

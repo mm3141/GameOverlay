@@ -66,7 +66,7 @@ namespace HealthBars
 
             if (marks)
             {
-                var markColor = UiHelper.Color(255, 255, 255, 100);
+                var markColor = ImGuiHelper.Color(255, 255, 255, 100);
                 Vector2 markLine = new(0, vBounds.Y - 1.5f);
                 Vector2 mark25 = new(vBounds.X * 0.25f, 0);
                 Vector2 mark50 = new(vBounds.X * 0.5f, 0);

@@ -178,7 +178,7 @@ namespace GameHelper.RemoteObjects.UiElement
             base.ToImGui();
             if (this.show)
             {
-                UiHelper.DrawRect(this.Postion, this.Size, 255, 255, 0);
+                ImGuiHelper.DrawRect(this.Postion, this.Size, 255, 255, 0);
             }
 
             ImGui.Text($"Id {this.Id}");

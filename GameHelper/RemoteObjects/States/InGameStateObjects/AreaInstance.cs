@@ -193,7 +193,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
                     if (awakeEntity.Value.IsValid &&
                         awakeEntity.Value.TryGetComponent<Render>(out var eRender))
                     {
-                        UiHelper.DrawText(
+                        ImGuiHelper.DrawText(
                             eRender.WorldPosition,
                             $"ID: {awakeEntity.Key.id}");
                     }

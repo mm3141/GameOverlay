@@ -78,7 +78,7 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
         {
             ImGui.Text("Player has");
             ImGui.SameLine();
-            UiHelper.IEnumerableComboBox(
+            ImGuiHelper.IEnumerableComboBox(
                 "ailment.##AilmentCondition",
                 JsonDataHelper.StatusEffectGroups.Keys,
                 ref statusEffectGroupKey);

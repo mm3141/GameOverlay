@@ -26,7 +26,7 @@ namespace GameHelper
                 Environment.Exit(1);
             };
 
-            using (Core.Overlay = new GameOverlay(StartupUtil.GenerateWindowTitle()))
+            using (Core.Overlay = new GameOverlay(MiscHelper.GenerateRandomString()))
             {
                 await Core.Overlay.Run();
             }

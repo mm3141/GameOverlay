@@ -100,9 +100,9 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
             ImGui.Text($"Only {OperatorEnum.EQUAL_TO} & {OperatorEnum.NOT_EQUAL_TO} supported.");
             ImGui.Text("Player is");
             ImGui.SameLine();
-            UiHelper.EnumComboBox("##AnimationOperator", ref operator_);
+            ImGuiHelper.EnumComboBox("##AnimationOperator", ref operator_);
             ImGui.SameLine();
-            UiHelper.EnumComboBox("for ##AnimationRHS", ref animation);
+            ImGuiHelper.EnumComboBox("for ##AnimationRHS", ref animation);
             ImGui.SameLine();
             ImGui.InputInt("ms##AnimationDuration", ref duration);
         }
