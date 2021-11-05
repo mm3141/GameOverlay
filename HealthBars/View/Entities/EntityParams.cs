@@ -85,7 +85,8 @@ namespace HealthBars.View.Entities
         public bool DrawBorder =>
             this.HasMagicProperties && this.Settings.ShowRarityBorders &&
             (this.Rarity == Rarity.Normal && this.Settings.ShowNormalBorders ||
-             this.Rarity == Rarity.Magic && this.Settings.ShowMagicBorders || this.Rarity == Rarity.Rare && this.Settings.ShowRareBorders ||
+             this.Rarity == Rarity.Magic && this.Settings.ShowMagicBorders ||
+             this.Rarity == Rarity.Rare && this.Settings.ShowRareBorders ||
              this.Rarity == Rarity.Unique && this.Settings.ShowUniqueBorders
             );
 

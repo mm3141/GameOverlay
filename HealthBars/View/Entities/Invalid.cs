@@ -2,6 +2,7 @@ namespace HealthBars.View.Entities
 {
     using System;
     using System.Numerics;
+    using Controller;
     using GameHelper.RemoteEnums;
     using GameHelper.Utils;
 

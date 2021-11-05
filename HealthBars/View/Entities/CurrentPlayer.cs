@@ -1,5 +1,7 @@
 namespace HealthBars.View.Entities
 {
+    using Controller;
+
     /// <inheritdoc />
     public class CurrentPlayer : CommonFriendly
     {

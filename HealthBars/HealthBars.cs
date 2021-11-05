@@ -8,6 +8,7 @@ namespace HealthBars
     using System.Collections.Generic;
     using System.IO;
     using System.Numerics;
+    using Controller;
     using Coroutine;
     using GameHelper;
     using GameHelper.CoroutineEvents;
@@ -25,9 +26,9 @@ namespace HealthBars
     public sealed class HealthBars : PCore<HealthBarsSettings>
     {
         private readonly EntityFactory entityFactory = new();
-        private readonly SpriteController spriteController = new();
         private ConcurrentDictionary<uint, Vector2> bPositions;
         private ActiveCoroutine onAreaChange;
+        private SpriteController spriteController;
         private string SettingPathname => Path.Join(this.DllDirectory, "config", "settings.txt");
 
         /// <inheritdoc />
@@ -205,7 +206,7 @@ namespace HealthBars
             }
 
             var spriteSheetPathName = Path.Join(this.DllDirectory, "spritesheet.png");
-            this.spriteController.AddSprites(spriteSheetPathName);
+            this.spriteController = new SpriteController(new SpriteAtlas(spriteSheetPathName));
             this.bPositions = new ConcurrentDictionary<uint, Vector2>();
             this.onAreaChange = CoroutineHandler.Start(this.ClearData());
         }

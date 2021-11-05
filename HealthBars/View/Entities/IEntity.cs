@@ -1,5 +1,7 @@
 namespace HealthBars.View.Entities
 {
+    using Controller;
+
     /// <summary>
     /// </summary>
     public interface IEntity
