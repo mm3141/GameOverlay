@@ -13,6 +13,11 @@ namespace HealthBars
     public sealed class HealthBarsSettings : IPSettings
     {
         /// <summary>
+        ///     Do not draw HP bars when game is in the background.
+        /// </summary>
+        public bool DrawWhenForeground = true;
+
+        /// <summary>
         ///     Culling range value.
         /// </summary>
         public int CullingRange = 10;

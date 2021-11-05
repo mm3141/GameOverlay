@@ -13,6 +13,7 @@ namespace HealthBars
     using GameHelper;
     using GameHelper.CoroutineEvents;
     using GameHelper.Plugin;
+    using GameHelper.RemoteEnums;
     using GameHelper.RemoteObjects.Components;
     using GameHelper.Utils;
     using ImGuiNET;
@@ -36,6 +37,7 @@ namespace HealthBars
         {
             ImGui.Text("NOTE: Turn off in game health bars for best result.");
             ImGui.NewLine();
+            ImGui.Checkbox("Hide Health Bars when game is in the background", ref this.Settings.DrawWhenForeground);
             ImGui.Checkbox("Show in Town", ref this.Settings.ShowInTown);
             ImGui.Checkbox("Show in Hideout", ref this.Settings.ShowInHideout);
             ImGui.NewLine();
@@ -147,6 +149,16 @@ namespace HealthBars
             var cAreaInstance = Core.States.InGameStateObject.CurrentAreaInstance;
             if (!this.Settings.ShowInTown && cAreaInstance.AreaDetails.IsTown ||
                 !this.Settings.ShowInHideout && cAreaInstance.AreaDetails.IsHideout)
+            {
+                return;
+            }
+
+            if (Core.States.GameCurrentState != GameStateTypes.InGameState)
+            {
+                return;
+            }
+
+            if (this.Settings.DrawWhenForeground && !Core.Process.Foreground)
             {
                 return;
             }
