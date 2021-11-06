@@ -105,6 +105,23 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
         /// </summary>
         public Dictionary<string, List<StdTuple2D<int>>> TgtTilesLocations { get; private set; } = new();
 
+        public float CurrentZoom()
+        {
+            var player = this.Player;
+
+            if (player.TryGetComponent(out Render render))
+            {
+                var wp = render.WorldPosition;
+                var p0 = Core.States.InGameStateObject.WorldToScreen(wp);
+                wp.Z += render.ModelBounds.Z;
+                var p1 = Core.States.InGameStateObject.WorldToScreen(wp);
+
+                return Math.Abs(p1.Y - p0.Y) / render.ModelBounds.Z;
+            }
+            
+            return 0;
+        }
+
         /// <summary>
         ///     Converts the <see cref="AreaInstance" /> class data to ImGui.
         /// </summary>

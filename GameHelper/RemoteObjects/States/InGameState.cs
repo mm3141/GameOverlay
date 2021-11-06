@@ -72,11 +72,11 @@ namespace GameHelper.RemoteObjects.States
                 return result;
             }
 
-            Vector4 temp0 = new(worldPosition.X, worldPosition.Y, worldPosition.Z, 1f);
+            Vector4 temp0 = new(worldPosition.X, worldPosition.Y, worldPosition.Z, 1.0f);
             temp0 = Vector4.Transform(temp0, this.WorldToScreenMatrix);
             temp0 /= temp0.W;
-            result.X = (temp0.X + 1f) * (Core.Process.WindowArea.Width / 2);
-            result.Y = (1.0f - temp0.Y) * (Core.Process.WindowArea.Height / 2);
+            result.X = (temp0.X + 1.0f) * (Core.Process.WindowArea.Width / 2.0f);
+            result.Y = (1.0f - temp0.Y) * (Core.Process.WindowArea.Height / 2.0f);
             return result;
         }
 

@@ -4,6 +4,7 @@
 
 namespace HealthBars
 {
+    using System;
     using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.IO;
@@ -36,6 +37,8 @@ namespace HealthBars
         public override void DrawSettings()
         {
             ImGui.Text("NOTE: Turn off in game health bars for best result.");
+            ImGui.NewLine();
+            ImGui.Checkbox("Interpolate position", ref this.Settings.InterpolatePosition);
             ImGui.NewLine();
             ImGui.Checkbox("Hide Health Bars when game is in the background", ref this.Settings.DrawWhenForeground);
             ImGui.Checkbox("Show in Town", ref this.Settings.ShowInTown);
@@ -176,18 +179,20 @@ namespace HealthBars
                 }
 
                 var curPos = render.WorldPosition;
-                curPos.X += 11.25f;
-                curPos.Z -= 1.4f * render.ModelBounds.Z;
+                curPos.Z -= render.ModelBounds.Z;
                 var location = Core.States.InGameStateObject.WorldToScreen(curPos);
 
-                if (this.bPositions.TryGetValue(gameEntityNodeKey.id, out var prevLocation))
+                if (this.Settings.InterpolatePosition)
                 {
-                    location = MathHelper.Lerp(prevLocation, location, 0.2f);
-                    this.bPositions.TryUpdate(gameEntityNodeKey.id, location, prevLocation);
-                }
-                else
-                {
-                    this.bPositions.TryAdd(gameEntityNodeKey.id, location);
+                    if (this.bPositions.TryGetValue(gameEntityNodeKey.id, out var prevLocation))
+                    {
+                        location = MathHelper.Lerp(prevLocation, location, 0.2f);
+                        this.bPositions.TryUpdate(gameEntityNodeKey.id, location, prevLocation);
+                    }
+                    else
+                    {
+                        this.bPositions.TryAdd(gameEntityNodeKey.id, location);
+                    }
                 }
 
                 if (this.entityFactory.TryGetEntity(gameEntity, out var drawEntity))

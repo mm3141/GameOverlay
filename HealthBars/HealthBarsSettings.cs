@@ -181,5 +181,10 @@ namespace HealthBars
         ///     Normal monster color.
         /// </summary>
         public Vector4 UniqueColor = new Vector4(206, 42, 0, 240) / 255f;
+
+        /// <summary>
+        ///     Interpolate entity position to minimize flicker effect.
+        /// </summary>
+        public bool InterpolatePosition = false;
     }
 }

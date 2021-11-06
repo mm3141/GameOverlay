@@ -1,6 +1,9 @@
 namespace HealthBars.Controller
 {
+    using System;
+    using System.Globalization;
     using System.Numerics;
+    using GameHelper;
     using GameHelper.Utils;
     using ImGuiNET;
 
@@ -45,12 +48,11 @@ namespace HealthBars.Controller
             bool border = false,
             uint borderColor = 0,
             bool inner = false,
-            bool fill = false,
-            float offsetX = 10,
-            float offsetY = 0
-        )
+            bool fill = false)
         {
             var sprite = this.spriteAtlas.GetSprite(spriteName);
+            var offsetX = 0f;
+            var offsetY = 23.17313f + Core.States.InGameStateObject.CurrentAreaInstance.CurrentZoom() * 14.69196f;
 
             if (sprite == null)
             {
