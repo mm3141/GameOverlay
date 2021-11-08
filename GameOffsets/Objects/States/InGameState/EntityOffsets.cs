@@ -38,13 +38,13 @@
     }
 
     // DRY this with LoadedFilesOffset
-    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    [StructLayout(LayoutKind.Explicit, Pack = 1)]
     public struct ComponentLookUpStruct
     {
-        public IntPtr Unknown0;
-        public IntPtr Unknown1;
-        public StdVector Unknown2;
-        public StdBucket ComponentsNameAndIndex;
+        [FieldOffset(0x00)] public IntPtr Unknown0;
+        [FieldOffset(0x08)] public IntPtr Unknown1;
+        [FieldOffset(0x10)] public StdVector Unknown2;
+        [FieldOffset(0x28)] public StdBucket ComponentsNameAndIndex;
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
