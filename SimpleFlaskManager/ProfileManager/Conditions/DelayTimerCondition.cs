@@ -1,4 +1,4 @@
-﻿// <copyright file="CooldownCondition.cs" company="PlaceholderCompany">
+﻿// <copyright file="DelayTimerCondition.cs" company="PlaceholderCompany">
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
@@ -10,19 +10,19 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
     /// <summary>
     ///     For triggering a flask on number of flask charges the flask got.
     /// </summary>
-    public class CooldownCondition
+    public class DelayTimerCondition
         : BaseCondition<float>
     {
-        private static float cooldownStatic;
+        private static float delayTimerStatic;
 
-        private readonly Stopwatch cooldownTimer = Stopwatch.StartNew();
+        private readonly Stopwatch delayTimer = Stopwatch.StartNew();
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="CooldownCondition" /> class.
+        ///     Initializes a new instance of the <see cref="DelayTimerCondition" /> class.
         /// </summary>
-        /// <param name="cooldown">Cooldown time in seconds.</param>
-        public CooldownCondition(float cooldown)
-            : base(OperatorEnum.BIGGER_THAN, cooldown) // OperatorEnum is ignored in this condition.
+        /// <param name="delayTimer">Delay time in seconds.</param>
+        public DelayTimerCondition(float delayTimer)
+            : base(OperatorEnum.BIGGER_THAN, delayTimer) // OperatorEnum is ignored in this condition.
         {
         }
 
@@ -32,13 +32,13 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
         /// <returns>
         ///     <see cref="ICondition" /> if user wants to add the condition, otherwise null.
         /// </returns>
-        public new static CooldownCondition Add()
+        public new static DelayTimerCondition Add()
         {
-            ToImGui(ref cooldownStatic);
+            ToImGui(ref delayTimerStatic);
             ImGui.SameLine();
-            if (ImGui.Button("Add##FlaskCharges") && cooldownStatic >= 0.0f)
+            if (ImGui.Button("Add##FlaskCharges") && delayTimerStatic >= 0.0f)
             {
-                return new CooldownCondition(cooldownStatic);
+                return new DelayTimerCondition(delayTimerStatic);
             }
 
             return null;
@@ -54,12 +54,12 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
         /// <inheritdoc />
         public override bool Evaluate()
         {
-            var elapsedSeconds = this.cooldownTimer.ElapsedMilliseconds / 1000f;
+            var elapsedSeconds = this.delayTimer.ElapsedMilliseconds / 1000f;
             if (elapsedSeconds > this.rightHandOperand)
             {
                 if (this.Next() == null || this.EvaluateNext())
                 {
-                    this.cooldownTimer.Restart();
+                    this.delayTimer.Restart();
                     return true;
                 }
             }
@@ -67,11 +67,11 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
             return false;
         }
 
-        private static void ToImGui(ref float cooldown)
+        private static void ToImGui(ref float delayTimer)
         {
             ImGui.Text("Wait for ");
             ImGui.SameLine();
-            ImGui.DragFloat("seconds##CooldownConditionCooldown", ref cooldown, 0.1f, 0.0f, 30.0f);
+            ImGui.DragFloat("seconds##DelayTimerConditionDelay", ref delayTimer, 0.1f, 0.0f, 30.0f);
         }
     }
 }
