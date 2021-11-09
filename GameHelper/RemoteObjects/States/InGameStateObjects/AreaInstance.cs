@@ -333,22 +333,10 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
                         if (!string.IsNullOrEmpty(entity.Path))
                         {
                             this.AwakeEntities[key] = entity;
-                        }
-
-                        if (this.isLeagueMechanicActivated)
-                        {
-                            if (entity.Path.Contains("Breach"))
-                            {
-                                this.DisappearingEntities[key] = LeagueMechanicType.Breach;
-                            }
-                            else if (entity.Path.Contains("LeagueAffliction"))
-                            {
-                                this.DisappearingEntities[key] = LeagueMechanicType.Delirium;
-                            }
-                            else if (entity.Path.Contains("Hellscape"))
-                            {
-                                this.DisappearingEntities[key] = LeagueMechanicType.Scourge;
-                            }
+                            this.DetectsAndAddsDisappearingEntity(
+                                this.isLeagueMechanicActivated,
+                                key,
+                                entity.Path);
                         }
                     }
                 });
@@ -377,6 +365,25 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
                 data.AwakeEntities, EntityFilter.IgnoreSleepingEntities);
             return true;
 #endif
+        }
+
+        private void DetectsAndAddsDisappearingEntity(bool isLeagueMechanicActivated, EntityNodeKey key, string path)
+        {
+            if (isLeagueMechanicActivated)
+            {
+                if (path.Contains("Breach"))
+                {
+                    this.DisappearingEntities[key] = LeagueMechanicType.Breach;
+                }
+                else if (path.Contains("LeagueAffliction"))
+                {
+                    this.DisappearingEntities[key] = LeagueMechanicType.Delirium;
+                }
+                else if (path.Contains("Hellscape"))
+                {
+                    this.DisappearingEntities[key] = LeagueMechanicType.Scourge;
+                }
+            }
         }
 
         private Dictionary<string, List<StdTuple2D<int>>> GetTgtFileData()
