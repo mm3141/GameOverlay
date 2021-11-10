@@ -206,8 +206,8 @@ namespace Radar
             this.BaseIcons.TryAdd("Leader", new IconPicker(iconPathName, IconsPngCols, IconsPngRows, 3, 0, 20));
             this.BaseIcons.TryAdd("Strongbox", new IconPicker(iconPathName, IconsPngCols, IconsPngRows, 8, 38, 30));
             this.BaseIcons.TryAdd("Arcanist/Cartographer/Divination", new IconPicker(iconPathName, IconsPngCols, IconsPngRows, 6, 41, 35));
-            this.BaseIcons.TryAdd("Large Chest", new IconPicker(iconPathName, IconsPngCols, IconsPngRows, 1, 13, 20));
-            this.BaseIcons.TryAdd("Mini Breakable Chest", new IconPicker(iconPathName, IconsPngCols, IconsPngRows, 6, 9, 20));
+            this.BaseIcons.TryAdd("Chests With Label", new IconPicker(iconPathName, IconsPngCols, IconsPngRows, 1, 13, 20));
+            this.BaseIcons.TryAdd("Chests Without Label", new IconPicker(iconPathName, IconsPngCols, IconsPngRows, 6, 9, 20));
 
             this.BaseIcons.TryAdd("Shrine", new IconPicker(iconPathName, IconsPngCols, IconsPngRows, 7, 0, 30));
 

@@ -31,9 +31,10 @@ namespace GameHelper.RemoteObjects.Components
         public bool IsStrongbox { get; private set; }
 
         /// <summary>
-        ///     Gets a value indicating whether chest is a breach chest or not.
+        ///     Gets a value indicating whether chest label is visible or not
+        ///     NOTE: Breach chests, Legion chests, Normal Chests labels are visible.
         /// </summary>
-        public bool IsBreachOrLarge { get; private set; }
+        public bool IsLabelVisible { get; private set; }
 
         /// <summary>
         ///     Converts the <see cref="Chest" /> class data to ImGui.
@@ -43,7 +44,7 @@ namespace GameHelper.RemoteObjects.Components
             base.ToImGui();
             ImGui.Text($"IsOpened: {this.IsOpened}");
             ImGui.Text($"IsStrongbox: {this.IsStrongbox}");
-            ImGui.Text($"IsBreachOrLarge: {this.IsBreachOrLarge}");
+            ImGui.Text($"IsLabelVisible: {this.IsLabelVisible}");
         }
 
         /// <inheritdoc />
@@ -62,7 +63,7 @@ namespace GameHelper.RemoteObjects.Components
             {
                 var dataInternal = reader.ReadMemory<ChestsStructInternal>(data.ChestsDataPtr);
                 this.IsStrongbox = dataInternal.StrongboxDatPtr != IntPtr.Zero;
-                this.IsBreachOrLarge = dataInternal.IsLarge;
+                this.IsLabelVisible = dataInternal.IsLabelVisible;
             }
         }
     }

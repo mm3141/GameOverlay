@@ -36,8 +36,6 @@ namespace HealthBars.Controller
         /// <param name="borderColor"></param>
         /// <param name="inner"></param>
         /// <param name="fill"></param>
-        /// <param name="offsetX"></param>
-        /// <param name="offsetY"></param>
         public void DrawSprite(
             string spriteName,
             Vector2 drawCoordinates,

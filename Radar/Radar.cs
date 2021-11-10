@@ -668,11 +668,7 @@ namespace Radar
                         continue;
                     }
 
-                    var chestIcon = chestComp.IsBreachOrLarge
-                        ? currentAreaInstance.DisappearingEntities.TryGetValue(entity.Key, out var league) &&
-                          league == LeagueMechanicType.Breach ? this.Settings.BreachIcons["Breach Chest"] :
-                        this.Settings.BaseIcons["Large Chest"]
-                        : this.Settings.BaseIcons["Mini Breakable Chest"];
+                    var chestIcon = this.Settings.BaseIcons["Chests Without Label"];
                     if (chestComp.IsStrongbox)
                     {
                         if (entity.Value.Path.StartsWith("Metadata/Chests/StrongBoxes/Arcanist") ||
@@ -684,6 +680,18 @@ namespace Radar
                         else
                         {
                             chestIcon = this.Settings.BaseIcons["Strongbox"];
+                        }
+                    }
+                    else if (chestComp.IsLabelVisible)
+                    {
+                        if (currentAreaInstance.DisappearingEntities.TryGetValue(entity.Key, out var league) &&
+                            league == LeagueMechanicType.Breach)
+                        {
+                            chestIcon = this.Settings.BreachIcons["Breach Chest"];
+                        }
+                        else
+                        {
+                            chestIcon = this.Settings.BaseIcons["Chests With Label"];
                         }
                     }
 

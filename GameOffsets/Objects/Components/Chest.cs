@@ -14,7 +14,7 @@
     [StructLayout(LayoutKind.Explicit, Pack = 1)]
     public struct ChestsStructInternal
     {
-        [FieldOffset(0x21)] public bool IsLarge;
+        [FieldOffset(0x21)] public bool IsLabelVisible;
         [FieldOffset(0x50)] public IntPtr StrongboxDatPtr;
     }
 }
