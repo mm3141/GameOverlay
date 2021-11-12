@@ -10,22 +10,22 @@ namespace GameHelper.RemoteEnums
     public enum GameStateTypes
     {
         /// <summary>
-        ///     When user is in Area Loading Screen.
+        ///     When user is on the Area Loading Screen.
         /// </summary>
         AreaLoadingState,
 
         /// <summary>
-        ///     Game state.
+        ///     Game State.
         /// </summary>
-        WaitingState,
+        ChangePasswordState,
 
         /// <summary>
-        ///     When user is in Login Screen.
+        ///     When user is viewing the credit screen window (accessable from login screen)
         /// </summary>
         CreditsState,
 
         /// <summary>
-        ///     Game State.
+        ///     When user has opened the escape menu.
         /// </summary>
         EscapeState,
 
@@ -35,42 +35,42 @@ namespace GameHelper.RemoteEnums
         InGameState,
 
         /// <summary>
-        ///     Game State.
-        /// </summary>
-        ChangePasswordState,
-
-        /// <summary>
-        ///     Game State.
-        /// </summary>
-        LoginState,
-
-        /// <summary>
-        ///     Game State.
+        ///     The user is watching the GGG animation that comes before the login screen.
         /// </summary>
         PreGameState,
 
         /// <summary>
-        ///     Game State.
+        ///     When user is on the Login screen.
+        /// </summary>
+        LoginState,
+
+        /// <summary>
+        ///     When user is transitioning from <see cref="PreGameState"/> to <see cref="LoginState"/>.
+        /// </summary>
+        WaitingState,
+
+        /// <summary>
+        ///     When user is on the create new character screen.
         /// </summary>
         CreateCharacterState,
 
         /// <summary>
-        ///     Game State.
+        ///     When user is on the select character screen.
         /// </summary>
         SelectCharacterState,
 
         /// <summary>
-        ///     Game State.
+        ///     When user is on the delete character screen.
         /// </summary>
         DeleteCharacterState,
 
         /// <summary>
-        ///     Game State.
+        ///     When user is transitioning from <see cref="SelectCharacterState"/> to <see cref="InGameState"/>.
         /// </summary>
         LoadingState,
 
         /// <summary>
-        ///     This is a special State, it will not trigger State Change Event.
+        ///     This is a special State, changing to this state will not trigger State Change Event.
         ///     This is just for displaying purposes. It means Game isn't stared.
         /// </summary>
         GameNotLoaded
