@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net5.0</TargetFramework>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AsmResolver.DotNet" Version="4.7.1" />
+    <PackageReference Include="AsmResolver.PE.Win32Resources" Version="4.7.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <MyCompiledFiles Include="$(OutDir)*.*" />
+  </ItemGroup>
+
+  <Target Name="CopyFiles" AfterTargets="Build">
+    <Copy SourceFiles="@(MyCompiledFiles)" DestinationFolder="..\GameHelper\$(OutDir)" SkipUnchangedFiles="true" />
+  </Target>
+</Project>
