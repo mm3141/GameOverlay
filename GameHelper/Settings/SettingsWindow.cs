@@ -11,7 +11,6 @@ namespace GameHelper.Settings
     using ClickableTransparentOverlay;
     using Coroutine;
     using CoroutineEvents;
-    using GameOffsets;
     using ImGuiNET;
     using Plugin;
     using Utils;
@@ -21,9 +20,9 @@ namespace GameHelper.Settings
     /// </summary>
     internal static class SettingsWindow
     {
+        private static Vector4 color = new(1f, 1f, 0f, 1f);
         private static bool isOverlayRunningLocal = true;
         private static bool isSettingsWindowVisible = true;
-        private static string currentlySelectedPlugin = "Core";
 
         /// <summary>
         ///     Initializes the Main Menu.
@@ -32,151 +31,122 @@ namespace GameHelper.Settings
         {
             HideOnStartCheck();
             CoroutineHandler.Start(LoadCurrentlyConfiguredFont());
-            CoroutineHandler.Start(SaveGameHelperSettings());
-            Core.CoroutinesRegistrar.Add(
-                CoroutineHandler.Start(
-                    DrawSettingsWindowRenderCoroutine(),
-                    "[Settings] Draw Core/Plugin settings",
-                    int.MaxValue));
+            CoroutineHandler.Start(SaveCoroutine());
+            Core.CoroutinesRegistrar.Add(CoroutineHandler.Start(
+                RenderCoroutine(),
+                "[Settings] Draw Core/Plugin settings",
+                int.MaxValue));
         }
 
-        /// <summary>
-        ///     Draws the (core/plugins) names as ImGui buttons in a single group.
-        /// </summary>
-        private static void DrawNames()
+        private static void DrawManuBar()
         {
-            var totalWidthAvailable = ImGui.GetContentRegionAvail().X * 0.2f;
-            var buttonSize = new Vector2(totalWidthAvailable, 0);
-            ImGui.PushItemWidth(totalWidthAvailable);
-            ImGui.BeginGroup();
-            var tmp = true;
-            ImGui.Checkbox("##CoreEnableCheckBox", ref tmp);
-            ImGui.SameLine();
-            if (ImGui.Button("Core##ShowSettingsButton", buttonSize))
+            if (ImGui.BeginMenuBar())
             {
-                currentlySelectedPlugin = "Core";
-            }
-
-            foreach (var pKeyValue in PManager.AllPlugins.ToList())
-            {
-                var pluginContainer = pKeyValue.Value;
-                tmp = pluginContainer.Enable;
-                if (ImGui.Checkbox($"##{pKeyValue.Key}EnableCheckbox", ref tmp))
+                if (ImGui.BeginMenu("Enable Plugins"))
                 {
-                    pluginContainer.Enable = !pluginContainer.Enable;
-                    if (pluginContainer.Enable)
+                    foreach (var pKeyValue in PManager.AllPlugins.ToList())
                     {
-                        pluginContainer.Plugin.OnEnable(Core.Process.Address != IntPtr.Zero);
-                    }
-                    else
-                    {
-                        pluginContainer.Plugin.OnDisable();
+                        var pluginContainer = pKeyValue.Value;
+                        var isEnabled = pluginContainer.Enable;
+                        if (ImGui.Checkbox($"{pKeyValue.Key}", ref isEnabled))
+                        {
+                            pluginContainer.Enable = !pluginContainer.Enable;
+                            if (pluginContainer.Enable)
+                            {
+                                pluginContainer.Plugin.OnEnable(Core.Process.Address != IntPtr.Zero);
+                            }
+                            else
+                            {
+                                pluginContainer.Plugin.OnDisable();
+                            }
+
+                            PManager.AllPlugins[pKeyValue.Key] = pluginContainer;
+                        }
                     }
 
-                    PManager.AllPlugins[pKeyValue.Key] = pluginContainer;
+                    ImGui.EndMenu();
                 }
 
-                ImGui.SameLine();
-                if (ImGui.Button($"{pKeyValue.Key}##ShowSettingsButton", buttonSize))
-                {
-                    currentlySelectedPlugin = pKeyValue.Key;
-                }
+                ImGui.EndMenuBar();
             }
+        }
 
-            ImGui.PopItemWidth();
-            ImGui.EndGroup();
+        private static void DrawTabs()
+        {
+            if (ImGui.BeginTabBar("pluginsTabBar", ImGuiTabBarFlags.AutoSelectNewTabs | ImGuiTabBarFlags.Reorderable))
+            {
+                if (ImGui.BeginTabItem("Core"))
+                {
+                    DrawCoreSettings();
+                    ImGui.EndTabItem();
+                }
+
+                foreach (var pKeyValue in PManager.AllPlugins.ToList())
+                {
+                    if (pKeyValue.Value.Enable && ImGui.BeginTabItem(pKeyValue.Key))
+                    {
+                        pKeyValue.Value.Plugin.DrawSettings();
+                        ImGui.EndTabItem();
+                    }
+                }
+
+                ImGui.EndTabBar();
+            }
         }
 
         /// <summary>
         ///     Draws the currently selected settings on ImGui.
         /// </summary>
-        private static void DrawCurrentlySelectedSettings()
+        private static void DrawCoreSettings()
         {
-            ImGui.PushItemWidth(ImGui.GetContentRegionAvail().X - 8f * ImGui.GetFontSize());
-            switch (currentlySelectedPlugin)
+            ImGui.TextColored(color, "This is a free software, only use https://ownedcore.com to " +
+                "download it. Do not pay the fake sellers/websites.");
+            ImGui.TextWrapped("Developer of this software is not responsible for " +
+                              "any loss that may happen due to the usage of this software. Use this " +
+                              "software at your own risk.");
+            ImGui.NewLine();
+            ImGui.TextColored(color, "All Settings (including plugins) are saved automatically " +
+                  $"when you close the overlay or hide it via {Core.GHSettings.MainMenuHotKey} button.");
+            ImGui.NewLine();
+            ImGui.TextWrapped("When GameOverlay press a key in the game, the key " +
+                              "has to go to the GGG server for it to work. This process takes " +
+                              "time equal to your latency x 2. During this time GameOverlay might " +
+                              "press that key again. Set the following timeout value to " +
+                              "latency x 2 so this doesn't happen. e.g. for 30ms latency, " +
+                              "set it to 60ms.");
+            ImGui.DragInt("Key Timeout", ref Core.GHSettings.KeyPressTimeout, 0.2f, 30, 300);
+            ImGui.NewLine();
+            ImGui.Text($"Current Game State: {Core.States.GameCurrentState}");
+            ImGui.NewLine();
+            ImGuiHelper.NonContinuousEnumComboBox("Select Show/Hide Key", ref Core.GHSettings.MainMenuHotKey);
+            if (ImGui.DragInt("Select Font", ref Core.GHSettings.CurrentlySelectedFont, 0.1f, 0, Core.Overlay.Fonts.Length - 1))
             {
-                case "Core":
-                    ImGui.BeginGroup();
-                    ImGui.TextWrapped("Developer of this software is not responsible for " +
-                                      "any loss that may happen due to the usage of this software. Use this " +
-                                      "software at your own risk. This is a free software, do not pay anyone " +
-                                      "to get it.");
-                    ImGui.NewLine();
-                    ImGui.TextWrapped("When GameOverlay press a key in the game, the key " +
-                                      "has to go to the GGG server for it to work. This process takes " +
-                                      "time equal to your latency. During this time GameOverlay might " +
-                                      "press that key again. Set the following timeout value to " +
-                                      "latency x 2 so this doesn't happen. e.g. for 30ms latency, " +
-                                      "set it to 60ms.");
-                    ImGui.DragInt("Key Timeout", ref Core.GHSettings.KeyPressTimeout, 0.2f, 30, 300);
-                    ImGui.TextWrapped("NOTE: (Plugins/Core) Settings are saved automatically " +
-                                      $"when you close the overlay or hide it via {Core.GHSettings.MainMenuHotKey} button.");
-                    ImGui.NewLine();
-                    ImGui.Text($"Current Game State: {Core.States.GameCurrentState}");
-                    ImGui.NewLine();
-                    ImGui.SetNextItemWidth(ImGui.GetContentRegionAvail().X / 3);
-                    ImGuiHelper.NonContinuousEnumComboBox("Select Show/Hide Key", ref Core.GHSettings.MainMenuHotKey);
-                    ImGui.SetNextItemWidth(ImGui.GetContentRegionAvail().X / 3);
-                    if (ImGui.DragInt("Select Font", ref Core.GHSettings.CurrentlySelectedFont, 0.1f, 0, Core.Overlay.Fonts.Length - 1))
-                    {
-                        SetCurrentlyConfiguredFont();
-                    }
-
-                    ImGui.Checkbox("Performance Stats", ref Core.GHSettings.ShowPerfStats);
-                    ImGui.Spacing();
-                    ImGui.SameLine();
-                    ImGui.Spacing();
-                    ImGui.SameLine();
-                    ImGui.Checkbox("Hide when game is in background", ref Core.GHSettings.HidePerfStatsWhenBg);
-                    ImGui.Checkbox("Game UiExplorer (GE)", ref Core.GHSettings.ShowGameUiExplorer);
-                    ImGui.Checkbox("Data Visualization (DV)", ref Core.GHSettings.ShowDataVisualization);
-                    ImGui.Checkbox("Disable entity processing when in town or hideout",
-                        ref Core.GHSettings.DisableEntityProcessingInTownOrHideout);
-                    ImGui.Checkbox("Hide overlay settings upon start", ref Core.GHSettings.HideSettingWindowOnStart);
-                    ImGui.NewLine();
-                    if (ImGui.Button("Test Disconnect POE"))
-                    {
-                        MiscHelper.KillTCPConnectionForProcess(Core.Process.Pid);
-                    }
-#if DEBUG
-                    if (ImGui.Button("Reload Plugins"))
-                    {
-                        PManager.CleanUpAllPlugins();
-                        PManager.InitializePlugins();
-                    }
-#endif
-
-                    ImGui.NewLine();
-                    if (ImGui.CollapsingHeader("Thank you for your support! Means a lot to me!"))
-                    {
-                        foreach (var c in GameProcessDetails.Contributors)
-                        {
-                            ImGui.TextColored(new Vector4(212 / 255f, 175 / 255f, 55 / 255f, 255 / 255f), c);
-                        }
-                    }
-
-                    ImGui.EndGroup();
-                    break;
-                default:
-                    if (PManager.AllPlugins.TryGetValue(currentlySelectedPlugin, out var pContainer))
-                    {
-                        ImGui.BeginGroup();
-                        if (pContainer.Enable)
-                        {
-                            pContainer.Plugin.DrawSettings();
-                        }
-                        else
-                        {
-                            ImGui.Text("Enable the plugin to view or modify the plugin settings.");
-                        }
-
-                        ImGui.EndGroup();
-                    }
-
-                    break;
+                SetCurrentlyConfiguredFont();
             }
 
-            ImGui.PopItemWidth();
+            ImGui.Checkbox("Performance Stats", ref Core.GHSettings.ShowPerfStats);
+            ImGui.Spacing();
+            ImGui.SameLine();
+            ImGui.Spacing();
+            ImGui.SameLine();
+            ImGui.Checkbox("Hide when game is in background", ref Core.GHSettings.HidePerfStatsWhenBg);
+            ImGui.Checkbox("Game UiExplorer (GE)", ref Core.GHSettings.ShowGameUiExplorer);
+            ImGui.Checkbox("Data Visualization (DV)", ref Core.GHSettings.ShowDataVisualization);
+            ImGui.Checkbox("Disable entity processing when in town or hideout",
+                ref Core.GHSettings.DisableEntityProcessingInTownOrHideout);
+            ImGui.Checkbox("Hide overlay settings upon start", ref Core.GHSettings.HideSettingWindowOnStart);
+            ImGui.NewLine();
+            if (ImGui.Button("Test Disconnect POE"))
+            {
+                MiscHelper.KillTCPConnectionForProcess(Core.Process.Pid);
+            }
+#if DEBUG
+            if (ImGui.Button("Reload Plugins"))
+            {
+                PManager.CleanUpAllPlugins();
+                PManager.InitializePlugins();
+            }
+#endif
         }
 
         /// <summary>
@@ -211,7 +181,7 @@ namespace GameHelper.Settings
         ///     Draws the Settings Window.
         /// </summary>
         /// <returns>co-routine IWait.</returns>
-        private static IEnumerator<Wait> DrawSettingsWindowRenderCoroutine()
+        private static IEnumerator<Wait> RenderCoroutine()
         {
             while (true)
             {
@@ -233,7 +203,8 @@ namespace GameHelper.Settings
                 ImGui.SetNextWindowSizeConstraints(new Vector2(800, 600), Vector2.One * float.MaxValue);
                 var isMainMenuExpanded = ImGui.Begin(
                     $"Game Overlay Settings [ {Core.GetVersion()} ]",
-                    ref isOverlayRunningLocal);
+                    ref isOverlayRunningLocal,
+                    ImGuiWindowFlags.MenuBar);
 
                 if (!isOverlayRunningLocal)
                 {
@@ -252,9 +223,8 @@ namespace GameHelper.Settings
                     continue;
                 }
 
-                DrawNames();
-                ImGui.SameLine();
-                DrawCurrentlySelectedSettings();
+                DrawManuBar();
+                DrawTabs();
                 ImGui.End();
             }
         }
@@ -263,7 +233,7 @@ namespace GameHelper.Settings
         ///     Saves the GameHelper settings to disk.
         /// </summary>
         /// <returns>co-routine IWait.</returns>
-        private static IEnumerator<Wait> SaveGameHelperSettings()
+        private static IEnumerator<Wait> SaveCoroutine()
         {
             while (true)
             {
