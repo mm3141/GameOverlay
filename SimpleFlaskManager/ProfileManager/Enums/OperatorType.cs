@@ -1,13 +1,13 @@
-﻿// <copyright file="OperatorEnum.cs" company="PlaceholderCompany">
+﻿// <copyright file="OperatorType.cs" company="PlaceholderCompany">
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
-namespace SimpleFlaskManager.ProfileManager
+namespace SimpleFlaskManager.ProfileManager.Enums
 {
     /// <summary>
     ///     Different type of operators available to use on the Conditions.
     /// </summary>
-    public enum OperatorEnum
+    public enum OperatorType
     {
         /// <summary>
         ///     Equal To Operator.

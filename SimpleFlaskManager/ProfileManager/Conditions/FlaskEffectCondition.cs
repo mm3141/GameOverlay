@@ -10,6 +10,7 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
     using GameHelper;
     using GameHelper.RemoteObjects.Components;
     using ImGuiNET;
+    using SimpleFlaskManager.ProfileManager.Enums;
 
     /// <summary>
     ///     For triggering a flask when flask effect is not active on player.
@@ -27,7 +28,7 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
         /// </summary>
         /// <param name="flaskSlot">flask number whos effect to use in the condition.</param>
         public FlaskEffectCondition(int flaskSlot)
-            : base(OperatorEnum.NOT_CONTAINS, flaskSlot)
+            : base(OperatorType.NOT_CONTAINS, flaskSlot)
         {
         }
 
@@ -39,7 +40,7 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
         /// </returns>
         public new static FlaskEffectCondition Add()
         {
-            ToImGui(OperatorEnum.NOT_CONTAINS, ref flaskSlotStatic);
+            ToImGui(OperatorType.NOT_CONTAINS, ref flaskSlotStatic);
             ImGui.SameLine();
             if (ImGui.Button("Add##FlaskEffect"))
             {
@@ -88,14 +89,14 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
             {
                 if (!this.flaskBuffsCache.Any(buffName => buffComponent.StatusEffects.ContainsKey(buffName)))
                 {
-                    return true && this.EvaluateNext();
+                    return true;
                 }
             }
 
             return false;
         }
 
-        private static void ToImGui(OperatorEnum operation, ref int flaskSlot)
+        private static void ToImGui(OperatorType operation, ref int flaskSlot)
         {
             ImGui.Text($"Player {operation} flask effect of flask");
             ImGui.SameLine();

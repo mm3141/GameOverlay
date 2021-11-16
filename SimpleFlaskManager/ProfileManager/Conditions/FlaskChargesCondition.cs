@@ -10,6 +10,7 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
     using GameHelper.Utils;
     using ImGuiNET;
     using Newtonsoft.Json;
+    using SimpleFlaskManager.ProfileManager.Enums;
 
     /// <summary>
     ///     For triggering a flask on number of flask charges the flask got.
@@ -17,7 +18,7 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
     public class FlaskChargesCondition
         : BaseCondition<int>
     {
-        private static OperatorEnum operatorStatic = OperatorEnum.BIGGER_THAN;
+        private static OperatorType operatorStatic = OperatorType.BIGGER_THAN;
         private static int flaskSlotStatic = 1;
         private static int chargesStatic = 10;
 
@@ -26,10 +27,10 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
         /// <summary>
         ///     Initializes a new instance of the <see cref="FlaskChargesCondition" /> class.
         /// </summary>
-        /// <param name="operator_"><see cref="OperatorEnum" /> to use in this condition.</param>
+        /// <param name="operator_"><see cref="OperatorType" /> to use in this condition.</param>
         /// <param name="flaskSlot">Flask slot number who's charges to look for.</param>
         /// <param name="charges">Flask charges threshold to use.</param>
-        public FlaskChargesCondition(OperatorEnum operator_, int flaskSlot, int charges) : base(operator_, charges)
+        public FlaskChargesCondition(OperatorType operator_, int flaskSlot, int charges) : base(operator_, charges)
         {
             this.slot = flaskSlot;
         }
@@ -45,7 +46,7 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
             ToImGui(ref operatorStatic, ref flaskSlotStatic, ref chargesStatic);
             ImGui.SameLine();
             if (ImGui.Button("Add##FlaskCharges") &&
-                (operatorStatic == OperatorEnum.BIGGER_THAN || operatorStatic == OperatorEnum.LESS_THAN))
+                (operatorStatic == OperatorType.BIGGER_THAN || operatorStatic == OperatorType.LESS_THAN))
             {
                 return new FlaskChargesCondition(operatorStatic, flaskSlotStatic, chargesStatic);
             }
@@ -73,19 +74,18 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
             {
                 return this.conditionOperator switch
                        {
-                           OperatorEnum.BIGGER_THAN => chargesComponent.Current > this.rightHandOperand,
-                           OperatorEnum.LESS_THAN => chargesComponent.Current < this.rightHandOperand,
+                           OperatorType.BIGGER_THAN => chargesComponent.Current > this.rightHandOperand,
+                           OperatorType.LESS_THAN => chargesComponent.Current < this.rightHandOperand,
                            _ => throw new Exception($"FlaskChargesCondition doesn't support {this.conditionOperator}.")
-                       }
-                       && this.EvaluateNext();
+                       };
             }
 
             return false;
         }
 
-        private static void ToImGui(ref OperatorEnum operator_, ref int flaskSlot, ref int charges)
+        private static void ToImGui(ref OperatorType operator_, ref int flaskSlot, ref int charges)
         {
-            ImGui.Text($"Only {OperatorEnum.BIGGER_THAN} & {OperatorEnum.LESS_THAN} supported.");
+            ImGui.Text($"Only {OperatorType.BIGGER_THAN} & {OperatorType.LESS_THAN} supported.");
             ImGui.Text("Flask");
             ImGui.SameLine();
             ImGui.DragInt("has##FlaskChargesFlaskSlot", ref flaskSlot, 0.05f, 1, 5);

@@ -8,6 +8,7 @@ namespace SimpleFlaskManager
     using GameHelper.Plugin;
     using ProfileManager;
     using ProfileManager.Conditions;
+    using SimpleFlaskManager.ProfileManager.Enums;
 
     /// <summary>
     ///     <see cref="SimpleFlaskManager" /> plugin settings class.
@@ -18,7 +19,7 @@ namespace SimpleFlaskManager
         ///     Condition on which user want to auto-quit.
         /// </summary>
         public readonly VitalsCondition AutoQuitCondition =
-            new(OperatorEnum.LESS_THAN, VitalsCondition.VitalsEnum.LIFE, -1);
+            new(OperatorType.LESS_THAN, VitalType.LIFE, -1);
 
         /// <summary>
         ///     Gets all the profiles containing rules on when to drink the flasks.

@@ -10,6 +10,7 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
     using GameHelper.Utils;
     using ImGuiNET;
     using Newtonsoft.Json;
+    using SimpleFlaskManager.ProfileManager.Enums;
 
     /// <summary>
     ///     For triggering a flask on player vitals changes.
@@ -17,55 +18,19 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
     public class VitalsCondition
         : BaseCondition<int>
     {
-        /// <summary>
-        ///     Different type of player Vitals.
-        /// </summary>
-        public enum VitalsEnum
-        {
-            /// <summary>
-            ///     Condition based on player Mana.
-            /// </summary>
-            MANA,
-
-            /// <summary>
-            ///     Condition based on player Mana.
-            /// </summary>
-            MANA_PERCENT,
-
-            /// <summary>
-            ///     Condition based on player Life.
-            /// </summary>
-            LIFE,
-
-            /// <summary>
-            ///     Condition based on player Life.
-            /// </summary>
-            LIFE_PERCENT,
-
-            /// <summary>
-            ///     Condition based on player Energy Shield.
-            /// </summary>
-            ENERGYSHIELD,
-
-            /// <summary>
-            ///     Condition based on player Energy Shield.
-            /// </summary>
-            ENERGYSHIELD_PERCENT
-        }
-
-        private static OperatorEnum operatorStatic = OperatorEnum.BIGGER_THAN;
-        private static VitalsEnum vitalTypeStatic = VitalsEnum.MANA;
+        private static OperatorType operatorStatic = OperatorType.BIGGER_THAN;
+        private static VitalType vitalTypeStatic = VitalType.MANA;
         private static int thresholdStatic;
 
-        [JsonProperty] private VitalsEnum vitalType;
+        [JsonProperty] private VitalType vitalType;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="VitalsCondition" /> class.
         /// </summary>
-        /// <param name="operator_"><see cref="OperatorEnum" /> to use in this condition.</param>
+        /// <param name="operator_"><see cref="OperatorType" /> to use in this condition.</param>
         /// <param name="vital">Player vital type to use in this condition.</param>
         /// <param name="threshold">Vital threshold to use in this condition.</param>
-        public VitalsCondition(OperatorEnum operator_, VitalsEnum vital, int threshold)
+        public VitalsCondition(OperatorType operator_, VitalType vital, int threshold)
             : base(operator_, threshold)
         {
             this.vitalType = vital;
@@ -82,8 +47,8 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
             ToImGui(ref operatorStatic, ref vitalTypeStatic, ref thresholdStatic);
             ImGui.SameLine();
             if (ImGui.Button("Add##Vitals") &&
-                (operatorStatic == OperatorEnum.BIGGER_THAN ||
-                 operatorStatic == OperatorEnum.LESS_THAN))
+                (operatorStatic == OperatorType.BIGGER_THAN ||
+                 operatorStatic == OperatorType.LESS_THAN))
             {
                 return new VitalsCondition(operatorStatic, vitalTypeStatic, thresholdStatic);
             }
@@ -106,19 +71,18 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
             {
                 return this.conditionOperator switch
                        {
-                           OperatorEnum.BIGGER_THAN => this.GetVitalValue(lifeComponent) > this.rightHandOperand,
-                           OperatorEnum.LESS_THAN => this.GetVitalValue(lifeComponent) < this.rightHandOperand,
+                           OperatorType.BIGGER_THAN => this.GetVitalValue(lifeComponent) > this.rightHandOperand,
+                           OperatorType.LESS_THAN => this.GetVitalValue(lifeComponent) < this.rightHandOperand,
                            _ => throw new Exception($"VitalCondition doesn't support {this.conditionOperator}.")
-                       }
-                       && this.EvaluateNext();
+                       };
             }
 
             return false;
         }
 
-        private static void ToImGui(ref OperatorEnum operator_, ref VitalsEnum vital, ref int threshold)
+        private static void ToImGui(ref OperatorType operator_, ref VitalType vital, ref int threshold)
         {
-            ImGui.Text($"Only {OperatorEnum.BIGGER_THAN} & {OperatorEnum.LESS_THAN} supported.");
+            ImGui.Text($"Only {OperatorType.BIGGER_THAN} & {OperatorType.LESS_THAN} supported.");
             ImGui.Text("Player");
             ImGui.SameLine();
             ImGuiHelper.EnumComboBox("is##VitalSelector", ref vital);
@@ -132,12 +96,12 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
         {
             return this.vitalType switch
             {
-                VitalsEnum.MANA => component.Mana.Current,
-                VitalsEnum.MANA_PERCENT => component.Mana.CurrentInPercent(),
-                VitalsEnum.LIFE => component.Health.Current,
-                VitalsEnum.LIFE_PERCENT => component.Health.CurrentInPercent(),
-                VitalsEnum.ENERGYSHIELD => component.EnergyShield.Current,
-                VitalsEnum.ENERGYSHIELD_PERCENT => component.EnergyShield.CurrentInPercent(),
+                VitalType.MANA => component.Mana.Current,
+                VitalType.MANA_PERCENT => component.Mana.CurrentInPercent(),
+                VitalType.LIFE => component.Health.Current,
+                VitalType.LIFE_PERCENT => component.Health.CurrentInPercent(),
+                VitalType.ENERGYSHIELD => component.EnergyShield.Current,
+                VitalType.ENERGYSHIELD_PERCENT => component.EnergyShield.CurrentInPercent(),
                 _ => throw new Exception($"Invalid Vital Type {this.vitalType}")
             };
         }

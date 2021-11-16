@@ -10,6 +10,7 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
     using GameHelper.Utils;
     using ImGuiNET;
     using Newtonsoft.Json;
+    using SimpleFlaskManager.ProfileManager.Enums;
 
     /// <summary>
     ///     For triggering a flask on player Status Effect changes.
@@ -17,7 +18,7 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
     public class StatusEffectCondition
         : BaseCondition<string>
     {
-        private static OperatorEnum operatorStatic = OperatorEnum.CONTAINS;
+        private static OperatorType operatorStatic = OperatorType.CONTAINS;
         private static string buffIdStatic = string.Empty;
         private static int buffChargesStatic;
 
@@ -26,10 +27,10 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
         /// <summary>
         ///     Initializes a new instance of the <see cref="StatusEffectCondition" /> class.
         /// </summary>
-        /// <param name="operator_"><see cref="OperatorEnum" /> to use in this condition.</param>
+        /// <param name="operator_"><see cref="OperatorType" /> to use in this condition.</param>
         /// <param name="buffId">Player buff/debuff to use in this condition.</param>
         /// <param name="buffCharges">Number of charges the buff/debuff has.</param>
-        public StatusEffectCondition(OperatorEnum operator_, string buffId, int buffCharges)
+        public StatusEffectCondition(OperatorType operator_, string buffId, int buffCharges)
             : base(operator_, buffId)
         {
             this.charges = buffCharges;
@@ -46,10 +47,10 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
             ToImGui(ref operatorStatic, ref buffIdStatic, ref buffChargesStatic);
             ImGui.SameLine();
             if (ImGui.Button("Add##StatusEffect") &&
-                (operatorStatic == OperatorEnum.CONTAINS ||
-                 operatorStatic == OperatorEnum.NOT_CONTAINS ||
-                 operatorStatic == OperatorEnum.BIGGER_THAN ||
-                 operatorStatic == OperatorEnum.LESS_THAN))
+                (operatorStatic == OperatorType.CONTAINS ||
+                 operatorStatic == OperatorType.NOT_CONTAINS ||
+                 operatorStatic == OperatorType.BIGGER_THAN ||
+                 operatorStatic == OperatorType.LESS_THAN))
             {
                 return new StatusEffectCondition(operatorStatic, buffIdStatic, buffChargesStatic);
             }
@@ -72,29 +73,28 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
             {
                 return this.conditionOperator switch
                        {
-                           OperatorEnum.CONTAINS => buffComponent.StatusEffects.ContainsKey(this.rightHandOperand),
-                           OperatorEnum.NOT_CONTAINS => !buffComponent.StatusEffects.ContainsKey(this.rightHandOperand),
-                           OperatorEnum.BIGGER_THAN => buffComponent.StatusEffects.ContainsKey(this.rightHandOperand) &&
+                           OperatorType.CONTAINS => buffComponent.StatusEffects.ContainsKey(this.rightHandOperand),
+                           OperatorType.NOT_CONTAINS => !buffComponent.StatusEffects.ContainsKey(this.rightHandOperand),
+                           OperatorType.BIGGER_THAN => buffComponent.StatusEffects.ContainsKey(this.rightHandOperand) &&
                                                        buffComponent.StatusEffects[this.rightHandOperand].Charges >
                                                        this.charges,
-                           OperatorEnum.LESS_THAN => buffComponent.StatusEffects.ContainsKey(this.rightHandOperand) &&
+                           OperatorType.LESS_THAN => buffComponent.StatusEffects.ContainsKey(this.rightHandOperand) &&
                                                      buffComponent.StatusEffects[this.rightHandOperand].Charges <
                                                      this.charges,
                            _ => throw new Exception($"BuffCondition doesn't support {this.conditionOperator}.")
-                       }
-                       && this.EvaluateNext();
+                       };
             }
 
             return false;
         }
 
-        private static void ToImGui(ref OperatorEnum operator_, ref string buffId, ref int charges)
+        private static void ToImGui(ref OperatorType operator_, ref string buffId, ref int charges)
         {
-            ImGui.TextWrapped($"{OperatorEnum.CONTAINS}, {OperatorEnum.NOT_CONTAINS}, " +
-                              $"{OperatorEnum.BIGGER_THAN} and {OperatorEnum.LESS_THAN} are supported." +
-                              $"{OperatorEnum.CONTAINS} and {OperatorEnum.NOT_CONTAINS} just checks if " +
-                              $"buff/debuff is there or not. {OperatorEnum.BIGGER_THAN} and " +
-                              $"{OperatorEnum.LESS_THAN} checks if buff/debuff is there and charges " +
+            ImGui.TextWrapped($"{OperatorType.CONTAINS}, {OperatorType.NOT_CONTAINS}, " +
+                              $"{OperatorType.BIGGER_THAN} and {OperatorType.LESS_THAN} are supported." +
+                              $"{OperatorType.CONTAINS} and {OperatorType.NOT_CONTAINS} just checks if " +
+                              $"buff/debuff is there or not. {OperatorType.BIGGER_THAN} and " +
+                              $"{OperatorType.LESS_THAN} checks if buff/debuff is there and charges " +
                               "are valid as well.");
             ImGui.Text("Player");
             ImGui.SameLine();

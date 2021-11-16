@@ -20,24 +20,5 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
         /// </summary>
         /// <param name="index">Condition sequence number.</param>
         public void Display(int index = 0);
-
-        /// <summary>
-        ///     Appends another condition to this condition.
-        /// </summary>
-        /// <param name="condition">
-        ///     condition to append.
-        /// </param>
-        public void Append(ICondition condition);
-
-        /// <summary>
-        ///     Gets the next in line condition.
-        /// </summary>
-        /// <returns><see cref="ICondition" /> if it exists, otherwise null.</returns>
-        public ICondition Next();
-
-        /// <summary>
-        ///     Deletes all the conditions in the rule.
-        /// </summary>
-        public void Delete();
     }
 }

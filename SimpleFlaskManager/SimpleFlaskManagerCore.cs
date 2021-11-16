@@ -142,13 +142,15 @@ namespace SimpleFlaskManager
 
             foreach (var rule in this.Settings.Profiles[this.Settings.CurrentProfile].Rules)
             {
-                if (rule.Condition != null && rule.Enable && rule.Condition.Evaluate())
-                {
-                    if (MiscHelper.KeyUp(rule.Key) && this.Settings.DebugMode)
-                    {
-                        this.keyPressInfo.Add($"{DateTime.Now.TimeOfDay}: I pressed {rule.Key} key.");
-                    }
-                }
+                rule.Execute(this.DebugLog);
+            }
+        }
+
+        private void DebugLog(string logText)
+        {
+            if (this.Settings.DebugMode)
+            {
+                this.keyPressInfo.Add($"{DateTime.Now.TimeOfDay}: {logText}");
             }
         }
 

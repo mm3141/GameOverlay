@@ -9,6 +9,7 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
     using GameHelper.RemoteObjects.Components;
     using GameHelper.Utils;
     using ImGuiNET;
+    using SimpleFlaskManager.ProfileManager.Enums;
 
     /// <summary>
     ///     For triggering a flask on player Status Effect changes.
@@ -26,7 +27,7 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
         ///     <see cref="JsonDataHelper.StatusEffectGroups" />.
         /// </param>
         public AilmentCondition(string statusEffectGroupKey)
-            : base(OperatorEnum.CONTAINS, statusEffectGroupKey)
+            : base(OperatorType.CONTAINS, statusEffectGroupKey)
         {
         }
 
@@ -66,7 +67,7 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
                 {
                     if (statusEffects.Any(statusEffect => buffComponent.StatusEffects.ContainsKey(statusEffect)))
                     {
-                        return true && this.EvaluateNext();
+                        return true;
                     }
                 }
             }
