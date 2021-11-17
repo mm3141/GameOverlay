@@ -28,7 +28,7 @@ namespace Radar
     public sealed class Radar : PCore<RadarSettings>
     {
         // Legion Cache.
-        private readonly Dictionary<uint, byte> frozenInTimeEntities = new();
+        private readonly Dictionary<uint, string> frozenInTimeEntities = new();
 
         private readonly List<string> diesAfterTimeIgnore = new()
         {
@@ -203,7 +203,8 @@ namespace Radar
                 this.Settings.DrawIconsSettingToImGui(
                     "Legion Icons",
                     this.Settings.LegionIcons,
-                    "Legion bosses are same as BaseGame Icons -> Unique Monsters.");
+                    "Selecting first icon from the icons image window will display important " +
+                    "legion monster names rather than the icon.");
 
                 this.Settings.DrawIconsSettingToImGui(
                     "Delirium Icons",
@@ -218,7 +219,8 @@ namespace Radar
                 this.Settings.DrawIconsSettingToImGui(
                     "Delve Icons",
                     this.Settings.DelveIcons,
-                    "Selecting first icon from the list of icons will display chest path name rather than the icon.");
+                    "Selecting first icon from the icons image window will display " +
+                    "chest name rather than the icon.");
             }
         }
 
@@ -629,11 +631,8 @@ namespace Radar
                             this.delveChestCache[entity.Key.id] =
                                 this.DelveChestPathToIcon(entity.Value.Path);
                         }
-
-                        continue;
                     }
-
-                    if (entity.Value.TryGetComponent<MinimapIcon>(out var _))
+                    else if (entity.Value.TryGetComponent<MinimapIcon>(out var _))
                     {
                         if (this.heistChestCache.TryGetValue(entity.Key.id, out var iconFinder))
                         {
@@ -647,54 +646,51 @@ namespace Radar
                                     heistChestIcon.UV0,
                                     heistChestIcon.UV1);
                             }
-
-                            continue;
                         }
                         else if (entity.Value.Path.StartsWith(
                             this.heistAllChestStarting, StringComparison.Ordinal))
                         {
                             this.heistChestCache[entity.Key.id] =
                                 this.HeistChestPathToIcon(entity.Value.Path);
-                            continue;
                         }
-
-                        continue;
                     }
-
-                    var chestIcon = this.Settings.BaseIcons["Chests Without Label"];
-                    if (chestComp.IsStrongbox)
+                    else
                     {
-                        if (entity.Value.Path.StartsWith("Metadata/Chests/StrongBoxes/Arcanist") ||
-                            entity.Value.Path.StartsWith("Metadata/Chests/StrongBoxes/Cartographer") ||
-                            entity.Value.Path.StartsWith("Metadata/Chests/StrongBoxes/StrongboxDivination"))
+                        var chestIcon = this.Settings.BaseIcons["Chests Without Label"];
+                        if (chestComp.IsStrongbox)
                         {
-                            chestIcon = this.Settings.BaseIcons["Arcanist/Cartographer/Divination"];
+                            if (entity.Value.Path.StartsWith("Metadata/Chests/StrongBoxes/Arcanist") ||
+                                entity.Value.Path.StartsWith("Metadata/Chests/StrongBoxes/Cartographer") ||
+                                entity.Value.Path.StartsWith("Metadata/Chests/StrongBoxes/StrongboxDivination"))
+                            {
+                                chestIcon = this.Settings.BaseIcons["Arcanist/Cartographer/Divination"];
+                            }
+                            else
+                            {
+                                chestIcon = this.Settings.BaseIcons["Strongbox"];
+                            }
                         }
-                        else
+                        else if (chestComp.IsLabelVisible)
                         {
-                            chestIcon = this.Settings.BaseIcons["Strongbox"];
+                            if (currentAreaInstance.DisappearingEntities.TryGetValue(entity.Key, out var league) &&
+                                league == LeagueMechanicType.Breach)
+                            {
+                                chestIcon = this.Settings.BreachIcons["Breach Chest"];
+                            }
+                            else
+                            {
+                                chestIcon = this.Settings.BaseIcons["Chests With Label"];
+                            }
                         }
-                    }
-                    else if (chestComp.IsLabelVisible)
-                    {
-                        if (currentAreaInstance.DisappearingEntities.TryGetValue(entity.Key, out var league) &&
-                            league == LeagueMechanicType.Breach)
-                        {
-                            chestIcon = this.Settings.BreachIcons["Breach Chest"];
-                        }
-                        else
-                        {
-                            chestIcon = this.Settings.BaseIcons["Chests With Label"];
-                        }
-                    }
 
-                    iconSizeMultiplierVector *= chestIcon.IconScale;
-                    fgDraw.AddImage(
-                        chestIcon.TexturePtr,
-                        mapCenter + fpos - iconSizeMultiplierVector,
-                        mapCenter + fpos + iconSizeMultiplierVector,
-                        chestIcon.UV0,
-                        chestIcon.UV1);
+                        iconSizeMultiplierVector *= chestIcon.IconScale;
+                        fgDraw.AddImage(
+                            chestIcon.TexturePtr,
+                            mapCenter + fpos - iconSizeMultiplierVector,
+                            mapCenter + fpos + iconSizeMultiplierVector,
+                            chestIcon.UV0,
+                            chestIcon.UV1);
+                    }
                 }
                 else if (isShrine)
                 {
@@ -709,36 +705,51 @@ namespace Radar
                             shrineIcon.UV0,
                             shrineIcon.UV1);
                     }
-
-                    continue;
                 }
                 else if (hasVital)
                 {
                     if (hasBuffs && buffsComp.StatusEffects.ContainsKey("frozen_in_time"))
                     {
-                        this.frozenInTimeEntities.TryAdd(entity.Key.id, 1);
-                        if (buffsComp.StatusEffects.ContainsKey("legion_reward_display") ||
-                            entity.Value.Path.Contains("Chest"))
+                        if (this.frozenInTimeEntities.TryGetValue(entity.Key.id, out var displayText))
                         {
-                            var monsterChestIcon = this.Settings.LegionIcons["Legion Monster Chest"];
-                            iconSizeMultiplierVector *= monsterChestIcon.IconScale;
-                            fgDraw.AddImage(
-                                monsterChestIcon.TexturePtr,
-                                mapCenter + fpos - iconSizeMultiplierVector,
-                                mapCenter + fpos + iconSizeMultiplierVector,
-                                monsterChestIcon.UV0,
-                                monsterChestIcon.UV1);
-                            continue;
+                            if (!string.IsNullOrEmpty(displayText))
+                            {
+                                var monsterChestIcon = this.Settings.LegionIcons["Legion Monster Chest"];
+                                if (monsterChestIcon.UV0 == Vector2.Zero)
+                                {
+                                    var s = ImGui.CalcTextSize(displayText) / 2;
+                                    fgDraw.AddRectFilled(mapCenter + fpos - s, mapCenter + fpos + s,
+                                        ImGuiHelper.Color(0, 0, 0, 255));
+                                    fgDraw.AddText(mapCenter + fpos - s, ImGuiHelper.Color(255, 128, 128, 255),
+                                        displayText);
+                                }
+                                else
+                                {
+                                    iconSizeMultiplierVector *= monsterChestIcon.IconScale;
+                                    fgDraw.AddImage(
+                                        monsterChestIcon.TexturePtr,
+                                        mapCenter + fpos - iconSizeMultiplierVector,
+                                        mapCenter + fpos + iconSizeMultiplierVector,
+                                        monsterChestIcon.UV0,
+                                        monsterChestIcon.UV1);
+                                }
+                            }
+                        }
+                        else if (buffsComp.StatusEffects.ContainsKey("legion_reward_display") ||
+                            entity.Value.Path.Contains("Chest") ||
+                            (hasOMP && omp.Rarity == Rarity.Unique))
+                        {
+                            // do display.
+                            this.frozenInTimeEntities[entity.Key.id] = entity.Value.Path.Split('/').LastOrDefault();
+                        }
+                        else
+                        {
+                            // do not display.
+                            this.frozenInTimeEntities[entity.Key.id] = string.Empty;
                         }
                     }
-
-                    if (hasBuffs && buffsComp.StatusEffects.ContainsKey("hidden_monster"))
+                    else if (hasBuffs && buffsComp.StatusEffects.ContainsKey("hidden_monster"))
                     {
-                        if (this.frozenInTimeEntities.ContainsKey(entity.Key.id))
-                        {
-                            continue;
-                        }
-
                         if (this.deliriumHiddenMonster.TryGetValue(entity.Key.id, out var iconFinder))
                         {
                             if (this.Settings.DeliriumIcons.TryGetValue(iconFinder, out var dHiddenMIcon))
@@ -751,30 +762,28 @@ namespace Radar
                                     dHiddenMIcon.UV0,
                                     dHiddenMIcon.UV1);
                             }
-
-                            continue;
                         }
-
-                        if (entity.Value.Path.StartsWith(
+                        else if (entity.Value.Path.StartsWith(
                             this.deliriumHiddenMonsterStarting,
                             StringComparison.Ordinal))
                         {
                             this.deliriumHiddenMonster[entity.Key.id] =
                                 this.DeliriumHiddenMonsterPathToIcon(entity.Value.Path);
-                            continue;
                         }
                     }
-
-                    var monsterIcon = entityPos.IsFriendly
-                        ? this.Settings.BaseIcons["Friendly"]
-                        : this.RarityToIconMapping(omp.Rarity);
-                    iconSizeMultiplierVector *= monsterIcon.IconScale;
-                    fgDraw.AddImage(
-                        monsterIcon.TexturePtr,
-                        mapCenter + fpos - iconSizeMultiplierVector,
-                        mapCenter + fpos + iconSizeMultiplierVector,
-                        monsterIcon.UV0,
-                        monsterIcon.UV1);
+                    else
+                    {
+                        var monsterIcon = entityPos.IsFriendly
+                            ? this.Settings.BaseIcons["Friendly"]
+                            : this.RarityToIconMapping(omp.Rarity);
+                        iconSizeMultiplierVector *= monsterIcon.IconScale;
+                        fgDraw.AddImage(
+                            monsterIcon.TexturePtr,
+                            mapCenter + fpos - iconSizeMultiplierVector,
+                            mapCenter + fpos + iconSizeMultiplierVector,
+                            monsterIcon.UV0,
+                            monsterIcon.UV1);
+                    }
                 }
                 else
                 {

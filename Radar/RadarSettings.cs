@@ -10,6 +10,7 @@ namespace Radar
     using GameHelper.Plugin;
     using ImGuiNET;
     using Newtonsoft.Json;
+    using GameHelper.Utils;
 
     /// <summary>
     /// <see cref="Radar"/> plugin settings class.
@@ -164,13 +165,14 @@ namespace Radar
             Dictionary<string, IconPicker> icons,
             string helpingText)
         {
-            if (ImGui.TreeNode($"{headingText}##treeNode"))
+            var isOpened = ImGui.TreeNode($"{headingText}##treeNode");
+            if (!string.IsNullOrEmpty(helpingText))
             {
-                if (!string.IsNullOrEmpty(helpingText))
-                {
-                    ImGui.Text(helpingText);
-                }
+                ImGuiHelper.ToolTip(helpingText);
+            }
 
+            if (isOpened)
+            {
                 ImGui.Columns(2, $"icons columns##{headingText}", false);
                 foreach (var icon in icons)
                 {
