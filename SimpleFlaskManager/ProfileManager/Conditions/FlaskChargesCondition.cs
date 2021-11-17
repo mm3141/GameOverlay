@@ -85,12 +85,12 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
 
         private static void ToImGui(ref OperatorType operator_, ref int flaskSlot, ref int charges)
         {
-            ImGui.Text($"Only {OperatorType.BIGGER_THAN} & {OperatorType.LESS_THAN} supported.");
             ImGui.Text("Flask");
             ImGui.SameLine();
             ImGui.DragInt("has##FlaskChargesFlaskSlot", ref flaskSlot, 0.05f, 1, 5);
             ImGui.SameLine();
             ImGuiHelper.EnumComboBox("##FlaskChargesOperator", ref operator_);
+            ImGuiHelper.ToolTip($"Only {OperatorType.BIGGER_THAN} & {OperatorType.LESS_THAN} supported.");
             ImGui.SameLine();
             ImGui.DragInt("charges##FlaskChargesFlaskCharge", ref charges, 0.1f, 2, 80);
         }

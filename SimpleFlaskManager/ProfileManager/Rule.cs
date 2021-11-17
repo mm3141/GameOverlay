@@ -195,7 +195,6 @@
                     ImGui.SameLine();
                     if (ImGui.ArrowButton("up", ImGuiDir.Up) && i > 0)
                     {
-                        ImGui.PopStyleVar();
                         this.Swap(i, i - 1);
                         ImGui.PopID();
                         break;

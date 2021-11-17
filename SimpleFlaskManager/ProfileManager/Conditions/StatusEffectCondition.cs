@@ -90,15 +90,15 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
 
         private static void ToImGui(ref OperatorType operator_, ref string buffId, ref int charges)
         {
-            ImGui.TextWrapped($"{OperatorType.CONTAINS}, {OperatorType.NOT_CONTAINS}, " +
-                              $"{OperatorType.BIGGER_THAN} and {OperatorType.LESS_THAN} are supported." +
-                              $"{OperatorType.CONTAINS} and {OperatorType.NOT_CONTAINS} just checks if " +
-                              $"buff/debuff is there or not. {OperatorType.BIGGER_THAN} and " +
-                              $"{OperatorType.LESS_THAN} checks if buff/debuff is there and charges " +
-                              "are valid as well.");
             ImGui.Text("Player");
             ImGui.SameLine();
             ImGuiHelper.EnumComboBox("##StatusEffectOperator", ref operator_);
+            ImGuiHelper.ToolTip($"{OperatorType.CONTAINS}, {OperatorType.NOT_CONTAINS}, " +
+                $"{OperatorType.BIGGER_THAN} and {OperatorType.LESS_THAN} are supported." +
+                $"{OperatorType.CONTAINS} and {OperatorType.NOT_CONTAINS} just checks if " +
+                $"buff/debuff is there or not. {OperatorType.BIGGER_THAN} and " +
+                $"{OperatorType.LESS_THAN} checks if buff/debuff is there and charges " +
+                "are valid as well.");
             ImGui.SameLine();
             ImGui.InputText("(de)buff with##StatusEffect", ref buffId, 200);
             ImGui.SameLine();

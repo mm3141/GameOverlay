@@ -98,10 +98,10 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
 
         private static void ToImGui(ref OperatorType operator_, ref Animation animation, ref int duration)
         {
-            ImGui.Text($"Only {OperatorType.EQUAL_TO} & {OperatorType.NOT_EQUAL_TO} supported.");
-            ImGui.Text("Player is");
+            ImGui.Text("Player");
             ImGui.SameLine();
             ImGuiHelper.EnumComboBox("##AnimationOperator", ref operator_);
+            ImGuiHelper.ToolTip($"Only {OperatorType.EQUAL_TO} & {OperatorType.NOT_EQUAL_TO} supported.");
             ImGui.SameLine();
             ImGuiHelper.EnumComboBox("for ##AnimationRHS", ref animation);
             ImGui.SameLine();

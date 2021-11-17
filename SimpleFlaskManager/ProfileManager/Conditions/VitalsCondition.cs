@@ -82,12 +82,12 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
 
         private static void ToImGui(ref OperatorType operator_, ref VitalType vital, ref int threshold)
         {
-            ImGui.Text($"Only {OperatorType.BIGGER_THAN} & {OperatorType.LESS_THAN} supported.");
             ImGui.Text("Player");
             ImGui.SameLine();
             ImGuiHelper.EnumComboBox("is##VitalSelector", ref vital);
             ImGui.SameLine();
             ImGuiHelper.EnumComboBox("##VitalOperator", ref operator_);
+            ImGuiHelper.ToolTip($"Only {OperatorType.BIGGER_THAN} & {OperatorType.LESS_THAN} supported.");
             ImGui.SameLine();
             ImGui.InputInt("##VitalThreshold", ref threshold);
         }
