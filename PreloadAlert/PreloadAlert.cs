@@ -86,9 +86,9 @@ namespace PreloadAlert
         /// </summary>
         public override void DrawSettings()
         {
-            ImGui.TextWrapped("You can also lock it by double clicking the preload window. " +
-                              "However, you can only unlock it from here.");
             ImGui.Checkbox("Lock/Unlock preload window", ref this.Settings.Locked);
+            ImGuiHelper.ToolTip("You can also lock it by double clicking the preload window. " +
+                              "However, you can only unlock it from here.");
             ImGui.Checkbox("Hide when locked & not in the game", ref this.Settings.EnableHideUi);
             ImGui.Checkbox("Hide when no preload found", ref this.Settings.HideWindowWhenEmpty);
             ImGui.Checkbox("Hide when in town or hideout", ref this.Settings.HideWhenInTownOrHideout);

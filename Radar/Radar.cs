@@ -86,25 +86,18 @@ namespace Radar
         /// <inheritdoc/>
         public override void DrawSettings()
         {
-            ImGui.TextWrapped("Following slider is for fixing large map icons. " +
-                              "You have to use it if you feel that LargeMap Icons " +
-                              "are moving while your player is moving. You only have " +
-                              "to find a value that works for you per game window resolution. " +
-                              "Basically, you don't have to change it unless you change your " +
-                              "game window resolution. Also, please contribute back, let me know " +
-                              "what resolution you use and what value works best for you. " +
-                              "This slider has no impact on mini-map icons. For windowed-full-screen " +
-                              "default value should be good enough.");
-            ImGui.DragFloat(
-                "Large Map Fix",
-                ref this.Settings.LargeMapScaleMultiplier,
-                0.001f,
-                0.01f,
-                0.3f);
             ImGui.TextWrapped("If your mini/large map icon are not working/visible. Open this " +
-                              "Overlay setting window, click anywhere on it and then hide this Overlay " +
-                              "setting window. It will fix the issue.");
-
+                "setting window, click anywhere on it and then hide this setting window. It will fix the issue.");
+            ImGui.DragFloat("Large Map Fix", ref this.Settings.LargeMapScaleMultiplier, 0.001f, 0.01f, 0.3f);
+            ImGuiHelper.ToolTip("This slider is for fixing large map (icons) offset. " +
+                "You have to use it if you feel that LargeMap Icons " +
+                "are moving while your player is moving. You only have " +
+                "to find a value that works for you per game window resolution. " +
+                "Basically, you don't have to change it unless you change your " +
+                "game window resolution. Also, please contribute back, let me know " +
+                "what resolution you use and what value works best for you. " +
+                "This slider has no impact on mini-map icons. For windowed-full-screen " +
+                "default value should be good enough.");
             ImGui.Checkbox("Hide Radar when in Hideout/Town", ref this.Settings.DrawWhenNotInHideoutOrTown);
             ImGui.Checkbox("Hide Radar when game is in the background", ref this.Settings.DrawWhenForeground);
             if (ImGui.Checkbox("Modify Large Map Culling Window", ref this.Settings.ModifyCullWindow))

@@ -204,5 +204,21 @@ namespace GameHelper.Utils
 
             return ret;
         }
+
+        /// <summary>
+        ///     Displays the text in ImGui tooltip.
+        /// </summary>
+        /// <param name="text">text to display in the ImGui tooltip.</param>
+        public static void ToolTip(string text)
+        {
+            if (ImGui.IsItemHovered())
+            {
+                ImGui.BeginTooltip();
+                ImGui.PushTextWrapPos(ImGui.GetFontSize() * 35.0f);
+                ImGui.TextUnformatted(text);
+                ImGui.PopTextWrapPos();
+                ImGui.EndTooltip();
+            }
+        }
     }
 }

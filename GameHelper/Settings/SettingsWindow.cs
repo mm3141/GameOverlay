@@ -99,22 +99,24 @@ namespace GameHelper.Settings
         /// </summary>
         private static void DrawCoreSettings()
         {
+            ImGui.PushTextWrapPos(ImGui.GetContentRegionMax().X);
             ImGui.TextColored(color, "This is a free software, only use https://ownedcore.com to " +
                 "download it. Do not pay the fake sellers/websites.");
-            ImGui.TextWrapped("Developer of this software is not responsible for " +
+            ImGui.NewLine();
+            ImGui.TextColored(Vector4.One, "Developer of this software is not responsible for " +
                               "any loss that may happen due to the usage of this software. Use this " +
                               "software at your own risk.");
             ImGui.NewLine();
-            ImGui.TextColored(color, "All Settings (including plugins) are saved automatically " +
+            ImGui.TextColored(Vector4.One, "All Settings (including plugins) are saved automatically " +
                   $"when you close the overlay or hide it via {Core.GHSettings.MainMenuHotKey} button.");
             ImGui.NewLine();
-            ImGui.TextWrapped("When GameOverlay press a key in the game, the key " +
-                              "has to go to the GGG server for it to work. This process takes " +
-                              "time equal to your latency x 2. During this time GameOverlay might " +
-                              "press that key again. Set the following timeout value to " +
-                              "latency x 2 so this doesn't happen. e.g. for 30ms latency, " +
-                              "set it to 60ms.");
+            ImGui.PopTextWrapPos();
             ImGui.DragInt("Key Timeout", ref Core.GHSettings.KeyPressTimeout, 0.2f, 30, 300);
+            ImGuiHelper.ToolTip("When GameOverlay press a key in the game, the key " +
+                "has to go to the GGG server for it to work. This process takes " +
+                "time equal to your latency x 2. During this time GameOverlay might " +
+                "press that key again. Set the key timeout value to latency x 2 so " +
+                "this doesn't happen. e.g. for 30ms latency, set it to 60ms.");
             ImGui.NewLine();
             ImGui.Text($"Current Game State: {Core.States.GameCurrentState}");
             ImGui.NewLine();
