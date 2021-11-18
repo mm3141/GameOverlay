@@ -8,10 +8,12 @@ namespace GameHelper
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Drawing;
+    using System.Numerics;
     using System.Runtime.InteropServices;
     using Coroutine;
     using CoroutineEvents;
     using GameOffsets;
+    using ImGuiNET;
     using Utils;
 
     /// <summary>
@@ -24,6 +26,11 @@ namespace GameHelper
     /// </summary>
     public class GameProcess
     {
+        private readonly List<Process> processesInfo = new();
+        private int clientSelected = -1;
+        private bool showSelectGameMenu = false;
+        private bool closeForcefully = false;
+
         /// <summary>
         ///     Initializes a new instance of the <see cref="GameProcess" /> class.
         /// </summary>
@@ -31,6 +38,7 @@ namespace GameHelper
         {
             CoroutineHandler.Start(this.FindAndOpen());
             CoroutineHandler.Start(this.FindStaticAddresses());
+            CoroutineHandler.Start(this.AskUserToSelectClient());
         }
 
         /// <summary>
@@ -138,31 +146,94 @@ namespace GameHelper
         /// </returns>
         private IEnumerator<Wait> FindAndOpen()
         {
-            var processesInfo = new List<Process>();
             while (true)
             {
                 yield return new Wait(1d);
-                processesInfo.Clear();
+                this.processesInfo.Clear();
                 foreach (var process in Process.GetProcesses())
                 {
                     if (GameProcessDetails.ProcessName.TryGetValue(process.ProcessName, out var windowTitle))
                     {
                         if (process.MainWindowTitle.ToLower() == windowTitle)
                         {
-                            processesInfo.Add(process);
+                            this.processesInfo.Add(process);
                         }
                     }
                 }
 
-                if (processesInfo.Count == 1)
+                if (this.processesInfo.Count == 1)
                 {
-                    this.Information = processesInfo[0];
+                    this.Information = this.processesInfo[0];
                     if (this.Open())
                     {
                         break;
                     }
                 }
+                else if (this.processesInfo.Count > 1)
+                {
+                    this.ShowSelectGameMenu();
+                    if (this.clientSelected > -1 && this.clientSelected < this.processesInfo.Count)
+                    {
+                        this.Information = this.processesInfo[this.clientSelected];
+                        if (this.Open())
+                        {
+                            break;
+                        }
+                    }
+                }
             }
+        }
+
+        private IEnumerator<Wait> AskUserToSelectClient()
+        {
+            while (true)
+            {
+                yield return new Wait(GameHelperEvents.OnRender);
+                if (this.showSelectGameMenu)
+                {
+                    ImGui.OpenPopup("SelectGameMenu");
+                }
+
+
+                if (ImGui.BeginPopup("SelectGameMenu"))
+                {
+                    for (var i = 0; i < this.processesInfo.Count; i++)
+                    {
+                        if (ImGui.RadioButton($"{i} - PathOfExile", i == this.clientSelected))
+                        {
+                            this.clientSelected = i;
+                        }
+                    }
+
+                    if (ImGui.Button("Done"))
+                    {
+                        this.HideSelectGameMenu();
+                        ImGui.CloseCurrentPopup();
+                    }
+
+                    ImGui.SameLine();
+                    if (ImGui.Button("Retry"))
+                    {
+                        this.HideSelectGameMenu();
+                        ImGui.CloseCurrentPopup();
+                        this.closeForcefully = true;
+                    }
+
+                    ImGui.EndPopup();
+                }
+            }
+        }
+
+        private void HideSelectGameMenu()
+        {
+            this.clientSelected = -1;
+            this.processesInfo.Clear();
+            this.showSelectGameMenu = false;
+        }
+
+        private void ShowSelectGameMenu()
+        {
+            this.showSelectGameMenu = true;
         }
 
         /// <summary>
@@ -176,8 +247,10 @@ namespace GameHelper
                 // Have to check MainWindowHandle because
                 // sometime HasExited returns false even when game isn't running..
                 if (this.Information.HasExited ||
-                    this.Information.MainWindowHandle.ToInt64() <= 0x00)
+                    this.Information.MainWindowHandle.ToInt64() <= 0x00 ||
+                    this.closeForcefully)
                 {
+                    this.closeForcefully = false;
                     this.Close();
                     break;
                 }
