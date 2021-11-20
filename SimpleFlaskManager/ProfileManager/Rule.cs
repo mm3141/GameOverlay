@@ -15,7 +15,7 @@
     /// </summary>
     public class Rule
     {
-        private ConditionType newConditionType;
+        private ConditionType newConditionType = ConditionType.AILMENT;
         private readonly Stopwatch delayStopwatch = Stopwatch.StartNew();
 
         [JsonProperty("Conditions", NullValueHandling = NullValueHandling.Ignore)]
@@ -227,16 +227,10 @@
 
             if (ImGui.BeginPopup("AddNewConditionPopUp"))
             {
+                ImGui.Text("NOTE: Click outside popup to close");
                 ImGuiHelper.EnumComboBox("Condition", ref this.newConditionType);
-                ImGui.PushItemWidth(ImGui.GetContentRegionAvail().X / 6);
                 ImGui.Separator();
                 this.Add(this.newConditionType);
-                ImGui.PopItemWidth();
-                if (ImGui.Button("Done", new Vector2(ImGui.GetContentRegionAvail().X, ImGui.GetTextLineHeight() * 2)))
-                {
-                    ImGui.CloseCurrentPopup();
-                }
-
                 ImGui.EndPopup();
             }
         }

@@ -38,7 +38,7 @@ namespace SimpleFlaskManager.ProfileManager
                 {
                     var currRule = this.Rules[i];
                     var shouldNotDelete = true;
-                    if (ImGui.BeginTabItem($"{currRule.Name}##Rule{i}", ref shouldNotDelete))
+                    if (ImGui.BeginTabItem($"{currRule.Name}###Rule{i}", ref shouldNotDelete))
                     {
                         currRule.DrawSettings();
                         ImGui.EndTabItem();
