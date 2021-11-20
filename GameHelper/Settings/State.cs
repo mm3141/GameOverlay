@@ -6,6 +6,7 @@ namespace GameHelper.Settings
 {
     using System;
     using System.IO;
+    using ClickableTransparentOverlay;
     using Newtonsoft.Json;
 
     /// <summary>
@@ -30,11 +31,6 @@ namespace GameHelper.Settings
         /// </summary>
         [JsonIgnore]
         public static readonly DirectoryInfo PluginsDirectory = new("Plugins");
-
-        /// <summary>
-        ///     Gets the currently selected font.
-        /// </summary>
-        public int CurrentlySelectedFont = 0;
 
         /// <summary>
         ///     Gets a value indicating whether user wants to disable entity processing
@@ -63,6 +59,21 @@ namespace GameHelper.Settings
         ///     Gets a value indicating how much time to wait between key presses.
         /// </summary>
         public int KeyPressTimeout = 50;
+
+        /// <summary>
+        ///     Gets the font pathname to load in ImGui.
+        /// </summary>
+        public string FontPathName = @"C:\Windows\Fonts\msyh.ttc";
+
+        /// <summary>
+        ///     Gets the font size to load in ImGui.
+        /// </summary>
+        public int FontSize = 18;
+
+        /// <summary>
+        ///     Gets the language that the font supports.
+        /// </summary>
+        public FontGlyphRangeType FontLanguage = FontGlyphRangeType.ChineseSimplifiedCommon;
 
         /// <summary>
         ///     Gets or sets hotKey to show/hide the main menu.

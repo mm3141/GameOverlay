@@ -30,7 +30,6 @@ namespace GameHelper.Settings
         internal static void InitializeCoroutines()
         {
             HideOnStartCheck();
-            CoroutineHandler.Start(LoadCurrentlyConfiguredFont());
             CoroutineHandler.Start(SaveCoroutine());
             Core.CoroutinesRegistrar.Add(CoroutineHandler.Start(
                 RenderCoroutine(),
@@ -101,7 +100,8 @@ namespace GameHelper.Settings
         {
             ImGui.PushTextWrapPos(ImGui.GetContentRegionMax().X);
             ImGui.TextColored(color, "This is a free software, only use https://ownedcore.com to " +
-                "download it. Do not pay the fake sellers/websites.");
+                "download it. Do not pay the fake sellers/websites. " +
+                "(这是一个免费软件。不要从假卖家那里购买。前往 https://ownedcore.com 免费下载。)");
             ImGui.NewLine();
             ImGui.TextColored(Vector4.One, "Developer of this software is not responsible for " +
                               "any loss that may happen due to the usage of this software. Use this " +
@@ -121,9 +121,15 @@ namespace GameHelper.Settings
             ImGui.Text($"Current Game State: {Core.States.GameCurrentState}");
             ImGui.NewLine();
             ImGuiHelper.NonContinuousEnumComboBox("Select Show/Hide Key", ref Core.GHSettings.MainMenuHotKey);
-            if (ImGui.DragInt("Select Font", ref Core.GHSettings.CurrentlySelectedFont, 0.1f, 0, Core.Overlay.Fonts.Length - 1))
+            ImGui.InputText("Font Pathname", ref Core.GHSettings.FontPathName, 300);
+            if (ImGui.DragInt("Font Size", ref Core.GHSettings.FontSize, 0.1f, 13, 40) ||
+                ImGuiHelper.EnumComboBox("Font Language", ref Core.GHSettings.FontLanguage) ||
+                ImGui.Button("Change Font"))
             {
-                SetCurrentlyConfiguredFont();
+                Core.Overlay.ReplaceFont(
+                    Core.GHSettings.FontPathName,
+                    Core.GHSettings.FontSize,
+                    Core.GHSettings.FontLanguage);
             }
 
             ImGui.Checkbox("Performance Stats", ref Core.GHSettings.ShowPerfStats);
@@ -241,20 +247,6 @@ namespace GameHelper.Settings
             {
                 yield return new Wait(GameHelperEvents.TimeToSaveAllSettings);
                 JsonHelper.SafeToFile(Core.GHSettings, State.CoreSettingFile);
-            }
-        }
-
-        private static IEnumerator<Wait> LoadCurrentlyConfiguredFont()
-        {
-            yield return new Wait(GameHelperEvents.OnRender);
-            SetCurrentlyConfiguredFont();
-        }
-
-        private static void SetCurrentlyConfiguredFont()
-        {
-            unsafe
-            {
-                ImGui.GetIO().NativePtr->FontDefault = Core.Overlay.Fonts[Core.GHSettings.CurrentlySelectedFont];
             }
         }
 

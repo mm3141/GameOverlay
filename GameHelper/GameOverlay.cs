@@ -53,19 +53,12 @@ namespace GameHelper
         }
 
         /// <inheritdoc />
-        protected override void AddFonts()
-        {
-            base.AddFonts();
-            this.Fonts = new ImFontPtr[4];
-            this.Fonts[0] = ImGui.GetFont();
-            this.Fonts[1] = ImGui.GetIO().Fonts.AddFontFromFileTTF(@"C:\Windows\Fonts\segoeui.ttf", 18);
-            this.Fonts[2] = ImGui.GetIO().Fonts.AddFontFromFileTTF(@"C:\Windows\Fonts\segoeui.ttf", 24);
-            this.Fonts[3] = ImGui.GetIO().Fonts.AddFontFromFileTTF(@"C:\Windows\Fonts\segoeui.ttf", 36);
-        }
-
-        /// <inheritdoc />
         protected override void PostStart()
         {
+            Core.Overlay.ReplaceFont(
+                Core.GHSettings.FontPathName,
+                Core.GHSettings.FontSize,
+                Core.GHSettings.FontLanguage);
             PManager.InitializePlugins();
         }
 
