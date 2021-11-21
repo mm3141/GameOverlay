@@ -100,8 +100,9 @@ namespace GameHelper.Settings
         {
             ImGui.PushTextWrapPos(ImGui.GetContentRegionMax().X);
             ImGui.TextColored(color, "This is a free software, only use https://ownedcore.com to " +
-                "download it. Do not pay the fake sellers/websites. " +
-                "(这是一个免费软件。不要从假卖家那里购买。前往 https://ownedcore.com 免费下载。)");
+                "download it. Do not buy from the fake sellers or websites.");
+            ImGui.TextColored(color, "请不要花钱购买本软件，否则你就是个傻逼。这是一个免费软件。" +
+                "不要从假卖家那里购买。前往 https://ownedcore.com 免费下载。");
             ImGui.NewLine();
             ImGui.TextColored(Vector4.One, "Developer of this software is not responsible for " +
                               "any loss that may happen due to the usage of this software. Use this " +
