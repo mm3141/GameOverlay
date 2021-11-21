@@ -20,6 +20,31 @@ namespace GameHelper.Utils
         private static readonly Stopwatch DelayBetweenKeys = Stopwatch.StartNew();
         private static Task<IntPtr> sendingMessage;
 
+        internal static bool TryConvertStringToImGuiGlyphRanges(string data, out ushort[] ranges)
+        {
+            if (string.IsNullOrEmpty(data))
+            {
+                ranges = Array.Empty<ushort>();
+                return false;
+            }
+
+            var intsInHex = data.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+            ranges = new ushort[intsInHex.Length];
+            for (var i = 0; i < intsInHex.Length; i++)
+            {
+                try
+                {
+                    ranges[i] = (ushort)Convert.ToInt32(intsInHex[i], 16);
+                }
+                catch (Exception)
+                {
+                    return false;
+                }
+            }
+
+            return ranges[^1] == 0x00;
+        }
+
         /// <summary>
         ///     Utility function that returns randomly generated string.
         /// </summary>

@@ -75,6 +75,14 @@ namespace GameHelper.Settings
         /// </summary>
         public FontGlyphRangeType FontLanguage = FontGlyphRangeType.ChineseSimplifiedCommon;
 
+
+        /// <summary>
+        ///     Gets the custom glyph range to load from the font texture. This is useful in case
+        ///     <see cref="FontGlyphRangeType"/> isn't enough. Set it to empty string to disable this
+        ///     feature.
+        /// </summary>
+        public string FontCustomGlyphRange = string.Empty;
+
         /// <summary>
         ///     Gets or sets hotKey to show/hide the main menu.
         /// </summary>

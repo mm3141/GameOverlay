@@ -9,6 +9,7 @@ namespace GameHelper
     using ClickableTransparentOverlay;
     using Coroutine;
     using CoroutineEvents;
+    using GameHelper.Utils;
     using ImGuiNET;
     using Plugin;
     using Settings;
@@ -55,10 +56,21 @@ namespace GameHelper
         /// <inheritdoc />
         protected override void PostStart()
         {
-            Core.Overlay.ReplaceFont(
-                Core.GHSettings.FontPathName,
-                Core.GHSettings.FontSize,
-                Core.GHSettings.FontLanguage);
+            if (MiscHelper.TryConvertStringToImGuiGlyphRanges(Core.GHSettings.FontCustomGlyphRange, out var glyphRanges))
+            {
+                Core.Overlay.ReplaceFont(
+                    Core.GHSettings.FontPathName,
+                    Core.GHSettings.FontSize,
+                    glyphRanges);
+            }
+            else
+            {
+                Core.Overlay.ReplaceFont(
+                    Core.GHSettings.FontPathName,
+                    Core.GHSettings.FontSize,
+                    Core.GHSettings.FontLanguage);
+            }
+
             PManager.InitializePlugins();
         }
 

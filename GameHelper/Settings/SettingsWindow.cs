@@ -120,18 +120,8 @@ namespace GameHelper.Settings
             ImGui.NewLine();
             ImGui.Text($"Current Game State: {Core.States.GameCurrentState}");
             ImGui.NewLine();
-            ImGuiHelper.NonContinuousEnumComboBox("Select Show/Hide Key", ref Core.GHSettings.MainMenuHotKey);
-            ImGui.InputText("Font Pathname", ref Core.GHSettings.FontPathName, 300);
-            if (ImGui.DragInt("Font Size", ref Core.GHSettings.FontSize, 0.1f, 13, 40) ||
-                ImGuiHelper.EnumComboBox("Font Language", ref Core.GHSettings.FontLanguage) ||
-                ImGui.Button("Change Font"))
-            {
-                Core.Overlay.ReplaceFont(
-                    Core.GHSettings.FontPathName,
-                    Core.GHSettings.FontSize,
-                    Core.GHSettings.FontLanguage);
-            }
-
+            ImGuiHelper.NonContinuousEnumComboBox("Settings Window Key", ref Core.GHSettings.MainMenuHotKey);
+            ImGui.NewLine();
             ImGui.Checkbox("Performance Stats", ref Core.GHSettings.ShowPerfStats);
             ImGui.Spacing();
             ImGui.SameLine();
@@ -144,6 +134,8 @@ namespace GameHelper.Settings
                 ref Core.GHSettings.DisableEntityProcessingInTownOrHideout);
             ImGui.Checkbox("Hide overlay settings upon start", ref Core.GHSettings.HideSettingWindowOnStart);
             ImGui.NewLine();
+            ChangeFontWidget();
+            ImGui.NewLine();
             if (ImGui.Button("Test Disconnect POE"))
             {
                 MiscHelper.KillTCPConnectionForProcess(Core.Process.Pid);
@@ -155,6 +147,62 @@ namespace GameHelper.Settings
                 PManager.InitializePlugins();
             }
 #endif
+        }
+
+        /// <summary>
+        ///     Draws the ImGui widget for changing fonts.
+        /// </summary>
+        private static void ChangeFontWidget()
+        {
+            if (ImGui.TreeNode("Change Font"))
+            {
+                ImGui.InputText("Pathname", ref Core.GHSettings.FontPathName, 300);
+                ImGui.DragInt("Size", ref Core.GHSettings.FontSize, 0.1f, 13, 40);
+                var languageChanged = ImGuiHelper.EnumComboBox("Language", ref Core.GHSettings.FontLanguage);
+                var customLanguage = ImGui.InputText("Custom Glyph Ranges", ref Core.GHSettings.FontCustomGlyphRange, 100);
+                ImGuiHelper.ToolTip("This is advance level feature. Do not modify this if you don't know what you are doing. " +
+                    "Example usage:- If you have downloaded and pointed to the ArialUnicodeMS.ttf font, you can use " +
+                    "0x0020, 0xFFFF, 0x00 text in this field to load all of the font texture in ImGui. Note the 0x00" +
+                    " as the last item in the range.");
+                if (languageChanged)
+                {
+                    Core.GHSettings.FontCustomGlyphRange = string.Empty;
+                }
+
+                if (customLanguage)
+                {
+                    Core.GHSettings.FontLanguage = (FontGlyphRangeType)100;
+                }
+
+                if (ImGui.Button("Change Font"))
+                {
+                    if (MiscHelper.TryConvertStringToImGuiGlyphRanges(Core.GHSettings.FontCustomGlyphRange, out var glyphranges))
+                    {
+                        Core.Overlay.ReplaceFont(
+                            Core.GHSettings.FontPathName,
+                            Core.GHSettings.FontSize,
+                            glyphranges);
+                    }
+                    else
+                    {
+                        Core.Overlay.ReplaceFont(
+                            Core.GHSettings.FontPathName,
+                            Core.GHSettings.FontSize,
+                            Core.GHSettings.FontLanguage);
+                    }
+                }
+
+                ImGui.SameLine();
+                if (ImGui.Button("Clear Custom Font"))
+                {
+                    Core.GHSettings.FontPathName = string.Empty;
+                    Core.GHSettings.FontSize = 13;
+                    Core.GHSettings.FontLanguage = FontGlyphRangeType.English;
+                    Core.GHSettings.FontCustomGlyphRange = string.Empty;
+                }
+
+                ImGui.TreePop();
+            }
         }
 
         /// <summary>

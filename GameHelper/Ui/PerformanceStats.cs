@@ -4,8 +4,8 @@
 
 namespace GameHelper.Ui
 {
-    using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Numerics;
     using Coroutine;
     using CoroutineEvents;
@@ -67,7 +67,13 @@ namespace GameHelper.Ui
                     }
 
                     ImGui.Text("Performance Related Stats");
-                    ImGui.Text($"Total Used Memory: {GC.GetTotalMemory(false) / (1024 * 1024)} (MB)");
+                    using (var proc = Process.GetCurrentProcess())
+                    {
+                        // The proc.PrivateMemorySize64 will returns the private memory usage in byte.
+                        // Would like to Convert it to Megabyte? divide it by 2^20
+                        ImGui.Text($"Total Used Memory: {proc.PrivateMemorySize64 / (1024 * 1024)} (MB)");
+                    }
+
                     ImGui.Text($"Total Event Coroutines: {CoroutineHandler.EventCount}");
                     ImGui.Text($"Total Tick Coroutines: {CoroutineHandler.TickingCount}");
                     var cAI = Core.States.InGameStateObject.CurrentAreaInstance;
