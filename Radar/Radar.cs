@@ -35,7 +35,9 @@ namespace Radar
             "Metadata/Monsters/AtlasExiles/CrusaderInfluenceMonsters/CrusaderArcaneRune",
             "Metadata/Monsters/Daemon/DaemonLaboratoryBlackhole",
             "Metadata/Monsters/AtlasExiles/AtlasExile",
+            "Metadata/Monsters/Daemon/MaligaroBladeVortexDaemon",
         };
+
         private readonly HashSet<uint> diesAfterTimeCache = new();
 
         private readonly string heistUsefullChestContains = "HeistChestSecondary";
