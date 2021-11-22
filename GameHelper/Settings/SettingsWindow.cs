@@ -172,7 +172,7 @@ namespace GameHelper.Settings
 
                 if (customLanguage)
                 {
-                    Core.GHSettings.FontLanguage = (FontGlyphRangeType)100;
+                    Core.GHSettings.FontLanguage = FontGlyphRangeType.English;
                 }
 
                 if (ImGui.Button("Change Font"))
