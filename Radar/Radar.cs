@@ -710,82 +710,117 @@ namespace Radar
                 }
                 else if (hasVital)
                 {
-                    if (hasBuffs && buffsComp.StatusEffects.ContainsKey("frozen_in_time"))
+                    if (hasBuffs) // Is there any monster that has Vital component but no Buff component?
                     {
-                        if (this.frozenInTimeEntities.TryGetValue(entity.Key.id, out var displayText))
+                        // When Legion monolith is not clicked by the user (Stage 0),
+                        //     Legion monsters (a.k.a FIT) has Frozen in time + Hidden buff.
+
+                        // When Legion monolith is clicked (Stage 1),
+                        //     FIT have just frozen in time buff.
+
+                        // When Legion monolith is destroyed (Stage 2),
+                        //     FIT are basically same as regular monster with no Frozen-in-time/hidden buff.
+
+                        // NOTE: There are other hidden monsters in the game as well
+                        // e.g. Delirium monsters (a.k.a DELI), underground crabs, hidden sea witches
+                        var isFrozenInTime = buffsComp.StatusEffects.ContainsKey("frozen_in_time");
+                        var isHidden = buffsComp.StatusEffects.ContainsKey("hidden_monster");
+                        if (isFrozenInTime)
                         {
-                            if (!string.IsNullOrEmpty(displayText))
+                            if (this.frozenInTimeEntities.TryGetValue(entity.Key.id, out var fitName)) // Known FIT
                             {
-                                var monsterChestIcon = this.Settings.LegionIcons["Legion Monster Chest"];
-                                if (monsterChestIcon.UV0 == Vector2.Zero)
+                                if (!string.IsNullOrEmpty(fitName)) // Important FIT
                                 {
-                                    var s = ImGui.CalcTextSize(displayText) / 2;
-                                    fgDraw.AddRectFilled(mapCenter + fpos - s, mapCenter + fpos + s,
-                                        ImGuiHelper.Color(0, 0, 0, 255));
-                                    fgDraw.AddText(mapCenter + fpos - s, ImGuiHelper.Color(255, 128, 128, 255),
-                                        displayText);
+                                    var monsterChestIcon = this.Settings.LegionIcons["Legion Monster Chest"];
+                                    if (monsterChestIcon.UV0 == Vector2.Zero)
+                                    {
+                                        var s = ImGui.CalcTextSize(fitName) / 2;
+                                        fgDraw.AddRectFilled(mapCenter + fpos - s, mapCenter + fpos + s,
+                                            ImGuiHelper.Color(0, 0, 0, 255));
+                                        fgDraw.AddText(mapCenter + fpos - s, ImGuiHelper.Color(255, 128, 128, 255),
+                                            fitName);
+                                    }
+                                    else
+                                    {
+                                        iconSizeMultiplierVector *= monsterChestIcon.IconScale;
+                                        fgDraw.AddImage(
+                                            monsterChestIcon.TexturePtr,
+                                            mapCenter + fpos - iconSizeMultiplierVector,
+                                            mapCenter + fpos + iconSizeMultiplierVector,
+                                            monsterChestIcon.UV0,
+                                            monsterChestIcon.UV1);
+                                    }
+
+                                    continue;
+                                }
+                                else if(isHidden) // Hidden FIT
+                                {
+                                    continue;
+                                }
+
+                                // FIT that is not important and not hidden.
+                                // We show them as regular monsters.
+                            }
+                            else // New FIT.
+                            {
+                                if (buffsComp.StatusEffects.ContainsKey("legion_reward_display") ||
+                                    entity.Value.Path.Contains("Chest") ||
+                                    (hasOMP && omp.Rarity == Rarity.Unique))
+                                {
+                                    // Important FIT
+                                    this.frozenInTimeEntities[entity.Key.id] = entity.Value.Path.Split('/').LastOrDefault();
                                 }
                                 else
                                 {
-                                    iconSizeMultiplierVector *= monsterChestIcon.IconScale;
+                                    // Not Important FIT.
+                                    this.frozenInTimeEntities[entity.Key.id] = string.Empty;
+                                }
+
+                                continue;
+                            }
+                        }
+                        else if (isHidden)
+                        {
+                            if (this.deliriumHiddenMonster.TryGetValue(entity.Key.id, out var iconFinder)) // Known DELI
+                            {
+                                if (this.Settings.DeliriumIcons.TryGetValue(iconFinder, out var dHiddenMIcon))
+                                {
+                                    iconSizeMultiplierVector *= dHiddenMIcon.IconScale;
                                     fgDraw.AddImage(
-                                        monsterChestIcon.TexturePtr,
+                                        dHiddenMIcon.TexturePtr,
                                         mapCenter + fpos - iconSizeMultiplierVector,
                                         mapCenter + fpos + iconSizeMultiplierVector,
-                                        monsterChestIcon.UV0,
-                                        monsterChestIcon.UV1);
+                                        dHiddenMIcon.UV0,
+                                        dHiddenMIcon.UV1);
                                 }
+
+                                continue;
                             }
-                        }
-                        else if (buffsComp.StatusEffects.ContainsKey("legion_reward_display") ||
-                            entity.Value.Path.Contains("Chest") ||
-                            (hasOMP && omp.Rarity == Rarity.Unique))
-                        {
-                            // do display.
-                            this.frozenInTimeEntities[entity.Key.id] = entity.Value.Path.Split('/').LastOrDefault();
-                        }
-                        else
-                        {
-                            // do not display.
-                            this.frozenInTimeEntities[entity.Key.id] = string.Empty;
-                        }
-                    }
-                    else if (hasBuffs && buffsComp.StatusEffects.ContainsKey("hidden_monster"))
-                    {
-                        if (this.deliriumHiddenMonster.TryGetValue(entity.Key.id, out var iconFinder))
-                        {
-                            if (this.Settings.DeliriumIcons.TryGetValue(iconFinder, out var dHiddenMIcon))
+                            else if (entity.Value.Path.StartsWith( // New DELI
+                                this.deliriumHiddenMonsterStarting,
+                                StringComparison.Ordinal))
                             {
-                                iconSizeMultiplierVector *= dHiddenMIcon.IconScale;
-                                fgDraw.AddImage(
-                                    dHiddenMIcon.TexturePtr,
-                                    mapCenter + fpos - iconSizeMultiplierVector,
-                                    mapCenter + fpos + iconSizeMultiplierVector,
-                                    dHiddenMIcon.UV0,
-                                    dHiddenMIcon.UV1);
+                                this.deliriumHiddenMonster[entity.Key.id] =
+                                    this.DeliriumHiddenMonsterPathToIcon(entity.Value.Path);
+                                continue;
                             }
-                        }
-                        else if (entity.Value.Path.StartsWith(
-                            this.deliriumHiddenMonsterStarting,
-                            StringComparison.Ordinal))
-                        {
-                            this.deliriumHiddenMonster[entity.Key.id] =
-                                this.DeliriumHiddenMonsterPathToIcon(entity.Value.Path);
+
+                            // Hidden monsters that are not DELI.
+                            // We show them as regular monster.
                         }
                     }
-                    else
-                    {
-                        var monsterIcon = entityPos.IsFriendly
-                            ? this.Settings.BaseIcons["Friendly"]
-                            : this.RarityToIconMapping(omp.Rarity);
-                        iconSizeMultiplierVector *= monsterIcon.IconScale;
-                        fgDraw.AddImage(
-                            monsterIcon.TexturePtr,
-                            mapCenter + fpos - iconSizeMultiplierVector,
-                            mapCenter + fpos + iconSizeMultiplierVector,
-                            monsterIcon.UV0,
-                            monsterIcon.UV1);
-                    }
+
+                    // All monsters in the game.
+                    var monsterIcon = entityPos.IsFriendly ?
+                        this.Settings.BaseIcons["Friendly"] :
+                        this.RarityToIconMapping(omp.Rarity);
+                    iconSizeMultiplierVector *= monsterIcon.IconScale;
+                    fgDraw.AddImage(
+                        monsterIcon.TexturePtr,
+                        mapCenter + fpos - iconSizeMultiplierVector,
+                        mapCenter + fpos + iconSizeMultiplierVector,
+                        monsterIcon.UV0,
+                        monsterIcon.UV1);
                 }
                 else
                 {
