@@ -10,7 +10,9 @@ namespace GameOffsets.Objects.States.InGameState
         [FieldOffset(0x80)] public IntPtr AreaDetailsPtr; // WorldAreaDatOffsets.cs
         [FieldOffset(0xB0)] public byte MonsterLevel;
         [FieldOffset(0x114)] public uint CurrentAreaHash;
-        [FieldOffset(0x550)] public StdVector OverlayLeagueMechanic; //int, float.
+
+        // Env which are activated. Keys can be found in Environments.dat file.
+        [FieldOffset(0x550)] public StdVector Environments; // EnvironmentStruct
         [FieldOffset(0x580)] public IntPtr ServerDataPtr;
 
         [FieldOffset(0x588)] public IntPtr LocalPlayerPtr;
@@ -21,6 +23,14 @@ namespace GameOffsets.Objects.States.InGameState
 
         //[FieldOffset(0x5C0)] public StdMap SleepingEntities; // always after awake entities.
         [FieldOffset(0x7D8)] public TerrainStruct TerrainMetadata;
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct EnvironmentStruct
+    {
+        public ushort Key;
+        public ushort Value0;
+        public float Value1;
     }
 
     public static class AreaInstanceConstants

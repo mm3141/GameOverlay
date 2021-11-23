@@ -674,8 +674,7 @@ namespace Radar
                         }
                         else if (chestComp.IsLabelVisible)
                         {
-                            if (currentAreaInstance.DisappearingEntities.TryGetValue(entity.Key, out var league) &&
-                                league == LeagueMechanicType.Breach)
+                            if (currentAreaInstance.EntityCaches[0].Contains(entity.Key))
                             {
                                 chestIcon = this.Settings.BreachIcons["Breach Chest"];
                             }

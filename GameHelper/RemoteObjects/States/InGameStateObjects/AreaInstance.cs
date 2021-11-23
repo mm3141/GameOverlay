@@ -12,10 +12,10 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
     using Coroutine;
     using CoroutineEvents;
     using FilesStructures;
+    using GameHelper.Cache;
     using GameOffsets.Natives;
     using GameOffsets.Objects.States.InGameState;
     using ImGuiNET;
-    using RemoteEnums;
     using Utils;
 
     /// <summary>
@@ -23,12 +23,12 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
     /// </summary>
     public class AreaInstance : RemoteObjectBase
     {
-        private ActiveCoroutine removeEntitiesJob = null;
-        private string entityIdFilter = string.Empty;
-        private string entityPathFilter = string.Empty;
+        private string entityIdFilter;
+        private string entityPathFilter;
         private bool filterByPath;
-        private bool isLeagueMechanicActivated;
-        private StdVector overlayLeagueMechanic;
+
+        private StdVector environmentPtr;
+        private readonly List<int> environments;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="AreaInstance" /> class.
@@ -37,14 +37,36 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
         internal AreaInstance(IntPtr address)
             : base(address)
         {
+            this.entityIdFilter = string.Empty;
+            this.entityPathFilter = string.Empty;
+            this.filterByPath = false;
+
+            this.environmentPtr = default;
+            this.environments = new();
+
+            this.MonsterLevel = 0;
+            this.AreaHash = string.Empty;
+            this.AreaDetails = new(IntPtr.Zero);
+
+            this.ServerDataObject = new(IntPtr.Zero);
+            this.Player = new();
+            this.AwakeEntities = new();
+            this.EntityCaches = new()
+            {
+                new("Breach", 1088, 1092, this.AwakeEntities),
+                new("LeagueAffliction", 1098, 1098, this.AwakeEntities),
+                new("Hellscape", 1228, 1239, this.AwakeEntities)
+            };
+
+            this.NetworkBubbleEntityCount = 0;
+            this.TerrainMetadata = default;
+            this.GridHeightData = Array.Empty<float[]>();
+            this.GridWalkableData = Array.Empty<byte>();
+            this.TgtTilesLocations = new();
+
             Core.CoroutinesRegistrar.Add(CoroutineHandler.Start(
                 this.OnPerFrame(), "[AreaInstance] Update Area Data", int.MaxValue - 3));
         }
-
-        /// <summary>
-        ///     Gets the entities that will disappear once overlay league mechanic is gone.
-        /// </summary>
-        public ConcurrentDictionary<EntityNodeKey, LeagueMechanicType> DisappearingEntities { get; } = new();
 
         /// <summary>
         ///     Gets the Monster Level of current Area.
@@ -55,22 +77,22 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
         ///     Gets the Hash of the current Area/Zone.
         ///     This value is sent to the client from the server.
         /// </summary>
-        public string AreaHash { get; private set; } = string.Empty;
+        public string AreaHash { get; private set; }
 
         /// <summary>
         ///     Gets the Area Details.
         /// </summary>
-        public WorldAreaDat AreaDetails { get; } = new(IntPtr.Zero);
+        public WorldAreaDat AreaDetails { get; }
 
         /// <summary>
         ///     Gets the data related to the player the user is playing.
         /// </summary>
-        public ServerData ServerDataObject { get; } = new(IntPtr.Zero);
+        public ServerData ServerDataObject { get; }
 
         /// <summary>
         ///     Gets the player Entity.
         /// </summary>
-        public Entity Player { get; } = new();
+        public Entity Player { get; }
 
         /// <summary>
         ///     Gets the Awake Entities of the current Area/Zone.
@@ -78,7 +100,12 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
         ///     e.g. Monsters, Players, NPC, Chests and etc. Sleeping entities
         ///     are opposite of awake entities e.g. Decorations, Effects, particles and etc.
         /// </summary>
-        public ConcurrentDictionary<EntityNodeKey, Entity> AwakeEntities { get; } = new();
+        public ConcurrentDictionary<EntityNodeKey, Entity> AwakeEntities { get; }
+
+        /// <summary>
+        ///     Gets important environments entity caches. 
+        /// </summary>
+        public List<DisappearingEntity> EntityCaches { get; }
 
         /// <summary>
         ///     Gets the total number of entities in the network bubble.
@@ -93,33 +120,39 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
         /// <summary>
         ///     Gets the terrain height data.
         /// </summary>
-        public float[][] GridHeightData { get; private set; } = Array.Empty<float[]>();
+        public float[][] GridHeightData { get; private set; }
 
         /// <summary>
         ///     Gets the terrain data of the current Area/Zone instance.
         /// </summary>
-        public byte[] GridWalkableData { get; private set; } = Array.Empty<byte>();
+        public byte[] GridWalkableData { get; private set; }
 
         /// <summary>
         ///     Gets the Disctionary of Lists containing only the named tgt tiles locations.
         /// </summary>
-        public Dictionary<string, List<StdTuple2D<int>>> TgtTilesLocations { get; private set; } = new();
+        public Dictionary<string, List<StdTuple2D<int>>> TgtTilesLocations { get; private set; }
 
-        public float CurrentZoom()
+        /// <summary>
+        ///    Gets the current zoom value of the world.
+        /// </summary>
+        public float Zoom
         {
-            var player = this.Player;
-
-            if (player.TryGetComponent(out Render render))
+            get
             {
-                var wp = render.WorldPosition;
-                var p0 = Core.States.InGameStateObject.WorldToScreen(wp);
-                wp.Z += render.ModelBounds.Z;
-                var p1 = Core.States.InGameStateObject.WorldToScreen(wp);
+                var player = this.Player;
 
-                return Math.Abs(p1.Y - p0.Y) / render.ModelBounds.Z;
+                if (player.TryGetComponent(out Render render))
+                {
+                    var wp = render.WorldPosition;
+                    var p0 = Core.States.InGameStateObject.WorldToScreen(wp);
+                    wp.Z += render.ModelBounds.Z;
+                    var p1 = Core.States.InGameStateObject.WorldToScreen(wp);
+
+                    return Math.Abs(p1.Y - p0.Y) / render.ModelBounds.Z;
+                }
+
+                return 0;
             }
-            
-            return 0;
         }
 
         /// <summary>
@@ -128,15 +161,33 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
         internal override void ToImGui()
         {
             base.ToImGui();
-            if (ImGui.TreeNode("League Mechanic Info"))
+            if (ImGui.TreeNode("Environment Info"))
             {
-                ImGui.Text($"Any League Mechanic Activated: {this.isLeagueMechanicActivated}");
-                ImGui.Text($"Address: {this.overlayLeagueMechanic}");
+                ImGuiHelper.IntPtrToImGui("Address", this.environmentPtr.First);
+                if (ImGui.TreeNode($"All Environments ({this.environments.Count})##AllEnvironments"))
+                {
+                    for (var i = 0; i < this.environments.Count; i++)
+                    {
+                        if (ImGui.Selectable($"{this.environments[i]}"))
+                        {
+                            ImGui.SetClipboardText($"{this.environments[i]}");
+                        }
+                    }
+
+                    ImGui.TreePop();
+                }
+
+                foreach (var eCache in this.EntityCaches)
+                {
+                    eCache.ToImGui();
+                }
+
                 ImGui.TreePop();
             }
 
             ImGui.Text($"Area Hash: {this.AreaHash}");
             ImGui.Text($"Monster Level: {this.MonsterLevel}");
+            ImGui.Text($"World Zoom: {this.Zoom}");
             if (ImGui.TreeNode("Terrain Metadata"))
             {
                 ImGui.Text($"Total Tiles: {this.TerrainMetadata.TotalTiles}");
@@ -218,32 +269,12 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
 
                 ImGui.TreePop();
             }
-
-            if (ImGui.TreeNode($"Disappearing Entities ({this.DisappearingEntities.Count})###Disappearing Enttiies"))
-            {
-                foreach (var disappearingEntity in this.DisappearingEntities)
-                {
-                    ImGui.Text($"{disappearingEntity.Key}");
-                }
-
-                ImGui.TreePop();
-            }
         }
 
         /// <inheritdoc />
         protected override void CleanUpData()
         {
-            this.MonsterLevel = 0x00;
-            this.ServerDataObject.Address = IntPtr.Zero;
-            this.AreaHash = string.Empty;
-            this.Player.Address = IntPtr.Zero;
-            this.AreaDetails.Address = IntPtr.Zero;
-            this.NetworkBubbleEntityCount = 0x00;
-            this.TerrainMetadata = default;
-            this.AwakeEntities.Clear();
-            this.DisappearingEntities.Clear();
-            this.removeEntitiesJob?.Cancel();
-            this.removeEntitiesJob = null;
+            this.Cleanup(false);
         }
 
         /// <inheritdoc />
@@ -251,15 +282,10 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
         {
             var reader = Core.Process.Handle;
             var data = reader.ReadMemory<AreaInstanceOffsets>(this.Address);
-            this.overlayLeagueMechanic = data.OverlayLeagueMechanic;
-            this.isLeagueMechanicActivated = data.OverlayLeagueMechanic.TotalElements(1) > 0;
-            this.ServerDataObject.Address = data.ServerDataPtr;
+
             if (hasAddressChanged)
             {
-                this.AwakeEntities.Clear();
-                this.DisappearingEntities.Clear();
-                this.removeEntitiesJob?.Cancel();
-                this.removeEntitiesJob = null;
+                this.Cleanup(true);
                 this.AreaDetails.Address = data.AreaDetailsPtr;
                 this.TerrainMetadata = data.TerrainMetadata;
                 this.MonsterLevel = data.MonsterLevel;
@@ -270,6 +296,53 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
                 this.TgtTilesLocations = this.GetTgtFileData();
             }
 
+            this.UpdateEnvironmentAndCaches(data.Environments);
+            this.ServerDataObject.Address = data.ServerDataPtr;
+            this.Player.Address = data.LocalPlayerPtr;
+            this.UpdateAwakeEntities(data.AwakeEntities);
+        }
+
+        private void UpdateEnvironmentAndCaches(StdVector environments)
+        {
+            this.environments.Clear();
+            var reader = Core.Process.Handle;
+            this.environmentPtr = environments;
+            var envData = reader.ReadStdVector<EnvironmentStruct>(environments);
+            for (var i = 0; i < envData.Length; i++)
+            {
+                this.environments.Add(envData[i].Key);
+            }
+
+            this.EntityCaches.ForEach((eCache) => eCache.UpdateState(this.environments));
+        }
+
+        private void AddToCacheParallel(EntityNodeKey key, string path)
+        {
+            for (var i = 0; i < this.EntityCaches.Count; i++)
+            {
+                if (this.EntityCaches[i].TryAddParallel(key, path))
+                {
+                    break;
+                }
+            }
+        }
+
+        private void UpdateAwakeEntities(StdMap awakeEntities)
+        {
+            var reader = Core.Process.Handle;
+            if (Core.GHSettings.DisableEntityProcessingInTownOrHideout &&
+                (this.AreaDetails.IsHideout || this.AreaDetails.IsTown))
+            {
+                this.NetworkBubbleEntityCount = 0;
+                return;
+            }
+
+#if DEBUG
+            var entities = reader.ReadStdMapAsList<EntityNodeKey, EntityNodeValue>(awakeEntities);
+#else
+            var entities = reader.ReadStdMapAsList<EntityNodeKey, EntityNodeValue>(
+                awakeEntities, EntityFilter.IgnoreSleepingEntities);
+#endif
             foreach (var kv in this.AwakeEntities)
             {
                 if (!kv.Value.IsValid)
@@ -289,101 +362,24 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
                 kv.Value.IsValid = false;
             }
 
-            if (this.removeEntitiesJob == null)
+            this.NetworkBubbleEntityCount = entities.Count;
+            Parallel.For(0, entities.Count, index =>
             {
-                if (!this.isLeagueMechanicActivated && !this.DisappearingEntities.IsEmpty)
+                var (key, value) = entities[index];
+                if (this.AwakeEntities.ContainsKey(key))
                 {
-                    this.removeEntitiesJob = CoroutineHandler.InvokeLater(new Wait(0.5d), () =>
-                    {
-                        foreach (var dE in this.DisappearingEntities)
-                        {
-                            this.AwakeEntities.TryRemove(dE.Key, out var _);
-                            this.DisappearingEntities.TryRemove(dE.Key, out var _);
-                        }
-
-                        this.removeEntitiesJob = null;
-                    });
+                    this.AwakeEntities[key].Address = value.EntityPtr;
                 }
-            }
-            else
-            {
-                // at this time we are not differentiating between different league mechanics & their entities
-                // So if any league mechanic is activated, we will delay the deletion job.
-                if (this.isLeagueMechanicActivated)
+                else
                 {
-                    this.removeEntitiesJob.Cancel();
-                    this.removeEntitiesJob = null;
-                }
-            }
-
-            this.Player.Address = data.LocalPlayerPtr;
-            if (this.TryGetCurrentEntities(data, out var entities))
-            {
-                this.NetworkBubbleEntityCount = entities.Count;
-                Parallel.For(0, entities.Count, index =>
-                {
-                    var (key, value) = entities[index];
-                    if (this.AwakeEntities.ContainsKey(key))
+                    var entity = new Entity(value.EntityPtr);
+                    if (!string.IsNullOrEmpty(entity.Path))
                     {
-                        this.AwakeEntities[key].Address = value.EntityPtr;
+                        this.AwakeEntities[key] = entity;
+                        this.AddToCacheParallel(key, entity.Path);
                     }
-                    else
-                    {
-                        var entity = new Entity(value.EntityPtr);
-                        if (!string.IsNullOrEmpty(entity.Path))
-                        {
-                            this.AwakeEntities[key] = entity;
-                            this.DetectsAndAddsDisappearingEntity(
-                                this.isLeagueMechanicActivated,
-                                key,
-                                entity.Path);
-                        }
-                    }
-                });
-            }
-            else
-            {
-                this.NetworkBubbleEntityCount = 0;
-            }
-        }
-
-        private bool TryGetCurrentEntities(AreaInstanceOffsets data,
-            out List<(EntityNodeKey Key, EntityNodeValue Value)> entities)
-        {
-            var reader = Core.Process.Handle;
-            if (Core.GHSettings.DisableEntityProcessingInTownOrHideout &&
-                (this.AreaDetails.IsHideout || this.AreaDetails.IsTown))
-            {
-                entities = null;
-                return false;
-            }
-#if DEBUG
-            entities = reader.ReadStdMapAsList<EntityNodeKey, EntityNodeValue>(data.AwakeEntities);
-            return true;
-#else
-            entities = reader.ReadStdMapAsList<EntityNodeKey, EntityNodeValue>(
-                data.AwakeEntities, EntityFilter.IgnoreSleepingEntities);
-            return true;
-#endif
-        }
-
-        private void DetectsAndAddsDisappearingEntity(bool isLeagueMechanicActivated, EntityNodeKey key, string path)
-        {
-            if (isLeagueMechanicActivated)
-            {
-                if (path.Contains("Breach"))
-                {
-                    this.DisappearingEntities[key] = LeagueMechanicType.Breach;
                 }
-                else if (path.Contains("LeagueAffliction"))
-                {
-                    this.DisappearingEntities[key] = LeagueMechanicType.Delirium;
-                }
-                else if (path.Contains("Hellscape"))
-                {
-                    this.DisappearingEntities[key] = LeagueMechanicType.Scourge;
-                }
-            }
+            });
         }
 
         private Dictionary<string, List<StdTuple2D<int>>> GetTgtFileData()
@@ -510,6 +506,34 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             });
 
             return result;
+        }
+
+        /// <summary>
+        ///     knows how to clean up the <see cref="AreaInstance"/> class.
+        /// </summary>
+        /// <param name="isAreaChange">
+        ///     true in case it's a cleanup due to area change otherwise false.
+        /// </param>
+        private void Cleanup(bool isAreaChange)
+        {
+            this.AwakeEntities.Clear();
+            this.EntityCaches.ForEach((e) => e.Clear());
+
+            if (!isAreaChange)
+            {
+                this.environmentPtr = default;
+                this.environments.Clear();
+                this.MonsterLevel = 0;
+                this.AreaHash = string.Empty;
+                this.AreaDetails.Address = IntPtr.Zero;
+                this.ServerDataObject.Address = IntPtr.Zero;
+                this.Player.Address = IntPtr.Zero;
+                this.NetworkBubbleEntityCount = 0;
+                this.TerrainMetadata = default;
+                this.GridHeightData = Array.Empty<float[]>();
+                this.GridWalkableData = Array.Empty<byte>();
+                this.TgtTilesLocations.Clear();
+            }
         }
 
         private IEnumerator<Wait> OnPerFrame()

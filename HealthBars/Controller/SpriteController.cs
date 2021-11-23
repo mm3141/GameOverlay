@@ -50,7 +50,7 @@ namespace HealthBars.Controller
         {
             var sprite = this.spriteAtlas.GetSprite(spriteName);
             var offsetX = 0f;
-            var offsetY = 23.17313f + Core.States.InGameStateObject.CurrentAreaInstance.CurrentZoom() * 14.69196f;
+            var offsetY = 23.17313f + Core.States.InGameStateObject.CurrentAreaInstance.Zoom * 14.69196f;
 
             if (sprite == null)
             {
