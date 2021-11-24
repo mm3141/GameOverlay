@@ -715,7 +715,8 @@ namespace Radar
                         //     Legion monsters (a.k.a FIT) has Frozen in time + Hidden buff.
 
                         // When Legion monolith is clicked (Stage 1),
-                        //     FIT have just frozen in time buff.
+                        //     FIT Not Killed by User: Just have frozen in time buff.
+                        //     FIT Killed by user: Just have hidden buff.
 
                         // When Legion monolith is destroyed (Stage 2),
                         //     FIT are basically same as regular monster with no Frozen-in-time/hidden buff.
@@ -780,7 +781,13 @@ namespace Radar
                         }
                         else if (isHidden)
                         {
-                            if (this.deliriumHiddenMonster.TryGetValue(entity.Key.id, out var iconFinder)) // Known DELI
+                            if (this.frozenInTimeEntities.ContainsKey(entity.Key.id))
+                            {
+                                // let's not display hidden monsters that were FIT.
+                                // Since these are the monsters in Monolith stage-1 that user has already killed.
+                                continue;
+                            }
+                            else if (this.deliriumHiddenMonster.TryGetValue(entity.Key.id, out var iconFinder)) // Known DELI
                             {
                                 if (this.Settings.DeliriumIcons.TryGetValue(iconFinder, out var dHiddenMIcon))
                                 {
