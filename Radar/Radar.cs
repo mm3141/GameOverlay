@@ -802,6 +802,7 @@ namespace Radar
 
                                 continue;
                             }
+                            // Not using deli cache cuz it's not active in all type of deli zone/area.
                             else if (entity.Value.Path.StartsWith( // New DELI
                                 this.deliriumHiddenMonsterStarting,
                                 StringComparison.Ordinal))
