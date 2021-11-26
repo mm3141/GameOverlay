@@ -73,7 +73,7 @@ namespace GameHelper.Cache
         ///     Update the cache states/processes based on currently active environments.
         /// </summary>
         /// <param name="environments">array of currently activated environments.</param>
-        public void UpdateState(IReadOnlyList<int> environments)
+        internal void UpdateState(IReadOnlyList<int> environments)
         {
             this.UpdateActivation(environments);
             this.UpdateCleanUpJob();
@@ -85,7 +85,7 @@ namespace GameHelper.Cache
         /// <param name="entity">entity key to add.</param>
         /// <param name="path">entity path to validate entity belonging to the cache.</param>
         /// <returns>true in case the entity is added otherwise false.</returns>
-        public bool TryAddParallel(EntityNodeKey entity, string path)
+        internal bool TryAddParallel(EntityNodeKey entity, string path)
         {
             if (this.isActivated && path.Contains(this.name, System.StringComparison.Ordinal))
             {
@@ -99,10 +99,23 @@ namespace GameHelper.Cache
         /// <summary>
         ///     Clears all the data in this cache.
         /// </summary>
-        public void Clear()
+        internal void Clear()
         {
             this.isActivated = false;
             this.cache.Clear();
+        }
+
+        /// <summary>
+        ///     Draws a widget for this class.
+        /// </summary>
+        internal void ToImGui()
+        {
+            if (ImGui.TreeNode(this.name))
+            {
+                ImGui.Text($"Is Activated: {this.isActivated}");
+                ImGui.Text($"Total Entities: {this.cache.Count}");
+                ImGui.TreePop();
+            }
         }
 
         /// <summary>
@@ -113,16 +126,12 @@ namespace GameHelper.Cache
         public bool Contains(EntityNodeKey entity) => this.cache.ContainsKey(entity);
 
         /// <summary>
-        ///     Draws a widget for this class.
+        ///     checks if the cache is active or not.
         /// </summary>
-        public void ToImGui()
+        /// <returns>true in case the cache is active otherwise false.</returns>
+        public bool IsActive()
         {
-            if (ImGui.TreeNode(this.name))
-            {
-                ImGui.Text($"Is Activated: {this.isActivated}");
-                ImGui.Text($"Total Entities: {this.cache.Count}");
-                ImGui.TreePop();
-            }
+            return this.isActivated;
         }
 
         private void UpdateActivation(IReadOnlyList<int> environments)

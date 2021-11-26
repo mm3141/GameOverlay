@@ -51,6 +51,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             this.ServerDataObject = new(IntPtr.Zero);
             this.Player = new();
             this.AwakeEntities = new();
+            this.SleepingEntities = new();
             this.EntityCaches = new()
             {
                 new("Breach", 1088, 1092, this.AwakeEntities),
@@ -103,12 +104,18 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
         public ConcurrentDictionary<EntityNodeKey, Entity> AwakeEntities { get; }
 
         /// <summary>
-        ///     Gets important environments entity caches. 
+        ///     Gets the sleeping entities of the current Area/Zone.
+        ///     Sleeping entities are the ones which player can not interact with.
+        /// </summary>
+        public ConcurrentDictionary<EntityNodeKey, Entity> SleepingEntities { get; }
+
+        /// <summary>
+        ///     Gets important environments entity caches. This only contain awake entities.
         /// </summary>
         public List<DisappearingEntity> EntityCaches { get; }
 
         /// <summary>
-        ///     Gets the total number of entities in the network bubble.
+        ///     Gets the total number of entities (awake as well as sleeping) in the network bubble.
         /// </summary>
         public int NetworkBubbleEntityCount { get; private set; }
 
@@ -164,7 +171,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             if (ImGui.TreeNode("Environment Info"))
             {
                 ImGuiHelper.IntPtrToImGui("Address", this.environmentPtr.First);
-                if (ImGui.TreeNode($"All Environments ({this.environments.Count})##AllEnvironments"))
+                if (ImGui.TreeNode($"All Environments ({this.environments.Count})###AllEnvironments"))
                 {
                     for (var i = 0; i < this.environments.Count; i++)
                     {
@@ -214,61 +221,8 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             }
 
             ImGui.Text($"Entities in network bubble: {this.NetworkBubbleEntityCount}");
-            if (ImGui.TreeNode($"Awake Entities ({this.AwakeEntities.Count})###Awake Entities"))
-            {
-                if (ImGui.RadioButton("Filter by Id           ", this.filterByPath == false))
-                {
-                    this.filterByPath = false;
-                    this.entityPathFilter = string.Empty;
-                }
-
-                ImGui.SameLine();
-                if (ImGui.RadioButton("Filter by Path", this.filterByPath))
-                {
-                    this.filterByPath = true;
-                    this.entityIdFilter = string.Empty;
-                }
-
-                if (this.filterByPath)
-                {
-                    ImGui.InputText("Entity Path Filter", ref this.entityPathFilter, 100);
-                }
-                else
-                {
-                    ImGui.InputText("Entity Id Filter", ref this.entityIdFilter, 10, ImGuiInputTextFlags.CharsDecimal);
-                }
-
-                foreach (var awakeEntity in this.AwakeEntities)
-                {
-                    if (!(string.IsNullOrEmpty(this.entityIdFilter) ||
-                          $"{awakeEntity.Key.id}".Contains(this.entityIdFilter)))
-                    {
-                        continue;
-                    }
-
-                    if (!(string.IsNullOrEmpty(this.entityPathFilter) ||
-                          awakeEntity.Value.Path.ToLower().Contains(this.entityPathFilter.ToLower())))
-                    {
-                        continue;
-                    }
-
-                    if (ImGui.TreeNode($"{awakeEntity.Value.Id} {awakeEntity.Value.Path}"))
-                    {
-                        awakeEntity.Value.ToImGui();
-                        ImGui.TreePop();
-                    }
-
-                    if (awakeEntity.Value.IsValid &&
-                        awakeEntity.Value.TryGetComponent<Render>(out var eRender))
-                    {
-                        ImGuiHelper.DrawText(
-                            eRender.WorldPosition,
-                            $"ID: {awakeEntity.Key.id}");
-                    }
-                }
-
-                ImGui.TreePop();
-            }
+            this.EntitiesWidget("Awake", this.AwakeEntities);
+            this.EntitiesWidget("Sleeping", this.SleepingEntities);
         }
 
         /// <inheritdoc />
@@ -299,7 +253,8 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             this.UpdateEnvironmentAndCaches(data.Environments);
             this.ServerDataObject.Address = data.ServerDataPtr;
             this.Player.Address = data.LocalPlayerPtr;
-            this.UpdateAwakeEntities(data.AwakeEntities);
+            this.UpdateEntities(data.AwakeEntities, this.AwakeEntities, true);
+            this.UpdateEntities(data.SleepingEntities, this.SleepingEntities, false);
         }
 
         private void UpdateEnvironmentAndCaches(StdVector environments)
@@ -327,7 +282,10 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             }
         }
 
-        private void UpdateAwakeEntities(StdMap awakeEntities)
+        private void UpdateEntities(
+            StdMap ePtr,
+            ConcurrentDictionary<EntityNodeKey, Entity> data,
+            bool addToCache)
         {
             var reader = Core.Process.Handle;
             if (Core.GHSettings.DisableEntityProcessingInTownOrHideout &&
@@ -337,13 +295,9 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
                 return;
             }
 
-#if DEBUG
-            var entities = reader.ReadStdMapAsList<EntityNodeKey, EntityNodeValue>(awakeEntities);
-#else
             var entities = reader.ReadStdMapAsList<EntityNodeKey, EntityNodeValue>(
-                awakeEntities, EntityFilter.IgnoreSleepingEntities);
-#endif
-            foreach (var kv in this.AwakeEntities)
+                ePtr, EntityFilter.IgnoreVisualsAndDecorations);
+            foreach (var kv in data)
             {
                 if (!kv.Value.IsValid)
                 {
@@ -355,7 +309,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
                     // bubble is same as entity exploded.
                     if (this.Player.DistanceFrom(kv.Value) < AreaInstanceConstants.NETWORK_BUBBLE_RADIUS)
                     {
-                        this.AwakeEntities.TryRemove(kv.Key, out _);
+                        data.TryRemove(kv.Key, out _);
                     }
                 }
 
@@ -366,17 +320,20 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             Parallel.For(0, entities.Count, index =>
             {
                 var (key, value) = entities[index];
-                if (this.AwakeEntities.ContainsKey(key))
+                if (data.ContainsKey(key))
                 {
-                    this.AwakeEntities[key].Address = value.EntityPtr;
+                    data[key].Address = value.EntityPtr;
                 }
                 else
                 {
                     var entity = new Entity(value.EntityPtr);
                     if (!string.IsNullOrEmpty(entity.Path))
                     {
-                        this.AwakeEntities[key] = entity;
-                        this.AddToCacheParallel(key, entity.Path);
+                        data[key] = entity;
+                        if (addToCache)
+                        {
+                            this.AddToCacheParallel(key, entity.Path);
+                        }
                     }
                 }
             });
@@ -517,6 +474,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
         private void Cleanup(bool isAreaChange)
         {
             this.AwakeEntities.Clear();
+            this.SleepingEntities.Clear();
             this.EntityCaches.ForEach((e) => e.Clear());
 
             if (!isAreaChange)
@@ -533,6 +491,72 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
                 this.GridHeightData = Array.Empty<float[]>();
                 this.GridWalkableData = Array.Empty<byte>();
                 this.TgtTilesLocations.Clear();
+            }
+        }
+
+        private void EntitiesWidget(string label, ConcurrentDictionary<EntityNodeKey, Entity> data)
+        {
+            if (ImGui.TreeNode($"{label} Entities ({data.Count})###${label} Entities"))
+            {
+                if (ImGui.RadioButton("Filter by Id           ", this.filterByPath == false))
+                {
+                    this.filterByPath = false;
+                    this.entityPathFilter = string.Empty;
+                }
+
+                ImGui.SameLine();
+                if (ImGui.RadioButton("Filter by Path", this.filterByPath))
+                {
+                    this.filterByPath = true;
+                    this.entityIdFilter = string.Empty;
+                }
+
+                if (this.filterByPath)
+                {
+                    ImGui.InputText(
+                        "Entity Path Filter",
+                        ref this.entityPathFilter,
+                        100);
+                }
+                else
+                {
+                    ImGui.InputText(
+                        "Entity Id Filter",
+                        ref this.entityIdFilter,
+                        10,
+                        ImGuiInputTextFlags.CharsDecimal);
+                }
+
+                foreach (var entity in data)
+                {
+                    if (!(string.IsNullOrEmpty(this.entityIdFilter) ||
+                          $"{entity.Key.id}".Contains(this.entityIdFilter)))
+                    {
+                        continue;
+                    }
+
+                    if (!(string.IsNullOrEmpty(this.entityPathFilter) ||
+                          entity.Value.Path.ToLower().Contains(this.entityPathFilter.ToLower())))
+                    {
+                        continue;
+                    }
+
+                    if (ImGui.TreeNode($"{entity.Value.Id} {entity.Value.Path}"))
+                    {
+                        entity.Value.ToImGui();
+                        ImGui.TreePop();
+                    }
+
+                    if (entity.Value.IsValid &&
+                        entity.Value.TryGetComponent<Render>(out var eRender))
+                    {
+                        ImGuiHelper.DrawText(
+                            eRender.WorldPosition,
+                            $"ID: {entity.Key.id}");
+                    }
+                }
+
+                ImGui.TreePop();
             }
         }
 

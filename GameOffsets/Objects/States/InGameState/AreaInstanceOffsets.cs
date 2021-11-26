@@ -17,9 +17,8 @@ namespace GameOffsets.Objects.States.InGameState
 
         [FieldOffset(0x588)] public IntPtr LocalPlayerPtr;
 
-        // Sleeping is decorations, disabled particles, effects.
-        // Awake is objects like Chests, Monsters, Players, Npcs and etc.
         [FieldOffset(0x638)] public StdMap AwakeEntities;
+        [FieldOffset(0x648)] public StdMap SleepingEntities;
 
         //[FieldOffset(0x5C0)] public StdMap SleepingEntities; // always after awake entities.
         [FieldOffset(0x7D8)] public TerrainStruct TerrainMetadata;
@@ -45,7 +44,7 @@ namespace GameOffsets.Objects.States.InGameState
 
     public static class EntityFilter
     {
-        public static Func<EntityNodeKey, bool> IgnoreSleepingEntities = param =>
+        public static Func<EntityNodeKey, bool> IgnoreVisualsAndDecorations = param =>
         {
             // from the game code
             //     if (0x3fffffff < *(uint *)(lVar1 + 0x60)) {}

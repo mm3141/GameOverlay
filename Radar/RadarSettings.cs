@@ -11,6 +11,7 @@ namespace Radar
     using ImGuiNET;
     using Newtonsoft.Json;
     using GameHelper.Utils;
+    using System;
 
     /// <summary>
     /// <see cref="Radar"/> plugin settings class.
@@ -108,6 +109,11 @@ namespace Radar
         /// Gets a value indicating wether user want to draw a background when writing tile name.
         /// </summary>
         public bool TgtNameBackground = false;
+
+        /// <summary>
+        /// Gets the hotkey for showing/hiding sleeping monsters.
+        /// </summary>
+        public ConsoleKey SleepingMonstersHotkey = ConsoleKey.F;
 
         /// <summary>
         /// Gets the Tgts and their expected clusters per area/zone/map.
