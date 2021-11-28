@@ -181,7 +181,11 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
         }
 
         /// <inheritdoc />
-        protected override void CleanUpData() { }
+        protected override void CleanUpData()
+        {
+            this.componentAddresses.Clear();
+            this.componentCache.Clear();
+        }
 
         /// <inheritdoc />
         protected override void UpdateData(bool hasAddressChanged)
