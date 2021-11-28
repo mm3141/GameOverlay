@@ -16,7 +16,7 @@
     public class Rule
     {
         private ConditionType newConditionType = ConditionType.AILMENT;
-        private readonly Stopwatch delayStopwatch = Stopwatch.StartNew();
+        private readonly Stopwatch cooldownStopwatch = Stopwatch.StartNew();
 
         [JsonProperty("Conditions", NullValueHandling = NullValueHandling.Ignore)]
         private readonly List<ICondition> conditions = new();
@@ -79,6 +79,7 @@
                 if (MiscHelper.KeyUp(this.Key))
                 {
                     logger($"Pressed the {this.Key} key");
+                    this.cooldownStopwatch.Restart();
                 }
             }
         }
@@ -121,11 +122,10 @@
         /// <returns>true if all the rules conditions are true otherwise false.</returns>
         private bool Evaluate()
         {
-            if (this.delayStopwatch.Elapsed.TotalSeconds > this.delayBetweenRuns)
+            if (this.cooldownStopwatch.Elapsed.TotalSeconds > this.delayBetweenRuns)
             {
                 if (this.conditions.TrueForAll(x => x.Evaluate()))
                 {
-                    this.delayStopwatch.Restart();
                     return true;
                 }
             }
@@ -162,7 +162,7 @@
             ImGui.DragFloat("Cooldown time (seconds)##DelayTimerConditionDelay", ref this.delayBetweenRuns, 0.1f, 0.0f, 30.0f);
             ImGui.SameLine();
             var cooldownTimeFraction = this.delayBetweenRuns <= 0f ? 1f :
-                MathF.Min((float)this.delayStopwatch.Elapsed.TotalSeconds, this.delayBetweenRuns) / this.delayBetweenRuns;
+                MathF.Min((float)this.cooldownStopwatch.Elapsed.TotalSeconds, this.delayBetweenRuns) / this.delayBetweenRuns;
             ImGui.PushStyleColor(ImGuiCol.PlotHistogram, cooldownTimeFraction < 1f ?
                 ImGuiHelper.Color(255, 0, 0, 255) : ImGuiHelper.Color(0, 255, 0, 255));
             ImGui.ProgressBar(

@@ -34,11 +34,11 @@ namespace SimpleFlaskManager
         public override void DrawSettings()
         {
             ImGui.PushTextWrapPos(ImGui.GetContentRegionMax().X);
-            ImGui.TextColored(impTextColor, "Do not trust FlaskManager Settings.txt file from unknown source. " +
+            ImGui.TextColored(this.impTextColor, "Do not trust FlaskManager Settings.txt file from unknown source. " +
                               "Bad profiles may get your account banned. Also, they can contain malicious code. " +
                               "Google SCS0028 and CA2328 for more information.");
             ImGui.NewLine();
-            ImGui.TextColored(impTextColor, "All the flask rules in all the profiles must have " +
+            ImGui.TextColored(this.impTextColor, "All the flask rules in all the profiles must have " +
                               "FLASK_EFFECT and FLASK_CHARGES condition, otherwise Flask Manager will spam " +
                               "the flask and you might get kicked or banned.");
             ImGui.NewLine();
