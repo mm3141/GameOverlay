@@ -53,7 +53,7 @@
 
             var reservedPercentToFlat = Math.Round(this.ReservedPercent / 10000f * this.Total);
             var vitalExcludingReserved = this.Total - this.ReservedFlat - reservedPercentToFlat;
-            return (int)Math.Round(100 * this.Current / vitalExcludingReserved);
+            return (int)Math.Round(100 * (this.Current / vitalExcludingReserved));
         }
     }
 }

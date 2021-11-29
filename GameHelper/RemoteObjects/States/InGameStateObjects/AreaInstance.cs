@@ -254,7 +254,10 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             this.ServerDataObject.Address = data.ServerDataPtr;
             this.Player.Address = data.LocalPlayerPtr;
             this.UpdateEntities(data.AwakeEntities, this.AwakeEntities, true);
-            this.UpdateEntities(data.SleepingEntities, this.SleepingEntities, false);
+            if (!this.EntityCaches[2].IsActive())
+            {
+                this.UpdateEntities(data.SleepingEntities, this.SleepingEntities, false);
+            }
         }
 
         private void UpdateEnvironmentAndCaches(StdVector environments)
