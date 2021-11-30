@@ -111,11 +111,6 @@ namespace Radar
         public bool TgtNameBackground = false;
 
         /// <summary>
-        /// Gets the hotkey for showing/hiding sleeping monsters.
-        /// </summary>
-        public ConsoleKey SleepingMonstersHotkey = ConsoleKey.F;
-
-        /// <summary>
         /// Gets the Tgts and their expected clusters per area/zone/map.
         /// </summary>
         [JsonIgnore]

@@ -28,8 +28,6 @@ namespace Radar
     /// </summary>
     public sealed class Radar : PCore<RadarSettings>
     {
-        private bool showSleepingMonsters = false;
-
         // Legion Cache.
         private readonly Dictionary<uint, string> frozenInTimeEntities = new();
 
@@ -193,7 +191,6 @@ namespace Radar
             ImGui.Checkbox("Hide Entities outside the network bubble", ref this.Settings.HideOutsideNetworkBubble);
             ImGui.Checkbox("Show Player Names", ref this.Settings.ShowPlayersNames);
             ImGui.InputText("Party Leader Name", ref this.leaderName, 200);
-            ImGuiHelper.NonContinuousEnumComboBox("Sleeping Monsters Hotkey", ref this.Settings.SleepingMonstersHotkey);
             ImGuiHelper.ToolTip("This button will not work while Player is in the Scourge.");
             if (ImGui.CollapsingHeader("Icons Setting"))
             {
@@ -502,19 +499,7 @@ namespace Radar
             }
 
             var pPos = new Vector2(playerRender.GridPosition.X, playerRender.GridPosition.Y);
-            if (NativeMethods.IsKeyPressedAndNotTimeout((int)this.Settings.SleepingMonstersHotkey))
-            {
-                this.showSleepingMonsters = !this.showSleepingMonsters;
-            }
-
-            if (this.showSleepingMonsters && currentAreaInstance.EntityCaches[2].IsActive())
-            {
-                this.showSleepingMonsters = false;
-            }
-
-            foreach (var entity in this.showSleepingMonsters ?
-                currentAreaInstance.SleepingEntities :
-                currentAreaInstance.AwakeEntities)
+            foreach (var entity in currentAreaInstance.AwakeEntities)
             {
                 if (this.Settings.HideOutsideNetworkBubble && !entity.Value.IsValid)
                 {

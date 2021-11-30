@@ -18,9 +18,8 @@ namespace GameOffsets.Objects.States.InGameState
         [FieldOffset(0x588)] public IntPtr LocalPlayerPtr;
 
         [FieldOffset(0x638)] public StdMap AwakeEntities;
-        [FieldOffset(0x648)] public StdMap SleepingEntities;
+        // [FieldOffset(0x648)] public StdMap SleepingEntities; // always after awake entities.
 
-        //[FieldOffset(0x5C0)] public StdMap SleepingEntities; // always after awake entities.
         [FieldOffset(0x7D8)] public TerrainStruct TerrainMetadata;
     }
 

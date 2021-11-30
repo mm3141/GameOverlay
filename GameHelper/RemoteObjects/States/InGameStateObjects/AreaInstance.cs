@@ -51,7 +51,6 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             this.ServerDataObject = new(IntPtr.Zero);
             this.Player = new();
             this.AwakeEntities = new();
-            this.SleepingEntities = new();
             this.EntityCaches = new()
             {
                 new("Breach", 1088, 1092, this.AwakeEntities),
@@ -102,12 +101,6 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
         ///     are opposite of awake entities e.g. Decorations, Effects, particles and etc.
         /// </summary>
         public ConcurrentDictionary<EntityNodeKey, Entity> AwakeEntities { get; }
-
-        /// <summary>
-        ///     Gets the sleeping entities of the current Area/Zone.
-        ///     Sleeping entities are the ones which player can not interact with.
-        /// </summary>
-        public ConcurrentDictionary<EntityNodeKey, Entity> SleepingEntities { get; }
 
         /// <summary>
         ///     Gets important environments entity caches. This only contain awake entities.
@@ -222,7 +215,6 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
 
             ImGui.Text($"Entities in network bubble: {this.NetworkBubbleEntityCount}");
             this.EntitiesWidget("Awake", this.AwakeEntities);
-            this.EntitiesWidget("Sleeping", this.SleepingEntities);
         }
 
         /// <inheritdoc />
@@ -254,10 +246,6 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             this.ServerDataObject.Address = data.ServerDataPtr;
             this.Player.Address = data.LocalPlayerPtr;
             this.UpdateEntities(data.AwakeEntities, this.AwakeEntities, true);
-            if (!this.EntityCaches[2].IsActive())
-            {
-                this.UpdateEntities(data.SleepingEntities, this.SleepingEntities, false);
-            }
         }
 
         private void UpdateEnvironmentAndCaches(StdVector environments)
@@ -477,7 +465,6 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
         private void Cleanup(bool isAreaChange)
         {
             this.AwakeEntities.Clear();
-            this.SleepingEntities.Clear();
             this.EntityCaches.ForEach((e) => e.Clear());
 
             if (!isAreaChange)
