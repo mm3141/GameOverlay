@@ -112,22 +112,36 @@
 
         private void ToImGui()
         {
-            ImGui.PushItemWidth(ImGui.GetContentRegionAvail().X / 7);
             ImGui.PushID("StatusEffectDuration");
-            ImGui.Text("Player has (de)buff");
-            ImGui.SameLine();
-            ImGui.InputText("with", ref this.buffId, 200);
-            ImGui.SameLine();
-            ImGuiHelper.EnumComboBox("##comparison", ref this.@operator, SupportedOperatorTypes);
-            ImGui.SameLine();
-            ImGui.InputFloat("##threshold", ref this.threshold);
-            ImGui.SameLine();
-            ImGuiHelper.EnumComboBox("##checkType", ref this.checkType);
-            ImGuiHelper.ToolTip($"What to compare. {CheckType.DURATION_PERCENT} ranges from " +
-                $"0 to 100, 0 being buff will expire imminently and 100 meaning " +
-                $"it was just applied");
+            if (this.@operator != OperatorType.CONTAINS && this.@operator != OperatorType.NOT_CONTAINS)
+            {
+                ImGui.PushItemWidth(ImGui.GetContentRegionAvail().X / 7);
+                ImGui.Text("Player has (de)buff");
+                ImGui.SameLine();
+                ImGui.InputText("with", ref this.buffId, 200);
+                ImGui.SameLine();
+                ImGuiHelper.EnumComboBox("##comparison", ref this.@operator, SupportedOperatorTypes);
+                ImGui.SameLine();
+                ImGui.InputFloat("##threshold", ref this.threshold);
+                ImGui.SameLine();
+                ImGuiHelper.EnumComboBox("##checkType", ref this.checkType);
+                ImGuiHelper.ToolTip($"What to compare. {CheckType.DURATION_PERCENT} ranges from " +
+                    $"0 to 100, 0 being buff will expire imminently and 100 meaning " +
+                    $"it was just applied");
+                ImGui.PopItemWidth();
+            }
+            else
+            {
+                ImGui.PushItemWidth(ImGui.GetContentRegionAvail().X / 3);
+                ImGui.Text("Player");
+                ImGui.SameLine();
+                ImGuiHelper.EnumComboBox("##comparison", ref this.@operator, SupportedOperatorTypes);
+                ImGui.SameLine();
+                ImGui.InputText("(de)buff", ref this.buffId, 200);
+                ImGui.PopItemWidth();
+            }
+
             ImGui.PopID();
-            ImGui.PopItemWidth();
         }
 
         /// <summary>
