@@ -12,30 +12,32 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
     using GameHelper.Utils;
     using ImGuiNET;
     using Newtonsoft.Json;
-    using SimpleFlaskManager.ProfileManager.Enums;
+    using Enums;
 
     /// <summary>
     ///     For triggering a flask on player animation changes.
     /// </summary>
-    public class AnimationCondition
-        : BaseCondition<Animation>
+    public class AnimationCondition : ICondition
     {
-        private static OperatorType operatorStatic = OperatorType.EQUAL_TO;
-        private static Animation selectedStatic = 0;
-        private static int durationMsStatic;
+        private static readonly OperatorType[] SupportedOperatorTypes = { OperatorType.EQUAL_TO, OperatorType.NOT_EQUAL_TO };
+        private static readonly AnimationCondition ConfigurationInstance = new(OperatorType.EQUAL_TO, Animation.Idle, 0);
+
         private readonly Stopwatch sw;
 
+        [JsonProperty] private OperatorType @operator;
+        [JsonProperty] private Animation animation;
         [JsonProperty] private int durationMs;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="AnimationCondition" /> class.
         /// </summary>
-        /// <param name="operator_"><see cref="OperatorType" /> to use in this condition.</param>
+        /// <param name="operator"><see cref="OperatorType" /> to use in this condition.</param>
         /// <param name="animation">player animation to use for this condition.</param>
         /// <param name="duration">duration (ms) for which the animation is active.</param>
-        public AnimationCondition(OperatorType operator_, Animation animation, int duration)
-            : base(operator_, animation)
+        public AnimationCondition(OperatorType @operator, Animation animation, int duration)
         {
+            this.@operator = @operator;
+            this.animation = animation;
             this.durationMs = duration;
             this.sw = Stopwatch.StartNew();
         }
@@ -46,38 +48,37 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
         /// <returns>
         ///     <see cref="ICondition" /> if user wants to add the condition, otherwise null.
         /// </returns>
-        public new static AnimationCondition Add()
+        public static AnimationCondition Add()
         {
-            ToImGui(ref operatorStatic, ref selectedStatic, ref durationMsStatic);
+            ConfigurationInstance.ToImGui();
             ImGui.SameLine();
-            if (ImGui.Button("Add##Animation") &&
-                (operatorStatic == OperatorType.EQUAL_TO ||
-                 operatorStatic == OperatorType.NOT_EQUAL_TO))
+            if (ImGui.Button("Add##Animation"))
             {
-                return new AnimationCondition(operatorStatic, selectedStatic, durationMsStatic);
+                return new AnimationCondition(ConfigurationInstance.@operator,
+                                              ConfigurationInstance.animation,
+                                              ConfigurationInstance.durationMs);
             }
 
             return null;
         }
 
         /// <inheritdoc />
-        public override void Display(int index = 0)
+        public void Display()
         {
-            ToImGui(ref this.conditionOperator, ref this.rightHandOperand, ref this.durationMs);
-            base.Display(index);
+            this.ToImGui();
         }
 
         /// <inheritdoc />
-        public override bool Evaluate()
+        public bool Evaluate()
         {
             var player = Core.States.InGameStateObject.CurrentAreaInstance.Player;
             if (player.TryGetComponent<Actor>(out var actorComponent))
             {
-                var isConditionValid = this.conditionOperator switch
+                var isConditionValid = this.@operator switch
                 {
-                    OperatorType.EQUAL_TO => actorComponent.Animation == this.rightHandOperand,
-                    OperatorType.NOT_EQUAL_TO => actorComponent.Animation != this.rightHandOperand,
-                    _ => throw new Exception($"AnimationCondition doesn't support {this.conditionOperator}.")
+                    OperatorType.EQUAL_TO => actorComponent.Animation == this.animation,
+                    OperatorType.NOT_EQUAL_TO => actorComponent.Animation != this.animation,
+                    _ => throw new Exception($"AnimationCondition doesn't support {this.@operator}.")
                 };
 
                 if (isConditionValid)
@@ -96,16 +97,15 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
             return false;
         }
 
-        private static void ToImGui(ref OperatorType operator_, ref Animation animation, ref int duration)
+        private void ToImGui()
         {
             ImGui.Text("Player");
             ImGui.SameLine();
-            ImGuiHelper.EnumComboBox("##AnimationOperator", ref operator_);
-            ImGuiHelper.ToolTip($"Only {OperatorType.EQUAL_TO} & {OperatorType.NOT_EQUAL_TO} supported.");
+            ImGuiHelper.EnumComboBox("##AnimationOperator", ref this.@operator, SupportedOperatorTypes);
             ImGui.SameLine();
-            ImGuiHelper.EnumComboBox("for ##AnimationRHS", ref animation);
+            ImGuiHelper.EnumComboBox("for ##AnimationRHS", ref this.animation);
             ImGui.SameLine();
-            ImGui.InputInt("ms##AnimationDuration", ref duration);
+            ImGui.InputInt("ms##AnimationDuration", ref this.durationMs);
         }
     }
 }

@@ -18,7 +18,6 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
         /// <summary>
         ///     Displays the condition to the user via ImGui.
         /// </summary>
-        /// <param name="index">Condition sequence number.</param>
-        public void Display(int index = 0);
+        public void Display();
     }
 }

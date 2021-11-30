@@ -10,16 +10,17 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
     using GameHelper;
     using GameHelper.RemoteObjects.Components;
     using ImGuiNET;
-    using SimpleFlaskManager.ProfileManager.Enums;
+    using Newtonsoft.Json;
 
     /// <summary>
     ///     For triggering a flask when flask effect is not active on player.
     ///     NOTE: will not trigger a flask if flask isn't available on the slot.
     /// </summary>
-    public class FlaskEffectCondition
-        : BaseCondition<int>
+    public class FlaskEffectCondition : ICondition
     {
-        private static int flaskSlotStatic = 1;
+        private static readonly FlaskEffectCondition ConfigurationInstance = new(1);
+
+        [JsonProperty] private int flaskSlot;
         private IntPtr flaskAddressCache = IntPtr.Zero;
         private List<string> flaskBuffsCache = new();
 
@@ -28,8 +29,8 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
         /// </summary>
         /// <param name="flaskSlot">flask number whos effect to use in the condition.</param>
         public FlaskEffectCondition(int flaskSlot)
-            : base(OperatorType.NOT_CONTAINS, flaskSlot)
         {
+            this.flaskSlot = flaskSlot;
         }
 
         /// <summary>
@@ -38,29 +39,28 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
         /// <returns>
         ///     <see cref="ICondition" /> if user wants to add the condition, otherwise null.
         /// </returns>
-        public new static FlaskEffectCondition Add()
+        public static FlaskEffectCondition Add()
         {
-            ToImGui(OperatorType.NOT_CONTAINS, ref flaskSlotStatic);
+            ConfigurationInstance.ToImGui();
             ImGui.SameLine();
             if (ImGui.Button("Add##FlaskEffect"))
             {
-                return new FlaskEffectCondition(flaskSlotStatic);
+                return new FlaskEffectCondition(ConfigurationInstance.flaskSlot);
             }
 
             return null;
         }
 
         /// <inheritdoc />
-        public override void Display(int index = 0)
+        public void Display()
         {
-            ToImGui(this.conditionOperator, ref this.rightHandOperand);
-            base.Display(index);
+            this.ToImGui();
         }
 
         /// <inheritdoc />
-        public override bool Evaluate()
+        public bool Evaluate()
         {
-            var flask = Core.States.InGameStateObject.CurrentAreaInstance.ServerDataObject.FlaskInventory[0, this.rightHandOperand - 1];
+            var flask = Core.States.InGameStateObject.CurrentAreaInstance.ServerDataObject.FlaskInventory[0, this.flaskSlot - 1];
             if (flask.Address == IntPtr.Zero)
             {
                 return false;
@@ -96,11 +96,11 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
             return false;
         }
 
-        private static void ToImGui(OperatorType operation, ref int flaskSlot)
+        private void ToImGui()
         {
-            ImGui.Text($"Player {operation} flask effect of flask");
+            ImGui.Text("Player does not have effect of flask");
             ImGui.SameLine();
-            ImGui.DragInt("##FlaskEffectFlaskSlot", ref flaskSlot, 0.05f, 1, 5);
+            ImGui.DragInt("##FlaskEffectFlaskSlot", ref this.flaskSlot, 0.05f, 1, 5);
         }
     }
 }

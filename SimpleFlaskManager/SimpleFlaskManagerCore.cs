@@ -89,7 +89,7 @@ namespace SimpleFlaskManager
             if (ImGui.CollapsingHeader("Auto Quit"))
             {
                 ImGui.PushItemWidth(ImGui.GetContentRegionAvail().X / 6);
-                this.Settings.AutoQuitCondition.Display(int.MaxValue - 1);
+                this.Settings.AutoQuitCondition.Display();
                 ImGui.PopItemWidth();
             }
         }

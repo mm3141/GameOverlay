@@ -4,9 +4,13 @@
 
 namespace SimpleFlaskManager.ProfileManager.Enums
 {
+    using Newtonsoft.Json;
+    using Newtonsoft.Json.Converters;
+
     /// <summary>
     ///     Different type of operators available to use on the Conditions.
     /// </summary>
+    [JsonConverter(typeof(StringEnumConverter))]
     public enum OperatorType
     {
         /// <summary>

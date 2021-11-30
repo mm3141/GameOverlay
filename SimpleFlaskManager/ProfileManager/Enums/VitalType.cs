@@ -4,9 +4,13 @@
 
 namespace SimpleFlaskManager.ProfileManager.Enums
 {
+    using Newtonsoft.Json;
+    using Newtonsoft.Json.Converters;
+
     /// <summary>
     ///     Different type of player Vitals.
     /// </summary>
+    [JsonConverter(typeof(StringEnumConverter))]
     public enum VitalType
     {
         /// <summary>

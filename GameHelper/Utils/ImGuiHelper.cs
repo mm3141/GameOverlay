@@ -6,6 +6,7 @@ namespace GameHelper.Utils
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Numerics;
     using GameOffsets.Natives;
     using ImGuiNET;
@@ -135,14 +136,13 @@ namespace GameHelper.Utils
         /// <param name="selected">Selected enum value in the ComboBox.</param>
         /// <returns>true in case user select an item otherwise false.</returns>
         public static bool EnumComboBox<T>(string displayText, ref T selected)
-            where T : Enum
+            where T : struct, Enum
         {
-            var enumType = typeof(T);
-            var enumNames = Enum.GetNames(enumType);
-            var selectedIndex = (int)Convert.ChangeType(selected, typeof(int));
+            var enumNames = Enum.GetNames<T>();
+            var selectedIndex = (int) Convert.ChangeType(selected, typeof(int));
             if (ImGui.Combo(displayText, ref selectedIndex, enumNames, enumNames.Length))
             {
-                selected = (T)Enum.Parse(enumType, enumNames[selectedIndex]);
+                selected = Enum.Parse<T>(enumNames[selectedIndex]);
                 return true;
             }
 
@@ -157,14 +157,35 @@ namespace GameHelper.Utils
         /// <param name="selected">Selected enum value in the ComboBox.</param>
         /// <returns>true in case user select an item otherwise false.</returns>
         public static bool NonContinuousEnumComboBox<T>(string displayText, ref T selected)
-            where T : Enum
+            where T : struct, Enum
         {
-            var enumType = typeof(T);
-            var enumNames = Enum.GetNames(enumType);
+            var enumNames = Enum.GetNames<T>();
             var selectedIndex = Array.IndexOf(enumNames, $"{selected}");
             if (ImGui.Combo(displayText, ref selectedIndex, enumNames, enumNames.Length))
             {
-                selected = (T)Enum.Parse(enumType, enumNames[selectedIndex]);
+                selected = Enum.Parse<T>(enumNames[selectedIndex]);
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        ///     Creates a ImGui ComboBox for a subset of C# Enum values.
+        /// </summary>
+        /// <typeparam name="T">Enum type to display in the ComboBox.</typeparam>
+        /// <param name="displayText">Text to display along the ComboBox.</param>
+        /// <param name="selected">Selected enum value in the ComboBox.</param>
+        /// <param name="allowedItems">Items the user is allowed to select.</param>
+        /// <returns>True if an item was selected; otherwise, false.</returns>
+        public static bool EnumComboBox<T>(string displayText, ref T selected, IReadOnlyList<T> allowedItems)
+            where T : struct, Enum
+        {
+            var enumNames = allowedItems.Select(x => x.ToString()).ToArray();
+            var selectedIndex = Array.IndexOf(enumNames, selected.ToString());
+            if (ImGui.Combo(displayText, ref selectedIndex, enumNames, enumNames.Length))
+            {
+                selected = allowedItems[selectedIndex];
                 return true;
             }
 

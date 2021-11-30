@@ -9,15 +9,16 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
     using GameHelper.RemoteObjects.Components;
     using GameHelper.Utils;
     using ImGuiNET;
-    using SimpleFlaskManager.ProfileManager.Enums;
+    using Newtonsoft.Json;
 
     /// <summary>
     ///     For triggering a flask on player Status Effect changes.
     /// </summary>
-    public class AilmentCondition
-        : BaseCondition<string>
+    public class AilmentCondition : ICondition
     {
-        private static string statusEffectGroupKeyStatic = string.Empty;
+        private static readonly AilmentCondition ConfigurationInstance = new("");
+
+        [JsonProperty] private string statusEffectGroupKey;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="AilmentCondition" /> class.
@@ -27,8 +28,8 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
         ///     <see cref="JsonDataHelper.StatusEffectGroups" />.
         /// </param>
         public AilmentCondition(string statusEffectGroupKey)
-            : base(OperatorType.CONTAINS, statusEffectGroupKey)
         {
+            this.statusEffectGroupKey = statusEffectGroupKey;
         }
 
         /// <summary>
@@ -37,31 +38,30 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
         /// <returns>
         ///     <see cref="ICondition" /> if user wants to add the condition, otherwise null.
         /// </returns>
-        public new static AilmentCondition Add()
+        public static AilmentCondition Add()
         {
-            ToImGui(ref statusEffectGroupKeyStatic);
+            ConfigurationInstance.ToImGui();
             ImGui.SameLine();
             if (ImGui.Button("Add##StatusEffect") &&
-                !string.IsNullOrEmpty(statusEffectGroupKeyStatic))
+                !string.IsNullOrEmpty(ConfigurationInstance.statusEffectGroupKey))
             {
-                return new AilmentCondition(statusEffectGroupKeyStatic);
+                return new AilmentCondition(ConfigurationInstance.statusEffectGroupKey);
             }
 
             return null;
         }
 
         /// <inheritdoc />
-        public override void Display(int index = 0)
+        public void Display()
         {
-            ToImGui(ref this.rightHandOperand);
-            base.Display(index);
+            this.ToImGui();
         }
 
         /// <inheritdoc />
-        public override bool Evaluate()
+        public bool Evaluate()
         {
             var player = Core.States.InGameStateObject.CurrentAreaInstance.Player;
-            if (JsonDataHelper.StatusEffectGroups.TryGetValue(this.rightHandOperand, out var statusEffects))
+            if (JsonDataHelper.StatusEffectGroups.TryGetValue(this.statusEffectGroupKey, out var statusEffects))
             {
                 if (player.TryGetComponent<Buffs>(out var buffComponent))
                 {
@@ -75,14 +75,14 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
             return false;
         }
 
-        private static void ToImGui(ref string statusEffectGroupKey)
+        private void ToImGui()
         {
             ImGui.Text("Player has");
             ImGui.SameLine();
             ImGuiHelper.IEnumerableComboBox(
                 "ailment.##AilmentCondition",
                 JsonDataHelper.StatusEffectGroups.Keys,
-                ref statusEffectGroupKey);
+                ref this.statusEffectGroupKey);
         }
     }
 }
