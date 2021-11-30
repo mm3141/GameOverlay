@@ -54,10 +54,11 @@
             ImGui.SameLine();
             if (ImGui.Button("Add##StatusEffect"))
             {
-                return new StatusEffectCondition(ConfigurationInstance.@operator,
-                                                         ConfigurationInstance.buffId,
-                                                         ConfigurationInstance.threshold,
-                                                         ConfigurationInstance.checkType);
+                return new StatusEffectCondition(
+                    ConfigurationInstance.@operator,
+                    ConfigurationInstance.buffId,
+                    ConfigurationInstance.threshold,
+                    ConfigurationInstance.checkType);
             }
 
             return null;
@@ -88,23 +89,19 @@
 
         private float GetValue(Buffs buffComponent)
         {
+            var exists = buffComponent.StatusEffects.TryGetValue(this.buffId, out var buff);
             return this.checkType switch
             {
-                CheckType.CHARGES => buffComponent.StatusEffects.TryGetValue(this.buffId, out var buff)
-                                         ? buff.Charges
-                                         : 0f,
-                CheckType.DURATION => buffComponent.StatusEffects.TryGetValue(this.buffId, out var buff)
-                                          ? buff.TimeLeft
-                                          : 0f,
-                CheckType.DURATION_PERCENT => buffComponent.StatusEffects.TryGetValue(this.buffId, out var buff)
-                                                  ? buff.TimeLeft / buff.TotalTime * 100
-                                                  : 0f,
+                CheckType.CHARGES => exists ? buff.Charges : 0f,
+                CheckType.DURATION => exists ? buff.TimeLeft : 0f,
+                CheckType.DURATION_PERCENT => exists ? (buff.TimeLeft / buff.TotalTime) * 100 : 0f,
                 _ => throw new Exception($"Invalid check type {this.checkType}")
             };
         }
 
         private void ToImGui()
         {
+            ImGui.PushItemWidth(ImGui.GetContentRegionAvail().X / 7);
             ImGui.PushID("StatusEffectDuration");
             ImGui.Text("Player has (de)buff");
             ImGui.SameLine();
@@ -113,9 +110,11 @@
             ImGuiHelper.EnumComboBox("##comparison", ref this.@operator, SupportedOperatorTypes);
             ImGui.SameLine();
             ImGui.InputFloat("##threshold", ref this.threshold);
+            ImGui.SameLine();
             ImGuiHelper.EnumComboBox("##checkType", ref this.checkType);
             ImGuiHelper.ToolTip($"What to compare. {CheckType.DURATION_PERCENT} ranges from 0 to 100, 0 being buff will expire imminently and 100 meaning it was just applied");
             ImGui.PopID();
+            ImGui.PopItemWidth();
         }
 
         /// <summary>

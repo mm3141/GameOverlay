@@ -54,9 +54,10 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
             ImGui.SameLine();
             if (ImGui.Button("Add##Animation"))
             {
-                return new AnimationCondition(ConfigurationInstance.@operator,
-                                              ConfigurationInstance.animation,
-                                              ConfigurationInstance.durationMs);
+                return new AnimationCondition(
+                    ConfigurationInstance.@operator,
+                    ConfigurationInstance.animation,
+                    ConfigurationInstance.durationMs);
             }
 
             return null;

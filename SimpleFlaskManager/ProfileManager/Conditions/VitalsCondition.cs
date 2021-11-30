@@ -50,9 +50,10 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
             ImGui.SameLine();
             if (ImGui.Button("Add##Vitals"))
             {
-                return new VitalsCondition(ConfigurationInstance.@operator, 
-                                           ConfigurationInstance.vitalType,
-                                           ConfigurationInstance.threshold);
+                return new VitalsCondition(
+                    ConfigurationInstance.@operator,
+                    ConfigurationInstance.vitalType,
+                    ConfigurationInstance.threshold);
             }
 
             return null;

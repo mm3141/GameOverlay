@@ -50,9 +50,10 @@ namespace SimpleFlaskManager.ProfileManager.Conditions
             ImGui.SameLine();
             if (ImGui.Button("Add##FlaskCharges"))
             {
-                return new FlaskChargesCondition(ConfigurationInstance.@operator,
-                                                 ConfigurationInstance.flaskSlot,
-                                                 ConfigurationInstance.charges);
+                return new FlaskChargesCondition(
+                    ConfigurationInstance.@operator,
+                    ConfigurationInstance.flaskSlot,
+                    ConfigurationInstance.charges);
             }
 
             return null;
