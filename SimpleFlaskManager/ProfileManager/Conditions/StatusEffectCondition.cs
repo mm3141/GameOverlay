@@ -5,11 +5,11 @@
 ﻿namespace SimpleFlaskManager.ProfileManager.Conditions
 {
     using System;
-    using System.Linq;
     using Enums;
     using GameHelper;
     using GameHelper.RemoteObjects.Components;
     using GameHelper.Utils;
+    using GameOffsets.Objects.Components;
     using ImGuiNET;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Converters;
@@ -19,8 +19,16 @@
     /// </summary>
     public class StatusEffectCondition : ICondition
     {
-        private static readonly OperatorType[] SupportedOperatorTypes = { OperatorType.BIGGER_THAN, OperatorType.LESS_THAN };
-        private static readonly StatusEffectCondition ConfigurationInstance = new(OperatorType.BIGGER_THAN, "", 1, CheckType.CHARGES);
+        private static readonly OperatorType[] SupportedOperatorTypes =
+        {
+            OperatorType.BIGGER_THAN,
+            OperatorType.LESS_THAN,
+            OperatorType.CONTAINS,
+            OperatorType.NOT_CONTAINS,
+        };
+
+        private static readonly StatusEffectCondition ConfigurationInstance
+            = new(OperatorType.BIGGER_THAN, "", 1, CheckType.CHARGES);
 
         [JsonProperty] private string buffId;
         [JsonProperty] private CheckType checkType;
@@ -76,10 +84,13 @@
             var player = Core.States.InGameStateObject.CurrentAreaInstance.Player;
             if (player.TryGetComponent<Buffs>(out var buffComponent))
             {
+                var exists = buffComponent.StatusEffects.TryGetValue(this.buffId, out var buff);
                 return this.@operator switch
                 {
-                    OperatorType.BIGGER_THAN => this.GetValue(buffComponent) > this.threshold,
-                    OperatorType.LESS_THAN => this.GetValue(buffComponent) < this.threshold,
+                    OperatorType.BIGGER_THAN => (exists ? this.GetValue(buff) : 0f) > this.threshold,
+                    OperatorType.LESS_THAN => (exists ? this.GetValue(buff) : 0f) < this.threshold,
+                    OperatorType.CONTAINS => exists,
+                    OperatorType.NOT_CONTAINS => !exists,
                     _ => throw new Exception($"BuffCondition doesn't support {this.@operator}.")
                 };
             }
@@ -87,14 +98,14 @@
             return false;
         }
 
-        private float GetValue(Buffs buffComponent)
+        private float GetValue(StatusEffectStruct buffDetails)
         {
-            var exists = buffComponent.StatusEffects.TryGetValue(this.buffId, out var buff);
             return this.checkType switch
             {
-                CheckType.CHARGES => exists ? buff.Charges : 0f,
-                CheckType.DURATION => exists ? buff.TimeLeft : 0f,
-                CheckType.DURATION_PERCENT => exists ? (buff.TimeLeft / buff.TotalTime) * 100 : 0f,
+                CheckType.CHARGES => buffDetails.Charges,
+                CheckType.DURATION => buffDetails.TimeLeft,
+                CheckType.DURATION_PERCENT => float.IsInfinity(buffDetails.TimeLeft) ? 100f :
+                                              (buffDetails.TimeLeft / buffDetails.TotalTime) * 100,
                 _ => throw new Exception($"Invalid check type {this.checkType}")
             };
         }
@@ -112,7 +123,9 @@
             ImGui.InputFloat("##threshold", ref this.threshold);
             ImGui.SameLine();
             ImGuiHelper.EnumComboBox("##checkType", ref this.checkType);
-            ImGuiHelper.ToolTip($"What to compare. {CheckType.DURATION_PERCENT} ranges from 0 to 100, 0 being buff will expire imminently and 100 meaning it was just applied");
+            ImGuiHelper.ToolTip($"What to compare. {CheckType.DURATION_PERCENT} ranges from " +
+                $"0 to 100, 0 being buff will expire imminently and 100 meaning " +
+                $"it was just applied");
             ImGui.PopID();
             ImGui.PopItemWidth();
         }
