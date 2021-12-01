@@ -28,10 +28,10 @@
         };
 
         private static readonly StatusEffectCondition ConfigurationInstance
-            = new(OperatorType.BIGGER_THAN, "", 1, CheckType.CHARGES);
+            = new(OperatorType.BIGGER_THAN, "", 1, StatusEffectCheckType.CHARGES);
 
         [JsonProperty] private string buffId;
-        [JsonProperty] private CheckType checkType;
+        [JsonProperty] private StatusEffectCheckType checkType;
         [JsonProperty] private OperatorType @operator;
         [JsonProperty] private float threshold;
 
@@ -42,7 +42,7 @@
         /// <param name="buffId">Player buff/debuff to use in this condition.</param>
         /// <param name="threshold"></param>
         /// <param name="checkType">Type of buff value to check</param>
-        public StatusEffectCondition(OperatorType @operator, string buffId, float threshold, CheckType checkType)
+        public StatusEffectCondition(OperatorType @operator, string buffId, float threshold, StatusEffectCheckType checkType)
         {
             this.@operator = @operator;
             this.buffId = buffId;
@@ -102,9 +102,9 @@
         {
             return this.checkType switch
             {
-                CheckType.CHARGES => buffDetails.Charges,
-                CheckType.DURATION => buffDetails.TimeLeft,
-                CheckType.DURATION_PERCENT => float.IsInfinity(buffDetails.TimeLeft) ? 100f :
+                StatusEffectCheckType.CHARGES => buffDetails.Charges,
+                StatusEffectCheckType.DURATION => buffDetails.TimeLeft,
+                StatusEffectCheckType.DURATION_PERCENT => float.IsInfinity(buffDetails.TimeLeft) ? 100f :
                                               (buffDetails.TimeLeft / buffDetails.TotalTime) * 100,
                 _ => throw new Exception($"Invalid check type {this.checkType}")
             };
@@ -125,7 +125,7 @@
                 ImGui.InputFloat("##threshold", ref this.threshold);
                 ImGui.SameLine();
                 ImGuiHelper.EnumComboBox("##checkType", ref this.checkType);
-                ImGuiHelper.ToolTip($"What to compare. {CheckType.DURATION_PERCENT} ranges from " +
+                ImGuiHelper.ToolTip($"What to compare. {StatusEffectCheckType.DURATION_PERCENT} ranges from " +
                     $"0 to 100, 0 being buff will expire imminently and 100 meaning " +
                     $"it was just applied");
                 ImGui.PopItemWidth();
@@ -142,28 +142,6 @@
             }
 
             ImGui.PopID();
-        }
-
-        /// <summary>
-        /// Check type for the condition
-        /// </summary>
-        [JsonConverter(typeof(StringEnumConverter))]
-        public enum CheckType
-        {
-            /// <summary>
-            /// Check remaining buff duration
-            /// </summary>
-            DURATION,
-
-            /// <summary>
-            /// Check remaning buff duration in percent
-            /// </summary>
-            DURATION_PERCENT,
-
-            /// <summary>
-            /// Check buff charges
-            /// </summary>
-            CHARGES
         }
     }
 }
