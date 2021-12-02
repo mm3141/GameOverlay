@@ -90,6 +90,10 @@ namespace SimpleFlaskManager
             {
                 ImGui.PushItemWidth(ImGui.GetContentRegionAvail().X / 6);
                 this.Settings.AutoQuitCondition.Display();
+                ImGui.Separator();
+                ImGui.Text("Hotkey to manually quit game connection: ");
+                ImGui.SameLine();
+                ImGuiHelper.NonContinuousEnumComboBox("##Manual Quit HotKey", ref this.Settings.AutoQuitKey);
                 ImGui.PopItemWidth();
             }
         }

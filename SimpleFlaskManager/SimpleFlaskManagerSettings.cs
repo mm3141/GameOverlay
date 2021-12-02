@@ -4,6 +4,7 @@
 
 namespace SimpleFlaskManager
 {
+    using System;
     using System.Collections.Generic;
     using GameHelper.Plugin;
     using ProfileManager;
@@ -20,6 +21,11 @@ namespace SimpleFlaskManager
         /// </summary>
         public readonly VitalsCondition AutoQuitCondition =
             new(OperatorType.LESS_THAN, VitalType.LIFE, -1);
+
+        /// <summary>
+        ///     Gets a key which allows the user to manually quit the game Connection.
+        /// </summary>
+        public ConsoleKey AutoQuitKey = ConsoleKey.F11;
 
         /// <summary>
         ///     Gets all the profiles containing rules on when to drink the flasks.
