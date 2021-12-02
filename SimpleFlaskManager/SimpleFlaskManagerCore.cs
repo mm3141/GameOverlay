@@ -8,6 +8,7 @@ namespace SimpleFlaskManager
     using System.Collections.Generic;
     using System.IO;
     using System.Numerics;
+    using ClickableTransparentOverlay;
     using GameHelper;
     using GameHelper.Plugin;
     using GameHelper.RemoteEnums;
@@ -127,7 +128,8 @@ namespace SimpleFlaskManager
                 return;
             }
 
-            if (this.Settings.AutoQuitCondition.Evaluate())
+            if (this.Settings.AutoQuitCondition.Evaluate() ||
+                NativeMethods.IsKeyPressedAndNotTimeout((int)this.Settings.AutoQuitKey))
             {
                 MiscHelper.KillTCPConnectionForProcess(Core.Process.Pid);
             }
