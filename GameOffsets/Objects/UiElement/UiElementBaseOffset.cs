@@ -26,7 +26,7 @@ namespace GameOffsets.Objects.UiElement
 
         [FieldOffset(0x100)] public float LocalScaleMultiplier;
 
-        // [FieldOffset(0x108)] public float Scale;
+        [FieldOffset(0x158)] public float Scale;
         [FieldOffset(0x160)] public uint Flags; // variable
 
         [FieldOffset(0x180)] public StdTuple2D<float> UnscaledSize; // variable

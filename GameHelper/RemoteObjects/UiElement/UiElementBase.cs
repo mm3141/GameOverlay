@@ -5,6 +5,7 @@
 namespace GameHelper.RemoteObjects.UiElement
 {
     using System;
+    using System.Diagnostics;
     using System.Numerics;
     using GameOffsets.Objects.UiElement;
     using ImGuiNET;
@@ -41,6 +42,7 @@ namespace GameHelper.RemoteObjects.UiElement
         /// </summary>
         protected Vector2 relativePosition = Vector2.Zero;
 
+        protected float Scale = 1f;
         /// <summary>
         ///     Index of the List of scale values.
         /// </summary>
@@ -88,8 +90,9 @@ namespace GameHelper.RemoteObjects.UiElement
                 var (widthScale, heightScale) = Core.GameScale.GetScaleValue(
                     this.scaleIndex, this.localScaleMultiplier);
                 var pos = this.GetUnScaledPosition();
-                pos.X *= widthScale;
-                pos.Y *= heightScale;
+                pos.X *= Scale;
+                pos.Y *= Scale;
+                Debug.Assert(!float.IsInfinity(pos.X));
                 return pos;
             }
 
@@ -106,8 +109,8 @@ namespace GameHelper.RemoteObjects.UiElement
                 var (widthScale, heightScale) = Core.GameScale.GetScaleValue(
                     this.scaleIndex, this.localScaleMultiplier);
                 var size = this.unScaledSize;
-                size.X *= widthScale;
-                size.Y *= heightScale;
+                size.X *= Scale;
+                size.Y *= Scale;
                 return size;
             }
 
@@ -203,6 +206,7 @@ namespace GameHelper.RemoteObjects.UiElement
             this.relativePosition = Vector2.Zero;
             this.unScaledSize = Vector2.Zero;
             this.scaleIndex = 0x00;
+            Scale = 1;
         }
 
         /// <inheritdoc />
@@ -246,7 +250,8 @@ namespace GameHelper.RemoteObjects.UiElement
 
             this.unScaledSize.X = data.UnscaledSize.X;
             this.unScaledSize.Y = data.UnscaledSize.Y;
-        }
+            Scale = data.Scale;
+    }
 
         /// <summary>
         ///     This function was basically parsed/read/decompiled from the game.
@@ -277,6 +282,7 @@ namespace GameHelper.RemoteObjects.UiElement
                 this.Parent.scaleIndex, this.Parent.localScaleMultiplier);
             var (myScaleW, myScaleH) = Core.GameScale.GetScaleValue(
                 this.scaleIndex, this.localScaleMultiplier);
+
             Vector2 myPos;
             myPos.X = parentPos.X * parentScaleW / myScaleW
                       + this.relativePosition.X;

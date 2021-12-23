@@ -6,6 +6,7 @@ namespace GameHelper.RemoteObjects
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using Coroutine;
     using CoroutineEvents;
     using GameOffsets.Objects.UiElement;
@@ -59,7 +60,9 @@ namespace GameHelper.RemoteObjects
                     heightScale *= this.Values[UiElementBaseFuncs.SCALE_INDEX_3 + 1];
                     break;
             }
-
+            if (widthScale != 0) { 
+                //Debug.Assert(widthScale == 1.35f && heightScale == 1.35f);
+            }
             return (widthScale, heightScale);
         }
 
@@ -82,12 +85,22 @@ namespace GameHelper.RemoteObjects
                 this.Values[i] = 1f;
             }
         }
-
+        IntPtr temp_width {
+            get {
+                var m = Core.Process.Handle;
+                var poe_addr = Core.Process.Information.MainModule.BaseAddress;
+                var _0 = m.ReadMemory<IntPtr>(poe_addr + 0x024373B8);
+                var _1 = m.ReadMemory<IntPtr>(_0 + 0xE0);
+                var res = _1 + 0x180;
+                return res;
+            }
+        }
+     
         /// <inheritdoc />
         protected override void UpdateData(bool hasAddressChanged)
         {
             var reader = Core.Process.Handle;
-            var data = reader.ReadMemoryArray<float>(this.Address, this.Values.Length);
+            var data = reader.ReadMemoryArray<float>(temp_width/*this.Address*/, this.Values.Length);
             for (var i = 0; i < data.Length; i++)
             {
                 this.Values[i] = data[i];
