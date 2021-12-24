@@ -25,5 +25,9 @@ namespace GameHelper.Utils
         ///     ToImGui method of the property.
         /// </summary>
         public MethodInfo ToImGui;
+
+        public override string ToString() {
+            return Name;
+        }
     }
 }

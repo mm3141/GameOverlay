@@ -7,6 +7,7 @@ namespace GameHelper
     using System;
     using System.Collections.Generic;
     using System.IO;
+    using System.Linq;
     using System.Reflection;
     using Coroutine;
     using CoroutineEvents;
@@ -129,7 +130,8 @@ namespace GameHelper
         internal static void RemoteObjectsToImGuiCollapsingHeader()
         {
             const BindingFlags propertyFlags = BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static;
-            foreach (var property in RemoteObjectBase.GetToImGuiMethods(typeof(Core), propertyFlags, null))
+            var rob_list = RemoteObjectBase.GetToImGuiMethods(typeof(Core), propertyFlags, null).ToList();
+            foreach (var property in rob_list)
             {
                 if (ImGui.CollapsingHeader(property.Name))
                 {

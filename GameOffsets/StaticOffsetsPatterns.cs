@@ -77,9 +77,12 @@
             // Trace and Break on that instruction with 1000 in Maximum trace count
             // go into all "Call POE.exe +XYZASDAS" functions
             // in one of them, it will be reading floats from static address.
-            // ///// Alternative Approach
+            // ///// Alternative Approach 
+            // => this method doesn't work. Tried on game state ="loading screen"
+            //all the time 2200+ the same values and do not decrease, so it is not clear which address to investigate
             // Change game window Height and Width (when in the login screen)
             // Look for float which increases when Width increases and decreases when width decreases max = 1.0 min = 0.3
+           
             // Now look for who access this address
             // </HowToFindIt>
             // this is the pattern.
