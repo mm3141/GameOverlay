@@ -370,3 +370,4 @@ PreloadAlert/preloads.txt
 Radar/important_tgt_files.txt
 
 .idea
+Resources/Properties/*.Designer.cs

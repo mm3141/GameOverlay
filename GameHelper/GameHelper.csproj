@@ -31,6 +31,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\GameOffsets\GameOffsets.csproj" />
+    <ProjectReference Include="..\Resources\Resources.csproj" />
   </ItemGroup>
 
   <Target Name="DeleteDebugSymbolFiles" AfterTargets="Build" Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
