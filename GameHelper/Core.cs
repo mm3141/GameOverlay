@@ -6,12 +6,15 @@ namespace GameHelper
 {
     using System;
     using System.Collections.Generic;
+    using System.Globalization;
     using System.IO;
+    using System.Linq;
     using System.Reflection;
     using Coroutine;
     using CoroutineEvents;
     using ImGuiNET;
     using RemoteObjects;
+    using Resources.Properties;
     using Settings;
     using Utils;
 
@@ -77,6 +80,21 @@ namespace GameHelper
         /// </summary>
         internal static State GHSettings { get; } = JsonHelper.CreateOrLoadJsonFile<State>(State.CoreSettingFile);
 
+        internal static readonly List<CultureInfo> AvailableLocales =
+            CultureInfo.GetCultures(CultureTypes.NeutralCultures)
+               .Where(c =>
+                {
+                    if (c.Equals(CultureInfo.InvariantCulture))
+                    {
+                        return false;
+                    }
+                    var rs = Localization.ResourceManager.GetResourceSet(c, true, false);
+                    return rs != null;
+                })
+               .OrderBy(x => x.NativeName)
+                //ensure that at least english is available
+               .Prepend(CultureInfo.GetCultureInfo("en")).Distinct().ToList();
+
         /// <summary>
         ///     Initializes the <see cref="Core" /> class.
         /// </summary>
@@ -90,6 +108,14 @@ namespace GameHelper
             {
                 version = "Dev";
             }
+
+            Localization.Culture =
+                (string.IsNullOrWhiteSpace(GHSettings.SelectedLanguage)
+                     //pick the default language by system locale if it's available
+                     ? AvailableLocales.FirstOrDefault(x =>
+                         x.TwoLetterISOLanguageName == CultureInfo.CurrentCulture.TwoLetterISOLanguageName)
+                     : CultureInfo.GetCultureInfo(GHSettings.SelectedLanguage))
+             ?? AvailableLocales.First();
         }
 
         /// <summary>

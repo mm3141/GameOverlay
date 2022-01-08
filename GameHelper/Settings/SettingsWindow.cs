@@ -16,6 +16,7 @@ namespace GameHelper.Settings
     using GameOffsets.Natives;
     using ImGuiNET;
     using Plugin;
+    using Resources.Properties;
     using Utils;
     using GameOffsets.Objects.States.InGameState;
 
@@ -109,17 +110,31 @@ namespace GameHelper.Settings
         private static void DrawCoreSettings()
         {
             ImGui.PushTextWrapPos(ImGui.GetContentRegionMax().X);
-            ImGui.TextColored(color, "This is a free software, only use https://ownedcore.com to " +
-                "download it. Do not buy from the fake sellers or websites.");
-            ImGui.TextColored(color, "请不要花钱购买本软件，否则你就是个傻逼。这是一个免费软件。" +
-                "不要从假卖家那里购买。前往 https://ownedcore.com 免费下载。");
+            var currentCulture = Localization.Culture;
+            if (ImGuiHelper.IEnumerableComboBox("Display language", Core.AvailableLocales, ref currentCulture,
+                    x => x.NativeName == x.EnglishName ? x.NativeName : $"{x.NativeName} ({x.EnglishName})"))
+            {
+                Core.GHSettings.SelectedLanguage = currentCulture.ToString();
+                Localization.Culture = currentCulture;
+            }
+
+            //this is hardcoded to avoid people changing the warning to something else,
+            //do not put it into the resource files
+            var freeSoftwareWarning = currentCulture.ToString() switch
+            {
+                "zh" => "请不要花钱购买本软件，否则你就是个傻逼。这是一个免费软件。" +
+                        "不要从假卖家那里购买。前往 https://ownedcore.com 免费下载。",
+                _ => "This is a free software, only use https://ownedcore.com to " +
+                     "download it. Do not buy from the fake sellers or websites."
+            };
+
+            ImGui.TextColored(color, freeSoftwareWarning);
             ImGui.NewLine();
             ImGui.TextColored(Vector4.One, "Developer of this software is not responsible for " +
                               "any loss that may happen due to the usage of this software. Use this " +
                               "software at your own risk.");
             ImGui.NewLine();
-            ImGui.TextColored(Vector4.One, "All Settings (including plugins) are saved automatically " +
-                  $"when you close the overlay or hide it via {Core.GHSettings.MainMenuHotKey} button.");
+            ImGui.TextColored(Vector4.One, string.Format(Localization.SettingsAreSaveAutomatically, Core.GHSettings.MainMenuHotKey));
             ImGui.NewLine();
             ImGui.PopTextWrapPos();
             ImGui.DragInt("Nearby Monster Range", ref Core.GHSettings.NearbyMeaning, 1f, 1, 200);

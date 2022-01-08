@@ -199,11 +199,12 @@ namespace GameHelper.Utils
         /// <param name="displayText">Text to display along the ComboBox.</param>
         /// <param name="items">IEnumerable data to choose from in the ComboBox.</param>
         /// <param name="current">Currently selected object of the IEnumerable data.</param>
+        /// <param name="displaySelector">The function that converts a selectable object to its visual representation</param>
         /// <returns>Returns a value indicating whether user has selected an item or not.</returns>
-        public static bool IEnumerableComboBox<T>(string displayText, IEnumerable<T> items, ref T current)
+        public static bool IEnumerableComboBox<T>(string displayText, IEnumerable<T> items, ref T current, Func<T, string> displaySelector)
         {
             var ret = false;
-            if (ImGui.BeginCombo(displayText, $"{current}"))
+            if (ImGui.BeginCombo(displayText, displaySelector(current)))
             {
                 var counter = 0;
                 foreach (var item in items)
@@ -214,7 +215,7 @@ namespace GameHelper.Utils
                         ImGui.SetScrollHereY();
                     }
 
-                    if (ImGui.Selectable($"{counter}:{item}", selected))
+                    if (ImGui.Selectable($"{counter}:{displaySelector(item)}", selected))
                     {
                         current = item;
                         ret = true;
@@ -227,6 +228,19 @@ namespace GameHelper.Utils
             }
 
             return ret;
+        }
+
+        /// <summary>
+        ///     Creates a ImGui ComboBox for C# IEnumerable.
+        /// </summary>
+        /// <typeparam name="T">The type of objects in the IEnumerable.</typeparam>
+        /// <param name="displayText">Text to display along the ComboBox.</param>
+        /// <param name="items">IEnumerable data to choose from in the ComboBox.</param>
+        /// <param name="current">Currently selected object of the IEnumerable data.</param>
+        /// <returns>Returns a value indicating whether user has selected an item or not.</returns>
+        public static bool IEnumerableComboBox<T>(string displayText, IEnumerable<T> items, ref T current)
+        {
+            return IEnumerableComboBox(displayText, items, ref current, x => x?.ToString());
         }
 
         /// <summary>

@@ -89,6 +89,11 @@ namespace GameHelper.Settings
         public ConsoleKey MainMenuHotKey = ConsoleKey.F12;
 
         /// <summary>
+        /// The selected language code
+        /// </summary>
+        public string SelectedLanguage = "";
+
+        /// <summary>
         ///     Gets or sets a value indicating whether
         ///     to show DataVisualization window or not.
         /// </summary>
