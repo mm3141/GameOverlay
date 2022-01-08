@@ -56,21 +56,7 @@ namespace GameHelper
         /// <inheritdoc />
         protected override void PostStart()
         {
-            if (MiscHelper.TryConvertStringToImGuiGlyphRanges(Core.GHSettings.FontCustomGlyphRange, out var glyphRanges))
-            {
-                Core.Overlay.ReplaceFont(
-                    Core.GHSettings.FontPathName,
-                    Core.GHSettings.FontSize,
-                    glyphRanges);
-            }
-            else
-            {
-                Core.Overlay.ReplaceFont(
-                    Core.GHSettings.FontPathName,
-                    Core.GHSettings.FontSize,
-                    Core.GHSettings.FontLanguage);
-            }
-
+            Core.UpdateFont();
             PManager.InitializePlugins();
         }
 

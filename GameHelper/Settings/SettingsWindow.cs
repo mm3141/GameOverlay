@@ -114,8 +114,7 @@ namespace GameHelper.Settings
             if (ImGuiHelper.IEnumerableComboBox("Display language", Core.AvailableLocales, ref currentCulture,
                     x => x.NativeName == x.EnglishName ? x.NativeName : $"{x.NativeName} ({x.EnglishName})"))
             {
-                Core.GHSettings.SelectedLanguage = currentCulture.ToString();
-                Localization.Culture = currentCulture;
+                Core.SetUiCulture(currentCulture);
             }
 
             //this is hardcoded to avoid people changing the warning to something else,
@@ -190,6 +189,7 @@ namespace GameHelper.Settings
         {
             if (ImGui.CollapsingHeader("Change Fonts"))
             {
+                ImGui.Checkbox("Try inferring font language from UI language", ref Core.GHSettings.InferFontLanguageFromUiLanguage);
                 ImGui.InputText("Pathname", ref Core.GHSettings.FontPathName, 300);
                 ImGui.DragInt("Size", ref Core.GHSettings.FontSize, 0.1f, 13, 40);
                 var languageChanged = ImGuiHelper.EnumComboBox("Language", ref Core.GHSettings.FontLanguage);
@@ -210,20 +210,7 @@ namespace GameHelper.Settings
 
                 if (ImGui.Button("Apply Changes"))
                 {
-                    if (MiscHelper.TryConvertStringToImGuiGlyphRanges(Core.GHSettings.FontCustomGlyphRange, out var glyphranges))
-                    {
-                        Core.Overlay.ReplaceFont(
-                            Core.GHSettings.FontPathName,
-                            Core.GHSettings.FontSize,
-                            glyphranges);
-                    }
-                    else
-                    {
-                        Core.Overlay.ReplaceFont(
-                            Core.GHSettings.FontPathName,
-                            Core.GHSettings.FontSize,
-                            Core.GHSettings.FontLanguage);
-                    }
+                    Core.UpdateFont();
                 }
             }
         }

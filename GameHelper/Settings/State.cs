@@ -75,6 +75,10 @@ namespace GameHelper.Settings
         /// </summary>
         public FontGlyphRangeType FontLanguage = FontGlyphRangeType.ChineseSimplifiedCommon;
 
+        /// <summary>
+        ///     Try inferring the needed character range from the language code
+        /// </summary>
+        public bool InferFontLanguageFromUiLanguage = true;
 
         /// <summary>
         ///     Gets the custom glyph range to load from the font texture. This is useful in case
