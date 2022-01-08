@@ -124,6 +124,9 @@ namespace GameHelper.Settings
             {
                 "zh" => "请不要花钱购买本软件，否则你就是个傻逼。这是一个免费软件。" +
                         "不要从假卖家那里购买。前往 https://ownedcore.com 免费下载。",
+                "ru" => "Это бесплатное программное обеспечение, для его загрузки " +
+                        "используйте только https://ownedcore.com. Не покупайте у " +
+                        "поддельных продавцов или веб-сайтов.",
                 _ => "This is a free software, only use https://ownedcore.com to " +
                      "download it. Do not buy from the fake sellers or websites."
             };

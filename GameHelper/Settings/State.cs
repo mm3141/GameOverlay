@@ -89,7 +89,7 @@ namespace GameHelper.Settings
         public ConsoleKey MainMenuHotKey = ConsoleKey.F12;
 
         /// <summary>
-        /// The selected language code
+        ///     The selected UI language code
         /// </summary>
         public string SelectedLanguage = "";
 
