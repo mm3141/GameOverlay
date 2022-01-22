@@ -43,23 +43,20 @@ namespace GameHelper.Settings
             {
                 if (ImGui.BeginMenu("Enable Plugins"))
                 {
-                    foreach (var pKeyValue in PManager.AllPlugins.ToList())
+                    foreach (var container in PManager.Plugins)
                     {
-                        var pluginContainer = pKeyValue.Value;
-                        var isEnabled = pluginContainer.Enable;
-                        if (ImGui.Checkbox($"{pKeyValue.Key}", ref isEnabled))
+                        var isEnabled = container.Metadata.Enable;
+                        if (ImGui.Checkbox($"{container.Name}", ref isEnabled))
                         {
-                            pluginContainer.Enable = !pluginContainer.Enable;
-                            if (pluginContainer.Enable)
+                            container.Metadata.Enable = !container.Metadata.Enable;
+                            if (container.Metadata.Enable)
                             {
-                                pluginContainer.Plugin.OnEnable(Core.Process.Address != IntPtr.Zero);
+                                container.Plugin.OnEnable(Core.Process.Address != IntPtr.Zero);
                             }
                             else
                             {
-                                pluginContainer.Plugin.OnDisable();
+                                container.Plugin.OnDisable();
                             }
-
-                            PManager.AllPlugins[pKeyValue.Key] = pluginContainer;
                         }
                     }
 
@@ -80,11 +77,11 @@ namespace GameHelper.Settings
                     ImGui.EndTabItem();
                 }
 
-                foreach (var pKeyValue in PManager.AllPlugins.ToList())
+                foreach (var container in PManager.Plugins)
                 {
-                    if (pKeyValue.Value.Enable && ImGui.BeginTabItem(pKeyValue.Key))
+                    if (container.Metadata.Enable && ImGui.BeginTabItem(container.Name))
                     {
-                        pKeyValue.Value.Plugin.DrawSettings();
+                        container.Plugin.DrawSettings();
                         ImGui.EndTabItem();
                     }
                 }

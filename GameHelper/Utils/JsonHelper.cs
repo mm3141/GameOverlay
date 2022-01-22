@@ -21,6 +21,7 @@ namespace GameHelper.Utils
         public static T CreateOrLoadJsonFile<T>(FileInfo file)
             where T : new()
         {
+            file.Refresh();
             file.Directory.Create();
             if (file.Exists)
             {

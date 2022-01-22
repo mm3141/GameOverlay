@@ -5,7 +5,6 @@
 namespace GameHelper.Plugin
 {
     using System;
-    using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
@@ -16,20 +15,16 @@ namespace GameHelper.Plugin
     using Settings;
     using Utils;
 
+    internal record PluginWithName(string Name, IPCore Plugin);
+
+    internal record PluginContainer(string Name, IPCore Plugin, PluginMetadata Metadata);
+
     /// <summary>
     ///     Finds, loads and unloads the plugins.
     /// </summary>
     internal static class PManager
     {
-        private static readonly ConcurrentBag<KeyValuePair<string, IPCore>> Plugins = new();
-
-        /// <summary>
-        ///     Gets the loaded plugins.
-        /// </summary>
-        internal static Dictionary<string, PContainer> AllPlugins { get; }
-
-            = JsonHelper.CreateOrLoadJsonFile<Dictionary<string, PContainer>>(
-                State.PluginsMetadataFile);
+        internal static readonly List<PluginContainer> Plugins = new();
 
         /// <summary>
         ///     Initlizes the plugin manager by loading all the plugins and their Metadata.
@@ -37,13 +32,23 @@ namespace GameHelper.Plugin
         internal static void InitializePlugins()
         {
             State.PluginsDirectory.Create(); // doesn't do anything if already exists.
-            Parallel.ForEach(GetPluginsDirectories(), LoadPlugin);
-            CombinePluginAndMetadata();
-            Parallel.ForEach(AllPlugins, EnablePluginIfRequired);
-            CoroutineHandler.Start(SavePluginSettings());
-            CoroutineHandler.Start(SavePluginMetadata());
+            var plugins = LoadPlugins();
+            LoadPluginMetadata(plugins);
+            Parallel.ForEach(Plugins, EnablePluginIfRequired);
+            CoroutineHandler.Start(SavePluginSettingsCoroutine());
+            CoroutineHandler.Start(SavePluginMetadataCoroutine());
             Core.CoroutinesRegistrar.Add(CoroutineHandler.Start(
                 DrawPluginUiRenderCoroutine(), "[PManager] Draw Plugins UI"));
+        }
+
+        private static List<PluginWithName> LoadPlugins()
+        {
+            return GetPluginsDirectories()
+                  .AsParallel()
+                  .Select(LoadPlugin)
+                  .Where(x => x != null)
+                  .OrderBy(x => x.Name)
+                  .ToList();
         }
 #if DEBUG
         /// <summary>
@@ -51,12 +56,12 @@ namespace GameHelper.Plugin
         /// </summary>
         internal static void CleanUpAllPlugins()
         {
-            foreach (var plugin in AllPlugins)
+            foreach (var plugin in Plugins)
             {
-                plugin.Value.Plugin.OnDisable();
+                plugin.Plugin.OnDisable();
             }
 
-            AllPlugins.Clear();
+            Plugins.Clear();
         }
 #endif
 
@@ -78,16 +83,11 @@ namespace GameHelper.Plugin
                     Console.WriteLine($"Couldn't find plugin dll with name {pluginDirectory.Name}" +
                                       $" in directory {pluginDirectory.FullName}." +
                                       " Please make sure DLL & the plugin got same name.");
+                    return null;
                 }
 
-                var pdbPath = dllFile.FullName.Replace(".dll", ".pdb");
-                var dllData = File.ReadAllBytes(dllFile.FullName);
-                if (File.Exists(pdbPath))
-                {
-                    return Assembly.Load(dllData, File.ReadAllBytes(pdbPath));
-                }
-
-                return Assembly.Load(dllData);
+                return new PluginAssemblyLoadContext(dllFile.FullName)
+                   .LoadFromAssemblyPath(dllFile.FullName);
             }
             catch (Exception e)
             {
@@ -96,18 +96,21 @@ namespace GameHelper.Plugin
             }
         }
 
-        private static void LoadPlugin(DirectoryInfo pluginDirectory)
+
+        private static PluginWithName LoadPlugin(DirectoryInfo pluginDirectory)
         {
             var assembly = ReadPluginFiles(pluginDirectory);
             if (assembly != null)
             {
                 var relativePluginDir = pluginDirectory.FullName.Replace(
                     State.PluginsDirectory.FullName, State.PluginsDirectory.Name);
-                LoadPlugin(assembly, relativePluginDir);
+                return LoadPlugin(assembly, relativePluginDir);
             }
+
+            return null;
         }
 
-        private static void LoadPlugin(Assembly assembly, string pluginRootDirectory)
+        private static PluginWithName LoadPlugin(Assembly assembly, string pluginRootDirectory)
         {
             try
             {
@@ -116,7 +119,7 @@ namespace GameHelper.Plugin
                 {
                     Console.WriteLine($"Plugin (in {pluginRootDirectory}) {assembly} doesn't " +
                                       "contain any types (i.e. classes/stuctures).");
-                    return;
+                    return null;
                 }
 
                 var iPluginClasses = types.Where(
@@ -127,74 +130,65 @@ namespace GameHelper.Plugin
                     Console.WriteLine($"Plugin (in {pluginRootDirectory}) {assembly} contains" +
                                       $" {iPluginClasses.Count} sealed classes derived from CoreBase<TSettings>." +
                                       " It should have one sealed class derived from IPlugin.");
-                    return;
+                    return null;
                 }
 
                 var pluginCore = Activator.CreateInstance(iPluginClasses[0]) as IPCore;
                 pluginCore.SetPluginDllLocation(pluginRootDirectory);
-                var pluginName = assembly.GetName().Name;
-                Plugins.Add(new KeyValuePair<string, IPCore>(pluginName, pluginCore));
+                return new PluginWithName(assembly.GetName().Name, pluginCore);
             }
             catch (Exception e)
             {
                 Console.WriteLine($"Error loading plugin {assembly.FullName} due to {e}");
+                return null;
             }
         }
 
-        private static void CombinePluginAndMetadata()
+        private static void LoadPluginMetadata(IEnumerable<PluginWithName> plugins)
         {
-            while (Plugins.TryTake(out var tmp))
-            {
-                if (AllPlugins.ContainsKey(tmp.Key))
-                {
-                    var pC = AllPlugins[tmp.Key];
-                    pC.Plugin = tmp.Value;
-                    AllPlugins[tmp.Key] = pC;
-                }
-                else
-                {
-                    var pC = new PContainer { Enable = true, Plugin = tmp.Value };
-                    AllPlugins.Add(tmp.Key, pC);
-                }
-            }
+            var metadata = JsonHelper.CreateOrLoadJsonFile<Dictionary<string, PluginMetadata>>(State.PluginsMetadataFile);
+            Plugins.AddRange(
+                plugins.Select(
+                    x => new PluginContainer(
+                        x.Name,
+                        x.Plugin,
+                        metadata.GetValueOrDefault(
+                            x.Name,
+                            new PluginMetadata()))));
 
-            // Removing any plugins Metadata which are deleted by the users.
-            foreach (var item in AllPlugins.ToList())
-            {
-                if (item.Value.Plugin == null)
-                {
-                    AllPlugins.Remove(item.Key);
-                }
-            }
-
-            JsonHelper.SafeToFile(AllPlugins, State.PluginsMetadataFile);
+            SavePluginMetadata();
         }
 
-        private static void EnablePluginIfRequired(KeyValuePair<string, PContainer> kv)
+        private static void EnablePluginIfRequired(PluginContainer container)
         {
-            if (kv.Value.Enable)
+            if (container.Metadata.Enable)
             {
-                kv.Value.Plugin.OnEnable(Core.Process.Address != IntPtr.Zero);
+                container.Plugin.OnEnable(Core.Process.Address != IntPtr.Zero);
             }
         }
 
-        private static IEnumerator<Wait> SavePluginMetadata()
+        private static void SavePluginMetadata()
+        {
+            JsonHelper.SafeToFile(Plugins.ToDictionary(x => x.Name, x => x.Metadata), State.PluginsMetadataFile);
+        }
+
+        private static IEnumerator<Wait> SavePluginMetadataCoroutine()
         {
             while (true)
             {
                 yield return new Wait(GameHelperEvents.TimeToSaveAllSettings);
-                JsonHelper.SafeToFile(AllPlugins, State.PluginsMetadataFile);
+                SavePluginMetadata();
             }
         }
 
-        private static IEnumerator<Wait> SavePluginSettings()
+        private static IEnumerator<Wait> SavePluginSettingsCoroutine()
         {
             while (true)
             {
                 yield return new Wait(GameHelperEvents.TimeToSaveAllSettings);
-                foreach (var keyvalue in AllPlugins)
+                foreach (var container in Plugins)
                 {
-                    keyvalue.Value.Plugin.SaveSettings();
+                    container.Plugin.SaveSettings();
                 }
             }
         }
@@ -204,11 +198,11 @@ namespace GameHelper.Plugin
             while (true)
             {
                 yield return new Wait(GameHelperEvents.OnRender);
-                foreach (var pluginKeyValue in AllPlugins)
+                foreach (var container in Plugins)
                 {
-                    if (pluginKeyValue.Value.Enable)
+                    if (container.Metadata.Enable)
                     {
-                        pluginKeyValue.Value.Plugin.DrawUI();
+                        container.Plugin.DrawUI();
                     }
                 }
             }
