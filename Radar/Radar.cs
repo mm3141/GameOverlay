@@ -10,7 +10,6 @@ namespace Radar
     using System.Linq;
     using System.Numerics;
     using System.Threading.Tasks;
-    using ClickableTransparentOverlay;
     using Coroutine;
     using GameHelper;
     using GameHelper.CoroutineEvents;

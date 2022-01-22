@@ -32,7 +32,7 @@ namespace GameHelper.RemoteObjects
         /// <summary>
         ///     Gets the current game window scale values.
         /// </summary>
-        public float[] Values { get; } = { 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f };
+        public float[] Values { get; } = new float[0x128];
 
         /// <summary>
         ///     Gets the Scale Value depending on the index and multiplier.

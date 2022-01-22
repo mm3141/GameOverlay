@@ -1,4 +1,4 @@
-﻿namespace GameOffsets.Objects.Components
+namespace GameOffsets.Objects.Components
 {
     using System.Runtime.InteropServices;
 

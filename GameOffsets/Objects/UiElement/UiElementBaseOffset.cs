@@ -26,7 +26,7 @@ namespace GameOffsets.Objects.UiElement
 
         [FieldOffset(0x100)] public float LocalScaleMultiplier;
 
-        // [FieldOffset(0x108)] public float Scale;
+        // [FieldOffset(0x108)] public float Scale; // !!do not use this!!, this scale provided by game is wrong.
         [FieldOffset(0x160)] public uint Flags; // variable
 
         [FieldOffset(0x180)] public StdTuple2D<float> UnscaledSize; // variable
@@ -38,8 +38,8 @@ namespace GameOffsets.Objects.UiElement
         private const int SHOULD_MODIFY_BINARY_POS = 0x0A;
         private const int IS_VISIBLE_BINARY_POS = 0x0B;
 
-        public const int SCALE_INDEX_1 = 0x02;
-        public const int SCALE_INDEX_2 = 0x04;
+        public const int SCALE_INDEX_1 = 0x102;
+        public const int SCALE_INDEX_2 = 0x104;
         public const int SCALE_INDEX_3 = 0x00;
 
         public static Func<uint, bool> IsVisibleChecker = param =>

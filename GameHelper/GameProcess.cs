@@ -7,13 +7,12 @@ namespace GameHelper
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
-    using System.Drawing;
-    using System.Numerics;
     using System.Runtime.InteropServices;
     using Coroutine;
     using CoroutineEvents;
     using GameOffsets;
     using ImGuiNET;
+    using SixLabors.ImageSharp;
     using Utils;
 
     /// <summary>
