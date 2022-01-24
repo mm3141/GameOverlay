@@ -6,6 +6,7 @@ namespace GameHelper.Ui
 {
     using System;
     using System.Collections.Generic;
+    using System.Numerics;
     using Coroutine;
     using CoroutineEvents;
     using ImGuiNET;
@@ -18,6 +19,7 @@ namespace GameHelper.Ui
     /// </summary>
     public static class GameUiExplorer
     {
+        private static readonly Vector4 VisibleUiElementColor = new(0, 255, 0, 255);
         private static readonly List<UiElement> Elements = new();
 
         /// <summary>
@@ -91,17 +93,17 @@ namespace GameHelper.Ui
                     {
                         ImGui.BulletText("Closing the game will remove all objects.");
                         ImGui.BulletText("To add element in this window go to any UiElement " +
-                                         "in\nData Visualization window and click Explore button.");
-                        ImGui.BulletText("To check currently loaded element bounds,\n" +
+                                         "in Data Visualization window and click Explore button.");
+                        ImGui.BulletText("To check currently loaded element bounds, " +
                                          "hover over the element header in blue.");
-                        ImGui.BulletText("To check bounds of all the children hover\n" +
+                        ImGui.BulletText("To check bounds of all the children hover " +
                                          "over the Children box.");
                         ImGui.BulletText("Feel free to add same element more than once.");
-                        ImGui.BulletText("When children combo box is opened feel free\n" +
+                        ImGui.BulletText("When children combo box is opened feel free " +
                                          "to use the up/down arrow key.");
                         ImGui.BulletText("Children bounds are drawn with RED color.");
                         ImGui.BulletText("Current element bounds are drawn with Yellow Color.");
-
+                        ImGui.BulletText("Green color child means it's visible, white means it isn't.");
                         ImGui.TreePop();
                     }
 
@@ -119,7 +121,7 @@ namespace GameHelper.Ui
                         var isRequired = true;
                         var isCurrentModified = false;
                         var isEnterPressed = false;
-                        if (ImGui.CollapsingHeader(eleName + $"##{i}", ref isRequired))
+                        if (ImGui.CollapsingHeader(eleName + $"##{i}", ref isRequired, ImGuiTreeNodeFlags.DefaultOpen))
                         {
                             if (ImGui.IsItemHovered())
                             {
@@ -188,11 +190,21 @@ namespace GameHelper.Ui
                                     var child = current.Children[j];
                                     child.Address = child.Address;
 
+                                    if (child.IsVisible)
+                                    {
+                                        ImGui.PushStyleColor(ImGuiCol.Text, VisibleUiElementColor);
+                                    }
+
                                     if (ImGui.Selectable($"{j}-{child.Address.ToInt64():X}-{child.Id}", selected))
                                     {
                                         current.CurrentChildIndex = j;
                                         current.CurrentChildPreview = $"{child.Address.ToInt64():X}-{child.Id}";
                                         Elements[i] = current;
+                                    }
+
+                                    if (child.IsVisible)
+                                    {
+                                        ImGui.PopStyleColor();
                                     }
 
                                     if (isEnterPressed && selected)
