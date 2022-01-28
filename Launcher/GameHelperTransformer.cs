@@ -27,19 +27,30 @@ namespace Launcher
         /// <returns></returns>
         public static string TransformGameHelperExecutable(string newName)
         {
-            var currentProcessPath = Assembly.GetExecutingAssembly().Location;
-            var directoryPath = Path.GetDirectoryName(currentProcessPath);
-            var gameHelperPath = Path.Join(directoryPath, GameHelperFileName);
-            var fileInfo = new FileInfo(gameHelperPath);
-            if (!fileInfo.Exists)
+            var gameHelperPath = string.Empty;
+            var dir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            if (!TryFindGameHelperExe(dir, out gameHelperPath))
             {
-                throw new Exception("GameHelper.exe does not exist");
+                Console.WriteLine($"GameHelper.exe not found in {dir} directory.");
+                Console.Write("Provide GameHelper.exe path:");
+                dir = Path.GetDirectoryName(Console.ReadLine());
+                if (!TryFindGameHelperExe(dir, out gameHelperPath))
+                {
+                    throw new Exception($"GameHelper.exe is also not found in {dir}");
+                }
             }
 
-            var newPath = Path.Join(directoryPath, $"{newName}.exe");
+            var newPath = Path.Join(dir, $"{newName}.exe");
             TemporaryFileManager.AddFile(newPath);
             TransformExecutable(gameHelperPath, newPath, newName);
             return newPath;
+        }
+
+        private static bool TryFindGameHelperExe(string directory, out string gameHelperPath)
+        {
+            gameHelperPath = Path.Join(directory, GameHelperFileName);
+            var fileInfo = new FileInfo(gameHelperPath);
+            return fileInfo.Exists;
         }
 
         private static void TransformExecutable(string inputPath, string outputPath, string infoName)
