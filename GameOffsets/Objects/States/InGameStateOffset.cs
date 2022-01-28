@@ -8,9 +8,9 @@ namespace GameOffsets.Objects.States
     public struct InGameStateOffset
     {
         [FieldOffset(0x18)] public IntPtr LocalData;
-        [FieldOffset(0x4F8)] public IntPtr UiRootPtr;
-        [FieldOffset(0x870)] public CameraStructure CameraData;
-        [FieldOffset(0xC68)] public IntPtr IngameUi;
+        [FieldOffset(0x4F0)] public IntPtr UiRootPtr;
+        [FieldOffset(0x868)] public CameraStructure CameraData;
+        [FieldOffset(0xC60)] public IntPtr IngameUi;
     }
 
     [StructLayout(LayoutKind.Explicit, Pack = 1)]
