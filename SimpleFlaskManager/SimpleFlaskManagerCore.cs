@@ -36,8 +36,8 @@ namespace SimpleFlaskManager
         {
             ImGui.PushTextWrapPos(ImGui.GetContentRegionMax().X);
             ImGui.TextColored(this.impTextColor, "Do not trust FlaskManager Settings.txt file from unknown source. " +
-                              "Bad profiles may get your account banned. Also, they can contain malicious code. " +
-                              "Google SCS0028 and CA2328 for more information.");
+                              "Bad profiles may get your account banned. Also, they can contain malicious code" +
+                              "that can f**k you up. ");
             ImGui.NewLine();
             ImGui.TextColored(this.impTextColor, "All the flask rules in all the profiles must have " +
                               "FLASK_EFFECT and FLASK_CHARGES condition, otherwise Flask Manager will spam " +

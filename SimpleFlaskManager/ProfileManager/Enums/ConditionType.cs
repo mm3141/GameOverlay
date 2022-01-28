@@ -41,6 +41,11 @@ namespace SimpleFlaskManager.ProfileManager.Enums
         /// <summary>
         ///     Condition based on Ailment on the player.
         /// </summary>
-        AILMENT
+        AILMENT,
+
+        /// <summary>
+        ///     Condition base on user code
+        /// </summary>
+        DYNAMIC
     }
 }

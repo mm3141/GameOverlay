@@ -40,6 +40,16 @@
         public int ReservedPercent;
 
         /// <summary>
+        ///     Final Reserved amount of Vital after all the calculations.
+        /// </summary>
+        public int ReservedTotal => (int)Math.Ceiling(this.ReservedPercent / 10000f * this.Total) + this.ReservedFlat;
+
+        /// <summary>
+        ///     Final un-reserved amount of Vital after all the calculations.
+        /// </summary>
+        public int Unreserved => this.Total - this.ReservedTotal;
+
+        /// <summary>
         ///     Returns current Vital in percentage (excluding the reserved vital) or returns zero in case the Vital
         ///     doesn't exists.
         /// </summary>
@@ -51,9 +61,7 @@
                 return 0;
             }
 
-            var reservedPercentToFlat = Math.Round(this.ReservedPercent / 10000f * this.Total);
-            var vitalExcludingReserved = this.Total - this.ReservedFlat - reservedPercentToFlat;
-            return (int)Math.Round(100 * (this.Current / vitalExcludingReserved));
+            return (int)Math.Round(100d * this.Current / this.Unreserved);
         }
     }
 }

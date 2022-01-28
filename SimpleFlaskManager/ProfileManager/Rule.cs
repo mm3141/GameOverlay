@@ -5,13 +5,14 @@
     using System.Diagnostics;
     using System.Numerics;
     using Conditions;
+    using Conditions.DynamicCondition;
     using GameHelper.Utils;
     using ImGuiNET;
     using Newtonsoft.Json;
-    using SimpleFlaskManager.ProfileManager.Enums;
+    using Enums;
 
     /// <summary>
-    /// Abstraction for the rule condition list
+    ///     Abstraction for the rule condition list
     /// </summary>
     public class Rule
     {
@@ -151,6 +152,7 @@
                 ConditionType.FLASK_EFFECT => FlaskEffectCondition.Add(),
                 ConditionType.FLASK_CHARGES => FlaskChargesCondition.Add(),
                 ConditionType.AILMENT => AilmentCondition.Add(),
+                ConditionType.DYNAMIC => DynamicCondition.Add(),
                 _ => throw new Exception($"{conditionType} not implemented in ConditionHelper class")
             };
 
