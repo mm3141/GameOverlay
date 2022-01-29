@@ -49,6 +49,43 @@
         }
 
         /// <summary>
+        ///     Creates default rules that are only valid for flasks on the newly created character.
+        /// </summary>
+        /// <returns>List of rules that are valid for newly created player.</returns>
+        public static Rule[] CreateDefaultRules()
+        {
+            var rules = new Rule[5];
+            for (var i = 0; i < 2; i++)
+            {
+                rules[i] = new($"Life_Flask{i + 1}");
+                rules[i].Enabled = true;
+                rules[i].Key = ConsoleKey.D1 + i;
+                rules[i].conditions.Add(new VitalsCondition(OperatorType.LESS_THAN, VitalType.LIFE, 70));
+                rules[i].conditions.Add(new FlaskChargesCondition(OperatorType.BIGGER_THAN, i + 1, 6));
+                rules[i].conditions.Add(new FlaskEffectCondition(i + 1));
+            }
+
+            rules[2] = new("Mana_Flask5");
+            rules[2].Enabled = true;
+            rules[2].Key = ConsoleKey.D5;
+            rules[2].conditions.Add(new VitalsCondition(OperatorType.LESS_THAN, VitalType.MANA_PERCENT, 20));
+            rules[2].conditions.Add(new FlaskChargesCondition(OperatorType.BIGGER_THAN, 5, 5));
+            rules[2].conditions.Add(new FlaskEffectCondition(5));
+
+            for (var i = 0; i < 2; i++)
+            {
+                rules[3 + i] = new($"QuickSilver_Flask{3 + i}(disabled)");
+                rules[3 + i].Enabled = false;
+                rules[3 + i].Key = ConsoleKey.D3 + i;
+                rules[3 + i].conditions.Add(new AnimationCondition(OperatorType.EQUAL_TO, GameHelper.RemoteEnums.Animation.Run, 1000));
+                rules[3 + i].conditions.Add(new FlaskChargesCondition(OperatorType.BIGGER_THAN, 3 + i, 29));
+                rules[3 + i].conditions.Add(new FlaskEffectCondition(3 + i));
+            }
+
+            return rules;
+        }
+
+        /// <summary>
         ///     Clears the list of conditions
         /// </summary>
         public void Clear()

@@ -16,11 +16,17 @@ namespace SimpleFlaskManager
     /// </summary>
     public sealed class SimpleFlaskManagerSettings : IPSettings
     {
+
+        /// <summary>
+        ///    Gets a value indicating whether to enable or disable the auto-quit feature.
+        /// </summary>
+        public bool EnableAutoQuit = false;
+
         /// <summary>
         ///     Condition on which user want to auto-quit.
         /// </summary>
         public readonly VitalsCondition AutoQuitCondition =
-            new(OperatorType.LESS_THAN, VitalType.LIFE, -1);
+            new(OperatorType.LESS_THAN, VitalType.LIFE_PERCENT, 30);
 
         /// <summary>
         ///     Gets a key which allows the user to manually quit the game Connection.

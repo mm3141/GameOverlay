@@ -9,7 +9,9 @@ namespace SimpleFlaskManager
     using System.IO;
     using System.Numerics;
     using ClickableTransparentOverlay;
+    using Coroutine;
     using GameHelper;
+    using GameHelper.CoroutineEvents;
     using GameHelper.Plugin;
     using GameHelper.RemoteEnums;
     using GameHelper.RemoteObjects.Components;
@@ -26,10 +28,15 @@ namespace SimpleFlaskManager
         private readonly Vector4 impTextColor = new(255, 255, 0, 255);
         private readonly List<string> keyPressInfo = new();
         private readonly Vector2 size = new(400, 200);
+        private ActiveCoroutine onAreaChange;
         private string debugMessage = "None";
         private string newProfileName = string.Empty;
+        private bool stopShowingAutoQuitWarning = false;
 
         private string SettingPathname => Path.Join(this.DllDirectory, "config", "settings.txt");
+        private bool ShouldExecuteAutoQuit =>
+            this.Settings.EnableAutoQuit &&
+            this.Settings.AutoQuitCondition.Evaluate();
 
         /// <inheritdoc />
         public override void DrawSettings()
@@ -90,7 +97,9 @@ namespace SimpleFlaskManager
             if (ImGui.CollapsingHeader("Auto Quit"))
             {
                 ImGui.PushItemWidth(ImGui.GetContentRegionAvail().X / 6);
+                ImGui.Checkbox("Enable AutoQuit", ref this.Settings.EnableAutoQuit);
                 this.Settings.AutoQuitCondition.Display();
+                ImGui.TextWrapped($"Current AutoQuit Condition Evaluates to {this.Settings.AutoQuitCondition.Evaluate()}");
                 ImGui.Separator();
                 ImGui.Text("Hotkey to manually quit game connection: ");
                 ImGui.SameLine();
@@ -123,13 +132,14 @@ namespace SimpleFlaskManager
                 ImGui.End();
             }
 
+            this.AutoQuitWarningUi();
             if (!this.ShouldExecutePlugin())
             {
                 return;
             }
 
-            if (this.Settings.AutoQuitCondition.Evaluate() ||
-                NativeMethods.IsKeyPressedAndNotTimeout((int)this.Settings.AutoQuitKey))
+            if (this.ShouldExecuteAutoQuit || NativeMethods.IsKeyPressedAndNotTimeout(
+                (int)this.Settings.AutoQuitKey))
             {
                 MiscHelper.KillTCPConnectionForProcess(Core.Process.Pid);
             }
@@ -163,6 +173,8 @@ namespace SimpleFlaskManager
         /// <inheritdoc />
         public override void OnDisable()
         {
+            this.onAreaChange?.Cancel();
+            this.onAreaChange = null;
         }
 
         /// <inheritdoc />
@@ -186,6 +198,12 @@ namespace SimpleFlaskManager
                         TypeNameHandling = TypeNameHandling.Auto
                     });
             }
+            else
+            {
+                this.CreateDefaultProfile();
+            }
+
+            this.onAreaChange = CoroutineHandler.Start(this.EnableAutoQuitWarningUiOnAreaChange());
         }
 
         /// <inheritdoc />
@@ -265,6 +283,53 @@ namespace SimpleFlaskManager
 
             this.debugMessage = "None";
             return true;
+        }
+
+        /// <summary>
+        ///     Creates a default profile that is only valid for flasks on newly created character.
+        /// </summary>
+        private void CreateDefaultProfile()
+        {
+            Profile profile = new();
+            foreach (var rule in Rule.CreateDefaultRules())
+            {
+                profile.Rules.Add(rule);
+            }
+
+            this.Settings.Profiles.Add("LeagueStartNewPlayerProfile", profile);
+        }
+
+        private void AutoQuitWarningUi()
+        {
+
+            if (!this.stopShowingAutoQuitWarning &&
+                Core.States.InGameStateObject.CurrentAreaInstance.AreaDetails.IsTown &&
+                this.ShouldExecuteAutoQuit)
+            {
+                ImGui.OpenPopup("AutoQuitWarningUi");
+            }
+
+            if (ImGui.BeginPopup("AutoQuitWarningUi"))
+            {
+                ImGui.Text("Please fix your AutoQuit Condition, it's evaluating to true in town.\n" +
+                    "You will logout automatically as soon as you leave town.");
+                if (ImGui.Button("Ok", new Vector2(400f, 50f)))
+                {
+                    this.stopShowingAutoQuitWarning = true;
+                    ImGui.CloseCurrentPopup();
+                }
+
+                ImGui.EndPopup();
+            }
+        }
+
+        private IEnumerator<Wait> EnableAutoQuitWarningUiOnAreaChange()
+        {
+            while (true)
+            {
+                yield return new Wait(RemoteEvents.AreaChanged);
+                this.stopShowingAutoQuitWarning = false;
+            }
         }
     }
 }

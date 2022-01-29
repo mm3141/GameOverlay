@@ -1,4 +1,8 @@
-﻿namespace SimpleFlaskManager.ProfileManager.Conditions.DynamicCondition.Interface
+﻿// <copyright file="IBuffDictionary.cs" company="PlaceholderCompany">
+// Copyright (c) PlaceholderCompany. All rights reserved.
+// </copyright>
+
+namespace SimpleFlaskManager.ProfileManager.Conditions.DynamicCondition.Interface
 {
     /// <summary>
     ///     Describes a set of buffs applied to the player

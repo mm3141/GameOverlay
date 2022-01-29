@@ -1,4 +1,8 @@
-﻿namespace SimpleFlaskManager.ProfileManager.Conditions.DynamicCondition.Interface
+﻿// <copyright file="IDynamicConditionState.cs" company="PlaceholderCompany">
+// Copyright (c) PlaceholderCompany. All rights reserved.
+// </copyright>
+
+namespace SimpleFlaskManager.ProfileManager.Conditions.DynamicCondition.Interface
 {
     using System.Collections.Generic;
     using GameHelper.RemoteEnums;

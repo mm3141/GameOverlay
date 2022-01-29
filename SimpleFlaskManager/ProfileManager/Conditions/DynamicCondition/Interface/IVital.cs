@@ -1,4 +1,8 @@
-﻿namespace SimpleFlaskManager.ProfileManager.Conditions.DynamicCondition.Interface
+﻿// <copyright file="IVital.cs" company="PlaceholderCompany">
+// Copyright (c) PlaceholderCompany. All rights reserved.
+// </copyright>
+
+namespace SimpleFlaskManager.ProfileManager.Conditions.DynamicCondition.Interface
 {
     /// <summary>
     ///     Information about a vital

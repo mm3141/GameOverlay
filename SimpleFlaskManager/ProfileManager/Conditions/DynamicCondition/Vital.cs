@@ -1,4 +1,8 @@
-﻿namespace SimpleFlaskManager.ProfileManager.Conditions.DynamicCondition
+﻿// <copyright file="Vital.cs" company="PlaceholderCompany">
+// Copyright (c) PlaceholderCompany. All rights reserved.
+// </copyright>
+
+namespace SimpleFlaskManager.ProfileManager.Conditions.DynamicCondition
 {
     using GameOffsets.Objects.Components;
     using Interface;

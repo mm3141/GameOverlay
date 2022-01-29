@@ -1,4 +1,8 @@
-﻿namespace SimpleFlaskManager.ProfileManager.Conditions.DynamicCondition
+﻿// <copyright file="DynamicConditionState.cs" company="PlaceholderCompany">
+// Copyright (c) PlaceholderCompany. All rights reserved.
+// </copyright>
+
+namespace SimpleFlaskManager.ProfileManager.Conditions.DynamicCondition
 {
     using System.Collections.Generic;
     using System.Linq;
