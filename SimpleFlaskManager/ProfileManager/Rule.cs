@@ -10,6 +10,7 @@
     using ImGuiNET;
     using Newtonsoft.Json;
     using Enums;
+    using GameHelper.RemoteEnums;
 
     /// <summary>
     ///     Abstraction for the rule condition list
@@ -60,7 +61,7 @@
                 rules[i] = new($"Life_Flask{i + 1}");
                 rules[i].Enabled = true;
                 rules[i].Key = ConsoleKey.D1 + i;
-                rules[i].conditions.Add(new VitalsCondition(OperatorType.LESS_THAN, VitalType.LIFE, 70));
+                rules[i].conditions.Add(new VitalsCondition(OperatorType.LESS_THAN, VitalType.LIFE_PERCENT, 70));
                 rules[i].conditions.Add(new FlaskChargesCondition(OperatorType.BIGGER_THAN, i + 1, 6));
                 rules[i].conditions.Add(new FlaskEffectCondition(i + 1));
             }
@@ -77,7 +78,7 @@
                 rules[3 + i] = new($"QuickSilver_Flask{3 + i}(disabled)");
                 rules[3 + i].Enabled = false;
                 rules[3 + i].Key = ConsoleKey.D3 + i;
-                rules[3 + i].conditions.Add(new AnimationCondition(OperatorType.EQUAL_TO, GameHelper.RemoteEnums.Animation.Run, 1000));
+                rules[3 + i].conditions.Add(new AnimationCondition(OperatorType.EQUAL_TO, Animation.Run, 1000));
                 rules[3 + i].conditions.Add(new FlaskChargesCondition(OperatorType.BIGGER_THAN, 3 + i, 29));
                 rules[3 + i].conditions.Add(new FlaskEffectCondition(3 + i));
             }

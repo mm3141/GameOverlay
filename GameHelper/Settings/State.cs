@@ -58,7 +58,7 @@ namespace GameHelper.Settings
         /// <summary>
         ///     Gets a value indicating how much time to wait between key presses.
         /// </summary>
-        public int KeyPressTimeout = 50;
+        public int KeyPressTimeout = 80;
 
         /// <summary>
         ///     Gets the font pathname to load in ImGui.
