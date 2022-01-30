@@ -135,7 +135,7 @@ namespace Radar
                 {
                     if (this.walkableMapTexture == IntPtr.Zero)
                     {
-                        this.GenerateMapTexture();
+                        this.ReloadMapTexture();
                     }
                 }
                 else
@@ -148,7 +148,7 @@ namespace Radar
             {
                 if (this.walkableMapTexture != IntPtr.Zero)
                 {
-                    this.GenerateMapTexture();
+                    this.ReloadMapTexture();
                 }
             }
 
@@ -314,6 +314,7 @@ namespace Radar
             this.onForegroundChange = null;
             this.onGameClose = null;
             this.onAreaChange = null;
+            this.CleanUpRadarPluginCaches();
         }
 
         /// <inheritdoc/>
@@ -343,6 +344,7 @@ namespace Radar
             this.onForegroundChange = CoroutineHandler.Start(this.OnForegroundChange());
             this.onGameClose = CoroutineHandler.Start(this.OnClose());
             this.onAreaChange = CoroutineHandler.Start(this.ClearCachesAndUpdateAreaInfo());
+            this.GenerateMapTexture();
         }
 
         /// <inheritdoc/>
@@ -842,11 +844,7 @@ namespace Radar
             while (true)
             {
                 yield return new Wait(RemoteEvents.AreaChanged);
-                this.frozenInTimeEntities.Clear();
-                this.heistChestCache.Clear();
-                this.deliriumHiddenMonster.Clear();
-                this.delveChestCache.Clear();
-                this.diesAfterTimeCache.Clear();
+                this.CleanUpRadarPluginCaches();
                 this.currentAreaName = Core.States.InGameStateObject.CurrentAreaInstance.AreaDetails.Id;
                 this.isAzuriteMine = this.currentAreaName == "Delve_Main";
                 this.GenerateMapTexture();
@@ -885,7 +883,7 @@ namespace Radar
             {
                 yield return new Wait(GameHelperEvents.OnClose);
                 this.skipOneSettingChange = true;
-                this.currentAreaName = string.Empty;
+                this.CleanUpRadarPluginCaches();
             }
         }
 
@@ -917,6 +915,12 @@ namespace Radar
             this.largeMapDiagonalLength = Math.Sqrt(widthSq + heightSq);
         }
 
+        private void ReloadMapTexture()
+        {
+            this.RemoveMapTexture();
+            this.GenerateMapTexture();
+        }
+
         private void RemoveMapTexture()
         {
             this.walkableMapTexture = IntPtr.Zero;
@@ -926,7 +930,6 @@ namespace Radar
 
         private void GenerateMapTexture()
         {
-            this.RemoveMapTexture();
             if (Core.States.GameCurrentState != GameStateTypes.InGameState &&
                 Core.States.GameCurrentState != GameStateTypes.EscapeState)
             {
@@ -1162,6 +1165,20 @@ namespace Radar
 
                 ImGui.TreePop();
             }
+        }
+
+        private void CleanUpRadarPluginCaches()
+        {
+            this.frozenInTimeEntities.Clear();
+            this.heistChestCache.Clear();
+            this.deliriumHiddenMonster.Clear();
+            this.delveChestCache.Clear();
+            this.diesAfterTimeCache.Clear();
+            this.currentAreaImportantTiles.Clear();
+            this.RemoveMapTexture();
+            this.isAzuriteMine = false;
+            this.currentAreaName = string.Empty;
+
         }
     }
 }
