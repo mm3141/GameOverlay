@@ -9,10 +9,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="ImGui.NET" Version="1.78.0">
+    <PackageReference Include="ImGui.NET" Version="1.86.0">
       <ExcludeAssets>runtime</ExcludeAssets>
     </PackageReference>
-    <PackageReference Include="System.Linq.Dynamic.Core" Version="1.2.14" />
+    <PackageReference Include="System.Linq.Dynamic.Core" Version="1.2.15" />
   </ItemGroup>
 
   <ItemGroup>
@@ -33,12 +33,14 @@
   </ItemGroup>
 
   <Target Name="CopyFiles" AfterTargets="Build">
-    <Copy SourceFiles="
-$(OutDir)$(TargetName)$(TargetExt);
-$(OutDir)FlaskNameToBuff.json;
-$(OutDir)StatusEffectGroup.json;
-$(OutDir)System.Linq.Dynamic.Core.dll
-" DestinationFolder="..\GameHelper\$(OutDir)Plugins\$(ProjectName)" SkipUnchangedFiles="true" />
+    <Copy
+      SourceFiles="
+        $(OutDir)$(TargetName)$(TargetExt);
+        $(OutDir)FlaskNameToBuff.json;
+        $(OutDir)StatusEffectGroup.json;
+        $(OutDir)System.Linq.Dynamic.Core.dll;"
+      DestinationFolder="..\GameHelper\$(OutDir)Plugins\$(ProjectName)"
+      SkipUnchangedFiles="true" />
   </Target>
 
 </Project>
