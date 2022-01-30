@@ -100,7 +100,7 @@ namespace AutoHotKeyTrigger.ProfileManager.Conditions
 
         private void ToImGui()
         {
-            ImGui.Text("Player");
+            ImGui.Text("Player animation is");
             ImGui.SameLine();
             ImGuiHelper.EnumComboBox("##AnimationOperator", ref this.@operator, SupportedOperatorTypes);
             ImGui.SameLine();
