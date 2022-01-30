@@ -27,9 +27,8 @@ namespace Launcher
         /// <returns></returns>
         public static string TransformGameHelperExecutable(string newName)
         {
-            var gameHelperPath = string.Empty;
             var dir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            if (!TryFindGameHelperExe(dir, out gameHelperPath))
+            if (!TryFindGameHelperExe(dir, out var gameHelperPath))
             {
                 Console.WriteLine($"GameHelper.exe not found in {dir} directory.");
                 Console.Write("Provide GameHelper.exe path:");

@@ -26,14 +26,13 @@ namespace SimpleFlaskManager.ProfileManager
         /// </summary>
         public void DrawSettings()
         {
-            if (ImGui.Button("+"))
-            {
-                this.Rules.Add(new Rule(this.Rules.Count.ToString()));
-            }
-
-            ImGui.SameLine();
             if (ImGui.BeginTabBar("Profile Rules", ImGuiTabBarFlags.AutoSelectNewTabs | ImGuiTabBarFlags.Reorderable))
             {
+                if (ImGui.TabItemButton("+", ImGuiTabItemFlags.Leading))
+                {
+                    this.Rules.Add(new Rule(this.Rules.Count.ToString()));
+                }
+
                 for (var i = 0; i < this.Rules.Count; i++)
                 {
                     var currRule = this.Rules[i];

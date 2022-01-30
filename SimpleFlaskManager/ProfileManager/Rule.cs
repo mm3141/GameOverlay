@@ -233,21 +233,25 @@
                     }
 
                     ImGui.SameLine();
-                    if (ImGui.ArrowButton("up", ImGuiDir.Up) && i > 0)
+                    ImGui.BeginDisabled(i==0);
+                    if (ImGui.ArrowButton("up", ImGuiDir.Up))
                     {
                         this.Swap(i, i - 1);
                         ImGui.PopID();
                         break;
                     }
 
+                    ImGui.EndDisabled();
                     ImGui.SameLine();
-                    if (ImGui.ArrowButton("down", ImGuiDir.Down) && i != this.conditions.Count - 1)
+                    ImGui.BeginDisabled(i == this.conditions.Count - 1);
+                    if (ImGui.ArrowButton("down", ImGuiDir.Down))
                     {
                         this.Swap(i, i + 1);
                         ImGui.PopID();
                         break;
                     }
 
+                    ImGui.EndDisabled();
                     ImGui.SameLine();
                     this.conditions[i].Display();
                     ImGui.PopID();
