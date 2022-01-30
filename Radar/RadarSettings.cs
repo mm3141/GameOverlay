@@ -47,13 +47,13 @@ namespace Radar
         /// <summary>
         /// Gets a value indicating whether user wants to modify large map culling window or not.
         /// </summary>
-        public bool ModifyCullWindow = true;
+        public bool ModifyCullWindow = false;
 
         /// <summary>
         /// Gets a value indicating whether user wants culling window
         /// to cover the full game or not.
         /// </summary>
-        public bool MakeCullWindowFullScreen = false;
+        public bool MakeCullWindowFullScreen = true;
 
         /// <summary>
         /// Gets a value indicating whether to draw the map in culling window or not.
