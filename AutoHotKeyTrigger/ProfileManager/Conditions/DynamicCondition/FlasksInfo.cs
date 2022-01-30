@@ -34,6 +34,31 @@ namespace AutoHotKeyTrigger.ProfileManager.Conditions.DynamicCondition
             }
         }
 
+        /// <summary>
+        ///     The flask in the first slot;
+        /// </summary>
+        public IFlaskInfo Flask1 => this[0];
+
+        /// <summary>
+        ///     The flask in the second slot;
+        /// </summary>
+        public IFlaskInfo Flask2 => this[1];
+
+        /// <summary>
+        ///     The flask in the third slot;
+        /// </summary>
+        public IFlaskInfo Flask3 => this[2];
+
+        /// <summary>
+        ///     The flask in the fourth slot;
+        /// </summary>
+        public IFlaskInfo Flask4 => this[3];
+
+        /// <summary>
+        ///     The flask in the fifth slot;
+        /// </summary>
+        public IFlaskInfo Flask5 => this[4];
+
         private readonly IReadOnlyList<FlaskInfo> flasks;
 
         /// <summary>
