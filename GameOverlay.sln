@@ -20,7 +20,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Radar", "Radar\Radar.csproj
 		{95B261DD-906E-4634-81D4-0A5A8C1D9398} = {95B261DD-906E-4634-81D4-0A5A8C1D9398}
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleFlaskManager", "SimpleFlaskManager\SimpleFlaskManager.csproj", "{86A443FF-7326-4B21-BC81-20813A7E307E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AutoHotKeyTrigger", "AutoHotKeyTrigger\AutoHotKeyTrigger.csproj", "{86A443FF-7326-4B21-BC81-20813A7E307E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HealthBars", "HealthBars\HealthBars.csproj", "{113DA4E9-73EB-411C-B328-6440DBB5AB1C}"
 EndProject
