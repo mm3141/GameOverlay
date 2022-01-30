@@ -865,6 +865,7 @@ namespace Radar
 
                     this.Settings.CullWindowSize.X = Core.Process.WindowArea.Size.Width;
                     this.Settings.CullWindowSize.Y = Core.Process.WindowArea.Size.Height;
+                    this.skipOneSettingChange = false;
                 }
                 else if (this.skipOneSettingChange)
                 {
