@@ -15,8 +15,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="ImGui.NET" Version="1.78.0" />
-    <PackageReference Include="SixLabors.ImageSharp" Version="1.0.0-rc0002" />
+    <PackageReference Include="ImGui.NET" Version="1.86.0" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="1.0.4" />
   </ItemGroup>
 
   <ItemGroup>
