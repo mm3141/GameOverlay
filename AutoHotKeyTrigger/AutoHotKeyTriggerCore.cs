@@ -181,8 +181,8 @@ namespace AutoHotKeyTrigger
         public override void OnEnable(bool isGameOpened)
         {
             var jsonData = File.ReadAllText(this.DllDirectory + @"/FlaskNameToBuff.json");
-            JsonDataHelper.FlaskNameToBuffGroups =
-                JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(jsonData);
+            JsonDataHelper.FlaskNameToBuffGroups = JsonConvert.DeserializeObject<
+                Dictionary<string, List<string>>>(jsonData);
 
             var jsonData2 = File.ReadAllText(this.DllDirectory + @"/StatusEffectGroup.json");
             JsonDataHelper.StatusEffectGroups = JsonConvert.DeserializeObject<
@@ -296,7 +296,7 @@ namespace AutoHotKeyTrigger
                 profile.Rules.Add(rule);
             }
 
-            this.Settings.Profiles.Add("LeagueStartNewPlayerProfile", profile);
+            this.Settings.Profiles.TryAdd("LeagueStartNewPlayerProfile", profile);
         }
 
         private void AutoQuitWarningUi()
