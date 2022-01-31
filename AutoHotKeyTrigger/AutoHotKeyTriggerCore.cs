@@ -296,7 +296,7 @@ namespace AutoHotKeyTrigger
                 profile.Rules.Add(rule);
             }
 
-            this.Settings.Profiles.Add("LeagueStartNewPlayerProfile", profile);
+            this.Settings.Profiles.TryAdd("LeagueStartNewPlayerProfile", profile);
         }
 
         private void AutoQuitWarningUi()
