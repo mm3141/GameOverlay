@@ -1175,7 +1175,6 @@ namespace Radar
             this.deliriumHiddenMonster.Clear();
             this.delveChestCache.Clear();
             this.diesAfterTimeCache.Clear();
-            this.currentAreaImportantTiles.Clear();
             this.RemoveMapTexture();
             this.isAzuriteMine = false;
             this.currentAreaName = string.Empty;
