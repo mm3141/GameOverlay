@@ -55,10 +55,10 @@
         /// <returns>List of rules that are valid for newly created player.</returns>
         public static Rule[] CreateDefaultRules()
         {
-            var rules = new Rule[5];
+            var rules = new Rule[6];
             for (var i = 0; i < 2; i++)
             {
-                rules[i] = new($"Life_Flask{i + 1}");
+                rules[i] = new($"Life{i + 1}");
                 rules[i].Enabled = true;
                 rules[i].Key = ConsoleKey.D1 + i;
                 rules[i].conditions.Add(new VitalsCondition(OperatorType.LESS_THAN, VitalType.LIFE_PERCENT, 70));
@@ -66,22 +66,33 @@
                 rules[i].conditions.Add(new FlaskEffectCondition(i + 1));
             }
 
-            rules[2] = new("Mana_Flask5");
-            rules[2].Enabled = true;
-            rules[2].Key = ConsoleKey.D5;
-            rules[2].conditions.Add(new VitalsCondition(OperatorType.LESS_THAN, VitalType.MANA_PERCENT, 20));
-            rules[2].conditions.Add(new FlaskChargesCondition(OperatorType.BIGGER_THAN, 5, 5));
-            rules[2].conditions.Add(new FlaskEffectCondition(5));
+            rules[2] = new($"Life3_disabled");
+            rules[2].Enabled = false;
+            rules[2].Key = ConsoleKey.D3;
+            rules[2].conditions.Add(new VitalsCondition(OperatorType.LESS_THAN, VitalType.LIFE_PERCENT, 70));
+            rules[2].conditions.Add(new FlaskChargesCondition(OperatorType.BIGGER_THAN, 3, 6));
+            rules[2].conditions.Add(new FlaskEffectCondition(3));
 
-            for (var i = 0; i < 2; i++)
-            {
-                rules[3 + i] = new($"QuickSilver_Flask{3 + i}(disabled)");
-                rules[3 + i].Enabled = false;
-                rules[3 + i].Key = ConsoleKey.D3 + i;
-                rules[3 + i].conditions.Add(new AnimationCondition(OperatorType.EQUAL_TO, Animation.Run, 1000));
-                rules[3 + i].conditions.Add(new FlaskChargesCondition(OperatorType.BIGGER_THAN, 3 + i, 29));
-                rules[3 + i].conditions.Add(new FlaskEffectCondition(3 + i));
-            }
+            rules[3] = new("Mana3_disabled");
+            rules[3].Enabled = false;
+            rules[3].Key = ConsoleKey.D3;
+            rules[3].conditions.Add(new VitalsCondition(OperatorType.LESS_THAN, VitalType.MANA_PERCENT, 20));
+            rules[3].conditions.Add(new FlaskChargesCondition(OperatorType.BIGGER_THAN, 3, 5));
+            rules[3].conditions.Add(new FlaskEffectCondition(3));
+
+            rules[4] = new($"QuickSilver4_disabled");
+            rules[4].Enabled = false;
+            rules[4].Key = ConsoleKey.D4;
+            rules[4].conditions.Add(new AnimationCondition(OperatorType.EQUAL_TO, Animation.Run, 1000));
+            rules[4].conditions.Add(new FlaskChargesCondition(OperatorType.BIGGER_THAN, 4, 29));
+            rules[4].conditions.Add(new FlaskEffectCondition(4));
+
+            rules[5] = new("Mana5");
+            rules[5].Enabled = false;
+            rules[5].Key = ConsoleKey.D5;
+            rules[5].conditions.Add(new VitalsCondition(OperatorType.LESS_THAN, VitalType.MANA_PERCENT, 20));
+            rules[5].conditions.Add(new FlaskChargesCondition(OperatorType.BIGGER_THAN, 5, 5));
+            rules[5].conditions.Add(new FlaskEffectCondition(5));
 
             return rules;
         }
