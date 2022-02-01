@@ -105,5 +105,10 @@ namespace GameHelper.Settings
         ///     the performance stats or not.
         /// </summary>
         public bool ShowPerfStats = false;
+
+        /// <summary>
+        ///     Gets or sets a value indicating what nearby means to the user.
+        /// </summary>
+        public int NearbyMeaning = 70;
     }
 }

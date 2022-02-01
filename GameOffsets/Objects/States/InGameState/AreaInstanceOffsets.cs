@@ -33,12 +33,11 @@ namespace GameOffsets.Objects.States.InGameState
 
     public static class AreaInstanceConstants
     {
-        // should be few points less than the real value (2178)
+        // should be few points less than the real value (200)
         // real value manually calculating by checking when entity leave the bubble.
-        // Updating it to 1630 to remove false positive.
-        // 1630 render distance is around 150 grid distance. ( divide by 10.87 )
-        // 1 full screen size is around 14xx so this is slightly more than 1 screen size.
-        public const int NETWORK_BUBBLE_RADIUS = 1630;
+        // BTW real value is different for different entity types.
+        // Updating it to 150 to remove false positive.
+        public const int NETWORK_BUBBLE_RADIUS = 150;
     }
 
     public static class EntityFilter

@@ -311,13 +311,13 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             Parallel.For(0, entities.Count, index =>
             {
                 var (key, value) = entities[index];
-                if (data.ContainsKey(key))
+                if (data.TryGetValue(key, out var entity))
                 {
-                    data[key].Address = value.EntityPtr;
+                    entity.Address = value.EntityPtr;
                 }
                 else
                 {
-                    var entity = new Entity(value.EntityPtr);
+                    entity = new Entity(value.EntityPtr);
                     if (!string.IsNullOrEmpty(entity.Path))
                     {
                         data[key] = entity;
@@ -326,7 +326,13 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
                             this.AddToCacheParallel(key, entity.Path);
                         }
                     }
+                    else
+                    {
+                        entity = null;
+                    }
                 }
+
+                entity?.UpdateNearby(this.Player);
             });
         }
 

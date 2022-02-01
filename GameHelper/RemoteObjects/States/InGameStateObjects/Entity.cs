@@ -19,6 +19,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
     {
         private readonly Dictionary<string, IntPtr> componentAddresses = new();
         private readonly Dictionary<string, RemoteObjectBase> componentCache = new();
+        private bool isnearby = false;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="Entity" /> class.
@@ -45,6 +46,11 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
         public uint Id { get; private set; }
 
         /// <summary>
+        ///     Gets a value indicating whether the entity is nearby the player or not.
+        /// </summary>
+        public bool IsNearby => this.IsValid && this.isnearby;
+
+        /// <summary>
         ///     Gets or Sets a value indicating whether the entity
         ///     exists in the game or not.
         /// </summary>
@@ -63,8 +69,8 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             if (this.TryGetComponent<Render>(out var myPosComp) &&
                 other.TryGetComponent<Render>(out var otherPosComp))
             {
-                var dx = myPosComp.WorldPosition.X - otherPosComp.WorldPosition.X;
-                var dy = myPosComp.WorldPosition.Y - otherPosComp.WorldPosition.Y;
+                var dx = myPosComp.GridPosition.X - otherPosComp.GridPosition.X;
+                var dy = myPosComp.GridPosition.Y - otherPosComp.GridPosition.Y;
                 return (int)Math.Sqrt(dx * dx + dy * dy);
             }
 
@@ -139,6 +145,18 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
                 }
 
                 ImGui.TreePop();
+            }
+        }
+
+        internal void UpdateNearby(Entity player)
+        {
+            if (this.DistanceFrom(player) < Core.GHSettings.NearbyMeaning)
+            {
+                this.isnearby = true;
+            }
+            else
+            {
+                this.isnearby = false;
             }
         }
 

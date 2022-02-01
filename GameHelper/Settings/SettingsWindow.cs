@@ -6,13 +6,18 @@ namespace GameHelper.Settings
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Numerics;
     using ClickableTransparentOverlay;
     using Coroutine;
     using CoroutineEvents;
+    using RemoteEnums;
+    using RemoteObjects.Components;
+    using GameOffsets.Natives;
     using ImGuiNET;
     using Plugin;
     using Utils;
+    using GameOffsets.Objects.States.InGameState;
 
     /// <summary>
     ///     Creates the MainMenu on the UI.
@@ -108,6 +113,8 @@ namespace GameHelper.Settings
                   $"when you close the overlay or hide it via {Core.GHSettings.MainMenuHotKey} button.");
             ImGui.NewLine();
             ImGui.PopTextWrapPos();
+            ImGui.DragInt("Nearby Monster Range", ref Core.GHSettings.NearbyMeaning, 1f, 1, 120);
+            DrawNearbyMonsterRange();
             ImGui.DragInt("Key Timeout", ref Core.GHSettings.KeyPressTimeout, 0.2f, 30, 300);
             ImGuiHelper.ToolTip("When GameOverlay press a key in the game, the key " +
                 "has to go to the GGG server for it to work. This process takes " +
@@ -231,6 +238,17 @@ namespace GameHelper.Settings
         }
 
         /// <summary>
+        ///     Hides the overlay on startup.
+        /// </summary>
+        private static void HideOnStartCheck()
+        {
+            if (Core.GHSettings.HideSettingWindowOnStart)
+            {
+                isSettingsWindowVisible = false;
+            }
+        }
+
+        /// <summary>
         ///     Draws the Settings Window.
         /// </summary>
         /// <returns>co-routine IWait.</returns>
@@ -295,11 +313,41 @@ namespace GameHelper.Settings
             }
         }
 
-        private static void HideOnStartCheck()
+        /// <summary>
+        ///     Draws the nearby monster range on screen.
+        /// </summary>
+        /// <returns>co-routine IWait.</returns>
+        private static void DrawNearbyMonsterRange()
         {
-            if (Core.GHSettings.HideSettingWindowOnStart)
+            var iGS = Core.States.InGameStateObject;
+            if (ImGui.IsItemHovered() &&
+                Core.States.GameCurrentState == GameStateTypes.InGameState &&
+                iGS.CurrentAreaInstance.Player.TryGetComponent<Render>(out var r))
             {
-                isSettingsWindowVisible = false;
+                foreach (var angle in Enumerable.Range(0, 360))
+                {
+                    Vector2 GetScreenCoord(int i)
+                    {
+                        var gridPoint = new Vector2(r.GridPosition.X, r.GridPosition.Y) +
+                                        new Vector2(
+                                            (float)(Math.Cos(Math.PI / 180 * i) * Core.GHSettings.NearbyMeaning),
+                                            (float)(Math.Sin(Math.PI / 180 * i) * Core.GHSettings.NearbyMeaning));
+                        var height =
+                            Core.States.InGameStateObject.CurrentAreaInstance.GridHeightData[(int)gridPoint.Y][(int)gridPoint.X];
+                        var screenCoord = Core.States.InGameStateObject.WorldToScreen(
+                            new StdTuple3D<float>
+                            {
+                                X = gridPoint.X * TileStructure.TileToWorldConversion / TileStructure.TileToGridConversion,
+                                Y = gridPoint.Y * TileStructure.TileToWorldConversion / TileStructure.TileToGridConversion,
+                                Z = height
+                            });
+                        return screenCoord;
+                    }
+
+                    var p1 = GetScreenCoord(angle);
+                    var p2 = GetScreenCoord(angle + 1);
+                    ImGui.GetBackgroundDrawList().AddLine(p1, p2, ImGuiHelper.Color(255, 0, 0, 255));
+                }
             }
         }
     }
