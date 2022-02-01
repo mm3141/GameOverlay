@@ -4,6 +4,7 @@
 
 namespace AutoHotKeyTrigger.ProfileManager
 {
+    using System;
     using System.Collections.Generic;
     using System.Numerics;
     using GameHelper;
@@ -15,6 +16,7 @@ namespace AutoHotKeyTrigger.ProfileManager
     public class Profile
     {
         private int ruleIndexToDelete = -1;
+        private int ruleIndexToSwap = -1;
 
         /// <summary>
         ///     Gets the rules to trigger the actions on.
@@ -26,6 +28,7 @@ namespace AutoHotKeyTrigger.ProfileManager
         /// </summary>
         public void DrawSettings()
         {
+
             if (ImGui.BeginTabBar("Profile Rules", ImGuiTabBarFlags.AutoSelectNewTabs | ImGuiTabBarFlags.Reorderable))
             {
                 if (ImGui.TabItemButton("+", ImGuiTabItemFlags.Leading))
@@ -37,7 +40,31 @@ namespace AutoHotKeyTrigger.ProfileManager
                 {
                     var currRule = this.Rules[i];
                     var shouldNotDelete = true;
-                    if (ImGui.BeginTabItem($"{currRule.Name}###Rule{i}", ref shouldNotDelete))
+                    var isSelected = ImGui.BeginTabItem(
+                        $"{currRule.Name}###Rule{i}",
+                        ref shouldNotDelete,
+                        ImGuiTabItemFlags.UnsavedDocument);
+
+                    if (ImGui.BeginDragDropSource())
+                    {
+                        this.ruleIndexToSwap = i;
+                        ImGui.SetDragDropPayload("RuleIndex", IntPtr.Zero, 0);
+                        ImGui.Text(currRule.Name);
+                        ImGui.EndDragDropSource();
+                    }
+
+                    if (ImGui.BeginDragDropTarget())
+                    {
+                        ImGui.AcceptDragDropPayload("RuleIndex");
+                        if (ImGui.IsMouseReleased(ImGuiMouseButton.Left))
+                        {
+                            this.SwapRules(this.ruleIndexToSwap, i);
+                        }
+
+                        ImGui.EndDragDropTarget();
+                    }
+
+                    if (isSelected)
                     {
                         currRule.DrawSettings();
                         ImGui.EndTabItem();
@@ -65,6 +92,8 @@ namespace AutoHotKeyTrigger.ProfileManager
                 if (ImGui.Button("Yes",
                     new Vector2(ImGui.GetContentRegionAvail().X / 2f, ImGui.GetTextLineHeight() * 2)))
                 {
+                    var ruleToDelete = this.Rules[this.ruleIndexToDelete];
+                    ImGui.SetTabItemClosed($"{ruleToDelete.Name}###Rule{this.ruleIndexToDelete}");
                     this.Rules.RemoveAt(this.ruleIndexToDelete);
                     ImGui.CloseCurrentPopup();
                 }
@@ -77,6 +106,23 @@ namespace AutoHotKeyTrigger.ProfileManager
 
                 ImGui.EndPopup();
             }
+        }
+
+        private void SwapRules(int index1, int index2)
+        {
+            if (index1 < 0 || index1 >= this.Rules.Count)
+            {
+                return;
+            }
+
+            if (index2 < 0 || index2 >= this.Rules.Count)
+            {
+                return;
+            }
+
+            var tmp = this.Rules[index2];
+            this.Rules[index2] = this.Rules[index1];
+            this.Rules[index1] = tmp;
         }
     }
 }
