@@ -113,7 +113,7 @@ namespace GameHelper.Settings
                   $"when you close the overlay or hide it via {Core.GHSettings.MainMenuHotKey} button.");
             ImGui.NewLine();
             ImGui.PopTextWrapPos();
-            ImGui.DragInt("Nearby Monster Range", ref Core.GHSettings.NearbyMeaning, 1f, 1, 120);
+            ImGui.DragInt("Nearby Monster Range", ref Core.GHSettings.NearbyMeaning, 1f, 1, 200);
             DrawNearbyMonsterRange();
             ImGui.DragInt("Key Timeout", ref Core.GHSettings.KeyPressTimeout, 0.2f, 30, 300);
             ImGuiHelper.ToolTip("When GameOverlay press a key in the game, the key " +
