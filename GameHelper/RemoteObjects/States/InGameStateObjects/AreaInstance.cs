@@ -245,6 +245,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             this.UpdateEnvironmentAndCaches(data.Environments);
             this.ServerDataObject.Address = data.ServerDataPtr;
             this.Player.Address = data.LocalPlayerPtr;
+            this.Player.TryGetComponent<Render>(out var _);
             this.UpdateEntities(data.AwakeEntities, this.AwakeEntities, true);
         }
 
