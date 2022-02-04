@@ -11,7 +11,6 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
     using Components;
     using Coroutine;
     using CoroutineEvents;
-    using FilesStructures;
     using GameHelper.Cache;
     using GameOffsets.Natives;
     using GameOffsets.Objects.States.InGameState;
@@ -19,7 +18,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
     using Utils;
 
     /// <summary>
-    ///     Points to the InGameState -> LocalData Object.
+    ///     Points to the InGameState -> AreaInstanceData Object.
     /// </summary>
     public class AreaInstance : RemoteObjectBase
     {
@@ -46,7 +45,6 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
 
             this.MonsterLevel = 0;
             this.AreaHash = string.Empty;
-            this.AreaDetails = new(IntPtr.Zero);
 
             this.ServerDataObject = new(IntPtr.Zero);
             this.Player = new();
@@ -78,11 +76,6 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
         ///     This value is sent to the client from the server.
         /// </summary>
         public string AreaHash { get; private set; }
-
-        /// <summary>
-        ///     Gets the Area Details.
-        /// </summary>
-        public WorldAreaDat AreaDetails { get; }
 
         /// <summary>
         ///     Gets the data related to the player the user is playing.
@@ -144,9 +137,9 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
                 if (player.TryGetComponent(out Render render))
                 {
                     var wp = render.WorldPosition;
-                    var p0 = Core.States.InGameStateObject.WorldToScreen(wp);
+                    var p0 = Core.States.InGameStateObject.CurrentWorldInstance.WorldToScreen(wp);
                     wp.Z += render.ModelBounds.Z;
-                    var p1 = Core.States.InGameStateObject.WorldToScreen(wp);
+                    var p1 = Core.States.InGameStateObject.CurrentWorldInstance.WorldToScreen(wp);
 
                     return Math.Abs(p1.Y - p0.Y) / render.ModelBounds.Z;
                 }
@@ -232,7 +225,6 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             if (hasAddressChanged)
             {
                 this.Cleanup(true);
-                this.AreaDetails.Address = data.AreaDetailsPtr;
                 this.TerrainMetadata = data.TerrainMetadata;
                 this.MonsterLevel = data.MonsterLevel;
                 this.AreaHash = $"{data.CurrentAreaHash:X}";
@@ -282,8 +274,9 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             bool addToCache)
         {
             var reader = Core.Process.Handle;
+            var areaDetails = Core.States.InGameStateObject.CurrentWorldInstance.AreaDetails;
             if (Core.GHSettings.DisableEntityProcessingInTownOrHideout &&
-                (this.AreaDetails.IsHideout || this.AreaDetails.IsTown))
+                (areaDetails.IsHideout || areaDetails.IsTown))
             {
                 this.NetworkBubbleEntityCount = 0;
                 return;
@@ -482,7 +475,6 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
                 this.environments.Clear();
                 this.MonsterLevel = 0;
                 this.AreaHash = string.Empty;
-                this.AreaDetails.Address = IntPtr.Zero;
                 this.ServerDataObject.Address = IntPtr.Zero;
                 this.Player.Address = IntPtr.Zero;
                 this.NetworkBubbleEntityCount = 0;

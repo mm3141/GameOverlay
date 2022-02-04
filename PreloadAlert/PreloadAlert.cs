@@ -115,7 +115,7 @@ namespace PreloadAlert
                 return;
             }
 
-            var areaDetails = Core.States.InGameStateObject.CurrentAreaInstance.AreaDetails;
+            var areaDetails = Core.States.InGameStateObject.CurrentWorldInstance.AreaDetails;
             if (this.Settings.HideWhenInTownOrHideout && (areaDetails.IsHideout || areaDetails.IsTown))
             {
                 return;

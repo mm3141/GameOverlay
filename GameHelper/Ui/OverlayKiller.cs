@@ -18,7 +18,7 @@ namespace GameHelper.Ui
     {
         private static readonly Stopwatch Sw = Stopwatch.StartNew();
         private static readonly int Timelimit = 20;
-        private static readonly Vector2 size = new(400);
+        private static readonly Vector2 Size = new(400);
 
         /// <summary>
         ///     Initializes the co-routines.
@@ -34,13 +34,13 @@ namespace GameHelper.Ui
             while (true)
             {
                 yield return new Wait(GameHelperEvents.OnRender);
-                if (!Core.States.InGameStateObject.CurrentAreaInstance.AreaDetails.IsBattleRoyale)
+                if (!Core.States.InGameStateObject.CurrentWorldInstance.AreaDetails.IsBattleRoyale)
                 {
                     Sw.Restart();
                     continue;
                 }
 
-                ImGui.SetNextWindowSize(size);
+                ImGui.SetNextWindowSize(Size);
                 ImGui.Begin("Player Vs Player (PVP) Detected");
                 ImGui.TextWrapped("Please don't cheat in PvP mode. GameHelper was not " +
                                   "created for PvP cheating. Overlay will close " +

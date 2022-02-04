@@ -234,7 +234,7 @@ namespace AutoHotKeyTrigger
                 return false;
             }
 
-            var areaDetails = Core.States.InGameStateObject.CurrentAreaInstance.AreaDetails;
+            var areaDetails = Core.States.InGameStateObject.CurrentWorldInstance.AreaDetails;
             if (areaDetails.IsTown)
             {
                 this.debugMessage = "Player is in town.";
@@ -303,7 +303,7 @@ namespace AutoHotKeyTrigger
         {
 
             if (!this.stopShowingAutoQuitWarning &&
-                Core.States.InGameStateObject.CurrentAreaInstance.AreaDetails.IsTown &&
+                Core.States.InGameStateObject.CurrentWorldInstance.AreaDetails.IsTown &&
                 this.ShouldExecuteAutoQuit)
             {
                 ImGui.OpenPopup("AutoQuitWarningUi");

@@ -7,20 +7,19 @@ namespace GameOffsets.Objects.States.InGameState
     [StructLayout(LayoutKind.Explicit, Pack = 1)]
     public struct AreaInstanceOffsets
     {
-        [FieldOffset(0x80)] public IntPtr AreaDetailsPtr; // WorldAreaDatOffsets.cs
         [FieldOffset(0xB0)] public byte MonsterLevel;
         [FieldOffset(0x114)] public uint CurrentAreaHash;
 
         // Env which are activated. Keys can be found in Environments.dat file.
-        [FieldOffset(0x550)] public StdVector Environments; // EnvironmentStruct
-        [FieldOffset(0x580)] public IntPtr ServerDataPtr;
+        [FieldOffset(0x650)] public StdVector Environments; // EnvironmentStruct
+        [FieldOffset(0x680)] public IntPtr ServerDataPtr;
 
-        [FieldOffset(0x588)] public IntPtr LocalPlayerPtr;
+        [FieldOffset(0x688)] public IntPtr LocalPlayerPtr;
 
-        [FieldOffset(0x638)] public StdMap AwakeEntities;
+        [FieldOffset(0x738)] public StdMap AwakeEntities;
         // [FieldOffset(0x648)] public StdMap SleepingEntities; // always after awake entities.
 
-        [FieldOffset(0x7C8)] public TerrainStruct TerrainMetadata;
+        [FieldOffset(0x8C8)] public TerrainStruct TerrainMetadata;
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]

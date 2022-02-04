@@ -170,10 +170,10 @@ namespace GameHelper.RemoteObjects
                 if (this.Address != IntPtr.Zero)
                 {
                     var areaHash = Core.States.InGameStateObject.CurrentAreaInstance.AreaHash;
-                    var iH = Core.States.InGameStateObject.CurrentAreaInstance.AreaDetails.IsHideout;
-                    var iT = Core.States.InGameStateObject.CurrentAreaInstance.AreaDetails.IsTown;
+                    var iH = Core.States.InGameStateObject.CurrentWorldInstance.AreaDetails.IsHideout;
+                    var iT = Core.States.InGameStateObject.CurrentWorldInstance.AreaDetails.IsTown;
                     var name = Core.States.AreaLoading.CurrentAreaName;
-                    if (iH || iT || areaHash == this.areaHashCache)
+                    if ((iH && Core.GHSettings.SkipPreloadedFilesInHideout) || iT || areaHash == this.areaHashCache)
                     {
                         continue;
                     }

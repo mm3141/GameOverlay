@@ -232,7 +232,7 @@ namespace Radar
         {
             var largeMap = Core.States.InGameStateObject.GameUi.LargeMap;
             var miniMap = Core.States.InGameStateObject.GameUi.MiniMap;
-            var areaDetails = Core.States.InGameStateObject.CurrentAreaInstance.AreaDetails;
+            var areaDetails = Core.States.InGameStateObject.CurrentWorldInstance.AreaDetails;
             if (this.Settings.ModifyCullWindow)
             {
                 ImGui.SetNextWindowPos(largeMap.Center, ImGuiCond.Appearing);
@@ -845,7 +845,7 @@ namespace Radar
             {
                 yield return new Wait(RemoteEvents.AreaChanged);
                 this.CleanUpRadarPluginCaches();
-                this.currentAreaName = Core.States.InGameStateObject.CurrentAreaInstance.AreaDetails.Id;
+                this.currentAreaName = Core.States.InGameStateObject.CurrentWorldInstance.AreaDetails.Id;
                 this.isAzuriteMine = this.currentAreaName == "Delve_Main";
                 this.GenerateMapTexture();
                 this.ClusterImportantTgtName();

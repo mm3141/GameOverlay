@@ -1,30 +1,14 @@
 namespace GameOffsets.Objects.States
 {
     using System;
-    using System.Numerics;
     using System.Runtime.InteropServices;
 
     [StructLayout(LayoutKind.Explicit, Pack = 1)]
     public struct InGameStateOffset
     {
-        [FieldOffset(0x18)] public IntPtr LocalData;
-        [FieldOffset(0x4F0)] public IntPtr UiRootPtr;
-        [FieldOffset(0x868)] public CameraStructure CameraData;
-        [FieldOffset(0xC60)] public IntPtr IngameUi;
-    }
-
-    [StructLayout(LayoutKind.Explicit, Pack = 1)]
-    public struct CameraStructure
-    {
-        [FieldOffset(0x00)] public IntPtr CodePtr;
-        // [FieldOffset(0x8)] public int Width;
-        // [FieldOffset(0xC)] public int Height;
-
-        // First value is changing when we change the screen size (ratio)
-        // 4 bytes before the matrix doesn't change
-        // matrix is duplicated, meaning when first matrix finish, 2nd one start with exact same values.
-        [FieldOffset(0x80)] public Matrix4x4 WorldToScreenMatrix;
-        // [FieldOffset(0xF0)] public Vector3 Position;
-        // [FieldOffset(0x1C4)] public float ZFar;
+        [FieldOffset(0x18)] public IntPtr AreaInstanceData;
+        [FieldOffset(0x78)] public IntPtr WorldData;
+        [FieldOffset(0x100)] public IntPtr UiRootPtr;
+        [FieldOffset(0x438)] public IntPtr IngameUi;
     }
 }

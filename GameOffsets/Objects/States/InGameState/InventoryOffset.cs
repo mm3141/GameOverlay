@@ -16,17 +16,17 @@ namespace GameOffsets.Objects.States.InGameState
         //[FieldOffset(0x00)] public int InventoryType;
         //[FieldOffset(0x04)] public int InventorySlot;
         //[FieldOffset(0x08)] public byte ShouldShowBoxes; // there are some other useless flags right after this byte.
-        [FieldOffset(0x14)] public StdTuple2D<int> TotalBoxes; // X * Y * 8 = StdVector.ItemList.Length.
+        [FieldOffset(0x144)] public StdTuple2D<int> TotalBoxes; // X * Y * 8 = StdVector.ItemList.Length.
 
         //[FieldOffset(0x18)] public int CanPutItem0; // setting this to 1 will block user from putting items.
         //[FieldOffset(0x1C)] public int CanPutItem1; // same as above.
-        [FieldOffset(0x38)] public StdVector ItemList;
+        [FieldOffset(0x168)] public StdVector ItemList;
 
         // use ItemList, reading StdMap requires more reads than reading StdVector
-        [FieldOffset(0x50)] public StdMap ItemsHashMap;
+        [FieldOffset(0x180)] public StdMap ItemsHashMap;
 
         // [FieldOffset(0x58)] public StdVector WierdUiElementsData;
-        [FieldOffset(0xA8)] public int ServerRequestCounter;
+        [FieldOffset(0x1C8)] public int ServerRequestCounter;
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]

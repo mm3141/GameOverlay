@@ -150,8 +150,9 @@ namespace HealthBars
         public override void DrawUI()
         {
             var cAreaInstance = Core.States.InGameStateObject.CurrentAreaInstance;
-            if (!this.Settings.ShowInTown && cAreaInstance.AreaDetails.IsTown ||
-                !this.Settings.ShowInHideout && cAreaInstance.AreaDetails.IsHideout)
+            var cWorldInstance = Core.States.InGameStateObject.CurrentWorldInstance;
+            if (!this.Settings.ShowInTown && cWorldInstance.AreaDetails.IsTown ||
+                !this.Settings.ShowInHideout && cWorldInstance.AreaDetails.IsHideout)
             {
                 return;
             }
@@ -180,7 +181,7 @@ namespace HealthBars
 
                 var curPos = render.WorldPosition;
                 curPos.Z -= render.ModelBounds.Z;
-                var location = Core.States.InGameStateObject.WorldToScreen(curPos);
+                var location = Core.States.InGameStateObject.CurrentWorldInstance.WorldToScreen(curPos);
 
                 if (this.Settings.InterpolatePosition)
                 {

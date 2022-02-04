@@ -71,7 +71,7 @@ namespace GameHelper.Utils
             var colBg = Color(0, 0, 0, 255);
             var colFg = Color(255, 255, 255, 255);
             var textSizeHalf = ImGui.CalcTextSize(text) / 2;
-            var location = Core.States.InGameStateObject.WorldToScreen(pos);
+            var location = Core.States.InGameStateObject.CurrentWorldInstance.WorldToScreen(pos);
             var max = location + textSizeHalf;
             location -= textSizeHalf;
             ImGui.GetBackgroundDrawList().AddRectFilled(location, max, colBg);

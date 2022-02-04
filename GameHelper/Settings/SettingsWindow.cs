@@ -334,7 +334,7 @@ namespace GameHelper.Settings
                                             (float)(Math.Sin(Math.PI / 180 * i) * Core.GHSettings.NearbyMeaning));
                         var height =
                             Core.States.InGameStateObject.CurrentAreaInstance.GridHeightData[(int)gridPoint.Y][(int)gridPoint.X];
-                        var screenCoord = Core.States.InGameStateObject.WorldToScreen(
+                        var screenCoord = Core.States.InGameStateObject.CurrentWorldInstance.WorldToScreen(
                             new StdTuple3D<float>
                             {
                                 X = gridPoint.X * TileStructure.TileToWorldConversion / TileStructure.TileToGridConversion,
