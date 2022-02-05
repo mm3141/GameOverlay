@@ -158,7 +158,7 @@ namespace GameHelper.Settings
         /// </summary>
         private static void ChangeFontWidget()
         {
-            if (ImGui.TreeNode("Change Font"))
+            if (ImGui.CollapsingHeader("Change Fonts"))
             {
                 ImGui.InputText("Pathname", ref Core.GHSettings.FontPathName, 300);
                 ImGui.DragInt("Size", ref Core.GHSettings.FontSize, 0.1f, 13, 40);
@@ -178,7 +178,7 @@ namespace GameHelper.Settings
                     Core.GHSettings.FontLanguage = FontGlyphRangeType.English;
                 }
 
-                if (ImGui.Button("Change Font"))
+                if (ImGui.Button("Apply Changes"))
                 {
                     if (MiscHelper.TryConvertStringToImGuiGlyphRanges(Core.GHSettings.FontCustomGlyphRange, out var glyphranges))
                     {
@@ -195,17 +195,6 @@ namespace GameHelper.Settings
                             Core.GHSettings.FontLanguage);
                     }
                 }
-
-                ImGui.SameLine();
-                if (ImGui.Button("Clear Custom Font"))
-                {
-                    Core.GHSettings.FontPathName = string.Empty;
-                    Core.GHSettings.FontSize = 13;
-                    Core.GHSettings.FontLanguage = FontGlyphRangeType.English;
-                    Core.GHSettings.FontCustomGlyphRange = string.Empty;
-                }
-
-                ImGui.TreePop();
             }
         }
 
