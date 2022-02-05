@@ -36,7 +36,7 @@ namespace GameHelper.RemoteObjects
         /// <summary>
         ///     Gets a dictionary containing all the Game States addresses.
         /// </summary>
-        public Dictionary<string, IntPtr> AllStates { get; } = new();
+        public Dictionary<IntPtr, GameStateTypes> AllStates { get; } = new();
 
         /// <summary>
         ///     Gets the AreaLoadingState object.
@@ -77,7 +77,7 @@ namespace GameHelper.RemoteObjects
             {
                 foreach (var state in this.AllStates)
                 {
-                    ImGuiHelper.IntPtrToImGui(state.Key, state.Value);
+                    ImGuiHelper.IntPtrToImGui($"{state.Value}", state.Key);
                 }
 
                 ImGui.TreePop();
@@ -94,21 +94,21 @@ namespace GameHelper.RemoteObjects
             {
                 this.myStaticObj = reader.ReadMemory<GameStateStaticOffset>(this.Address);
                 var data = reader.ReadMemory<GameStateOffset>(this.myStaticObj.GameState);
-                var states = reader.ReadStdList<StateInternalStructure>(data.States);
-                for (var i = 0; i < states.Count; i++)
-                {
-                    var state = states[i];
-                    var name = $"{(GameStateTypes)state.StateEnumToName}";
-                    this.UpdateKnownStatesObjects(name, state.StatePtr);
-                    if (this.AllStates.ContainsKey(name))
-                    {
-                        this.AllStates[name] = state.StatePtr;
-                    }
-                    else
-                    {
-                        this.AllStates.Add(name, state.StatePtr);
-                    }
-                }
+                this.AllStates[data.State0] = (GameStateTypes)0;
+                this.AllStates[data.State1] = (GameStateTypes)1;
+                this.AllStates[data.State2] = (GameStateTypes)2;
+                this.AllStates[data.State3] = (GameStateTypes)3;
+                this.AllStates[data.State4] = (GameStateTypes)4;
+                this.AllStates[data.State5] = (GameStateTypes)5;
+                this.AllStates[data.State6] = (GameStateTypes)6;
+                this.AllStates[data.State7] = (GameStateTypes)7;
+                this.AllStates[data.State8] = (GameStateTypes)8;
+                this.AllStates[data.State9] = (GameStateTypes)9;
+                this.AllStates[data.State10] = (GameStateTypes)10;
+                this.AllStates[data.State11] = (GameStateTypes)11;
+
+                this.AreaLoading.Address = data.State0;
+                this.InGameStateObject.Address = data.State4;
             }
             else
             {
@@ -117,14 +117,7 @@ namespace GameHelper.RemoteObjects
                 if (cStateAddr != IntPtr.Zero && cStateAddr != this.currentStateAddress)
                 {
                     this.currentStateAddress = cStateAddr;
-                    foreach (var state in Core.States.AllStates)
-                    {
-                        if (state.Value == cStateAddr)
-                        {
-                            this.GameCurrentState = this.ConvertStringToEnum(state.Key);
-                            break;
-                        }
-                    }
+                    this.GameCurrentState = this.AllStates[this.currentStateAddress];
                 }
             }
         }
@@ -138,34 +131,6 @@ namespace GameHelper.RemoteObjects
             this.AllStates.Clear();
             this.AreaLoading.Address = IntPtr.Zero;
             this.InGameStateObject.Address = IntPtr.Zero;
-        }
-
-        /// <summary>
-        ///     Updates the known states Objects and silently skips the unknown ones.
-        /// </summary>
-        /// <param name="name">State name.</param>
-        /// <param name="address">State address.</param>
-        private void UpdateKnownStatesObjects(string name, IntPtr address)
-        {
-            switch (name)
-            {
-                case "AreaLoadingState":
-                    this.AreaLoading.Address = address;
-                    break;
-                case "InGameState":
-                    this.InGameStateObject.Address = address;
-                    break;
-            }
-        }
-
-        private GameStateTypes ConvertStringToEnum(string data)
-        {
-            if (Enum.TryParse<GameStateTypes>(data, out var result))
-            {
-                return result;
-            }
-
-            throw new Exception($"New GameStateTypes discovered: {data}");
         }
 
         private IEnumerator<Wait> OnPerFrame()
