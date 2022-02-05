@@ -239,7 +239,11 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             this.Player.Address = data.LocalPlayerPtr;
 
             // reading Render to avoid concurrent modification in UpdateEntites func.
-            this.Player.TryGetComponent<Render>(out var _);
+            if (!this.Player.TryGetComponent<Render>(out var _))
+            {
+                return;
+            }
+
             this.UpdateEntities(data.AwakeEntities, this.AwakeEntities, true);
         }
 

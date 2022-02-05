@@ -87,6 +87,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
         public bool TryGetComponent<T>(out T component)
             where T : RemoteObjectBase
         {
+            component = null;
             var componenName = typeof(T).Name;
             if (this.componentCache.TryGetValue(componenName, out var comp))
             {
@@ -104,7 +105,6 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
                 }
             }
 
-            component = null;
             return false;
         }
 
