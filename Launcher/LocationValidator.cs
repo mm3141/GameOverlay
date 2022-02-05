@@ -29,7 +29,11 @@ namespace Launcher
             var pathMatch = BadNameRegex.Match(directoryPath);
             if (pathMatch.Success)
             {
-                var message = $"Bad process path detected ({pathMatch.Value}), please move it to a more inconspicuous location";
+                var message = $"You have downloaded GameHelper in a bad folder/pathname. " +
+                    $"Your folder/pathname contains \"{pathMatch.Value}\". " +
+                    $"This is bad for your account. Please rename/move GameHelper to a better folder/pathname. " +
+                    $"If you don't really care about your account, feel free to launch GameHelper.exe directly " +
+                    $"rather than launching from the Launcher.exe.";
                 if (allowBadPath)
                 {
                     Console.WriteLine(message);
