@@ -332,8 +332,16 @@ namespace GameHelper.Settings
                                         new Vector2(
                                             (float)(Math.Cos(Math.PI / 180 * i) * Core.GHSettings.NearbyMeaning),
                                             (float)(Math.Sin(Math.PI / 180 * i) * Core.GHSettings.NearbyMeaning));
-                        var height =
-                            Core.States.InGameStateObject.CurrentAreaInstance.GridHeightData[(int)gridPoint.Y][(int)gridPoint.X];
+
+                        var height = r.TerrainHeight;
+                        try
+                        {
+                            height = Core.States.InGameStateObject.CurrentAreaInstance.GridHeightData[(int)gridPoint.Y][(int)gridPoint.X];
+                        }
+                        catch (Exception)
+                        {
+                        }
+
                         var screenCoord = Core.States.InGameStateObject.CurrentWorldInstance.WorldToScreen(
                             new StdTuple3D<float>
                             {
