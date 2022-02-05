@@ -19,7 +19,7 @@ namespace GameHelper.RemoteObjects
     /// </summary>
     public class GameStates : RemoteObjectBase
     {
-        private Dictionary<IntPtr, GameStateTypes> gameStateCache = new();
+        private IntPtr currentStateAddress = IntPtr.Zero;
         private GameStateTypes currentStateName = GameStateTypes.GameNotLoaded;
         private GameStateStaticOffset myStaticObj;
 
@@ -32,6 +32,11 @@ namespace GameHelper.RemoteObjects
         {
             CoroutineHandler.Start(this.OnPerFrame(), priority: int.MaxValue);
         }
+
+        /// <summary>
+        ///     Gets a dictionary containing all the Game States addresses.
+        /// </summary>
+        public Dictionary<string, IntPtr> AllStates { get; } = new();
 
         /// <summary>
         ///     Gets the AreaLoadingState object.
@@ -70,9 +75,9 @@ namespace GameHelper.RemoteObjects
             base.ToImGui();
             if (ImGui.TreeNode("All States Info"))
             {
-                foreach (var state in this.gameStateCache)
+                foreach (var state in this.AllStates)
                 {
-                    ImGuiHelper.IntPtrToImGui($"{state.Value}", state.Key);
+                    ImGuiHelper.IntPtrToImGui(state.Key, state.Value);
                 }
 
                 ImGui.TreePop();
@@ -88,14 +93,39 @@ namespace GameHelper.RemoteObjects
             if (hasAddressChanged)
             {
                 this.myStaticObj = reader.ReadMemory<GameStateStaticOffset>(this.Address);
+                var data = reader.ReadMemory<GameStateOffset>(this.myStaticObj.GameState);
+                var states = reader.ReadStdList<StateInternalStructure>(data.States);
+                for (var i = 0; i < states.Count; i++)
+                {
+                    var state = states[i];
+                    var name = $"{(GameStateTypes)state.StateEnumToName}";
+                    this.UpdateKnownStatesObjects(name, state.StatePtr);
+                    if (this.AllStates.ContainsKey(name))
+                    {
+                        this.AllStates[name] = state.StatePtr;
+                    }
+                    else
+                    {
+                        this.AllStates.Add(name, state.StatePtr);
+                    }
+                }
             }
-
-            var data = reader.ReadMemory<GameStateOffset>(this.myStaticObj.GameState);
-            var cStateAddr = reader.ReadMemory<IntPtr>(data.CurrentStatePtr.Last - 0x10); // Get 2nd-last ptr.
-            if (cStateAddr != IntPtr.Zero)
+            else
             {
-                this.AddToCacheAndKnownStateObject(cStateAddr);
-                this.GameCurrentState = this.gameStateCache[cStateAddr];
+                var data = reader.ReadMemory<GameStateOffset>(this.myStaticObj.GameState);
+                var cStateAddr = reader.ReadMemory<IntPtr>(data.CurrentStatePtr.Last - 0x10); // Get 2nd-last ptr.
+                if (cStateAddr != IntPtr.Zero && cStateAddr != this.currentStateAddress)
+                {
+                    this.currentStateAddress = cStateAddr;
+                    foreach (var state in Core.States.AllStates)
+                    {
+                        if (state.Value == cStateAddr)
+                        {
+                            this.GameCurrentState = this.ConvertStringToEnum(state.Key);
+                            break;
+                        }
+                    }
+                }
             }
         }
 
@@ -103,45 +133,39 @@ namespace GameHelper.RemoteObjects
         protected override void CleanUpData()
         {
             this.myStaticObj = default;
+            this.currentStateAddress = IntPtr.Zero;
             this.GameCurrentState = GameStateTypes.GameNotLoaded;
-            this.gameStateCache.Clear();
+            this.AllStates.Clear();
             this.AreaLoading.Address = IntPtr.Zero;
             this.InGameStateObject.Address = IntPtr.Zero;
         }
 
         /// <summary>
-        ///     Updates the state cache and known state object based on state address.
-        ///     Cache helps save 1 memory read per frame.
-        /// </summary>
-        /// <param name="stateptr">state address</param>
-        private void AddToCacheAndKnownStateObject(IntPtr stateptr)
-        {
-            var reader = Core.Process.Handle;
-            if (!this.gameStateCache.ContainsKey(stateptr))
-            {
-                var stateheader = reader.ReadMemory<StateHeaderStruct>(stateptr);
-                var statetype = (GameStateTypes)stateheader.GameStateTypeEnum;
-                this.gameStateCache[stateptr] = statetype;
-                this.UpdateKnownStatesObjects(statetype, stateptr);
-            }
-        }
-
-        /// <summary>
         ///     Updates the known states Objects and silently skips the unknown ones.
         /// </summary>
-        /// <param name="name">State type.</param>
+        /// <param name="name">State name.</param>
         /// <param name="address">State address.</param>
-        private void UpdateKnownStatesObjects(GameStateTypes name, IntPtr address)
+        private void UpdateKnownStatesObjects(string name, IntPtr address)
         {
             switch (name)
             {
-                case GameStateTypes.AreaLoadingState:
+                case "AreaLoadingState":
                     this.AreaLoading.Address = address;
                     break;
-                case GameStateTypes.InGameState:
+                case "InGameState":
                     this.InGameStateObject.Address = address;
                     break;
             }
+        }
+
+        private GameStateTypes ConvertStringToEnum(string data)
+        {
+            if (Enum.TryParse<GameStateTypes>(data, out var result))
+            {
+                return result;
+            }
+
+            throw new Exception($"New GameStateTypes discovered: {data}");
         }
 
         private IEnumerator<Wait> OnPerFrame()
