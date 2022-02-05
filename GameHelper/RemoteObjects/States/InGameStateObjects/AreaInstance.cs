@@ -51,9 +51,9 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             this.AwakeEntities = new();
             this.EntityCaches = new()
             {
-                new("Breach", 1088, 1092, this.AwakeEntities),
-                new("LeagueAffliction", 1098, 1098, this.AwakeEntities),
-                new("Hellscape", 1228, 1239, this.AwakeEntities)
+                new("Breach", 1096, 1100, this.AwakeEntities),
+                new("LeagueAffliction", 1106, 1106, this.AwakeEntities),
+                new("Hellscape", 1236, 1247, this.AwakeEntities)
             };
 
             this.NetworkBubbleEntityCount = 0;
