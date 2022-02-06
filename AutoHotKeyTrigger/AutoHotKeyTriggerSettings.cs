@@ -52,5 +52,11 @@ namespace AutoHotKeyTrigger
         ///     Gets a value indicating weather this plugin should work in hideout or not.
         /// </summary>
         public bool ShouldRunInHideout = true;
+
+        /// <summary>
+        ///     Gets a value indicating weather user wants to dump the player
+        ///     status effect or not.
+        /// </summary>
+        public ConsoleKey DumpStatusEffectOnMe = ConsoleKey.F10;
     }
 }

@@ -55,6 +55,14 @@ namespace AutoHotKeyTrigger
             ImGuiHelper.ToolTip("Debug mode will help you figure out why AutoHotKeyTrigger is not doing the action. " +
                 "It will also help you figure out if AutoHotKeyTrigger is spamming the action or not. " +
                 "So create all new profiles with debug mode turned on.");
+            ImGui.NewLine();
+            ImGuiHelper.NonContinuousEnumComboBox("Dump player Status Effects",
+                ref this.Settings.DumpStatusEffectOnMe);
+            ImGuiHelper.ToolTip($"This hotkey will dump the player buff, debuff in GameHelper -> Plugins -> " +
+                $"AutoHotKeyTrigger folder. Use this hotkey if AutoHotKeyTrigger plugin fails to detect " +
+                $" the bleed, corruption, poison, freeze etc on you and it's currently active.");
+
+            ImGui.NewLine();
             ImGui.Checkbox("Should Run In Hideout", ref this.Settings.ShouldRunInHideout);
             ImGuiHelper.IEnumerableComboBox("Profile", this.Settings.Profiles.Keys, ref this.Settings.CurrentProfile);
             ImGui.NewLine();
@@ -142,6 +150,24 @@ namespace AutoHotKeyTrigger
                 (int)this.Settings.AutoQuitKey))
             {
                 MiscHelper.KillTCPConnectionForProcess(Core.Process.Pid);
+            }
+
+            if (NativeMethods.IsKeyPressedAndNotTimeout(
+                (int)this.Settings.DumpStatusEffectOnMe))
+            {
+                if (Core.States.InGameStateObject.CurrentAreaInstance.Player.TryGetComponent<Buffs>(out var buff))
+                {
+                    var data = string.Empty;
+                    foreach (var statusEffect in buff.StatusEffects)
+                    {
+                        data += statusEffect.Key + "\n";
+                    }
+
+                    if (!string.IsNullOrEmpty(data))
+                    {
+                        File.AppendAllText(Path.Join(this.DllDirectory, "player_status_effect.txt"), data);
+                    }
+                }
             }
 
             if (string.IsNullOrEmpty(this.Settings.CurrentProfile))

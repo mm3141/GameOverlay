@@ -6,11 +6,10 @@ namespace Launcher
 {
     using System;
     using System.Diagnostics;
-    using System.Linq;
 
     public static class Program
     {
-        private static void Main(string[] args)
+        private static void Main()
         {
             try
             {
@@ -18,7 +17,13 @@ namespace Launcher
                 var newName = MiscHelper.GenerateRandomString();
                 TemporaryFileManager.Purge();
                 //TODO: if functionality extends, should probably utilize an argument parser, but good for now
-                LocationValidator.CheckGameHelperLocation(Debugger.IsAttached || args.Contains("-allowPath", StringComparer.InvariantCultureIgnoreCase));
+                if (!LocationValidator.IsGameHelperLocationGood(out var message))
+                {
+                    Console.WriteLine(message);
+                    Console.Write("Press any key to ignore this warning.");
+                    Console.ReadLine();
+                }
+
                 var gameHelperPath = GameHelperTransformer.TransformGameHelperExecutable(newName);
                 Console.WriteLine($"Starting GameHelper at '{gameHelperPath}'...");
                 Process.Start(gameHelperPath);
