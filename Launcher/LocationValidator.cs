@@ -20,29 +20,24 @@ namespace Launcher
 
         /// <summary>
         ///     Checks the GameHelper tool path name to make sure it doesn't have any bad information.
+        ///     If it does, print the issue to the stdout.
         /// </summary>
-        /// <param name="allowBadPath">throws an exception in case of the failure if true.</param>
-        public static void CheckGameHelperLocation(bool allowBadPath)
+        /// <returns>returns true in case of good path otherwise false.</returns>
+        public static bool IsGameHelperLocationGood(out string message)
         {
+            message = null;
             var currentProcessPath = Assembly.GetExecutingAssembly().Location;
             var directoryPath = Path.GetDirectoryName(currentProcessPath);
             var pathMatch = BadNameRegex.Match(directoryPath);
             if (pathMatch.Success)
             {
-                var message = $"You have downloaded GameHelper in a bad folder/pathname. " +
+                message = $"You have downloaded GameHelper in a bad folder/pathname. " +
                     $"Your folder/pathname contains \"{pathMatch.Value}\". " +
-                    $"This is bad for your account. Please rename/move GameHelper to a better folder/pathname. " +
-                    $"If you don't really care about your account, feel free to launch GameHelper.exe directly " +
-                    $"rather than launching from the Launcher.exe.";
-                if (allowBadPath)
-                {
-                    Console.WriteLine(message);
-                }
-                else
-                {
-                    throw new Exception(message);
-                }
+                    $"This is bad for your account. Please rename/move GameHelper to a better folder/pathname.";
+                return false;
             }
+
+            return true;
         }
     }
 }
