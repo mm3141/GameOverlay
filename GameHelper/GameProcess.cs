@@ -324,8 +324,8 @@ namespace GameHelper
             GetClientRect(this.Information.MainWindowHandle, out var size);
             ClientToScreen(this.Information.MainWindowHandle, out var pos);
             var sizePos = size.ToRectangle(pos);
-            if ((sizePos != this.WindowArea && sizePos.Size != Size.Empty) ||
-                this.HasMonitorCountChanged())
+            if (this.HasMonitorCountChanged() ||
+                (sizePos != this.WindowArea && sizePos.Size != Size.Empty))
             {
                 this.WindowArea = sizePos;
                 CoroutineHandler.RaiseEvent(GameHelperEvents.OnMoved);
