@@ -25,6 +25,7 @@ namespace GameHelper
     /// </summary>
     public class GameProcess
     {
+        private int monitorCount = 0;
         private readonly List<Process> processesInfo = new();
         private int clientSelected = -1;
         private bool showSelectGameMenu = false;
@@ -323,11 +324,39 @@ namespace GameHelper
             GetClientRect(this.Information.MainWindowHandle, out var size);
             ClientToScreen(this.Information.MainWindowHandle, out var pos);
             var sizePos = size.ToRectangle(pos);
-            if (sizePos != this.WindowArea && sizePos.Size != Size.Empty)
+            if ((sizePos != this.WindowArea && sizePos.Size != Size.Empty) ||
+                this.HasMonitorCountChanged())
             {
                 this.WindowArea = sizePos;
                 CoroutineHandler.RaiseEvent(GameHelperEvents.OnMoved);
             }
+        }
+
+        private bool HasMonitorCountChanged()
+        {
+            if (!Core.GHSettings.EnableKVMMonitor)
+            {
+                return false;
+            }
+
+            var mCount = 0;
+            EnumDisplayMonitors(
+                IntPtr.Zero,
+                IntPtr.Zero,
+                delegate (IntPtr hMonitor, IntPtr hdcMonitor, ref RECT lprcMonitor, IntPtr dwData)
+                {
+                    mCount++;
+                    return true;
+                },
+                IntPtr.Zero);
+
+            if (mCount != this.monitorCount)
+            {
+                this.monitorCount = mCount;
+                return true;
+            }
+
+            return false;
         }
 
         [DllImport("user32.dll")] private static extern IntPtr GetForegroundWindow();
@@ -335,6 +364,10 @@ namespace GameHelper
         [DllImport("user32.dll")] private static extern bool GetClientRect(IntPtr hWnd, out RECT lpRect);
 
         [DllImport("user32.dll")] private static extern bool ClientToScreen(IntPtr hWnd, out Point lpPoint);
+
+        delegate bool EnumMonitorsDelegate(IntPtr hMonitor, IntPtr hdcMonitor, ref RECT lprcMonitor, IntPtr dwData);
+
+        [DllImport("user32.dll")] static extern bool EnumDisplayMonitors(IntPtr hdc, IntPtr lprcClip, EnumMonitorsDelegate lpfnEnum, IntPtr dwData);
 
         [StructLayout(LayoutKind.Sequential)]
         private struct RECT

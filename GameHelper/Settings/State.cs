@@ -116,5 +116,11 @@ namespace GameHelper.Settings
         ///     preload-loaded-files in hideout or not.
         /// </summary>
         public bool SkipPreloadedFilesInHideout = true;
+
+        /// <summary>
+        ///     Gets a value indicating whether user wants to monitor for
+        ///     KVM changes or not.
+        /// </summary>
+        public bool EnableKVMMonitor = false;
     }
 }
