@@ -49,6 +49,9 @@ namespace GameHelper.Ui
                             var field = fields[i];
                             ImGui.Text($"{field.Name}: {field.GetValue(Core.GHSettings)}");
                         }
+
+                        ImGui.Text($"Current SDL Window Size:{Core.Overlay.Size}");
+                        ImGui.Text($"Current SDL Window Pos: {Core.Overlay.Position}");
                     }
 
                     if (ImGui.CollapsingHeader("Game Process"))
