@@ -160,7 +160,7 @@ namespace AutoHotKeyTrigger
                     var data = string.Empty;
                     foreach (var statusEffect in buff.StatusEffects)
                     {
-                        data += statusEffect.Key + "\n";
+                        data += $"{statusEffect.Key} {statusEffect.Value}\n";
                     }
 
                     if (!string.IsNullOrEmpty(data))
