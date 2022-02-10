@@ -17,28 +17,37 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
     /// </summary>
     public class Entity : RemoteObjectBase
     {
-        private readonly Dictionary<string, IntPtr> componentAddresses = new();
-        private readonly Dictionary<string, RemoteObjectBase> componentCache = new();
-        private bool isnearby = false;
+        private readonly Dictionary<string, IntPtr> componentAddresses;
+        private readonly Dictionary<string, RemoteObjectBase> componentCache;
+        private bool isnearby;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="Entity" /> class.
         /// </summary>
         /// <param name="address">address of the Entity.</param>
         internal Entity(IntPtr address)
-            : base(address, true) { }
+            : this()
+        {
+            this.Address = address;
+        }
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="Entity" /> class.
         ///     NOTE: Without providing an address, only invalid and empty entity is created.
         /// </summary>
         internal Entity()
-            : base(IntPtr.Zero, true) { }
+            : base(IntPtr.Zero, true)
+        {
+            this.componentAddresses = new();
+            this.componentCache = new();
+            this.isnearby = false;
+            this.Path = string.Empty;
+        }
 
         /// <summary>
         ///     Gets the Path (e.g. Metadata/Character/int/int) assocaited to the entity.
         /// </summary>
-        public string Path { get; private set; } = string.Empty;
+        public string Path { get; private set; }
 
         /// <summary>
         ///     Gets the Id associated to the entity. This is unique per map/Area.
@@ -201,8 +210,8 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
         /// <inheritdoc />
         protected override void CleanUpData()
         {
-            this.componentAddresses.Clear();
-            this.componentCache.Clear();
+            this.componentAddresses?.Clear();
+            this.componentCache?.Clear();
         }
 
         /// <inheritdoc />
