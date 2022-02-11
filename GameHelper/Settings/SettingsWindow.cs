@@ -137,6 +137,7 @@ namespace GameHelper.Settings
             ImGui.Checkbox("Disable entity processing when in town or hideout",
                 ref Core.GHSettings.DisableEntityProcessingInTownOrHideout);
             ImGui.Checkbox("Hide overlay settings upon start", ref Core.GHSettings.HideSettingWindowOnStart);
+            ImGui.Checkbox("Close GameHelper when Game Exit", ref Core.GHSettings.CloseWhenGameExit);
             ImGui.NewLine();
             ChangeFontWidget();
             ImGui.NewLine();

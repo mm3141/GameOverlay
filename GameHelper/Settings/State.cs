@@ -116,5 +116,11 @@ namespace GameHelper.Settings
         ///     preload-loaded-files in hideout or not.
         /// </summary>
         public bool SkipPreloadedFilesInHideout = true;
+
+        /// <summary>
+        ///     Gets a value indicating whether user wants to close the Game Helper when
+        ///     the game exit or not.
+        /// </summary>
+        public bool CloseWhenGameExit = false;
     }
 }
