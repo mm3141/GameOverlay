@@ -72,7 +72,6 @@ namespace Radar
         private int tmpExpectedClusters = 1;
         private string leaderName = string.Empty;
 
-        private Vector2 miniMapCenterWithDefaultShift = Vector2.Zero;
         private double miniMapDiagonalLength = 0x00;
 
         private double largeMapDiagonalLength = 0x00;
@@ -292,14 +291,17 @@ namespace Radar
             {
                 Helper.DiagonalLength = this.miniMapDiagonalLength;
                 Helper.Scale = miniMap.Zoom;
-                var miniMapRealCenter = this.miniMapCenterWithDefaultShift + miniMap.Shift;
+                var miniMapCenter = miniMap.Postion +
+                    (miniMap.Size / 2) +
+                    miniMap.DefaultShift +
+                    miniMap.Shift;
                 ImGui.SetNextWindowPos(miniMap.Postion);
                 ImGui.SetNextWindowSize(miniMap.Size);
                 ImGui.SetNextWindowBgAlpha(0f);
                 ImGui.PushStyleVar(ImGuiStyleVar.WindowBorderSize, 0f);
                 ImGui.Begin("###minimapRadar", ImGuiHelper.TransparentWindowFlags);
                 ImGui.PopStyleVar();
-                this.DrawMapIcons(miniMapRealCenter, miniMap.Zoom);
+                this.DrawMapIcons(miniMapCenter, miniMap.Zoom);
                 ImGui.End();
             }
         }
@@ -902,8 +904,6 @@ namespace Radar
         private void UpdateMiniMapDetails()
         {
             var map = Core.States.InGameStateObject.GameUi.MiniMap;
-            this.miniMapCenterWithDefaultShift = map.Postion + (map.Size / 2) + map.DefaultShift;
-
             var widthSq = map.Size.X * map.Size.X;
             var heightSq = map.Size.Y * map.Size.Y;
             this.miniMapDiagonalLength = Math.Sqrt(widthSq + heightSq);
