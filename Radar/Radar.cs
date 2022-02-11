@@ -36,6 +36,7 @@ namespace Radar
             "Metadata/Monsters/Daemon/DaemonLaboratoryBlackhole",
             "Metadata/Monsters/AtlasExiles/AtlasExile",
             "Metadata/Monsters/Daemon/MaligaroBladeVortexDaemon",
+            "Metadata/Monsters/Daemon/DoNothingDaemon",
         };
 
         private readonly HashSet<uint> diesAfterTimeCache = new();
