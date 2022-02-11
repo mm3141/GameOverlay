@@ -110,5 +110,17 @@ namespace GameHelper.Settings
         ///     Gets or sets a value indicating what nearby means to the user.
         /// </summary>
         public int NearbyMeaning = 70;
+
+        /// <summary>
+        ///     Gets a value indicating whether user wants to load the
+        ///     preload-loaded-files in hideout or not.
+        /// </summary>
+        public bool SkipPreloadedFilesInHideout = true;
+
+        /// <summary>
+        ///     Gets a value indicating whether user wants to close the Game Helper when
+        ///     the game exit or not.
+        /// </summary>
+        public bool CloseWhenGameExit = false;
     }
 }

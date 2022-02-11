@@ -233,6 +233,11 @@ namespace GameHelper
                 GameScale.Address = IntPtr.Zero;
                 RotationSelector.Address = IntPtr.Zero;
                 RotatorHelper.Address = IntPtr.Zero;
+
+                if (GHSettings.CloseWhenGameExit)
+                {
+                    Overlay?.Close();
+                }
             }
         }
     }
