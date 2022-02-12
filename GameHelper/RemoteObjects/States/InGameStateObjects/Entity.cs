@@ -83,7 +83,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
                 return (int)Math.Sqrt(dx * dx + dy * dy);
             }
 
-            Console.WriteLine($"Position Component missing in {this.Path} or {other.Path}");
+            Console.WriteLine($"Render Component missing in {this.Path} or {other.Path}");
             return 0;
         }
 
