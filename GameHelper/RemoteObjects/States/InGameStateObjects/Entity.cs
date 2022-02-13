@@ -5,7 +5,7 @@
 namespace GameHelper.RemoteObjects.States.InGameStateObjects
 {
     using System;
-    using System.Collections.Generic;
+    using System.Collections.Concurrent;
     using Components;
     using GameOffsets.Objects.States.InGameState;
     using ImGuiNET;
@@ -17,8 +17,8 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
     /// </summary>
     public class Entity : RemoteObjectBase
     {
-        private readonly Dictionary<string, IntPtr> componentAddresses;
-        private readonly Dictionary<string, RemoteObjectBase> componentCache;
+        private readonly ConcurrentDictionary<string, IntPtr> componentAddresses;
+        private readonly ConcurrentDictionary<string, RemoteObjectBase> componentCache;
         private bool isnearby;
 
         /// <summary>
