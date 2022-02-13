@@ -114,7 +114,6 @@ namespace GameHelper.Settings
             ImGui.NewLine();
             ImGui.PopTextWrapPos();
             ImGui.DragInt("Nearby Monster Range", ref Core.GHSettings.NearbyMeaning, 1f, 1, 200);
-            DrawNearbyMonsterRange();
             ImGui.DragInt("Key Timeout", ref Core.GHSettings.KeyPressTimeout, 0.2f, 30, 300);
             ImGuiHelper.ToolTip("When GameOverlay press a key in the game, the key " +
                 "has to go to the GGG server for it to work. This process takes " +
@@ -300,51 +299,6 @@ namespace GameHelper.Settings
             {
                 yield return new Wait(GameHelperEvents.TimeToSaveAllSettings);
                 JsonHelper.SafeToFile(Core.GHSettings, State.CoreSettingFile);
-            }
-        }
-
-        /// <summary>
-        ///     Draws the nearby monster range on screen.
-        /// </summary>
-        /// <returns>co-routine IWait.</returns>
-        private static void DrawNearbyMonsterRange()
-        {
-            var iGS = Core.States.InGameStateObject;
-            if (ImGui.IsItemHovered() &&
-                Core.States.GameCurrentState == GameStateTypes.InGameState &&
-                iGS.CurrentAreaInstance.Player.TryGetComponent<Render>(out var r))
-            {
-                foreach (var angle in Enumerable.Range(0, 360))
-                {
-                    Vector2 GetScreenCoord(int i)
-                    {
-                        var gridPoint = new Vector2(r.GridPosition.X, r.GridPosition.Y) +
-                                        new Vector2(
-                                            (float)(Math.Cos(Math.PI / 180 * i) * Core.GHSettings.NearbyMeaning),
-                                            (float)(Math.Sin(Math.PI / 180 * i) * Core.GHSettings.NearbyMeaning));
-                        var height = r.TerrainHeight;
-                        try
-                        {
-                            height = Core.States.InGameStateObject.CurrentAreaInstance.GridHeightData[(int)gridPoint.Y][(int)gridPoint.X];
-                        }
-                        catch (Exception)
-                        {
-                        }
-
-                        var screenCoord = Core.States.InGameStateObject.CurrentWorldInstance.WorldToScreen(
-                            new StdTuple3D<float>
-                            {
-                                X = gridPoint.X * TileStructure.TileToWorldConversion / TileStructure.TileToGridConversion,
-                                Y = gridPoint.Y * TileStructure.TileToWorldConversion / TileStructure.TileToGridConversion,
-                                Z = height
-                            });
-                        return screenCoord;
-                    }
-
-                    var p1 = GetScreenCoord(angle);
-                    var p2 = GetScreenCoord(angle + 1);
-                    ImGui.GetBackgroundDrawList().AddLine(p1, p2, ImGuiHelper.Color(255, 0, 0, 255));
-                }
             }
         }
     }
