@@ -6,6 +6,8 @@ namespace GameHelper.RemoteObjects.Components
 {
     using System;
     using System.Collections.Concurrent;
+    using System.Collections.Generic;
+    using Coroutine;
     using GameOffsets.Objects.Components;
     using GameOffsets.Objects.FilesStructures;
     using ImGuiNET;
@@ -26,6 +28,11 @@ namespace GameHelper.RemoteObjects.Components
         /// <param name="address">address of the <see cref="Base" /> component.</param>
         public Base(IntPtr address)
             : base(address, true) { }
+
+        static Base()
+        {
+            CoroutineHandler.Start(OnGameClose());
+        }
 
         /// <summary>
         ///     Gets the items base name.
@@ -63,6 +70,15 @@ namespace GameHelper.RemoteObjects.Components
                     BaseItemTypeDatCache[data.BaseInternalPtr] = name;
                     this.ItemBaseName = name;
                 }
+            }
+        }
+
+        private static IEnumerable<Wait> OnGameClose()
+        {
+            while (true)
+            {
+                yield return new(CoroutineEvents.GameHelperEvents.OnClose);
+                BaseItemTypeDatCache.Clear();
             }
         }
     }
