@@ -670,7 +670,8 @@ namespace Radar
                         {
                             if (entity.Value.Path.StartsWith("Metadata/Chests/StrongBoxes/Arcanist") ||
                                 entity.Value.Path.StartsWith("Metadata/Chests/StrongBoxes/Cartographer") ||
-                                entity.Value.Path.StartsWith("Metadata/Chests/StrongBoxes/StrongboxDivination"))
+                                entity.Value.Path.StartsWith("Metadata/Chests/StrongBoxes/StrongboxDivination") ||
+                                entity.Value.Path.StartsWith("Metadata/Chests/StrongBoxes/StrongboxScarab"))
                             {
                                 chestIcon = this.Settings.BaseIcons["Arcanist/Cartographer/Divination"];
                             }
