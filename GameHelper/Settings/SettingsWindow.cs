@@ -115,6 +115,8 @@ namespace GameHelper.Settings
             ImGui.PopTextWrapPos();
             ImGui.DragInt("Nearby Monster Range", ref Core.GHSettings.NearbyMeaning, 1f, 1, 200);
             DrawNearbyMonsterRange();
+            ImGuiHelper.ToolTip("If you are in the game and hovering over this, " +
+                "it will draw your current nearby range on the screen.");
             ImGui.DragInt("Key Timeout", ref Core.GHSettings.KeyPressTimeout, 0.2f, 30, 300);
             ImGuiHelper.ToolTip("When GameOverlay press a key in the game, the key " +
                 "has to go to the GGG server for it to work. This process takes " +
@@ -306,7 +308,6 @@ namespace GameHelper.Settings
         /// <summary>
         ///     Draws the nearby monster range on screen.
         /// </summary>
-        /// <returns>co-routine IWait.</returns>
         private static void DrawNearbyMonsterRange()
         {
             var iGS = Core.States.InGameStateObject;
