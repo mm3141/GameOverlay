@@ -212,9 +212,14 @@ namespace PreloadAlert
 
         private void DisplayAllImportantPreloads()
         {
-            if (ImGui.CollapsingHeader("All Important Preloads (click path to edit)"))
+            if (ImGui.CollapsingHeader("All Important Preloads (click preload path to edit)"))
             {
-                ImGui.Text("Click on the display name to edit that preload.");
+                if (this.importantPreloads.Count == 0)
+                {
+                    ImGui.Text("No important preload found. Did you forget to copy preload.txt " +
+                        "file in the preload alert plugin folder?");
+                }
+
                 foreach (var (key, preloadInfo) in this.importantPreloads)
                 {
                     if (ImGui.SmallButton($"Delete##{key}"))
