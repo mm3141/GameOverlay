@@ -181,7 +181,6 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
                     if (this.Items.ContainsKey(invItemPtr))
                     {
                         this.Items[invItemPtr].Address = invItem.Item;
-                        this.Items[invItemPtr].IsValid = true;
                     }
                     else
                     {

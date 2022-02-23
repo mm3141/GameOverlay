@@ -79,7 +79,8 @@ namespace AutoHotKeyTrigger.ProfileManager.Conditions
                     }
                     else
                     {
-                        throw new Exception($"New flask base found {baseComponent.ItemBaseName}. Please let the developer know.");
+                        throw new Exception($"New (IsValid={flask.IsValid}) flask base found " +
+                            $"{baseComponent.ItemBaseName}. Please let the developer know.");
                     }
                 }
             }
