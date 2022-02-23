@@ -37,7 +37,8 @@ namespace AutoHotKeyTrigger.ProfileManager.Conditions.DynamicCondition
             {
                 if (!JsonDataHelper.FlaskNameToBuffGroups.TryGetValue(@base.ItemBaseName, out var buffNames))
                 {
-                    throw new Exception($"New flask base found {@base.ItemBaseName}. Please let the developer know.");
+                    throw new Exception($"New (IsValid={flaskItem.IsValid}) flask base found " +
+                        $"{@base.ItemBaseName}. Please let the developer know.");
                 }
 
                 if (state.CurrentAreaInstance.Player.TryGetComponent<Buffs>(out var playerBuffs))
