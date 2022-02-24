@@ -208,7 +208,7 @@ namespace Radar
             this.BaseIcons.TryAdd("Player", new IconPicker(iconPathName, IconsPngCols, IconsPngRows, 2, 0, 20));
             this.BaseIcons.TryAdd("Leader", new IconPicker(iconPathName, IconsPngCols, IconsPngRows, 3, 0, 20));
             this.BaseIcons.TryAdd("Strongbox", new IconPicker(iconPathName, IconsPngCols, IconsPngRows, 8, 38, 30));
-            this.BaseIcons.TryAdd("Arcanist/Cartographer/Divination", new IconPicker(iconPathName, IconsPngCols, IconsPngRows, 6, 41, 35));
+            this.BaseIcons.TryAdd("Important Strongboxes", new IconPicker(iconPathName, IconsPngCols, IconsPngRows, 6, 41, 35));
             this.BaseIcons.TryAdd("Chests With Label", new IconPicker(iconPathName, IconsPngCols, IconsPngRows, 1, 13, 20));
             this.BaseIcons.TryAdd("Chests Without Label", new IconPicker(iconPathName, IconsPngCols, IconsPngRows, 6, 9, 20));
 
