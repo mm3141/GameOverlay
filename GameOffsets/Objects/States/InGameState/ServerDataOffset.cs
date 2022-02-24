@@ -8,7 +8,7 @@ namespace GameOffsets.Objects.States.InGameState
     public struct ServerDataStructure
     {
         public const int SKIP = 0x8E00; // for reducing struct size.
-        [FieldOffset(0x8EB0 - SKIP)] public StdVector PlayerInventories; // InventoryArrayStruct
+        [FieldOffset(0x8EB8 - SKIP)] public StdVector PlayerInventories; // InventoryArrayStruct
     }
 
     [StructLayout(LayoutKind.Explicit, Pack = 1)]
