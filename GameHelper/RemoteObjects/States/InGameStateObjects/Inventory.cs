@@ -162,12 +162,6 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
 
             foreach (var item in this.Items)
             {
-                if (!item.Value.IsValid)
-                {
-                    this.Items.TryRemove(item.Key, out _);
-                    continue;
-                }
-
                 item.Value.IsValid = false;
             }
 
@@ -193,6 +187,14 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
                     }
                 }
             });
+
+            foreach (var item in this.Items)
+            {
+                if (!item.Value.IsValid)
+                {
+                    this.Items.TryRemove(item.Key, out _);
+                }
+            }
         }
 
         private IEnumerable<Wait> OnTimeTick()
