@@ -79,8 +79,17 @@ namespace AutoHotKeyTrigger.ProfileManager.Conditions
                     }
                     else
                     {
+                        var allItems = Core.States.InGameStateObject.CurrentAreaInstance.
+                            ServerDataObject.FlaskInventory.Items.Values;
+                        var data = string.Empty;
+                        foreach (var item in allItems)
+                        {
+                            data += item.Path;
+                            data += " ";
+                        }
+
                         throw new Exception($"New (IsValid={flask.IsValid}) flask base found " +
-                            $"{baseComponent.ItemBaseName}. Please let the developer know.");
+                            $"{baseComponent.ItemBaseName}. Please let the developer know. All items in list are {data}");
                     }
                 }
             }

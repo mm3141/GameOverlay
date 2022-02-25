@@ -151,8 +151,6 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
         protected override void UpdateData(bool hasAddressChanged)
         {
             var reader = Core.Process.Handle;
-            //var preInv0 = reader.ReadMemory<PreInventoryStruct>(this.Address);
-            //var preInv1 = reader.ReadMemory<PreInventoryStruct>(preInv0.ptr); //TODO: fix this
             var invInfo = reader.ReadMemory<InventoryStruct>(this.Address);
             this.TotalBoxes = invInfo.TotalBoxes;
             this.ServerRequestCounter = invInfo.ServerRequestCounter;

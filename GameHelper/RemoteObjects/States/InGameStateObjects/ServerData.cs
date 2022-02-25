@@ -26,8 +26,9 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
         internal ServerData(IntPtr address)
             : base(address)
         {
-            Core.CoroutinesRegistrar.Add(CoroutineHandler.Start(
-                this.OnTimeTick(), "[ServerData] Update ServerData", int.MaxValue - 3));
+            // Feel free to uncomment this if we ever add stuff like latency.
+            //Core.CoroutinesRegistrar.Add(CoroutineHandler.Start(
+            //    this.OnTimeTick(), "[ServerData] Update ServerData", int.MaxValue - 3));
         }
 
         /// <summary>
