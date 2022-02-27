@@ -190,14 +190,18 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
                 var lookupPtr = reader.ReadMemory<ComponentLookUpStruct>(
                     entityDetails.ComponentLookUpPtr);
 
-                var namesAndIndexes = reader.ReadStdBucket<ComponentNameAndIndexStruct>(lookupPtr.ComponentsNameAndIndex);
+                var namesAndIndexes = reader.ReadStdBucket<ComponentNameAndIndexStruct>(
+                    lookupPtr.ComponentsNameAndIndex);
                 for (var i = 0; i < namesAndIndexes.Count; i++)
                 {
                     var nameAndIndex = namesAndIndexes[i];
-                    var name = reader.ReadString(nameAndIndex.NamePtr);
-                    if (!(string.IsNullOrEmpty(name) || this.componentAddresses.ContainsKey(name)))
+                    if (nameAndIndex.Index >= 0 && nameAndIndex.Index < entityComponent.Length)
                     {
-                        this.componentAddresses.TryAdd(name, entityComponent[nameAndIndex.Index]);
+                        var name = reader.ReadString(nameAndIndex.NamePtr);
+                        if (!string.IsNullOrEmpty(name))
+                        {
+                            this.componentAddresses.TryAdd(name, entityComponent[nameAndIndex.Index]);
+                        }
                     }
                 }
             }
