@@ -7,6 +7,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
     using System;
     using System.Collections.Concurrent;
     using Components;
+    using GameHelper.RemoteEnums;
     using GameOffsets.Objects.States.InGameState;
     using ImGuiNET;
     using Utils;
@@ -42,6 +43,9 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             this.componentCache = new();
             this.isnearby = false;
             this.Path = string.Empty;
+            this.Id = 0;
+            this.IsValid = false;
+            this.EntityType = EntityTypes.Unidentified;
         }
 
         /// <summary>
@@ -66,6 +70,11 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
         public bool IsValid { get; set; }
 
         /// <summary>
+        ///     Gets a value indicating the type of entity this is.
+        /// </summary>
+        public EntityTypes EntityType { get; protected set; }
+
+        /// <summary>
         ///     Calculate the distance from the other entity.
         /// </summary>
         /// <param name="other">Other entity object.</param>
@@ -83,7 +92,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
                 return (int)Math.Sqrt(dx * dx + dy * dy);
             }
 
-            Console.WriteLine($"Render Component missing in {this.Path} or {other.Path}");
+            // Console.WriteLine($"Render Component missing in {this.Path} or {other.Path}");
             return 0;
         }
 
@@ -138,6 +147,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             ImGui.Text($"Path: {this.Path}");
             ImGui.Text($"Id: {this.Id}");
             ImGui.Text($"Is Valid: {this.IsValid}");
+            ImGui.Text($"Entity Type: {this.EntityType}");
             if (ImGui.TreeNode("Components"))
             {
                 foreach (var kv in this.componentAddresses)
@@ -162,13 +172,14 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
 
         internal void UpdateNearby(Entity player)
         {
-            if (this.DistanceFrom(player) < Core.GHSettings.NearbyMeaning)
+            if (this.EntityType == EntityTypes.Useless ||
+                this.DistanceFrom(player) >= Core.GHSettings.NearbyMeaning)
             {
-                this.isnearby = true;
+                this.isnearby = false;
             }
             else
             {
-                this.isnearby = false;
+                this.isnearby = true;
             }
         }
 
@@ -234,7 +245,27 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             }
 
             this.Id = entityData.Id;
+            if (this.EntityType == EntityTypes.Useless)
+            {
+                // let's not read or parse any useless entity components.
+                return;
+            }
+
             this.UpdateComponentData(entityData.ItemBase, hasAddressChanged);
+            this.ParseEntityType();
+        }
+
+        private void ParseEntityType()
+        {
+            if (!this.TryGetComponent<Render>(out var _))
+            {
+                this.EntityType = EntityTypes.Useless;
+            }
+
+            if (!this.TryGetComponent<Positioned>(out var _))
+            {
+                this.EntityType = EntityTypes.Useless;
+            }
         }
     }
 }

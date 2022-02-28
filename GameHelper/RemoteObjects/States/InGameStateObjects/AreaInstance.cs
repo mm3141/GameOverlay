@@ -237,13 +237,6 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             this.UpdateEnvironmentAndCaches(data.Environments);
             this.ServerDataObject.Address = data.ServerDataPtr;
             this.Player.Address = data.LocalPlayerPtr;
-
-            // reading Render to avoid concurrent modification in UpdateEntites func.
-            if (!this.Player.TryGetComponent<Render>(out var _))
-            {
-                return;
-            }
-
             this.UpdateEntities(data.AwakeEntities, this.AwakeEntities, true);
         }
 
@@ -292,14 +285,14 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             {
                 if (!kv.Value.IsValid)
                 {
-                    // This logic isn't perfect in case something happens to the entity before
-                    // we can cache the location of that entity. In that case we will just
-                    // delete that entity anyway. This activity is fine as long as it doesn't
-                    // crash the GameHelper. This logic is to detect if entity exploded due to
-                    // explodi-chest or just left the network bubble since entity leaving network
-                    // bubble is same as entity exploded.
                     if (this.Player.DistanceFrom(kv.Value) < AreaInstanceConstants.NETWORK_BUBBLE_RADIUS)
                     {
+                        // This logic isn't perfect in case something happens to the entity before
+                        // we can cache the location of that entity. In that case we will just
+                        // delete that entity anyway. This activity is fine as long as it doesn't
+                        // crash the GameHelper. This logic is to detect if entity exploded due to
+                        // explodi-chest or just left the network bubble since entity leaving network
+                        // bubble is same as entity exploded.
                         data.TryRemove(kv.Key, out _);
                     }
                 }
