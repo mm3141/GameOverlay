@@ -261,11 +261,6 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             {
                 this.EntityType = EntityTypes.Useless;
             }
-
-            if (!this.TryGetComponent<Positioned>(out var _))
-            {
-                this.EntityType = EntityTypes.Useless;
-            }
         }
     }
 }
