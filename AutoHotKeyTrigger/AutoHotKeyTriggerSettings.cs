@@ -9,14 +9,12 @@ namespace AutoHotKeyTrigger
     using GameHelper.Plugin;
     using ProfileManager;
     using ProfileManager.Conditions;
-    using AutoHotKeyTrigger.ProfileManager.Enums;
 
     /// <summary>
     ///     <see cref="AutoHotKeyTrigger" /> plugin settings class.
     /// </summary>
     public sealed class AutoHotKeyTriggerSettings : IPSettings
     {
-
         /// <summary>
         ///    Gets a value indicating whether to enable or disable the auto-quit feature.
         /// </summary>
@@ -25,8 +23,8 @@ namespace AutoHotKeyTrigger
         /// <summary>
         ///     Condition on which user want to auto-quit.
         /// </summary>
-        public readonly VitalsCondition AutoQuitCondition =
-            new(OperatorType.LESS_THAN, VitalType.LIFE_PERCENT, 30);
+        [Obsolete("Any rule can be an auto-quit trigger now")]
+        public VitalsCondition AutoQuitCondition { internal get; set; } = null;
 
         /// <summary>
         ///     Gets a key which allows the user to manually quit the game Connection.

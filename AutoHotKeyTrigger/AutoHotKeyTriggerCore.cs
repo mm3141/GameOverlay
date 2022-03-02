@@ -7,6 +7,7 @@ namespace AutoHotKeyTrigger
     using System;
     using System.Collections.Generic;
     using System.IO;
+    using System.Linq;
     using System.Numerics;
     using ClickableTransparentOverlay;
     using Coroutine;
@@ -37,7 +38,11 @@ namespace AutoHotKeyTrigger
         private string SettingPathname => Path.Join(this.DllDirectory, "config", "settings.txt");
         private bool ShouldExecuteAutoQuit =>
             this.Settings.EnableAutoQuit &&
-            this.Settings.AutoQuitCondition.Evaluate();
+            (this.CurrentProfile?.Rules.Where(r => r.UseAsAutoQuit).Any(x => x.Evaluate()) ?? false);
+
+        private Profile CurrentProfile => string.IsNullOrEmpty(this.Settings.CurrentProfile)
+                                              ? null
+                                              : this.Settings.Profiles.GetValueOrDefault(this.Settings.CurrentProfile);
 
         /// <inheritdoc />
         public override void DrawSettings()
@@ -112,12 +117,11 @@ namespace AutoHotKeyTrigger
             {
                 ImGui.PushItemWidth(ImGui.GetContentRegionAvail().X / 6);
                 ImGui.Checkbox("Enable AutoQuit", ref this.Settings.EnableAutoQuit);
-                this.Settings.AutoQuitCondition.Display();
-                ImGui.TextWrapped($"Current AutoQuit Condition Evaluates to {this.Settings.AutoQuitCondition.Evaluate()}");
                 ImGui.Separator();
                 ImGui.Text("Hotkey to manually quit game connection: ");
                 ImGui.SameLine();
                 ImGuiHelper.NonContinuousEnumComboBox("##Manual Quit HotKey", ref this.Settings.AutoQuitKey);
+                ImGui.Text("You can configure other conditions in the regular profiles");
                 ImGui.PopItemWidth();
             }
         }
@@ -146,33 +150,32 @@ namespace AutoHotKeyTrigger
                 ImGui.End();
             }
 
+            this.DrawAutoQuitMigratedUi();
             this.AutoQuitWarningUi();
-            if (!this.ShouldExecutePlugin())
-            {
-                return;
-            }
+            var shouldExecutePlugin = this.ShouldExecutePlugin();
 
-            DynamicCondition.UpdateState();
-            if (this.ShouldExecuteAutoQuit || NativeMethods.IsKeyPressedAndNotTimeout(
-                (int)this.Settings.AutoQuitKey))
+            if (shouldExecutePlugin)
             {
-                MiscHelper.KillTCPConnectionForProcess(Core.Process.Pid);
-            }
-
-            if (NativeMethods.IsKeyPressedAndNotTimeout(
-                (int)this.Settings.DumpStatusEffectOnMe))
-            {
-                if (Core.States.InGameStateObject.CurrentAreaInstance.Player.TryGetComponent<Buffs>(out var buff))
+                if (NativeMethods.IsKeyPressedAndNotTimeout((int)this.Settings.AutoQuitKey))
                 {
-                    var data = string.Empty;
-                    foreach (var statusEffect in buff.StatusEffects)
-                    {
-                        data += $"{statusEffect.Key} {statusEffect.Value}\n";
-                    }
+                    MiscHelper.KillTCPConnectionForProcess(Core.Process.Pid);
+                }
 
-                    if (!string.IsNullOrEmpty(data))
+                if (NativeMethods.IsKeyPressedAndNotTimeout(
+                        (int)this.Settings.DumpStatusEffectOnMe))
+                {
+                    if (Core.States.InGameStateObject.CurrentAreaInstance.Player.TryGetComponent<Buffs>(out var buff))
                     {
-                        File.AppendAllText(Path.Join(this.DllDirectory, "player_status_effect.txt"), data);
+                        var data = string.Empty;
+                        foreach (var statusEffect in buff.StatusEffects)
+                        {
+                            data += $"{statusEffect.Key} {statusEffect.Value}\n";
+                        }
+
+                        if (!string.IsNullOrEmpty(data))
+                        {
+                            File.AppendAllText(Path.Join(this.DllDirectory, "player_status_effect.txt"), data);
+                        }
                     }
                 }
             }
@@ -183,13 +186,17 @@ namespace AutoHotKeyTrigger
                 return;
             }
 
-            if (!this.Settings.Profiles.ContainsKey(this.Settings.CurrentProfile))
+            var currentProfile = this.CurrentProfile;
+            if (currentProfile == null)
             {
-                this.debugMessage = $"{this.Settings.CurrentProfile} not found.";
+                this.debugMessage = $"Profile {this.Settings.CurrentProfile} not found.";
                 return;
             }
 
-            foreach (var rule in this.Settings.Profiles[this.Settings.CurrentProfile].Rules)
+            DynamicCondition.UpdateState();
+            foreach (var rule in currentProfile.Rules.Where(rule =>
+                         !rule.UseAsAutoQuit && shouldExecutePlugin ||
+                         rule.UseAsAutoQuit && this.Settings.EnableAutoQuit))
             {
                 rule.Execute(this.DebugLog);
             }
@@ -230,6 +237,21 @@ namespace AutoHotKeyTrigger
                     {
                         TypeNameHandling = TypeNameHandling.Auto
                     });
+#pragma warning disable CS0618
+                if (this.Settings?.AutoQuitCondition != null)
+                {
+                    foreach (var profile in this.Settings.Profiles)
+                    {
+                        var migratedRule = new Rule("Migrated auto-quit")
+                        {
+                            Enabled = true,
+                            UseAsAutoQuit = true
+                        };
+                        migratedRule.AddCondition(this.Settings.AutoQuitCondition);
+                        profile.Value.Rules.Insert(0, migratedRule);
+                    }
+                }
+#pragma warning restore CS0618
             }
             else
             {
@@ -332,9 +354,31 @@ namespace AutoHotKeyTrigger
             this.Settings.Profiles.TryAdd("LeagueStartNewPlayerProfile", profile);
         }
 
+        private void DrawAutoQuitMigratedUi()
+        {
+#pragma warning disable CS0618
+            if (this.Settings.AutoQuitCondition != null)
+            {
+                ImGui.OpenPopup("AutoQuitMigratedUi");
+            }
+
+            if (ImGui.BeginPopup("AutoQuitMigratedUi"))
+            {
+                ImGui.TextWrapped("Your auto-quit condition was migrated to a profile condition. " +
+                                  "Check your profile(s) to ensure everything is configured the way you'd like");
+                if (ImGui.Button("Ok", new Vector2(400f, 50f)))
+                {
+                    this.Settings.AutoQuitCondition = null;
+                    ImGui.CloseCurrentPopup();
+                }
+
+                ImGui.EndPopup();
+            }
+#pragma warning restore CS0618
+        }
+
         private void AutoQuitWarningUi()
         {
-
             if (!this.stopShowingAutoQuitWarning &&
                 Core.States.InGameStateObject.CurrentWorldInstance.AreaDetails.IsTown &&
                 this.ShouldExecuteAutoQuit)

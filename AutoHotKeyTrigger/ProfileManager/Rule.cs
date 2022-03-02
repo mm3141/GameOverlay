@@ -10,6 +10,7 @@
     using ImGuiNET;
     using Newtonsoft.Json;
     using Enums;
+    using GameHelper;
     using GameHelper.RemoteEnums;
 
     /// <summary>
@@ -39,6 +40,11 @@
         ///     Rule key to press on success.
         /// </summary>
         public ConsoleKey Key;
+
+        /// <summary>
+        ///     Whether to use this rule as a trigger for auto-quit
+        /// </summary>
+        public bool UseAsAutoQuit;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="Rule" /> class.
@@ -106,19 +112,34 @@
         }
 
         /// <summary>
+        ///     Adds a new condition to a rule
+        /// </summary>
+        /// <param name="condition">The condition to add</param>
+        public void AddCondition(ICondition condition)
+        {
+            this.conditions.Add(condition);
+        }
+
+        /// <summary>
         ///     Displays the rule settings
         /// </summary>
         public void DrawSettings()
         {
             ImGui.Checkbox("Enable", ref this.Enabled);
+            ImGui.SameLine();
+            ImGui.Checkbox("Use as auto-quit", ref this.UseAsAutoQuit);
             ImGui.InputText("Name", ref this.Name, 20);
-            var tmpKey = (VirtualKeys)this.Key;
-            if (ImGuiHelper.NonContinuousEnumComboBox("Key", ref tmpKey))
+            if (!this.UseAsAutoQuit)
             {
-                this.Key = (ConsoleKey)tmpKey;
+                var tmpKey = (VirtualKeys)this.Key;
+                if (ImGuiHelper.NonContinuousEnumComboBox("Key", ref tmpKey))
+                {
+                    this.Key = (ConsoleKey)tmpKey;
+                }
+                
+                this.DrawCooldownWidget();
             }
 
-            this.DrawCooldownWidget();
             this.DrawAddNewCondition();
             this.DrawExistingConditions();
         }
@@ -131,10 +152,17 @@
         {
             if (this.Enabled && this.Evaluate())
             {
-                if (MiscHelper.KeyUp(this.Key))
+                if (this.UseAsAutoQuit)
                 {
-                    logger($"Pressed the {this.Key} key");
-                    this.cooldownStopwatch.Restart();
+                    MiscHelper.KillTCPConnectionForProcess(Core.Process.Pid);
+                }
+                else
+                {
+                    if (MiscHelper.KeyUp(this.Key))
+                    {
+                        logger($"Pressed the {this.Key} key");
+                        this.cooldownStopwatch.Restart();
+                    }
                 }
             }
         }
@@ -148,7 +176,7 @@
             var condition = EnumToObject(conditionType);
             if (condition != null)
             {
-                this.conditions.Add(condition);
+                this.AddCondition(condition);
             }
         }
 
@@ -175,9 +203,9 @@
         ///     Checks the specified conditions, shortcircuiting on the first unsatisfied one
         /// </summary>
         /// <returns>true if all the rules conditions are true otherwise false.</returns>
-        private bool Evaluate()
+        public bool Evaluate()
         {
-            if (this.cooldownStopwatch.Elapsed.TotalSeconds > this.delayBetweenRuns)
+            if (this.UseAsAutoQuit || this.cooldownStopwatch.Elapsed.TotalSeconds > this.delayBetweenRuns)
             {
                 if (this.conditions.TrueForAll(x => x.Evaluate()))
                 {
