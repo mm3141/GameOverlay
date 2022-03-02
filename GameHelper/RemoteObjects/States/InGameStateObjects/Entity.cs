@@ -6,6 +6,8 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
 {
     using System;
     using System.Collections.Concurrent;
+    using System.Collections.Generic;
+    using System.Linq;
     using Components;
     using GameHelper.RemoteEnums;
     using GameOffsets.Objects.States.InGameState;
@@ -18,6 +20,19 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
     /// </summary>
     public class Entity : RemoteObjectBase
     {
+        private static List<string> diesAfterTimeIgnore = new()
+        {
+            "Metadata/Monsters/AtlasExiles/CrusaderInfluenceMonsters/CrusaderArcaneRune",
+            "Metadata/Monsters/Daemon/DaemonLaboratoryBlackhole",
+            "Metadata/Monsters/AtlasExiles/AtlasExile",
+            "Metadata/Monsters/Daemon/MaligaroBladeVortexDaemon",
+            "Metadata/Monsters/Daemon/DoNothingDaemon",
+            "Metadata/Monsters/Daemon/ShakariQuicksandDaemon"
+        };
+
+        private static string deliriumHiddenMonsterStarting =
+            "Metadata/Monsters/LeagueAffliction/DoodadDaemons/DoodadDaemon";
+
         private readonly ConcurrentDictionary<string, IntPtr> componentAddresses;
         private readonly ConcurrentDictionary<string, RemoteObjectBase> componentCache;
         private bool isnearby;
@@ -257,7 +272,263 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
 
         private void ParseEntityType()
         {
+            switch (this.EntityType)
+            {
+                // There is no use case (yet) to re-evaluate the following entity types
+                case EntityTypes.Npc:
+                case EntityTypes.SelfPlayer:
+                case EntityTypes.OtherPlayer:
+                case EntityTypes.Blockage:
+                case EntityTypes.Shrine:
+                    return;
+            }
+
             if (!this.TryGetComponent<Render>(out var _))
+            {
+                this.EntityType = EntityTypes.Useless;
+            }
+            else if (this.TryGetComponent<Chest>(out var chestComp))
+            {
+                if (chestComp.IsOpened)
+                {
+                    this.EntityType = EntityTypes.Useless;
+                }
+                else if(this.EntityType == EntityTypes.Unidentified) // so it only happen once.
+                {
+                    if (this.Path.StartsWith("Metadata/Chests/DelveChests/"))
+                    {
+                        this.EntityType = EntityTypes.DelveChest;
+                    }
+                    else if (this.TryGetComponent<MinimapIcon>(out var _) &&
+                        this.Path.StartsWith("Metadata/Chests/LeagueHeist"))
+                    {
+                        this.EntityType = EntityTypes.HeistChest;
+                    }
+                    else if (this.Path.StartsWith("Metadata/Chests/Breach"))
+                    {
+                        this.EntityType = EntityTypes.BreachChest;
+                    }
+                    else if (chestComp.IsStrongbox)
+                    {
+                        if (this.Path.StartsWith("Metadata/Chests/StrongBoxes/Arcanist") ||
+                            this.Path.StartsWith("Metadata/Chests/StrongBoxes/Cartographer") ||
+                            this.Path.StartsWith("Metadata/Chests/StrongBoxes/StrongboxDivination") ||
+                            this.Path.StartsWith("Metadata/Chests/StrongBoxes/StrongboxScarab"))
+                        {
+                            this.EntityType = EntityTypes.ImportantStrongboxChest;
+                        }
+                        else
+                        {
+                            this.EntityType = EntityTypes.StrongboxChest;
+                        }
+                    }
+                    else if (chestComp.IsLabelVisible)
+                    {
+                        this.EntityType = EntityTypes.ChestWithLabels;
+                    }
+                    else
+                    {
+                        this.EntityType = EntityTypes.Chest;
+                    }
+                }
+            }
+            else if (this.TryGetComponent<NPC>(out var _))
+            {
+                this.EntityType = EntityTypes.Npc;
+            }
+            else if (this.TryGetComponent<Player>(out var _))
+            {
+                if (this.Id == Core.States.InGameStateObject.CurrentAreaInstance.Player.Id)
+                {
+                    this.EntityType = EntityTypes.SelfPlayer;
+                }
+                else
+                {
+                    this.EntityType = EntityTypes.OtherPlayer;
+                }
+            }
+            else if (this.TryGetComponent<Shrine>(out var _))
+            {
+                // NOTE: Do not send Shrine to useless because it can go back to not used.
+                //       e.g. Shrine in PVP area can do that.
+                this.EntityType = EntityTypes.Shrine;
+            }
+            else if (this.TryGetComponent<Life>(out var lifeComp))
+            {
+                if (!lifeComp.IsAlive)
+                {
+                    this.EntityType = EntityTypes.Useless;
+                    return;
+                }
+
+                if (this.TryGetComponent<TriggerableBlockage>(out var _))
+                {
+                    // NOTE: Do not send blockage to useless because it can go back to blocked.
+                    // NOTE: If blockage Life is 0 (not IsAlive), it can be send to useless
+                    //       but they are so rare, it's not worth it.
+                    this.EntityType = EntityTypes.Blockage;
+                    return;
+                }
+
+                if (!this.TryGetComponent<Positioned>(out var posComp))
+                {
+                    this.EntityType = EntityTypes.Useless;
+                    return;
+                }
+
+                if (posComp.IsFriendly)
+                {
+                    this.EntityType = EntityTypes.FriendlyMonster;
+                    return;
+                }
+
+                if (!this.TryGetComponent<ObjectMagicProperties>(out var OMP))
+                {
+                    this.EntityType = EntityTypes.Useless;
+                    return;
+                }
+
+                if (this.EntityType == EntityTypes.Unidentified &&
+                       this.TryGetComponent<DiesAfterTime>(out var _) &&
+                       diesAfterTimeIgnore.Any(ignorePath => this.Path.StartsWith(ignorePath)))
+                {
+                    this.EntityType = EntityTypes.Useless;
+                    return;
+                }
+
+                if (this.TryGetComponent<Buffs>(out var buffComp))
+                {
+                    // When Legion monolith is not clicked by the user (Stage 0),
+                    //     Legion monsters (a.k.a FIT) has Frozen in time + Hidden buff.
+
+                    // When Legion monolith is clicked (Stage 1),
+                    //     FIT Not Killed by User: Just have frozen in time buff.
+                    //     FIT Killed by user: Just have hidden buff.
+
+                    // When Legion monolith is destroyed (Stage 2),
+                    //     FIT are basically same as regular monster with no Frozen-in-time/hidden buff.
+
+                    // NOTE: There are other hidden monsters in the game as well
+                    // e.g. Delirium monsters (a.k.a DELI), underground crabs, hidden sea witches
+                    var isFrozenInTime = buffComp.StatusEffects.ContainsKey("frozen_in_time");
+                    var isHidden = buffComp.StatusEffects.ContainsKey("hidden_monster");
+                    if (isFrozenInTime && isHidden)
+                    {
+                        if (this.EntityType != EntityTypes.Stage0RewardFIT &&
+                            this.EntityType != EntityTypes.Stage0ChestFIT &&
+                            this.EntityType != EntityTypes.Stage0GeneralFIT &&
+                            this.EntityType != EntityTypes.Stage0FIT) // New FITs only.
+                        {
+                            if (buffComp.StatusEffects.ContainsKey("legion_reward_display"))
+                            {
+                                this.EntityType = EntityTypes.Stage0RewardFIT;
+                            }
+                            else if (this.Path.Contains("Chest"))
+                            {
+                                this.EntityType = EntityTypes.Stage0ChestFIT;
+                            }
+                            else if (OMP.Rarity == Rarity.Unique)
+                            {
+                                this.EntityType = EntityTypes.Stage0GeneralFIT;
+                            }
+                            else
+                            {
+                                this.EntityType = EntityTypes.Stage0FIT;
+                            }
+                        }
+
+                        return;
+                    }
+                    else if (isFrozenInTime)
+                    {
+                        if (this.EntityType != EntityTypes.Stage1RewardFIT &&
+                            this.EntityType != EntityTypes.Stage1ChestFIT &&
+                            this.EntityType != EntityTypes.Stage1GeneralFIT &&
+                            this.EntityType != EntityTypes.Stage1FIT) // New FITs only.
+                        {
+                            if (buffComp.StatusEffects.ContainsKey("legion_reward_display"))
+                            {
+                                this.EntityType = EntityTypes.Stage1RewardFIT;
+                            }
+                            else if (this.Path.Contains("Chest"))
+                            {
+                                this.EntityType = EntityTypes.Stage1ChestFIT;
+                            }
+                            else if (OMP.Rarity == Rarity.Unique)
+                            {
+                                this.EntityType = EntityTypes.Stage1GeneralFIT;
+                            }
+                            else
+                            {
+                                this.EntityType = EntityTypes.Stage1FIT;
+                            }
+                        }
+
+                        return;
+                    }
+                    else if (isHidden)
+                    {
+                        switch (this.EntityType)
+                        {
+                            case EntityTypes.Stage0GeneralFIT:
+                            case EntityTypes.Stage0ChestFIT:
+                            case EntityTypes.Stage0RewardFIT:
+                            case EntityTypes.Stage0FIT:
+                            case EntityTypes.Stage1GeneralFIT:
+                            case EntityTypes.Stage1ChestFIT:
+                            case EntityTypes.Stage1RewardFIT:
+                            case EntityTypes.Stage1FIT:
+                            case EntityTypes.Stage1DeadFIT:
+                                this.EntityType = EntityTypes.Stage1DeadFIT;
+                                return;
+                            case EntityTypes.DeliriumBomb:
+                            case EntityTypes.DeliriumSpawner:
+                                return;
+                            case EntityTypes.Unidentified:
+                                if (this.Path.StartsWith(deliriumHiddenMonsterStarting))
+                                {
+                                    if (this.Path.Contains("BloodBag"))
+                                    {
+                                        this.EntityType = EntityTypes.DeliriumBomb;
+                                    }
+                                    else if (this.Path.Contains("EggFodder"))
+                                    {
+                                        this.EntityType = EntityTypes.DeliriumSpawner;
+                                    }
+                                    else if (this.Path.Contains("GlobSpawn"))
+                                    {
+                                        this.EntityType = EntityTypes.DeliriumSpawner;
+                                    }
+                                    else
+                                    {
+                                        this.EntityType = EntityTypes.Useless;
+                                    }
+
+                                    return;
+                                }
+
+                                break;
+                        }
+                    }
+                }
+
+                switch (OMP.Rarity)
+                {
+                    case Rarity.Normal:
+                        this.EntityType = EntityTypes.NormalMonster;
+                        break;
+                    case Rarity.Magic:
+                        this.EntityType = EntityTypes.MagicMonster;
+                        break;
+                    case Rarity.Rare:
+                        this.EntityType = EntityTypes.RareMonster;
+                        break;
+                    case Rarity.Unique:
+                        this.EntityType = EntityTypes.UniqueMonster;
+                        break;
+                }
+            }
+            else
             {
                 this.EntityType = EntityTypes.Useless;
             }

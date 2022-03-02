@@ -27,34 +27,11 @@ namespace Radar
     /// </summary>
     public sealed class Radar : PCore<RadarSettings>
     {
-        // Legion Cache.
-        private readonly Dictionary<uint, string> frozenInTimeEntities = new();
-
-        private readonly List<string> diesAfterTimeIgnore = new()
-        {
-            "Metadata/Monsters/AtlasExiles/CrusaderInfluenceMonsters/CrusaderArcaneRune",
-            "Metadata/Monsters/Daemon/DaemonLaboratoryBlackhole",
-            "Metadata/Monsters/AtlasExiles/AtlasExile",
-            "Metadata/Monsters/Daemon/MaligaroBladeVortexDaemon",
-            "Metadata/Monsters/Daemon/DoNothingDaemon",
-            "Metadata/Monsters/Daemon/ShakariQuicksandDaemon"
-        };
-
-        private readonly HashSet<uint> diesAfterTimeCache = new();
-
         private readonly string heistUsefullChestContains = "HeistChestSecondary";
         private readonly string heistAllChestStarting = "Metadata/Chests/LeagueHeist";
         private readonly Dictionary<uint, string> heistChestCache = new();
-
-        // Delirium Hidden Monster cache.
-        private readonly Dictionary<uint, string> deliriumHiddenMonster = new();
-
-        private readonly string deliriumHiddenMonsterStarting =
-            "Metadata/Monsters/LeagueAffliction/DoodadDaemons/DoodadDaemon";
-
         private readonly string delveChestStarting = "Metadata/Chests/DelveChests/";
         private readonly Dictionary<uint, string> delveChestCache = new();
-        private bool isAzuriteMine = false;
 
         /// <summary>
         /// If we don't do this, user will be asked to
@@ -511,103 +488,87 @@ namespace Radar
                     continue;
                 }
 
-                var hasVital = entity.Value.TryGetComponent<Life>(out var lifeComp);
-                var hasBuffs = entity.Value.TryGetComponent<Buffs>(out var buffsComp);
-                var isChest = entity.Value.TryGetComponent<Chest>(out var chestComp);
-                var hasOMP = entity.Value.TryGetComponent<ObjectMagicProperties>(out var omp);
-                var isShrine = entity.Value.TryGetComponent<Shrine>(out var shrineComp);
-                var isBlockage = entity.Value.TryGetComponent<TriggerableBlockage>(out var blockageComp);
-                var isPlayer = entity.Value.TryGetComponent<Player>(out var playerComp);
-                var isPosAvailable = entity.Value.TryGetComponent<Positioned>(out var entityPos);
-                var isRenderAvailable = entity.Value.TryGetComponent<Render>(out var entityRender);
-                var isDiesAfterTime = entity.Value.TryGetComponent<DiesAfterTime>(out var _);
-
-                if (!isPosAvailable || !isRenderAvailable)
+                if (!entity.Value.TryGetComponent<Render>(out var entityRender))
                 {
                     continue;
                 }
-                else if (this.Settings.HideUseless)
-                {
-                    if (isDiesAfterTime)
-                    {
-                        if (this.diesAfterTimeCache.Contains(entity.Value.Id))
-                        {
-                            continue;
-                        }
-                        else if (this.diesAfterTimeIgnore.Any(ignorePath =>
-                        entity.Value.Path.StartsWith(ignorePath)))
-                        {
-                            this.diesAfterTimeCache.Add(entity.Value.Id);
-                            continue;
-                        }
-                    }
-
-                    if (!(hasVital || isChest || isPlayer))
-                    {
-                        continue;
-                    }
-                    else if (isChest && chestComp.IsOpened)
-                    {
-                        continue;
-                    }
-                    else if (hasVital && (!lifeComp.IsAlive || (!hasOMP && !isBlockage && !isPlayer)))
-                    {
-                        continue;
-                    }
-                    else if (isBlockage && !blockageComp.IsBlocked)
-                    {
-                        continue;
-                    }
-                    else if (isPlayer && entity.Value.Address ==
-                        Core.States.InGameStateObject.CurrentAreaInstance.Player.Address)
-                    {
-                        continue;
-                    }
-                }
 
                 var ePos = new Vector2(entityRender.GridPosition.X, entityRender.GridPosition.Y);
-                var fpos = Helper.DeltaInWorldToMapDelta(
-                    ePos - pPos, entityRender.TerrainHeight - playerRender.TerrainHeight);
-                var iconSizeMultiplierVector = Vector2.One * iconSizeMultiplier;
-                if (isPlayer)
+                var fpos = Helper.DeltaInWorldToMapDelta(ePos - pPos, entityRender.TerrainHeight - playerRender.TerrainHeight);
+                if (!this.Settings.HideUseless && entity.Value.EntityType == EntityTypes.Useless)
                 {
-                    if (this.Settings.ShowPlayersNames)
-                    {
-                        var pNameSizeH = ImGui.CalcTextSize(playerComp.Name) / 2;
-                        fgDraw.AddRectFilled(mapCenter + fpos - pNameSizeH, mapCenter + fpos + pNameSizeH,
-                            ImGuiHelper.Color(0, 0, 0, 200));
-                        fgDraw.AddText(ImGui.GetFont(), ImGui.GetFontSize(), mapCenter + fpos - pNameSizeH,
-                            ImGuiHelper.Color(255, 128, 128, 255), playerComp.Name);
-                    }
-                    else
-                    {
-                        var playerIcon = playerComp.Name == this.leaderName
-                            ? this.Settings.BaseIcons["Leader"]
-                            : this.Settings.BaseIcons["Player"];
-                        iconSizeMultiplierVector *= playerIcon.IconScale;
+                    fgDraw.AddCircleFilled(mapCenter + fpos, 5f, ImGuiHelper.Color(255, 0, 255, 255));
+                    return;
+                }
+                else if(entity.Value.EntityType == EntityTypes.Useless)
+                {
+                    continue;
+                }
+
+                var iconSizeMultiplierVector = Vector2.One * iconSizeMultiplier;
+                switch (entity.Value.EntityType)
+                {
+                    case EntityTypes.OtherPlayer:
+                        entity.Value.TryGetComponent<Player>(out var playerComp);
+                        if (this.Settings.ShowPlayersNames)
+                        {
+                            var pNameSizeH = ImGui.CalcTextSize(playerComp.Name) / 2;
+                            fgDraw.AddRectFilled(mapCenter + fpos - pNameSizeH, mapCenter + fpos + pNameSizeH,
+                                ImGuiHelper.Color(0, 0, 0, 200));
+                            fgDraw.AddText(ImGui.GetFont(), ImGui.GetFontSize(), mapCenter + fpos - pNameSizeH,
+                                ImGuiHelper.Color(255, 128, 128, 255), playerComp.Name);
+                        }
+                        else
+                        {
+                            var playerIcon = playerComp.Name == this.leaderName
+                                ? this.Settings.BaseIcons["Leader"]
+                                : this.Settings.BaseIcons["Player"];
+                            iconSizeMultiplierVector *= playerIcon.IconScale;
+                            fgDraw.AddImage(
+                                playerIcon.TexturePtr,
+                                mapCenter + fpos - iconSizeMultiplierVector,
+                                mapCenter + fpos + iconSizeMultiplierVector,
+                                playerIcon.UV0,
+                                playerIcon.UV1);
+                        }
+
+                        break;
+                    case EntityTypes.Blockage:
+                        entity.Value.TryGetComponent<TriggerableBlockage>(out var blockComp);
+                        if (blockComp.IsBlocked)
+                        {
+                            var blockageIcon = this.Settings.DelveIcons["Blockage OR DelveWall"];
+                            iconSizeMultiplierVector *= blockageIcon.IconScale;
+                            fgDraw.AddImage(
+                                blockageIcon.TexturePtr,
+                                mapCenter + fpos - iconSizeMultiplierVector,
+                                mapCenter + fpos + iconSizeMultiplierVector,
+                                blockageIcon.UV0,
+                                blockageIcon.UV1);
+                        }
+
+                        break;
+                    case EntityTypes.Chest:
+                        var chestIcon = this.Settings.BaseIcons["Chests Without Label"];
+                        iconSizeMultiplierVector *= chestIcon.IconScale;
                         fgDraw.AddImage(
-                            playerIcon.TexturePtr,
+                            chestIcon.TexturePtr,
                             mapCenter + fpos - iconSizeMultiplierVector,
                             mapCenter + fpos + iconSizeMultiplierVector,
-                            playerIcon.UV0,
-                            playerIcon.UV1);
-                    }
-                }
-                else if (isBlockage)
-                {
-                    var blockageIcon = this.Settings.DelveIcons["Blockage OR DelveWall"];
-                    iconSizeMultiplierVector *= blockageIcon.IconScale;
-                    fgDraw.AddImage(
-                        blockageIcon.TexturePtr,
-                        mapCenter + fpos - iconSizeMultiplierVector,
-                        mapCenter + fpos + iconSizeMultiplierVector,
-                        blockageIcon.UV0,
-                        blockageIcon.UV1);
-                }
-                else if (isChest)
-                {
-                    if (this.isAzuriteMine)
-                    {
+                            chestIcon.UV0,
+                            chestIcon.UV1);
+                        break;
+                    case EntityTypes.ChestWithLabels:
+                        chestIcon = this.Settings.BaseIcons["Chests With Label"];
+                        iconSizeMultiplierVector *= chestIcon.IconScale;
+                        fgDraw.AddImage(
+                            chestIcon.TexturePtr,
+                            mapCenter + fpos - iconSizeMultiplierVector,
+                            mapCenter + fpos + iconSizeMultiplierVector,
+                            chestIcon.UV0,
+                            chestIcon.UV1);
+                        break;
+                    case EntityTypes.DelveChest:
                         if (this.delveChestCache.TryGetValue(entity.Key.id, out var iconFinder))
                         {
                             if (this.Settings.DelveIcons.TryGetValue(iconFinder, out var delveChestIcon))
@@ -640,10 +601,10 @@ namespace Radar
                             this.delveChestCache[entity.Key.id] =
                                 this.DelveChestPathToIcon(entity.Value.Path);
                         }
-                    }
-                    else if (entity.Value.TryGetComponent<MinimapIcon>(out var _))
-                    {
-                        if (this.heistChestCache.TryGetValue(entity.Key.id, out var iconFinder))
+
+                        break;
+                    case EntityTypes.HeistChest:
+                        if (this.heistChestCache.TryGetValue(entity.Key.id, out iconFinder))
                         {
                             if (this.Settings.HeistIcons.TryGetValue(iconFinder, out var heistChestIcon))
                             {
@@ -662,36 +623,10 @@ namespace Radar
                             this.heistChestCache[entity.Key.id] =
                                 this.HeistChestPathToIcon(entity.Value.Path);
                         }
-                    }
-                    else
-                    {
-                        var chestIcon = this.Settings.BaseIcons["Chests Without Label"];
-                        if (chestComp.IsStrongbox)
-                        {
-                            if (entity.Value.Path.StartsWith("Metadata/Chests/StrongBoxes/Arcanist") ||
-                                entity.Value.Path.StartsWith("Metadata/Chests/StrongBoxes/Cartographer") ||
-                                entity.Value.Path.StartsWith("Metadata/Chests/StrongBoxes/StrongboxDivination") ||
-                                entity.Value.Path.StartsWith("Metadata/Chests/StrongBoxes/StrongboxScarab"))
-                            {
-                                chestIcon = this.Settings.BaseIcons["Important Strongboxes"];
-                            }
-                            else
-                            {
-                                chestIcon = this.Settings.BaseIcons["Strongbox"];
-                            }
-                        }
-                        else if (chestComp.IsLabelVisible)
-                        {
-                            if (currentAreaInstance.EntityCaches[0].Contains(entity.Key))
-                            {
-                                chestIcon = this.Settings.BreachIcons["Breach Chest"];
-                            }
-                            else
-                            {
-                                chestIcon = this.Settings.BaseIcons["Chests With Label"];
-                            }
-                        }
 
+                        break;
+                    case EntityTypes.ImportantStrongboxChest:
+                        chestIcon = this.Settings.BaseIcons["Important Strongboxes"];
                         iconSizeMultiplierVector *= chestIcon.IconScale;
                         fgDraw.AddImage(
                             chestIcon.TexturePtr,
@@ -699,147 +634,174 @@ namespace Radar
                             mapCenter + fpos + iconSizeMultiplierVector,
                             chestIcon.UV0,
                             chestIcon.UV1);
-                    }
-                }
-                else if (isShrine)
-                {
-                    if (!shrineComp.IsUsed)
-                    {
-                        var shrineIcon = this.Settings.BaseIcons["Shrine"];
-                        iconSizeMultiplierVector *= shrineIcon.IconScale;
+                        break;
+                    case EntityTypes.StrongboxChest:
+                        chestIcon = this.Settings.BaseIcons["Strongbox"];
+                        iconSizeMultiplierVector *= chestIcon.IconScale;
                         fgDraw.AddImage(
-                            shrineIcon.TexturePtr,
+                            chestIcon.TexturePtr,
                             mapCenter + fpos - iconSizeMultiplierVector,
                             mapCenter + fpos + iconSizeMultiplierVector,
-                            shrineIcon.UV0,
-                            shrineIcon.UV1);
-                    }
-                }
-                else if (hasVital)
-                {
-                    if (hasBuffs) // Is there any monster that has Vital component but no Buff component?
-                    {
-                        // When Legion monolith is not clicked by the user (Stage 0),
-                        //     Legion monsters (a.k.a FIT) has Frozen in time + Hidden buff.
-
-                        // When Legion monolith is clicked (Stage 1),
-                        //     FIT Not Killed by User: Just have frozen in time buff.
-                        //     FIT Killed by user: Just have hidden buff.
-
-                        // When Legion monolith is destroyed (Stage 2),
-                        //     FIT are basically same as regular monster with no Frozen-in-time/hidden buff.
-
-                        // NOTE: There are other hidden monsters in the game as well
-                        // e.g. Delirium monsters (a.k.a DELI), underground crabs, hidden sea witches
-                        var isFrozenInTime = buffsComp.StatusEffects.ContainsKey("frozen_in_time");
-                        var isHidden = buffsComp.StatusEffects.ContainsKey("hidden_monster");
-                        if (isFrozenInTime)
+                            chestIcon.UV0,
+                            chestIcon.UV1);
+                        break;
+                    case EntityTypes.BreachChest:
+                        chestIcon = this.Settings.BreachIcons["Breach Chest"];
+                        iconSizeMultiplierVector *= chestIcon.IconScale;
+                        fgDraw.AddImage(
+                            chestIcon.TexturePtr,
+                            mapCenter + fpos - iconSizeMultiplierVector,
+                            mapCenter + fpos + iconSizeMultiplierVector,
+                            chestIcon.UV0,
+                            chestIcon.UV1);
+                        break;
+                    case EntityTypes.Shrine:
+                        entity.Value.TryGetComponent<Shrine>(out var shrineComp);
+                        if (!shrineComp.IsUsed)
                         {
-                            if (this.frozenInTimeEntities.TryGetValue(entity.Key.id, out var fitName)) // Known FIT
-                            {
-                                if (!string.IsNullOrEmpty(fitName)) // Important FIT
-                                {
-                                    var monsterChestIcon = this.Settings.LegionIcons["Legion Monster Chest"];
-                                    if (monsterChestIcon.UV0 == Vector2.Zero)
-                                    {
-                                        var s = ImGui.CalcTextSize(fitName) / 2;
-                                        fgDraw.AddRectFilled(mapCenter + fpos - s, mapCenter + fpos + s,
-                                            ImGuiHelper.Color(0, 0, 0, 255));
-                                        fgDraw.AddText(mapCenter + fpos - s, ImGuiHelper.Color(255, 128, 128, 255),
-                                            fitName);
-                                    }
-                                    else
-                                    {
-                                        iconSizeMultiplierVector *= monsterChestIcon.IconScale;
-                                        fgDraw.AddImage(
-                                            monsterChestIcon.TexturePtr,
-                                            mapCenter + fpos - iconSizeMultiplierVector,
-                                            mapCenter + fpos + iconSizeMultiplierVector,
-                                            monsterChestIcon.UV0,
-                                            monsterChestIcon.UV1);
-                                    }
-
-                                    continue;
-                                }
-                                else if(isHidden) // Hidden FIT
-                                {
-                                    continue;
-                                }
-
-                                // FIT that is not important and not hidden.
-                                // We show them as regular monsters.
-                            }
-                            else // New FIT.
-                            {
-                                if (buffsComp.StatusEffects.ContainsKey("legion_reward_display") ||
-                                    entity.Value.Path.Contains("Chest") ||
-                                    (hasOMP && omp.Rarity == Rarity.Unique))
-                                {
-                                    // Important FIT
-                                    this.frozenInTimeEntities[entity.Key.id] = entity.Value.Path.Split('/').LastOrDefault();
-                                }
-                                else
-                                {
-                                    // Not Important FIT.
-                                    this.frozenInTimeEntities[entity.Key.id] = string.Empty;
-                                }
-
-                                continue;
-                            }
+                            var shrineIcon = this.Settings.BaseIcons["Shrine"];
+                            iconSizeMultiplierVector *= shrineIcon.IconScale;
+                            fgDraw.AddImage(
+                                shrineIcon.TexturePtr,
+                                mapCenter + fpos - iconSizeMultiplierVector,
+                                mapCenter + fpos + iconSizeMultiplierVector,
+                                shrineIcon.UV0,
+                                shrineIcon.UV1);
                         }
-                        else if (isHidden)
+                        break;
+                    case EntityTypes.Npc:
+                        var npcIcon = this.Settings.BaseIcons["Npc"];
+                        iconSizeMultiplierVector *= npcIcon.IconScale;
+                        fgDraw.AddImage(
+                            npcIcon.TexturePtr,
+                            mapCenter + fpos - iconSizeMultiplierVector,
+                            mapCenter + fpos + iconSizeMultiplierVector,
+                            npcIcon.UV0,
+                            npcIcon.UV1);
+                        break;
+                    case EntityTypes.FriendlyMonster:
+                        var friendlyIcon = this.Settings.BaseIcons["Friendly"];
+                        iconSizeMultiplierVector *= friendlyIcon.IconScale;
+                        fgDraw.AddImage(
+                            friendlyIcon.TexturePtr,
+                            mapCenter + fpos - iconSizeMultiplierVector,
+                            mapCenter + fpos + iconSizeMultiplierVector,
+                            friendlyIcon.UV0,
+                            friendlyIcon.UV1);
+                        break;
+                    case EntityTypes.NormalMonster:
+                        var monsterIcon = this.RarityToIconMapping(Rarity.Normal);
+                        iconSizeMultiplierVector *= monsterIcon.IconScale;
+                        fgDraw.AddImage(
+                            monsterIcon.TexturePtr,
+                            mapCenter + fpos - iconSizeMultiplierVector,
+                            mapCenter + fpos + iconSizeMultiplierVector,
+                            monsterIcon.UV0,
+                            monsterIcon.UV1);
+                        break;
+                    case EntityTypes.MagicMonster:
+                        monsterIcon = this.RarityToIconMapping(Rarity.Magic);
+                        iconSizeMultiplierVector *= monsterIcon.IconScale;
+                        fgDraw.AddImage(
+                            monsterIcon.TexturePtr,
+                            mapCenter + fpos - iconSizeMultiplierVector,
+                            mapCenter + fpos + iconSizeMultiplierVector,
+                            monsterIcon.UV0,
+                            monsterIcon.UV1);
+                        break;
+                    case EntityTypes.RareMonster:
+                        monsterIcon = this.RarityToIconMapping(Rarity.Rare);
+                        iconSizeMultiplierVector *= monsterIcon.IconScale;
+                        fgDraw.AddImage(
+                            monsterIcon.TexturePtr,
+                            mapCenter + fpos - iconSizeMultiplierVector,
+                            mapCenter + fpos + iconSizeMultiplierVector,
+                            monsterIcon.UV0,
+                            monsterIcon.UV1);
+                        break;
+                    case EntityTypes.UniqueMonster:
+                        monsterIcon = this.RarityToIconMapping(Rarity.Unique);
+                        iconSizeMultiplierVector *= monsterIcon.IconScale;
+                        fgDraw.AddImage(
+                            monsterIcon.TexturePtr,
+                            mapCenter + fpos - iconSizeMultiplierVector,
+                            mapCenter + fpos + iconSizeMultiplierVector,
+                            monsterIcon.UV0,
+                            monsterIcon.UV1);
+                        break;
+                    case EntityTypes.Stage0GeneralFIT:
+                    case EntityTypes.Stage1GeneralFIT:
+                        monsterIcon = this.RarityToIconMapping(Rarity.Unique);
+                        iconSizeMultiplierVector *= monsterIcon.IconScale;
+                        fgDraw.AddImage(
+                            monsterIcon.TexturePtr,
+                            mapCenter + fpos - iconSizeMultiplierVector,
+                            mapCenter + fpos + iconSizeMultiplierVector,
+                            monsterIcon.UV0,
+                            monsterIcon.UV1);
+                        break;
+                    case EntityTypes.Stage0RewardFIT:
+                    case EntityTypes.Stage1RewardFIT:
+                    case EntityTypes.Stage0ChestFIT:
+                    case EntityTypes.Stage1ChestFIT:
+                        var monsterChestIcon = this.Settings.LegionIcons["Legion Reward Monster"];
+                        if (entity.Value.EntityType == EntityTypes.Stage0ChestFIT ||
+                            entity.Value.EntityType == EntityTypes.Stage1ChestFIT)
                         {
-                            if (this.frozenInTimeEntities.ContainsKey(entity.Key.id))
-                            {
-                                // let's not display hidden monsters that were FIT.
-                                // Since these are the monsters in Monolith stage-1 that user has already killed.
-                                continue;
-                            }
-                            else if (this.deliriumHiddenMonster.TryGetValue(entity.Key.id, out var iconFinder)) // Known DELI
-                            {
-                                if (this.Settings.DeliriumIcons.TryGetValue(iconFinder, out var dHiddenMIcon))
-                                {
-                                    iconSizeMultiplierVector *= dHiddenMIcon.IconScale;
-                                    fgDraw.AddImage(
-                                        dHiddenMIcon.TexturePtr,
-                                        mapCenter + fpos - iconSizeMultiplierVector,
-                                        mapCenter + fpos + iconSizeMultiplierVector,
-                                        dHiddenMIcon.UV0,
-                                        dHiddenMIcon.UV1);
-                                }
-
-                                continue;
-                            }
-                            // Not using deli cache cuz it's not active in all type of deli zone/area.
-                            else if (entity.Value.Path.StartsWith( // New DELI
-                                this.deliriumHiddenMonsterStarting,
-                                StringComparison.Ordinal))
-                            {
-                                this.deliriumHiddenMonster[entity.Key.id] =
-                                    this.DeliriumHiddenMonsterPathToIcon(entity.Value.Path);
-                                continue;
-                            }
-
-                            // Hidden monsters that are not DELI.
-                            // We show them as regular monster.
+                            monsterChestIcon = this.Settings.LegionIcons["Legion Chest"];
                         }
-                    }
 
-                    // All monsters in the game.
-                    var monsterIcon = entityPos.IsFriendly ?
-                        this.Settings.BaseIcons["Friendly"] :
-                        this.RarityToIconMapping(omp.Rarity);
-                    iconSizeMultiplierVector *= monsterIcon.IconScale;
-                    fgDraw.AddImage(
-                        monsterIcon.TexturePtr,
-                        mapCenter + fpos - iconSizeMultiplierVector,
-                        mapCenter + fpos + iconSizeMultiplierVector,
-                        monsterIcon.UV0,
-                        monsterIcon.UV1);
-                }
-                else
-                {
-                    fgDraw.AddCircleFilled(mapCenter + fpos, 5f, ImGuiHelper.Color(255, 0, 255, 255));
+                        var fitName = entity.Value.Path.Split('/').LastOrDefault();
+                        if (monsterChestIcon.UV0 == Vector2.Zero)
+                        {
+                            var s = ImGui.CalcTextSize(fitName) / 2;
+                            fgDraw.AddRectFilled(mapCenter + fpos - s, mapCenter + fpos + s,
+                                ImGuiHelper.Color(0, 0, 0, 255));
+                            fgDraw.AddText(mapCenter + fpos - s, ImGuiHelper.Color(255, 128, 128, 255),
+                                fitName);
+                        }
+                        else
+                        {
+                            iconSizeMultiplierVector *= monsterChestIcon.IconScale;
+                            fgDraw.AddImage(
+                                monsterChestIcon.TexturePtr,
+                                mapCenter + fpos - iconSizeMultiplierVector,
+                                mapCenter + fpos + iconSizeMultiplierVector,
+                                monsterChestIcon.UV0,
+                                monsterChestIcon.UV1);
+                        }
+                        break;
+                    case EntityTypes.Stage1FIT:
+                        entity.Value.TryGetComponent<ObjectMagicProperties>(out var omp);
+                        monsterIcon = this.RarityToIconMapping(omp.Rarity);
+                        iconSizeMultiplierVector *= monsterIcon.IconScale;
+                        fgDraw.AddImage(
+                            monsterIcon.TexturePtr,
+                            mapCenter + fpos - iconSizeMultiplierVector,
+                            mapCenter + fpos + iconSizeMultiplierVector,
+                            monsterIcon.UV0,
+                            monsterIcon.UV1);
+                        break;
+                    case EntityTypes.DeliriumBomb:
+                        var dHiddenMIcon = this.Settings.DeliriumIcons["Delirium Bomb"];
+                        iconSizeMultiplierVector *= dHiddenMIcon.IconScale;
+                        fgDraw.AddImage(
+                            dHiddenMIcon.TexturePtr,
+                            mapCenter + fpos - iconSizeMultiplierVector,
+                            mapCenter + fpos + iconSizeMultiplierVector,
+                            dHiddenMIcon.UV0,
+                            dHiddenMIcon.UV1);
+                        break;
+                    case EntityTypes.DeliriumSpawner:
+                        dHiddenMIcon = this.Settings.DeliriumIcons["Delirium Spawner"];
+                        iconSizeMultiplierVector *= dHiddenMIcon.IconScale;
+                        fgDraw.AddImage(
+                            dHiddenMIcon.TexturePtr,
+                            mapCenter + fpos - iconSizeMultiplierVector,
+                            mapCenter + fpos + iconSizeMultiplierVector,
+                            dHiddenMIcon.UV0,
+                            dHiddenMIcon.UV1);
+                        break;
                 }
             }
         }
@@ -851,7 +813,6 @@ namespace Radar
                 yield return new Wait(RemoteEvents.AreaChanged);
                 this.CleanUpRadarPluginCaches();
                 this.currentAreaName = Core.States.InGameStateObject.CurrentWorldInstance.AreaDetails.Id;
-                this.isAzuriteMine = this.currentAreaName == "Delve_Main";
                 this.GenerateMapTexture();
                 this.ClusterImportantTgtName();
             }
@@ -1068,39 +1029,9 @@ namespace Radar
             return $"Heist {truncatedPath}";
         }
 
-        private string DeliriumHiddenMonsterPathToIcon(string path)
-        {
-            if (path.Contains("BloodBag"))
-            {
-                return "Delirium Bomb";
-            }
-            else if (path.Contains("EggFodder"))
-            {
-                return "Delirium Spawner";
-            }
-            else if (path.Contains("GlobSpawn"))
-            {
-                return "Delirium Spawner";
-            }
-            else
-            {
-                return $"Delirium Ignore";
-            }
-        }
-
         private string DelveChestPathToIcon(string path)
         {
-            var truncatedPath = path.Replace(
-                this.delveChestStarting,
-                null,
-                StringComparison.Ordinal);
-
-            if (truncatedPath.Length != path.Length)
-            {
-                return truncatedPath;
-            }
-
-            return "Delve Ignore";
+            return path.Replace(this.delveChestStarting, null, StringComparison.Ordinal);
         }
 
         private void AddNewTileBox()
@@ -1173,15 +1104,10 @@ namespace Radar
 
         private void CleanUpRadarPluginCaches()
         {
-            this.frozenInTimeEntities.Clear();
             this.heistChestCache.Clear();
-            this.deliriumHiddenMonster.Clear();
             this.delveChestCache.Clear();
-            this.diesAfterTimeCache.Clear();
             this.RemoveMapTexture();
-            this.isAzuriteMine = false;
             this.currentAreaName = string.Empty;
-
         }
     }
 }

@@ -10,7 +10,7 @@ namespace GameHelper.RemoteEnums
     public enum EntityTypes
     {
         /// <summary>
-        ///     Unknown entity type. should only be used for init purposes.
+        ///     Unknown entity type i.e. entity isn't categorized yet.
         /// </summary>
         Unidentified,
 
@@ -26,9 +26,14 @@ namespace GameHelper.RemoteEnums
         Useless,
 
         /// <summary>
-        ///     Contains the Chest component.
+        ///     Contains the Player component and player ID is the same as user player id.
         /// </summary>
-        Player,
+        SelfPlayer,
+
+        /// <summary>
+        ///     Contains the Player component and player ID isn't the same as user player id..
+        /// </summary>
+        OtherPlayer,
 
         /// <summary>
         ///     Contains the TriggerableBlockage component.
@@ -41,6 +46,36 @@ namespace GameHelper.RemoteEnums
         Chest,
 
         /// <summary>
+        ///     Contains the Chest component and display some label on the chest.
+        /// </summary>
+        ChestWithLabels,
+
+        /// <summary>
+        ///     Contains the Chest component and found in the delve area.
+        /// </summary>
+        DelveChest,
+
+        /// <summary>
+        ///     Contains the Chest component and found in the heist area.
+        /// </summary>
+        HeistChest,
+
+        /// <summary>
+        ///     Contains the Chest component and is a strongbox.
+        /// </summary>
+        ImportantStrongboxChest,
+
+        /// <summary>
+        ///     Contains the Chest component and is a strongbox.
+        /// </summary>
+        StrongboxChest,
+
+        /// <summary>
+        ///     Contains the Chest component and found in a breach.
+        /// </summary>
+        BreachChest,
+
+        /// <summary>
         ///     Contains the Shrine component.
         /// </summary>
         Shrine,
@@ -51,14 +86,84 @@ namespace GameHelper.RemoteEnums
         Npc,
 
         /// <summary>
-        ///     Contains life component.
+        ///     Contains life and position component and is friendly.
         /// </summary>
-        Monster,
+        FriendlyMonster,
 
         /// <summary>
-        ///     Contains WorldItem component.
+        ///     Contains life and ObjectMagicProperties component and is of normal rarity.
         /// </summary>
-        WorldItem,
+        NormalMonster,
+
+        /// <summary>
+        ///     Contains life and ObjectMagicProperties component and is of magic rarity.
+        /// </summary>
+        MagicMonster,
+
+        /// <summary>
+        ///     Contains life and ObjectMagicProperties component and is of rare rarity.
+        /// </summary>
+        RareMonster,
+
+        /// <summary>
+        ///     Contains life and ObjectMagicProperties component and is of unique rarity.
+        /// </summary>
+        UniqueMonster,
+
+        /// <summary>
+        ///     Important legion monster when legion isn't opened.
+        /// </summary>
+        Stage0RewardFIT,
+
+        /// <summary>
+        ///     Important legion monster when legion isn't opened.
+        /// </summary>
+        Stage0ChestFIT,
+
+        /// <summary>
+        ///     Important legion monster when legion isn't opened.
+        /// </summary>
+        Stage0GeneralFIT,
+
+        /// <summary>
+        ///     legion monster when legion isn't opened.
+        /// </summary>
+        Stage0FIT,
+
+        /// <summary>
+        ///     Important legion monster when legion isn't opened.
+        /// </summary>
+        Stage1RewardFIT,
+
+        /// <summary>
+        ///     Important legion monster when legion isn't opened.
+        /// </summary>
+        Stage1ChestFIT,
+
+        /// <summary>
+        ///     Important legion monster when legion isn't opened.
+        /// </summary>
+        Stage1GeneralFIT,
+
+        /// <summary>
+        ///     Legion monster after legion is opened.
+        /// </summary>
+        Stage1FIT,
+
+        /// <summary>
+        ///     Legion monster after legion is opened and killed by user.
+        /// </summary>
+        Stage1DeadFIT,
+
+        /// <summary>
+        ///     Delirium monster that explode when player steps on it.
+        /// </summary>
+        DeliriumBomb,
+
+        /// <summary>
+        ///     Delirium monster that creates new monster when player steps on it.
+        /// </summary>
+        DeliriumSpawner,
 
         /// <summary>
         ///     Entity of type <see cref="RemoteObjects.States.InGameStateObjects.Item"/> class.
