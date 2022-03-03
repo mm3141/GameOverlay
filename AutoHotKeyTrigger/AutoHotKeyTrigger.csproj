@@ -36,6 +36,7 @@
     <Copy
       SourceFiles="
         $(OutDir)$(TargetName)$(TargetExt);
+        $(OutDir)$(TargetName).pdb;
         $(OutDir)FlaskNameToBuff.json;
         $(OutDir)StatusEffectGroup.json;
         $(OutDir)System.Linq.Dynamic.Core.dll;"
