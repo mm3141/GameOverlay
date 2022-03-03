@@ -495,13 +495,13 @@ namespace Radar
 
                 var ePos = new Vector2(entityRender.GridPosition.X, entityRender.GridPosition.Y);
                 var fpos = Helper.DeltaInWorldToMapDelta(ePos - pPos, entityRender.TerrainHeight - playerRender.TerrainHeight);
-                if (!this.Settings.HideUseless && entity.Value.EntityType == EntityTypes.Useless)
+                if (entity.Value.EntityType == EntityTypes.Useless)
                 {
-                    fgDraw.AddCircleFilled(mapCenter + fpos, 5f, ImGuiHelper.Color(255, 0, 255, 255));
-                    return;
-                }
-                else if(entity.Value.EntityType == EntityTypes.Useless)
-                {
+                    if (!this.Settings.HideUseless)
+                    {
+                        fgDraw.AddCircleFilled(mapCenter + fpos, 5f, ImGuiHelper.Color(255, 0, 255, 255));
+                    }
+
                     continue;
                 }
 
