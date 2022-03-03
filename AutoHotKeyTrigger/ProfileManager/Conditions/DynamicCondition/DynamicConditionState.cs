@@ -4,6 +4,7 @@
 
 namespace AutoHotKeyTrigger.ProfileManager.Conditions.DynamicCondition
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using GameHelper.RemoteEnums;
@@ -16,6 +17,8 @@ namespace AutoHotKeyTrigger.ProfileManager.Conditions.DynamicCondition
     /// </summary>
     public class DynamicConditionState : IDynamicConditionState
     {
+        private readonly Lazy<NearbyMonsterInfo> nearbyMonsterInfo;
+
         /// <summary>
         ///     Creates a new instance
         /// </summary>
@@ -44,6 +47,7 @@ namespace AutoHotKeyTrigger.ProfileManager.Conditions.DynamicCondition
                 }
 
                 this.Flasks = new FlasksInfo(state);
+                this.nearbyMonsterInfo = new Lazy<NearbyMonsterInfo>(() => new NearbyMonsterInfo(state));
             }
         }
 
@@ -71,5 +75,17 @@ namespace AutoHotKeyTrigger.ProfileManager.Conditions.DynamicCondition
         ///     The flask information
         /// </summary>
         public IFlasksInfo Flasks { get; }
+
+        /// <summary>
+        ///     Calculates the number of nearby monsters given a rarity selector
+        /// </summary>
+        /// <param name="rarity">The rarity selector for monster search</param>
+        /// <returns></returns>
+        public int MonsterCount(MonsterRarity rarity) => this.nearbyMonsterInfo.Value.GetMonsterCount(rarity);
+
+        /// <summary>
+        ///     Number of friendly nearby monsters
+        /// </summary>
+        public int FriendlyMonsterCount => this.nearbyMonsterInfo.Value.FriendlyMonsterCount;
     }
 }

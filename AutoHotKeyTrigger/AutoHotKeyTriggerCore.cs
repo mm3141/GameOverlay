@@ -19,6 +19,7 @@ namespace AutoHotKeyTrigger
     using ImGuiNET;
     using Newtonsoft.Json;
     using ProfileManager;
+    using ProfileManager.Conditions.DynamicCondition;
 
     /// <summary>
     ///     <see cref="AutoHotKeyTrigger" /> plugin.
@@ -80,6 +81,8 @@ namespace AutoHotKeyTrigger
                 }
             }
 
+            //separate update to allow settings to draw correctly, does not really hurt performance and only called when the settings window is open
+            DynamicCondition.UpdateState();
             if (ImGui.CollapsingHeader("Profiles"))
             {
                 foreach (var (key, profile) in this.Settings.Profiles)
@@ -145,6 +148,7 @@ namespace AutoHotKeyTrigger
             {
                 return;
             }
+            DynamicCondition.UpdateState();
 
             if (this.ShouldExecuteAutoQuit || NativeMethods.IsKeyPressedAndNotTimeout(
                 (int)this.Settings.AutoQuitKey))

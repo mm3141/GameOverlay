@@ -21,6 +21,8 @@ namespace AutoHotKeyTrigger.ProfileManager.Conditions.DynamicCondition
         private static readonly Vector4 CodeCompileFailure = new(255, 0, 0, 255);
         private static readonly DynamicCondition ConfigurationInstance = new("");
 
+        private static Lazy<DynamicConditionState> state;
+
         [JsonProperty] private string conditionSource;
         private string lastException;
         private Func<DynamicConditionState, bool> func;
@@ -36,6 +38,19 @@ namespace AutoHotKeyTrigger.ProfileManager.Conditions.DynamicCondition
         {
             this.conditionSource = conditionSource;
             this.RebuildFunction();
+        }
+        
+        static DynamicCondition()
+        {
+            UpdateState();
+        }
+
+        /// <summary>
+        ///     Indicates that the shared dynamic condition state needs to be rebuilt
+        /// </summary>
+        public static void UpdateState()
+        {
+            state = new Lazy<DynamicConditionState>(() => new DynamicConditionState(Core.States.InGameStateObject));
         }
 
         /// <summary>
@@ -74,7 +89,7 @@ namespace AutoHotKeyTrigger.ProfileManager.Conditions.DynamicCondition
             try
             {
                 var expression = DynamicExpressionParser.ParseLambda<DynamicConditionState, bool>(
-                    new ParsingConfig() { AllowNewToEvaluateAnyType = true, },
+                    new ParsingConfig() { AllowNewToEvaluateAnyType = true, ResolveTypesBySimpleName = true },
                     false,
                     this.conditionSource);
                 this.func = expression.Compile();
@@ -141,7 +156,7 @@ namespace AutoHotKeyTrigger.ProfileManager.Conditions.DynamicCondition
             {
                 try
                 {
-                    result = this.func(new DynamicConditionState(Core.States.InGameStateObject));
+                    result = this.func(state.Value);
                     this.lastException = string.Empty;
                 }
                 catch (Exception ex)

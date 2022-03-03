@@ -36,5 +36,17 @@ namespace AutoHotKeyTrigger.ProfileManager.Conditions.DynamicCondition.Interface
         ///     The vitals information
         /// </summary>
         IVitalsInfo Vitals { get; }
+
+        /// <summary>
+        ///     Number of friendly nearby monsters
+        /// </summary>
+        int FriendlyMonsterCount { get; }
+
+        /// <summary>
+        ///     Calculates the number of nearby monsters given a rarity selector
+        /// </summary>
+        /// <param name="rarity">The rarity selector for monster search</param>
+        /// <returns></returns>
+        int MonsterCount(MonsterRarity rarity);
     }
 }
