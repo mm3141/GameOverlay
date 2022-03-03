@@ -94,7 +94,10 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
         /// </summary>
         public bool CanExplode =>
             this.EntityType == EntityTypes.Monster ||
-            this.EntityType == EntityTypes.Useless;
+            this.EntityType == EntityTypes.Useless ||
+            this.EntityType == EntityTypes.Stage1RewardFIT ||
+            this.EntityType == EntityTypes.Stage1FIT ||
+            this.EntityType == EntityTypes.Stage1EChestFIT;
 
         /// <summary>
         ///     Calculate the distance from the other entity.
