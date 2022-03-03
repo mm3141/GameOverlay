@@ -66,21 +66,21 @@
                 rules[i].conditions.Add(new FlaskEffectCondition(i + 1));
             }
 
-            rules[2] = new($"SmallLifeFlask3_disabled");
+            rules[2] = new($"SmallLifeFlask3");
             rules[2].Enabled = false;
             rules[2].Key = ConsoleKey.D3;
             rules[2].conditions.Add(new VitalsCondition(OperatorType.LESS_THAN, VitalType.LIFE_PERCENT, 70));
             rules[2].conditions.Add(new FlaskChargesCondition(OperatorType.BIGGER_THAN, 3, 6));
             rules[2].conditions.Add(new FlaskEffectCondition(3));
 
-            rules[3] = new("SmallManaFlask3_disabled");
+            rules[3] = new("SmallManaFlask3");
             rules[3].Enabled = false;
             rules[3].Key = ConsoleKey.D3;
             rules[3].conditions.Add(new VitalsCondition(OperatorType.LESS_THAN, VitalType.MANA_PERCENT, 20));
             rules[3].conditions.Add(new FlaskChargesCondition(OperatorType.BIGGER_THAN, 3, 5));
             rules[3].conditions.Add(new FlaskEffectCondition(3));
 
-            rules[4] = new($"QuickSilverFlask4_disabled");
+            rules[4] = new($"QuickSilverFlask4");
             rules[4].Enabled = false;
             rules[4].Key = ConsoleKey.D4;
             rules[4].conditions.Add(new AnimationCondition(OperatorType.EQUAL_TO, Animation.Run, 1000));
@@ -88,7 +88,7 @@
             rules[4].conditions.Add(new FlaskEffectCondition(4));
 
             rules[5] = new("SmallManaFlask5");
-            rules[5].Enabled = false;
+            rules[5].Enabled = true;
             rules[5].Key = ConsoleKey.D5;
             rules[5].conditions.Add(new VitalsCondition(OperatorType.LESS_THAN, VitalType.MANA_PERCENT, 20));
             rules[5].conditions.Add(new FlaskChargesCondition(OperatorType.BIGGER_THAN, 5, 5));
@@ -265,6 +265,15 @@
                     ImGui.EndDisabled();
                     ImGui.SameLine();
                     this.conditions[i].Display();
+                    if (this.conditions[i] is not DynamicCondition)
+                    {
+                        ImGui.SameLine();
+                        var evaluationResult = this.conditions[i].Evaluate();
+                        ImGui.TextColored(
+                            evaluationResult ? new Vector4(0, 1, 0, 1) : new Vector4(1, 0, 0, 1),
+                            evaluationResult ? "(true)" : "(false)");
+                    }
+
                     ImGui.PopID();
                 }
 

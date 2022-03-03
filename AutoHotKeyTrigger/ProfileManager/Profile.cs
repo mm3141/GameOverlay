@@ -8,6 +8,7 @@ namespace AutoHotKeyTrigger.ProfileManager
     using System.Collections.Generic;
     using System.Numerics;
     using GameHelper;
+    using GameHelper.Utils;
     using ImGuiNET;
 
     /// <summary>
@@ -28,7 +29,6 @@ namespace AutoHotKeyTrigger.ProfileManager
         /// </summary>
         public void DrawSettings()
         {
-
             if (ImGui.BeginTabBar("Profile Rules", ImGuiTabBarFlags.AutoSelectNewTabs | ImGuiTabBarFlags.Reorderable))
             {
                 if (ImGui.TabItemButton("+", ImGuiTabItemFlags.Leading))
@@ -40,10 +40,20 @@ namespace AutoHotKeyTrigger.ProfileManager
                 {
                     var currRule = this.Rules[i];
                     var shouldNotDelete = true;
+                    if (!currRule.Enabled)
+                    {
+                        ImGui.PushStyleColor(ImGuiCol.Text, ImGuiHelper.Color(255, 75, 0, 255));
+                    }
+
                     var isSelected = ImGui.BeginTabItem(
                         $"{currRule.Name}###Rule{i}",
                         ref shouldNotDelete,
                         ImGuiTabItemFlags.UnsavedDocument);
+
+                    if (!currRule.Enabled)
+                    {
+                        ImGui.PopStyleColor();
+                    }
 
                     if (ImGui.BeginDragDropSource())
                     {
