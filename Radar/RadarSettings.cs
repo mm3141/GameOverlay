@@ -35,11 +35,6 @@ namespace Radar
         public bool DrawWhenNotInHideoutOrTown = true;
 
         /// <summary>
-        /// Hides all the entities that doesn't have life or chest component.
-        /// </summary>
-        public bool HideUseless = true;
-
-        /// <summary>
         /// Hides all the entities that are outside the network bubble.
         /// </summary>
         public bool HideOutsideNetworkBubble = false;

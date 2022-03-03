@@ -164,7 +164,6 @@ namespace Radar
 
             ImGui.Separator();
             ImGui.NewLine();
-            ImGui.Checkbox("Hide Entities without Life/Chest component", ref this.Settings.HideUseless);
             ImGui.Checkbox("Hide Entities outside the network bubble", ref this.Settings.HideOutsideNetworkBubble);
             ImGui.Checkbox("Show Player Names", ref this.Settings.ShowPlayersNames);
             ImGui.InputText("Party Leader Name", ref this.leaderName, 200);
@@ -488,23 +487,14 @@ namespace Radar
                     continue;
                 }
 
-                if (!entity.Value.TryGetComponent<Render>(out var entityRender))
-                {
-                    continue;
-                }
-
-                var ePos = new Vector2(entityRender.GridPosition.X, entityRender.GridPosition.Y);
-                var fpos = Helper.DeltaInWorldToMapDelta(ePos - pPos, entityRender.TerrainHeight - playerRender.TerrainHeight);
                 if (entity.Value.EntityType == EntityTypes.Useless)
                 {
-                    if (!this.Settings.HideUseless)
-                    {
-                        fgDraw.AddCircleFilled(mapCenter + fpos, 5f, ImGuiHelper.Color(255, 0, 255, 255));
-                    }
-
                     continue;
                 }
 
+                entity.Value.TryGetComponent<Render>(out var entityRender);
+                var ePos = new Vector2(entityRender.GridPosition.X, entityRender.GridPosition.Y);
+                var fpos = Helper.DeltaInWorldToMapDelta(ePos - pPos, entityRender.TerrainHeight - playerRender.TerrainHeight);
                 var iconSizeMultiplierVector = Vector2.One * iconSizeMultiplier;
                 switch (entity.Value.EntityType)
                 {
