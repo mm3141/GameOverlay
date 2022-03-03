@@ -12,6 +12,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
     using Coroutine;
     using CoroutineEvents;
     using GameHelper.Cache;
+    using GameHelper.RemoteEnums;
     using GameOffsets.Natives;
     using GameOffsets.Objects.States.InGameState;
     using ImGuiNET;
@@ -285,7 +286,9 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             {
                 if (!kv.Value.IsValid)
                 {
-                    if (this.Player.DistanceFrom(kv.Value) < AreaInstanceConstants.NETWORK_BUBBLE_RADIUS)
+                    if (kv.Value.EntityType == EntityTypes.FriendlyMonster||
+                        (kv.Value.CanExplode &&
+                        this.Player.DistanceFrom(kv.Value) < AreaInstanceConstants.NETWORK_BUBBLE_RADIUS))
                     {
                         // This logic isn't perfect in case something happens to the entity before
                         // we can cache the location of that entity. In that case we will just

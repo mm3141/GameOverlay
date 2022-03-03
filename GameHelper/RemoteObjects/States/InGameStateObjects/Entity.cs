@@ -90,6 +90,13 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
         public EntityTypes EntityType { get; protected set; }
 
         /// <summary>
+        ///     Gets a value indicating whether this entity can explode or not.
+        /// </summary>
+        public bool CanExplode =>
+            this.EntityType == EntityTypes.Monster ||
+            this.EntityType == EntityTypes.Useless;
+
+        /// <summary>
         ///     Calculate the distance from the other entity.
         /// </summary>
         /// <param name="other">Other entity object.</param>
@@ -142,15 +149,6 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             }
 
             return false;
-        }
-
-        /// <summary>
-        ///     Calling this function will make sure entity isn't deleted
-        ///     in the very next frame even if GameHelper consider it invalid.
-        /// </summary>
-        public void ForceKeepEntity()
-        {
-            this.IsValid = true;
         }
 
         /// <summary>

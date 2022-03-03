@@ -148,8 +148,8 @@ namespace AutoHotKeyTrigger
             {
                 return;
             }
-            DynamicCondition.UpdateState();
 
+            DynamicCondition.UpdateState();
             if (this.ShouldExecuteAutoQuit || NativeMethods.IsKeyPressedAndNotTimeout(
                 (int)this.Settings.AutoQuitKey))
             {

@@ -573,9 +573,6 @@ namespace Radar
                         {
                             if (this.Settings.DelveIcons.TryGetValue(iconFinder, out var delveChestIcon))
                             {
-                                // Have to force keep the Delve Chest since GGG reduced
-                                // the network bubble radius for them.
-                                entity.Value.ForceKeepEntity();
                                 if (delveChestIcon.UV0 == Vector2.Zero)
                                 {
                                     var s = ImGui.CalcTextSize(iconFinder) / 2;
