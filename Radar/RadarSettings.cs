@@ -224,8 +224,8 @@ namespace Radar
 
         private void AddDefaultLegionIcons(string iconPathName)
         {
-            this.LegionIcons.TryAdd("Legion Reward Monster", new IconPicker(iconPathName, IconsPngCols, IconsPngRows, 4, 41, 30));
-            this.LegionIcons.TryAdd("Legion Chest", new IconPicker(iconPathName, IconsPngCols, IconsPngRows, 6, 41, 30));
+            this.LegionIcons.TryAdd("Legion Reward Monster/Chest", new IconPicker(iconPathName, IconsPngCols, IconsPngRows, 4, 41, 30));
+            this.LegionIcons.TryAdd("Legion Epic Chest", new IconPicker(iconPathName, IconsPngCols, IconsPngRows, 6, 41, 30));
         }
 
         private void AddDefaultBreachIcons(string iconPathName)

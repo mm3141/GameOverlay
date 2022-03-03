@@ -742,13 +742,13 @@ namespace Radar
                         break;
                     case EntityTypes.Stage0RewardFIT:
                     case EntityTypes.Stage1RewardFIT:
-                    case EntityTypes.Stage0ChestFIT:
-                    case EntityTypes.Stage1ChestFIT:
-                        var monsterChestIcon = this.Settings.LegionIcons["Legion Reward Monster"];
-                        if (entity.Value.EntityType == EntityTypes.Stage0ChestFIT ||
-                            entity.Value.EntityType == EntityTypes.Stage1ChestFIT)
+                    case EntityTypes.Stage0EChestFIT:
+                    case EntityTypes.Stage1EChestFIT:
+                        var monsterChestIcon = this.Settings.LegionIcons["Legion Reward Monster/Chest"];
+                        if (entity.Value.EntityType == EntityTypes.Stage0EChestFIT ||
+                            entity.Value.EntityType == EntityTypes.Stage1EChestFIT)
                         {
-                            monsterChestIcon = this.Settings.LegionIcons["Legion Chest"];
+                            monsterChestIcon = this.Settings.LegionIcons["Legion Epic Chest"];
                         }
 
                         var fitName = entity.Value.Path.Split('/').LastOrDefault();

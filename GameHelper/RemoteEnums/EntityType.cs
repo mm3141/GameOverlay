@@ -111,42 +111,42 @@ namespace GameHelper.RemoteEnums
         UniqueMonster,
 
         /// <summary>
-        ///     Important legion monster when legion isn't opened.
+        ///     Important legion monster or chest when legion isn't opened.
         /// </summary>
         Stage0RewardFIT,
 
         /// <summary>
-        ///     Important legion monster when legion isn't opened.
+        ///     Legion epic chest when legion isn't opened.
         /// </summary>
-        Stage0ChestFIT,
+        Stage0EChestFIT,
 
         /// <summary>
-        ///     Important legion monster when legion isn't opened.
+        ///     Legion Boss when legion isn't opened.
         /// </summary>
         Stage0GeneralFIT,
 
         /// <summary>
-        ///     legion monster when legion isn't opened.
+        ///     Regular legion monster when legion isn't opened.
         /// </summary>
         Stage0FIT,
 
         /// <summary>
-        ///     Important legion monster when legion isn't opened.
+        ///     Important legion monster or chest when legion is opened.
         /// </summary>
         Stage1RewardFIT,
 
         /// <summary>
-        ///     Important legion monster when legion isn't opened.
+        ///     Legion epic chest when legion is opened.
         /// </summary>
-        Stage1ChestFIT,
+        Stage1EChestFIT,
 
         /// <summary>
-        ///     Important legion monster when legion isn't opened.
+        ///     Legion boss when legion is opened.
         /// </summary>
         Stage1GeneralFIT,
 
         /// <summary>
-        ///     Legion monster after legion is opened.
+        ///     Regular legion monster after legion is opened.
         /// </summary>
         Stage1FIT,
 

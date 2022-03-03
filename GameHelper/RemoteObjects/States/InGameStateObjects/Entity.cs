@@ -415,7 +415,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
                     if (isFrozenInTime && isHidden)
                     {
                         if (this.EntityType != EntityTypes.Stage0RewardFIT &&
-                            this.EntityType != EntityTypes.Stage0ChestFIT &&
+                            this.EntityType != EntityTypes.Stage0EChestFIT &&
                             this.EntityType != EntityTypes.Stage0GeneralFIT &&
                             this.EntityType != EntityTypes.Stage0FIT) // New FITs only.
                         {
@@ -423,9 +423,13 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
                             {
                                 this.EntityType = EntityTypes.Stage0RewardFIT;
                             }
+                            else if (this.Path.Contains("ChestEpic"))
+                            {
+                                this.EntityType = EntityTypes.Stage0EChestFIT;
+                            }
                             else if (this.Path.Contains("Chest"))
                             {
-                                this.EntityType = EntityTypes.Stage0ChestFIT;
+                                this.EntityType = EntityTypes.Stage0RewardFIT;
                             }
                             else if (OMP.Rarity == Rarity.Unique)
                             {
@@ -442,7 +446,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
                     else if (isFrozenInTime)
                     {
                         if (this.EntityType != EntityTypes.Stage1RewardFIT &&
-                            this.EntityType != EntityTypes.Stage1ChestFIT &&
+                            this.EntityType != EntityTypes.Stage1EChestFIT &&
                             this.EntityType != EntityTypes.Stage1GeneralFIT &&
                             this.EntityType != EntityTypes.Stage1FIT) // New FITs only.
                         {
@@ -450,9 +454,13 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
                             {
                                 this.EntityType = EntityTypes.Stage1RewardFIT;
                             }
+                            else if (this.Path.Contains("ChestEpic"))
+                            {
+                                this.EntityType = EntityTypes.Stage1EChestFIT;
+                            }
                             else if (this.Path.Contains("Chest"))
                             {
-                                this.EntityType = EntityTypes.Stage1ChestFIT;
+                                this.EntityType = EntityTypes.Stage1RewardFIT;
                             }
                             else if (OMP.Rarity == Rarity.Unique)
                             {
@@ -471,11 +479,11 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
                         switch (this.EntityType)
                         {
                             case EntityTypes.Stage0GeneralFIT:
-                            case EntityTypes.Stage0ChestFIT:
+                            case EntityTypes.Stage0EChestFIT:
                             case EntityTypes.Stage0RewardFIT:
                             case EntityTypes.Stage0FIT:
                             case EntityTypes.Stage1GeneralFIT:
-                            case EntityTypes.Stage1ChestFIT:
+                            case EntityTypes.Stage1EChestFIT:
                             case EntityTypes.Stage1RewardFIT:
                             case EntityTypes.Stage1FIT:
                             case EntityTypes.Stage1DeadFIT:
