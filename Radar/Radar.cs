@@ -689,49 +689,17 @@ namespace Radar
                             friendlyIcon.UV0,
                             friendlyIcon.UV1);
                         break;
-                    case EntityTypes.NormalMonster:
-                        var monsterIcon = this.RarityToIconMapping(Rarity.Normal);
-                        iconSizeMultiplierVector *= monsterIcon.IconScale;
-                        fgDraw.AddImage(
-                            monsterIcon.TexturePtr,
-                            mapCenter + fpos - iconSizeMultiplierVector,
-                            mapCenter + fpos + iconSizeMultiplierVector,
-                            monsterIcon.UV0,
-                            monsterIcon.UV1);
-                        break;
-                    case EntityTypes.MagicMonster:
-                        monsterIcon = this.RarityToIconMapping(Rarity.Magic);
-                        iconSizeMultiplierVector *= monsterIcon.IconScale;
-                        fgDraw.AddImage(
-                            monsterIcon.TexturePtr,
-                            mapCenter + fpos - iconSizeMultiplierVector,
-                            mapCenter + fpos + iconSizeMultiplierVector,
-                            monsterIcon.UV0,
-                            monsterIcon.UV1);
-                        break;
-                    case EntityTypes.RareMonster:
-                        monsterIcon = this.RarityToIconMapping(Rarity.Rare);
-                        iconSizeMultiplierVector *= monsterIcon.IconScale;
-                        fgDraw.AddImage(
-                            monsterIcon.TexturePtr,
-                            mapCenter + fpos - iconSizeMultiplierVector,
-                            mapCenter + fpos + iconSizeMultiplierVector,
-                            monsterIcon.UV0,
-                            monsterIcon.UV1);
-                        break;
-                    case EntityTypes.UniqueMonster:
-                        monsterIcon = this.RarityToIconMapping(Rarity.Unique);
-                        iconSizeMultiplierVector *= monsterIcon.IconScale;
-                        fgDraw.AddImage(
-                            monsterIcon.TexturePtr,
-                            mapCenter + fpos - iconSizeMultiplierVector,
-                            mapCenter + fpos + iconSizeMultiplierVector,
-                            monsterIcon.UV0,
-                            monsterIcon.UV1);
-                        break;
-                    case EntityTypes.Stage0GeneralFIT:
-                    case EntityTypes.Stage1GeneralFIT:
-                        monsterIcon = this.RarityToIconMapping(Rarity.Unique);
+                    case EntityTypes.Stage0FIT:
+                    case EntityTypes.Stage1FIT:
+                    case EntityTypes.Monster:
+                        entity.Value.TryGetComponent<ObjectMagicProperties>(out var omp);
+                        if (entity.Value.EntityType == EntityTypes.Stage0FIT &&
+                            omp.Rarity != Rarity.Unique)
+                        {
+                            break;
+                        }
+
+                        var monsterIcon = this.RarityToIconMapping(omp.Rarity);
                         iconSizeMultiplierVector *= monsterIcon.IconScale;
                         fgDraw.AddImage(
                             monsterIcon.TexturePtr,
@@ -751,9 +719,9 @@ namespace Radar
                             monsterChestIcon = this.Settings.LegionIcons["Legion Epic Chest"];
                         }
 
-                        var fitName = entity.Value.Path.Split('/').LastOrDefault();
                         if (monsterChestIcon.UV0 == Vector2.Zero)
                         {
+                            var fitName = entity.Value.Path.Split('/').LastOrDefault();
                             var s = ImGui.CalcTextSize(fitName) / 2;
                             fgDraw.AddRectFilled(mapCenter + fpos - s, mapCenter + fpos + s,
                                 ImGuiHelper.Color(0, 0, 0, 255));
@@ -770,17 +738,7 @@ namespace Radar
                                 monsterChestIcon.UV0,
                                 monsterChestIcon.UV1);
                         }
-                        break;
-                    case EntityTypes.Stage1FIT:
-                        entity.Value.TryGetComponent<ObjectMagicProperties>(out var omp);
-                        monsterIcon = this.RarityToIconMapping(omp.Rarity);
-                        iconSizeMultiplierVector *= monsterIcon.IconScale;
-                        fgDraw.AddImage(
-                            monsterIcon.TexturePtr,
-                            mapCenter + fpos - iconSizeMultiplierVector,
-                            mapCenter + fpos + iconSizeMultiplierVector,
-                            monsterIcon.UV0,
-                            monsterIcon.UV1);
+
                         break;
                     case EntityTypes.DeliriumBomb:
                         var dHiddenMIcon = this.Settings.DeliriumIcons["Delirium Bomb"];

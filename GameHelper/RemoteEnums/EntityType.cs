@@ -91,24 +91,9 @@ namespace GameHelper.RemoteEnums
         FriendlyMonster,
 
         /// <summary>
-        ///     Contains life and ObjectMagicProperties component and is of normal rarity.
+        ///     Contains life and ObjectMagicProperties component.
         /// </summary>
-        NormalMonster,
-
-        /// <summary>
-        ///     Contains life and ObjectMagicProperties component and is of magic rarity.
-        /// </summary>
-        MagicMonster,
-
-        /// <summary>
-        ///     Contains life and ObjectMagicProperties component and is of rare rarity.
-        /// </summary>
-        RareMonster,
-
-        /// <summary>
-        ///     Contains life and ObjectMagicProperties component and is of unique rarity.
-        /// </summary>
-        UniqueMonster,
+        Monster,
 
         /// <summary>
         ///     Important legion monster or chest when legion isn't opened.
@@ -119,11 +104,6 @@ namespace GameHelper.RemoteEnums
         ///     Legion epic chest when legion isn't opened.
         /// </summary>
         Stage0EChestFIT,
-
-        /// <summary>
-        ///     Legion Boss when legion isn't opened.
-        /// </summary>
-        Stage0GeneralFIT,
 
         /// <summary>
         ///     Regular legion monster when legion isn't opened.
@@ -139,11 +119,6 @@ namespace GameHelper.RemoteEnums
         ///     Legion epic chest when legion is opened.
         /// </summary>
         Stage1EChestFIT,
-
-        /// <summary>
-        ///     Legion boss when legion is opened.
-        /// </summary>
-        Stage1GeneralFIT,
 
         /// <summary>
         ///     Regular legion monster after legion is opened.

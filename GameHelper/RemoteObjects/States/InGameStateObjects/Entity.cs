@@ -376,15 +376,15 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
                     return;
                 }
 
-                if (posComp.IsFriendly)
-                {
-                    this.EntityType = EntityTypes.FriendlyMonster;
-                    return;
-                }
-
                 if (!this.TryGetComponent<ObjectMagicProperties>(out var OMP))
                 {
                     this.EntityType = EntityTypes.Useless;
+                    return;
+                }
+
+                if (posComp.IsFriendly)
+                {
+                    this.EntityType = EntityTypes.FriendlyMonster;
                     return;
                 }
 
@@ -416,7 +416,6 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
                     {
                         if (this.EntityType != EntityTypes.Stage0RewardFIT &&
                             this.EntityType != EntityTypes.Stage0EChestFIT &&
-                            this.EntityType != EntityTypes.Stage0GeneralFIT &&
                             this.EntityType != EntityTypes.Stage0FIT) // New FITs only.
                         {
                             if (buffComp.StatusEffects.ContainsKey("legion_reward_display"))
@@ -431,10 +430,6 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
                             {
                                 this.EntityType = EntityTypes.Stage0RewardFIT;
                             }
-                            else if (OMP.Rarity == Rarity.Unique)
-                            {
-                                this.EntityType = EntityTypes.Stage0GeneralFIT;
-                            }
                             else
                             {
                                 this.EntityType = EntityTypes.Stage0FIT;
@@ -447,7 +442,6 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
                     {
                         if (this.EntityType != EntityTypes.Stage1RewardFIT &&
                             this.EntityType != EntityTypes.Stage1EChestFIT &&
-                            this.EntityType != EntityTypes.Stage1GeneralFIT &&
                             this.EntityType != EntityTypes.Stage1FIT) // New FITs only.
                         {
                             if (buffComp.StatusEffects.ContainsKey("legion_reward_display"))
@@ -462,10 +456,6 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
                             {
                                 this.EntityType = EntityTypes.Stage1RewardFIT;
                             }
-                            else if (OMP.Rarity == Rarity.Unique)
-                            {
-                                this.EntityType = EntityTypes.Stage1GeneralFIT;
-                            }
                             else
                             {
                                 this.EntityType = EntityTypes.Stage1FIT;
@@ -478,11 +468,9 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
                     {
                         switch (this.EntityType)
                         {
-                            case EntityTypes.Stage0GeneralFIT:
                             case EntityTypes.Stage0EChestFIT:
                             case EntityTypes.Stage0RewardFIT:
                             case EntityTypes.Stage0FIT:
-                            case EntityTypes.Stage1GeneralFIT:
                             case EntityTypes.Stage1EChestFIT:
                             case EntityTypes.Stage1RewardFIT:
                             case EntityTypes.Stage1FIT:
@@ -520,21 +508,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
                     }
                 }
 
-                switch (OMP.Rarity)
-                {
-                    case Rarity.Normal:
-                        this.EntityType = EntityTypes.NormalMonster;
-                        break;
-                    case Rarity.Magic:
-                        this.EntityType = EntityTypes.MagicMonster;
-                        break;
-                    case Rarity.Rare:
-                        this.EntityType = EntityTypes.RareMonster;
-                        break;
-                    case Rarity.Unique:
-                        this.EntityType = EntityTypes.UniqueMonster;
-                        break;
-                }
+                this.EntityType = EntityTypes.Monster;
             }
             else
             {
