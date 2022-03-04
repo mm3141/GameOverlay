@@ -43,25 +43,28 @@ namespace AutoHotKeyTrigger
         public override void DrawSettings()
         {
             ImGui.PushTextWrapPos(ImGui.GetContentRegionMax().X);
-            ImGui.TextColored(this.impTextColor, "Do not trust AutoHotKeyTrigger Settings.txt file from unknown source. " +
-                              "Bad profiles may get your account banned. Also, they can contain malicious code" +
-                              "that can be bad for you.");
+            ImGui.TextColored(this.impTextColor, "Do not trust Settings.txt files for Auto Hokey Trigger from sources you have not personally verified. " + 
+                              "They may contain malicious content that can compromise your computer. " +
+                              "Using profiles with incorrectly configured rules may also lead to you being kicked from the server, " +
+                              "or your account being banned as a result of preforming to many actions repeatedly.") ;
             ImGui.NewLine();
-            ImGui.TextColored(this.impTextColor, "All the flask rules in all the profiles must have " +
-                              "FLASK_EFFECT and FLASK_CHARGES condition, otherwise Flask Manager will spam " +
-                              "the flask and you might get kicked or banned.");
+            ImGui.TextColored(this.impTextColor, "Again, all profiles/rules created to use a specified flask(s) should have at a minimum " +
+                              "the FLASK_EFFECT and an appropriate number of FLASK_CHARGES defined as part of the use condition of a given profile rule. " +
+                              "Failing to to include these two conditions as part of a rule will likely result in Auto Hotkey Trigger spamming the flask(s), " + 
+                              "resulting in a possible kick or ban from the game servers because of sending to many actions to the server. " +
+                              "You have been warrned, use common sense when creating profiles/rulse with this tool.");
             ImGui.NewLine();
             ImGui.PopTextWrapPos();
             ImGui.Checkbox("Debug Mode", ref this.Settings.DebugMode);
-            ImGuiHelper.ToolTip("Debug mode will help you figure out why AutoHotKeyTrigger is not doing the action. " +
-                "It will also help you figure out if AutoHotKeyTrigger is spamming the action or not. " +
-                "So create all new profiles with debug mode turned on.");
+            ImGuiHelper.ToolTip("The debug mode may prove to be a helpful tool in troubleshooting Auto HotKey Trigger profile rules that are not preforming as expected. " +
+                                "It can also be used to verify if AutoHotKeyTrigger is spamming the profile rule action or not based on the included conditions of a given profile rule. " +
+                                "It is highly suggested to create and test all new profiles/rules with the debug mode turned on to insure that all rules are preforming as expected.");
             ImGui.NewLine();
-            ImGuiHelper.NonContinuousEnumComboBox("Dump player Status Effects",
+            ImGuiHelper.NonContinuousEnumComboBox("Dump Player Status Effects",
                 ref this.Settings.DumpStatusEffectOnMe);
-            ImGuiHelper.ToolTip($"This hotkey will dump the player buff, debuff in GameHelper -> Plugins -> " +
-                $"AutoHotKeyTrigger folder. Use this hotkey if AutoHotKeyTrigger plugin fails to detect " +
-                $" the bleed, corruption, poison, freeze etc on you and it's currently active.");
+            ImGuiHelper.ToolTip($"This hotkey will dump the current active player's buff(s), debuff(s) into a text file in the GameHelper -> Plugins -> " +
+                                $"AutoHotKeyTrigger folder. Use this hotkey if the AutoHotKeyTrigger plugin fails to detect for example: " +
+                                $"bleeds, corrupting blood, poison, freeze, ignites or other de(buffs) currently active on the character.");
 
             ImGui.NewLine();
             ImGui.Checkbox("Should Run In Hideout", ref this.Settings.ShouldRunInHideout);
