@@ -97,7 +97,8 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             this.EntityType == EntityTypes.Useless ||
             this.EntityType == EntityTypes.Stage1RewardFIT ||
             this.EntityType == EntityTypes.Stage1FIT ||
-            this.EntityType == EntityTypes.Stage1EChestFIT;
+            this.EntityType == EntityTypes.Stage1EChestFIT ||
+            this.EntityType == EntityTypes.BlightChest;
 
         /// <summary>
         ///     Calculate the distance from the other entity.
@@ -308,6 +309,10 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
                     else if (this.Path.StartsWith("Metadata/Chests/Breach"))
                     {
                         this.EntityType = EntityTypes.BreachChest;
+                    }
+                    else if (this.Path.StartsWith("Metadata/Chests/Blight"))
+                    {
+                        this.EntityType = EntityTypes.BlightChest;
                     }
                     else if (chestComp.IsStrongbox)
                     {
