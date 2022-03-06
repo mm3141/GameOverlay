@@ -47,7 +47,7 @@ namespace Radar
         private string currentAreaName = string.Empty;
         private string tmpTileName = string.Empty;
         private string tmpDisplayName = string.Empty;
-        private int tmpExpectedClusters = 1;
+        private int tmpTgtSelectionCounter = 0;
         private string leaderName = string.Empty;
 
         private double miniMapDiagonalLength = 0x00;
@@ -56,8 +56,6 @@ namespace Radar
 
         private IntPtr walkableMapTexture = IntPtr.Zero;
         private Vector2 walkableMapDimension = Vector2.Zero;
-
-        private Dictionary<string, TgtClusters> currentAreaImportantTiles = new();
 
         private string SettingPathname => Path.Join(this.DllDirectory, "config", "settings.txt");
 
@@ -314,8 +312,8 @@ namespace Radar
             if (File.Exists(this.ImportantTgtPathName))
             {
                 var tgtfiles = File.ReadAllText(this.ImportantTgtPathName);
-                this.Settings.ImportantTgts = JsonConvert.DeserializeObject<
-                    Dictionary<string, Dictionary<string, TgtClusters>>>(tgtfiles);
+                this.Settings.ImportantTgts = JsonConvert.DeserializeObject
+                    <Dictionary<string, Dictionary<string, string>>>(tgtfiles);
             }
 
             this.Settings.AddDefaultIcons(this.DllDirectory);
@@ -413,48 +411,52 @@ namespace Radar
             var pPos = new Vector2(playerRender.GridPosition.X, playerRender.GridPosition.Y);
             if (this.Settings.ShowAllTgtNames)
             {
+                var counter = 0;
+                var pNameSizeH = ImGui.CalcTextSize(counter.ToString()) / 2;
                 foreach (var tgtKV in currentAreaInstance.TgtTilesLocations)
                 {
-                    var pNameSizeH = ImGui.CalcTextSize(tgtKV.Key) / 2;
                     for (var i = 0; i < tgtKV.Value.Count; i++)
                     {
                         var val = tgtKV.Value[i];
-                        var ePos = new Vector2(val.X, val.Y);
-                        var fpos = Helper.DeltaInWorldToMapDelta(
-                            ePos - pPos,
-                            -playerRender.TerrainHeight - currentAreaInstance.GridHeightData[val.Y][val.X]);
-                        if (this.Settings.TgtNameBackground)
+                        if (val.Y < currentAreaInstance.GridHeightData.Length &&
+                            val.X < currentAreaInstance.GridHeightData[0].Length)
                         {
-                            fgDraw.AddRectFilled(mapCenter + fpos - pNameSizeH, mapCenter + fpos + pNameSizeH,
-                                ImGuiHelper.Color(0, 0, 0, 200));
+                            var fpos = Helper.DeltaInWorldToMapDelta(
+                                val - pPos,
+                                -playerRender.TerrainHeight -
+                                currentAreaInstance.GridHeightData[(int)val.Y][(int)val.X]);
+                            fgDraw.AddText(
+                                ImGui.GetFont(),
+                                ImGui.GetFontSize(),
+                                mapCenter + fpos - pNameSizeH,
+                                col,
+                                $"{counter}");
                         }
-
-                        fgDraw.AddText(ImGui.GetFont(), ImGui.GetFontSize(), mapCenter + fpos - pNameSizeH, col,
-                            tgtKV.Key);
                     }
+                    counter++;
                 }
             }
-            else if (this.Settings.ShowImportantTgtNames)
+            else if (this.Settings.ShowImportantTgtNames &&
+                this.Settings.ImportantTgts.ContainsKey(this.currentAreaName))
             {
-                foreach (var tile in this.currentAreaImportantTiles)
+                foreach (var tile in this.Settings.ImportantTgts[this.currentAreaName])
                 {
-                    if (!tile.Value.IsValid())
+                    if (!currentAreaInstance.TgtTilesLocations.ContainsKey(tile.Key))
                     {
                         continue;
                     }
 
-                    for (var i = 0; i < tile.Value.ClustersCount; i++)
+                    for (var i = 0; i < currentAreaInstance.TgtTilesLocations[tile.Key].Count; i++)
                     {
                         float height = 0;
-                        var loc = tile.Value.Clusters[i];
+                        var loc = currentAreaInstance.TgtTilesLocations[tile.Key][i];
                         if (loc.X < currentAreaInstance.GridHeightData[0].Length &&
                             loc.Y < currentAreaInstance.GridHeightData.Length)
                         {
                             height = currentAreaInstance.GridHeightData[(int)loc.Y][(int)loc.X];
                         }
 
-                        var display = tile.Value.Display;
-                        var pNameSizeH = ImGui.CalcTextSize(display) / 2;
+                        var pNameSizeH = ImGui.CalcTextSize(tile.Value) / 2;
                         var fpos = Helper.DeltaInWorldToMapDelta(
                             loc - pPos, -playerRender.TerrainHeight + height);
                         if (this.Settings.TgtNameBackground)
@@ -463,8 +465,12 @@ namespace Radar
                                 ImGuiHelper.Color(0, 0, 0, 200));
                         }
 
-                        fgDraw.AddText(ImGui.GetFont(), ImGui.GetFontSize(), mapCenter + fpos - pNameSizeH, col,
-                            display);
+                        fgDraw.AddText(
+                            ImGui.GetFont(),
+                            ImGui.GetFontSize(),
+                            mapCenter + fpos - pNameSizeH,
+                            col,
+                            tile.Value);
                     }
                 }
             }
@@ -760,7 +766,6 @@ namespace Radar
                 this.CleanUpRadarPluginCaches();
                 this.currentAreaName = Core.States.InGameStateObject.CurrentWorldInstance.AreaDetails.Id;
                 this.GenerateMapTexture();
-                this.ClusterImportantTgtName();
             }
         }
 
@@ -886,73 +891,6 @@ namespace Radar
             this.walkableMapDimension = new Vector2(w, h);
         }
 
-        private void ClusterImportantTgtName()
-        {
-            if (!this.Settings.ImportantTgts.ContainsKey(this.currentAreaName))
-            {
-                this.currentAreaImportantTiles = new Dictionary<string, TgtClusters>();
-                return;
-            }
-
-            var currentArea = Core.States.InGameStateObject.CurrentAreaInstance;
-            this.currentAreaImportantTiles = this.Settings.ImportantTgts[this.currentAreaName];
-            Parallel.ForEach(this.currentAreaImportantTiles, (kv) =>
-            {
-                if (!currentArea.TgtTilesLocations.ContainsKey(kv.Key))
-                {
-#if DEBUG
-                    Console.WriteLine($"Couldn't find tile name {kv.Key} in area {this.currentAreaName}." +
-                                      " Please delete/fix Radar plugin config file.");
-#endif
-                    kv.Value.MakeInvalid();
-                }
-                else
-                {
-                    kv.Value.MakeValid();
-                    if (kv.Value.ClustersCount == currentArea.TgtTilesLocations[kv.Key].Count)
-                    {
-                        for (var i = 0; i < kv.Value.ClustersCount; i++)
-                        {
-                            kv.Value.Clusters[i].X = currentArea.TgtTilesLocations[kv.Key][i].X;
-                            kv.Value.Clusters[i].Y = currentArea.TgtTilesLocations[kv.Key][i].Y;
-                        }
-                    }
-                    else
-                    {
-                        var tgttile = currentArea.TgtTilesLocations[kv.Key];
-                        var rawData = new double[tgttile.Count][];
-                        var result = new double[kv.Value.ClustersCount][];
-                        for (var i = 0; i < kv.Value.ClustersCount; i++)
-                        {
-                            result[i] = new double[3] { 0, 0, 0 }; // x-sum, y-sum, total-count.
-                        }
-
-                        for (var i = 0; i < tgttile.Count; i++)
-                        {
-                            rawData[i] = new double[2];
-                            rawData[i][0] = tgttile[i].X;
-                            rawData[i][1] = tgttile[i].Y;
-                        }
-
-                        var cluster = KMean.Cluster(rawData, kv.Value.ClustersCount);
-                        for (var i = 0; i < tgttile.Count; i++)
-                        {
-                            var result_index = cluster[i];
-                            result[result_index][0] += rawData[i][0];
-                            result[result_index][1] += rawData[i][1];
-                            result[result_index][2] += 1;
-                        }
-
-                        for (var i = 0; i < result.Length; i++)
-                        {
-                            kv.Value.Clusters[i].X = (float)(result[i][0] / result[i][2]);
-                            kv.Value.Clusters[i].Y = (float)(result[i][1] / result[i][2]);
-                        }
-                    }
-                }
-            });
-        }
-
         private IconPicker RarityToIconMapping(Rarity rarity)
         {
             return rarity switch
@@ -984,23 +922,20 @@ namespace Radar
         {
             var tgttilesInArea = Core.States.InGameStateObject.CurrentAreaInstance.TgtTilesLocations;
             ImGui.Text("Leave display name empty if you want to use tile name as display name.");
-            ImGui.PushItemWidth(ImGui.GetContentRegionAvail().X / 1.3f);
             ImGui.InputText("Area Name", ref this.currentAreaName, 200, ImGuiInputTextFlags.ReadOnly);
+            if (ImGui.InputInt("Tile Index###tgtSelectorCounter", ref this.tmpTgtSelectionCounter) &&
+                this.tmpTgtSelectionCounter < tgttilesInArea.Keys.Count)
+            {
+                this.tmpTileName = tgttilesInArea.Keys.ElementAt(this.tmpTgtSelectionCounter);
+            }
+
             ImGuiHelper.IEnumerableComboBox("Tile Name", tgttilesInArea.Keys, ref this.tmpTileName);
             ImGui.InputText("Display Name", ref this.tmpDisplayName, 200);
-            ImGui.Text("Set expected tile count to zero to show all tiles of that name.");
-            ImGui.DragInt("Expected Tile Count", ref this.tmpExpectedClusters, 0.01f, 0, 10);
-            ImGui.PopItemWidth();
             if (ImGui.Button("Add Tile Name"))
             {
                 if (!string.IsNullOrEmpty(this.currentAreaName) &&
                     !string.IsNullOrEmpty(this.tmpTileName))
                 {
-                    if (this.tmpExpectedClusters == 0)
-                    {
-                        this.tmpExpectedClusters = tgttilesInArea[this.tmpTileName].Count;
-                    }
-
                     if (string.IsNullOrEmpty(this.tmpDisplayName))
                     {
                         this.tmpDisplayName = this.tmpTileName;
@@ -1008,19 +943,14 @@ namespace Radar
 
                     if (!this.Settings.ImportantTgts.ContainsKey(this.currentAreaName))
                     {
-                        this.Settings.ImportantTgts[this.currentAreaName] = new Dictionary<string, TgtClusters>();
+                        this.Settings.ImportantTgts[this.currentAreaName] = new();
                     }
 
-                    this.Settings.ImportantTgts[this.currentAreaName][this.tmpTileName] = new TgtClusters()
-                    {
-                        Display = this.tmpDisplayName,
-                        ClustersCount = this.tmpExpectedClusters,
-                        Clusters = new Vector2[this.tmpExpectedClusters],
-                    };
+                    this.Settings.ImportantTgts[this.currentAreaName]
+                        [this.tmpTileName] = this.tmpDisplayName;
 
                     this.tmpTileName = string.Empty;
                     this.tmpDisplayName = string.Empty;
-                    this.tmpExpectedClusters = 1;
                 }
             }
         }
@@ -1039,8 +969,7 @@ namespace Radar
                         }
 
                         ImGui.SameLine();
-                        ImGui.Text(
-                            $"Tile Name: {tgt.Key}, Expected Clusters: {tgt.Value.ClustersCount}, Display: {tgt.Value.Display}");
+                        ImGui.Text($"Tile Path: {tgt.Key}, Display: {tgt.Value}");
                     }
                 }
 

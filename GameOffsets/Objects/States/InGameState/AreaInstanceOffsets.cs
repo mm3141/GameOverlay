@@ -127,8 +127,10 @@ namespace GameOffsets.Objects.States.InGameState
         public StdVector EntitiesList;
         public IntPtr PAD_0x28;
         public short TileHeight;
-        public ushort PAD_0x32;
-        public ushort PAD_0x34;
+        public byte PAD_0x32;
+        public byte PAD_0x33;
+        public byte tileIdX;
+        public byte tileIdY;
         public byte RotationSelector;
         public byte PAD_0x37;
         public static int TileToGridConversion = 0x17; // 23
@@ -141,16 +143,22 @@ namespace GameOffsets.Objects.States.InGameState
         public StdVector SubTileHeight; // tile has 23x23 subtiles.
     }
 
-    [StructLayout(LayoutKind.Explicit, Pack = 1)]
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct TgtFileStruct
     {
-        [FieldOffset(0x08)] public StdWString TgtPath;
-        [FieldOffset(0x30)] public IntPtr TgtDetailPtr; // TgtDetailStruct
+        public IntPtr Vtable;
+        public StdWString TgtPath;
+        //public int Unknown0;
+        //public int Unknown1;
+        //public IntPtr TgtDetailPtr; // TgtDetailStruct
+        //public int Unknown2;
+        //public int Unknown3;
+        //public int Unknown4;
     }
 
-    [StructLayout(LayoutKind.Explicit, Pack = 1)]
-    public struct TgtDetailStruct
-    {
-        [FieldOffset(0x00)] public StdWString name;
-    }
+    //[StructLayout(LayoutKind.Explicit, Pack = 1)]
+    //public struct TgtDetailStruct
+    //{
+    //    [FieldOffset(0x00)] public StdWString name;
+    //}
 }

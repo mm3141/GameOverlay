@@ -11,7 +11,6 @@ namespace Radar
     using ImGuiNET;
     using Newtonsoft.Json;
     using GameHelper.Utils;
-    using System;
 
     /// <summary>
     /// <see cref="Radar"/> plugin settings class.
@@ -109,7 +108,7 @@ namespace Radar
         /// Gets the Tgts and their expected clusters per area/zone/map.
         /// </summary>
         [JsonIgnore]
-        public Dictionary<string, Dictionary<string, TgtClusters>> ImportantTgts = new();
+        public Dictionary<string, Dictionary<string, string>> ImportantTgts = new();
 
         /// <summary>
         /// Icons to display on the map. Base game includes normal chests, strongboxes, monsters etc.
