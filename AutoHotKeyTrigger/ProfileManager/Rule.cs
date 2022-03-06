@@ -112,7 +112,12 @@
         {
             ImGui.Checkbox("Enable", ref this.Enabled);
             ImGui.InputText("Name", ref this.Name, 20);
-            ImGuiHelper.NonContinuousEnumComboBox("Key", ref this.Key);
+            var tmpKey = (VirtualKeys)this.Key;
+            if (ImGuiHelper.NonContinuousEnumComboBox("Key", ref tmpKey))
+            {
+                this.Key = (ConsoleKey)tmpKey;
+            }
+
             this.DrawCooldownWidget();
             this.DrawAddNewCondition();
             this.DrawExistingConditions();
