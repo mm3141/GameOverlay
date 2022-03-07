@@ -197,7 +197,7 @@ namespace AutoHotKeyTrigger.ProfileManager
         
         NumAdd = 0x6B,
         
-        NumSubtract = 0x6C,
+        Separator = 0x6C,
         
         NumSubtract = 0x6D,
         
