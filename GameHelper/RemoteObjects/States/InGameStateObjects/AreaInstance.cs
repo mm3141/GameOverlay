@@ -355,7 +355,15 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
                         return localstate;
                     }
 
-                    tgtName += $"x:{tile.tileIdX}-y:{tile.tileIdY}";
+                    if (tile.RotationSelector % 2 == 0)
+                    {
+                        tgtName += $"x:{tile.tileIdX}-y:{tile.tileIdY}";
+                    }
+                    else
+                    {
+                        tgtName += $"x:{tile.tileIdY}-y:{tile.tileIdX}";
+                    }
+
                     var loc = new Vector2
                     {
                         Y = (tileNumber / this.TerrainMetadata.TotalTiles.X) * TileStructure.TileToGridConversion,
