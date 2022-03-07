@@ -67,8 +67,8 @@ namespace GameHelper.Utils
             {
                 if (!NativeWrapper.ReadProcessMemory(this.handle, address, ref result))
                 {
-                    throw new Exception("Failed To Read the Memory" +
-                                        $" due to Error Number: 0x{NativeWrapper.LastError:X}");
+                    throw new Exception("Failed To Read the Memory (T)" +
+                                        $" due to Error Number: 0x{NativeWrapper.LastError:X} on handle {this.handle}");
                 }
 
                 return result;
@@ -122,8 +122,8 @@ namespace GameHelper.Utils
                 if (!NativeWrapper.ReadProcessMemoryArray(
                     this.handle, address, buffer, out var numBytesRead))
                 {
-                    throw new Exception("Failed To Read the Memory" +
-                                        $" due to Error Number: 0x{NativeWrapper.LastError:X}");
+                    throw new Exception("Failed To Read the Memory (array)" +
+                                        $" due to Error Number: 0x{NativeWrapper.LastError:X} on handle {this.handle}");
                 }
 
                 if (numBytesRead.ToInt32() < nsize)
