@@ -409,30 +409,45 @@ namespace Radar
             }
 
             var pPos = new Vector2(playerRender.GridPosition.X, playerRender.GridPosition.Y);
+
+            void drawString(string text, Vector2 location, Vector2 stringImGuiSize, bool drawBackground)
+            {
+                float height = 0;
+                if (location.X < currentAreaInstance.GridHeightData[0].Length &&
+                    location.Y < currentAreaInstance.GridHeightData.Length)
+                {
+                    height = currentAreaInstance.GridHeightData[(int)location.Y][(int)location.X];
+                }
+
+                var fpos = Helper.DeltaInWorldToMapDelta(
+                    location - pPos, -playerRender.TerrainHeight + height);
+                if (drawBackground)
+                {
+                    fgDraw.AddRectFilled(
+                        mapCenter + fpos - stringImGuiSize,
+                        mapCenter + fpos + stringImGuiSize,
+                        ImGuiHelper.Color(0, 0, 0, 200));
+                }
+
+                fgDraw.AddText(
+                    ImGui.GetFont(),
+                    ImGui.GetFontSize(),
+                    mapCenter + fpos - stringImGuiSize,
+                    col,
+                    text);
+            }
+
             if (this.Settings.ShowAllTgtNames)
             {
                 var counter = 0;
-                var pNameSizeH = ImGui.CalcTextSize(counter.ToString()) / 2;
                 foreach (var tgtKV in currentAreaInstance.TgtTilesLocations)
                 {
+                    var tgtKImGuiSize = ImGui.CalcTextSize(counter.ToString()) / 2;
                     for (var i = 0; i < tgtKV.Value.Count; i++)
                     {
-                        var val = tgtKV.Value[i];
-                        if (val.Y < currentAreaInstance.GridHeightData.Length &&
-                            val.X < currentAreaInstance.GridHeightData[0].Length)
-                        {
-                            var fpos = Helper.DeltaInWorldToMapDelta(
-                                val - pPos,
-                                -playerRender.TerrainHeight -
-                                currentAreaInstance.GridHeightData[(int)val.Y][(int)val.X]);
-                            fgDraw.AddText(
-                                ImGui.GetFont(),
-                                ImGui.GetFontSize(),
-                                mapCenter + fpos - pNameSizeH,
-                                col,
-                                $"{counter}");
-                        }
+                        drawString(counter.ToString(), tgtKV.Value[i], tgtKImGuiSize, false);
                     }
+
                     counter++;
                 }
             }
@@ -441,36 +456,14 @@ namespace Radar
             {
                 foreach (var tile in this.Settings.ImportantTgts[this.currentAreaName])
                 {
-                    if (!currentAreaInstance.TgtTilesLocations.ContainsKey(tile.Key))
+                    if (currentAreaInstance.TgtTilesLocations.ContainsKey(tile.Key))
                     {
-                        continue;
-                    }
-
-                    for (var i = 0; i < currentAreaInstance.TgtTilesLocations[tile.Key].Count; i++)
-                    {
-                        float height = 0;
-                        var loc = currentAreaInstance.TgtTilesLocations[tile.Key][i];
-                        if (loc.X < currentAreaInstance.GridHeightData[0].Length &&
-                            loc.Y < currentAreaInstance.GridHeightData.Length)
+                        var locations = currentAreaInstance.TgtTilesLocations[tile.Key];
+                        var strSize = ImGui.CalcTextSize(tile.Value) / 2;
+                        for (var i = 0; i < locations.Count; i++)
                         {
-                            height = currentAreaInstance.GridHeightData[(int)loc.Y][(int)loc.X];
+                            drawString(tile.Value, locations[i], strSize, this.Settings.TgtNameBackground);
                         }
-
-                        var pNameSizeH = ImGui.CalcTextSize(tile.Value) / 2;
-                        var fpos = Helper.DeltaInWorldToMapDelta(
-                            loc - pPos, -playerRender.TerrainHeight + height);
-                        if (this.Settings.TgtNameBackground)
-                        {
-                            fgDraw.AddRectFilled(mapCenter + fpos - pNameSizeH, mapCenter + fpos + pNameSizeH,
-                                ImGuiHelper.Color(0, 0, 0, 200));
-                        }
-
-                        fgDraw.AddText(
-                            ImGui.GetFont(),
-                            ImGui.GetFontSize(),
-                            mapCenter + fpos - pNameSizeH,
-                            col,
-                            tile.Value);
                     }
                 }
             }
