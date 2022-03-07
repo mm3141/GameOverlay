@@ -554,7 +554,6 @@ namespace Radar
                             chestIcon.UV0,
                             chestIcon.UV1);
                         break;
-                    case EntityTypes.BlightChest:
                     case EntityTypes.ChestWithLabels:
                         chestIcon = this.Settings.BaseIcons["Chests With Label"];
                         iconSizeMultiplierVector *= chestIcon.IconScale;
