@@ -6,12 +6,13 @@ namespace AutoHotKeyTrigger.ProfileManager
     public enum VirtualKeys
         : int
     {
+    VirtualKeyListUpdate
         
         MouseLeftButton = 0x01,
         
         MouseRightButton = 0x02,
         
-        CancelControl-break = 0x03,
+        CancelControlbreak = 0x03,
         
         MouseMiddleButton = 0x04,
         
