@@ -205,6 +205,7 @@ namespace GameHelper.Utils
             var ret = false;
             if (ImGui.BeginCombo(displayText, $"{current}"))
             {
+                var counter = 0;
                 foreach (var item in items)
                 {
                     var selected = item.Equals(current);
@@ -213,11 +214,13 @@ namespace GameHelper.Utils
                         ImGui.SetScrollHereY();
                     }
 
-                    if (ImGui.Selectable($"{item}", selected))
+                    if (ImGui.Selectable($"{counter}:{item}", selected))
                     {
                         current = item;
                         ret = true;
                     }
+
+                    counter++;
                 }
 
                 ImGui.EndCombo();

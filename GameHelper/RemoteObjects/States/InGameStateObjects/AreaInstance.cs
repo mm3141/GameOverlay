@@ -7,6 +7,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
     using System;
     using System.Collections.Concurrent;
     using System.Collections.Generic;
+    using System.Numerics;
     using System.Threading.Tasks;
     using Components;
     using Coroutine;
@@ -124,7 +125,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
         /// <summary>
         ///     Gets the Disctionary of Lists containing only the named tgt tiles locations.
         /// </summary>
-        public Dictionary<string, List<StdTuple2D<int>>> TgtTilesLocations { get; private set; }
+        public Dictionary<string, List<Vector2>> TgtTilesLocations { get; private set; }
 
         /// <summary>
         ///    Gets the current zoom value of the world.
@@ -332,31 +333,41 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             });
         }
 
-        private Dictionary<string, List<StdTuple2D<int>>> GetTgtFileData()
+        private Dictionary<string, List<Vector2>> GetTgtFileData()
         {
             var reader = Core.Process.Handle;
             var tileData = reader.ReadStdVector<TileStructure>(this.TerrainMetadata.TileDetailsPtr);
-            var ret = new Dictionary<string, List<StdTuple2D<int>>>();
+            var ret = new Dictionary<string, List<Vector2>>();
             object mylock = new();
             Parallel.For(
                 0,
                 tileData.Length,
-                () => new Dictionary<string, List<StdTuple2D<int>>>(), // happens on every thread, rather than every iteration.
-                (tileNumber, _, localstate) => // happens on every iteration.
+                // happens on every thread, rather than every iteration.
+                () => new Dictionary<string, List<Vector2>>(),
+                // happens on every iteration.
+                (tileNumber, _, localstate) =>
                 {
                     var tile = tileData[tileNumber];
                     var tgtFile = reader.ReadMemory<TgtFileStruct>(tile.TgtFilePtr);
-                    var tgtDetail = reader.ReadMemory<TgtDetailStruct>(tgtFile.TgtDetailPtr);
-                    var tgtName = reader.ReadStdWString(tgtDetail.name);
+                    var tgtName = reader.ReadStdWString(tgtFile.TgtPath);
                     if (string.IsNullOrEmpty(tgtName))
                     {
                         return localstate;
                     }
 
-                    var loc = new StdTuple2D<int>
+                    if (tile.RotationSelector % 2 == 0)
                     {
-                        Y = (int)(tileNumber / this.TerrainMetadata.TotalTiles.X) * TileStructure.TileToGridConversion,
-                        X = (int)(tileNumber % this.TerrainMetadata.TotalTiles.X) * TileStructure.TileToGridConversion
+                        tgtName += $"x:{tile.tileIdX}-y:{tile.tileIdY}";
+                    }
+                    else
+                    {
+                        tgtName += $"x:{tile.tileIdY}-y:{tile.tileIdX}";
+                    }
+
+                    var loc = new Vector2
+                    {
+                        Y = (tileNumber / this.TerrainMetadata.TotalTiles.X) * TileStructure.TileToGridConversion,
+                        X = (tileNumber % this.TerrainMetadata.TotalTiles.X) * TileStructure.TileToGridConversion
                     };
 
                     if (localstate.ContainsKey(tgtName))
@@ -365,7 +376,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
                     }
                     else
                     {
-                        localstate[tgtName] = new List<StdTuple2D<int>> { loc };
+                        localstate[tgtName] = new() { loc };
                     }
 
                     return localstate;
@@ -378,13 +389,14 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
                         {
                             if (!ret.ContainsKey(kv.Key))
                             {
-                                ret[kv.Key] = new List<StdTuple2D<int>>();
+                                ret[kv.Key] = new();
                             }
 
                             ret[kv.Key].AddRange(kv.Value);
                         }
                     }
                 });
+
             return ret;
         }
 

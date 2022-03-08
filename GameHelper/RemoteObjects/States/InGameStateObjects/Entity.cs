@@ -97,8 +97,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             this.EntityType == EntityTypes.Useless ||
             this.EntityType == EntityTypes.Stage1RewardFIT ||
             this.EntityType == EntityTypes.Stage1FIT ||
-            this.EntityType == EntityTypes.Stage1EChestFIT ||
-            this.EntityType == EntityTypes.BlightChest;
+            this.EntityType == EntityTypes.Stage1EChestFIT;
 
         /// <summary>
         ///     Calculate the distance from the other entity.
@@ -277,7 +276,6 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             switch (this.EntityType)
             {
                 // There is no use case (yet) to re-evaluate the following entity types
-                case EntityTypes.Npc:
                 case EntityTypes.SelfPlayer:
                 case EntityTypes.OtherPlayer:
                 case EntityTypes.Blockage:
@@ -297,22 +295,28 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
                 }
                 else if(this.EntityType == EntityTypes.Unidentified) // so it only happen once.
                 {
-                    if (this.Path.StartsWith("Metadata/Chests/DelveChests/"))
+                    if (this.TryGetComponent<MinimapIcon>(out var _))
+                    {
+                        if (this.Path.StartsWith("Metadata/Chests/LeagueHeist"))
+                        {
+                            this.EntityType = EntityTypes.HeistChest;
+                        }
+                        else
+                        {
+                            this.EntityType = EntityTypes.Useless;
+                        }
+                    }
+                    else if (this.Path.StartsWith("Metadata/Chests/LegionChests"))
+                    {
+                        this.EntityType = EntityTypes.Useless;
+                    }
+                    else if (this.Path.StartsWith("Metadata/Chests/DelveChests/"))
                     {
                         this.EntityType = EntityTypes.DelveChest;
-                    }
-                    else if (this.TryGetComponent<MinimapIcon>(out var _) &&
-                        this.Path.StartsWith("Metadata/Chests/LeagueHeist"))
-                    {
-                        this.EntityType = EntityTypes.HeistChest;
                     }
                     else if (this.Path.StartsWith("Metadata/Chests/Breach"))
                     {
                         this.EntityType = EntityTypes.BreachChest;
-                    }
-                    else if (this.Path.StartsWith("Metadata/Chests/Blight"))
-                    {
-                        this.EntityType = EntityTypes.BlightChest;
                     }
                     else if (chestComp.IsStrongbox)
                     {
@@ -337,10 +341,6 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
                         this.EntityType = EntityTypes.Chest;
                     }
                 }
-            }
-            else if (this.TryGetComponent<NPC>(out var _))
-            {
-                this.EntityType = EntityTypes.Npc;
             }
             else if (this.TryGetComponent<Player>(out var _))
             {

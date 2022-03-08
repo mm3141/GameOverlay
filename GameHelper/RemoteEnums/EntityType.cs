@@ -61,11 +61,6 @@ namespace GameHelper.RemoteEnums
         HeistChest,
 
         /// <summary>
-        ///     Contains the Chest component and found in blight fungal.
-        /// </summary>
-        BlightChest,
-
-        /// <summary>
         ///     Contains the Chest component and is a strongbox.
         /// </summary>
         ImportantStrongboxChest,
@@ -84,11 +79,6 @@ namespace GameHelper.RemoteEnums
         ///     Contains the Shrine component.
         /// </summary>
         Shrine,
-
-        /// <summary>
-        ///     Contains the Npc component.
-        /// </summary>
-        Npc,
 
         /// <summary>
         ///     Contains life and position component and is friendly.
