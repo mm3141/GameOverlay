@@ -200,17 +200,9 @@ namespace GameHelper.Plugin
                 yield return new Wait(GameHelperEvents.OnRender);
                 foreach (var container in Plugins)
                 {
-                    try
+                    if (container.Metadata.Enable)
                     {
-                        if (container.Metadata.Enable)
-                        {
-                            container.Plugin.DrawUI();
-                        }
-                    }
-                    catch (Exception e)
-                    {
-                        var errorText = "DrawPluginUiRenderCoroutine:\n " + e.Message;
-                        File.AppendAllText("Error.log", $"{DateTime.Now:g} {errorText}\r\n{new string('-', 30)}\r\n");
+                        container.Plugin.DrawUI();
                     }
                 }
             }
