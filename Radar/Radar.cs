@@ -655,16 +655,6 @@ namespace Radar
                                 shrineIcon.UV1);
                         }
                         break;
-                    case EntityTypes.Npc:
-                        var npcIcon = this.Settings.BaseIcons["Npc"];
-                        iconSizeMultiplierVector *= npcIcon.IconScale;
-                        fgDraw.AddImage(
-                            npcIcon.TexturePtr,
-                            mapCenter + fpos - iconSizeMultiplierVector,
-                            mapCenter + fpos + iconSizeMultiplierVector,
-                            npcIcon.UV0,
-                            npcIcon.UV1);
-                        break;
                     case EntityTypes.FriendlyMonster:
                         var friendlyIcon = this.Settings.BaseIcons["Friendly"];
                         iconSizeMultiplierVector *= friendlyIcon.IconScale;

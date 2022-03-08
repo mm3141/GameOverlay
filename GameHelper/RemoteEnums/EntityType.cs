@@ -81,11 +81,6 @@ namespace GameHelper.RemoteEnums
         Shrine,
 
         /// <summary>
-        ///     Contains the Npc component.
-        /// </summary>
-        Npc,
-
-        /// <summary>
         ///     Contains life and position component and is friendly.
         /// </summary>
         FriendlyMonster,
