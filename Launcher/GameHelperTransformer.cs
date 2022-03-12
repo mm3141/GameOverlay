@@ -32,7 +32,16 @@ namespace Launcher
             {
                 Console.WriteLine($"GameHelper.exe not found in {dir} directory.");
                 Console.Write("Provide GameHelper.exe path:");
-                dir = Path.GetDirectoryName(Console.ReadLine());
+                var path = Console.ReadLine().Trim();
+                if (File.GetAttributes(path).HasFlag(FileAttributes.Directory))
+                {
+                    dir = path;
+                }
+                else
+                {
+                    dir = Path.GetDirectoryName(path);
+                }
+
                 if (!TryFindGameHelperExe(dir, out gameHelperPath))
                 {
                     throw new Exception($"GameHelper.exe is also not found in {dir}");
