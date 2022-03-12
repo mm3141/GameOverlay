@@ -147,7 +147,7 @@ namespace GameHelper
         {
             while (true)
             {
-                yield return new Wait(1d);
+                yield return new Wait(2d);
                 this.processesInfo.Clear();
                 foreach (var process in Process.GetProcesses())
                 {
@@ -176,6 +176,7 @@ namespace GameHelper
                         this.Information = this.processesInfo[this.clientSelected];
                         if (this.Open())
                         {
+                            this.processesInfo.Clear();
                             break;
                         }
                     }
@@ -193,25 +194,27 @@ namespace GameHelper
                     ImGui.OpenPopup("SelectGameMenu");
                 }
 
-
                 if (ImGui.BeginPopup("SelectGameMenu"))
                 {
                     for (var i = 0; i < this.processesInfo.Count; i++)
                     {
-                        if (ImGui.RadioButton($"{i} - PathOfExile", i == this.clientSelected))
+                        var foreground = GetForegroundWindow() == this.processesInfo[i].MainWindowHandle;
+                        if (ImGui.RadioButton($"{i} - PathOfExile - Focused: {foreground}", i == this.clientSelected))
                         {
                             this.clientSelected = i;
                         }
                     }
 
+                    ImGui.BeginDisabled(this.Address == IntPtr.Zero);
                     if (ImGui.Button("Done"))
                     {
                         this.HideSelectGameMenu();
                         ImGui.CloseCurrentPopup();
                     }
 
+                    ImGui.EndDisabled();
                     ImGui.SameLine();
-                    if (ImGui.Button("Retry"))
+                    if (ImGui.Button("Retry or Delay Selection"))
                     {
                         this.HideSelectGameMenu();
                         ImGui.CloseCurrentPopup();
