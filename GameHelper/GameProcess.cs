@@ -271,7 +271,12 @@ namespace GameHelper
             while (true)
             {
                 yield return new Wait(GameHelperEvents.OnOpened);
-                var baseAddress = this.Information.MainModule.BaseAddress;
+                var baseAddress = this.Address;
+                if (baseAddress == IntPtr.Zero)
+                {
+                    continue;
+                }
+
                 var procSize = this.Information.MainModule.ModuleMemorySize;
                 var patternsInfo = PatternFinder.Find(this.Handle, baseAddress, procSize);
                 foreach (var patternInfo in patternsInfo)
