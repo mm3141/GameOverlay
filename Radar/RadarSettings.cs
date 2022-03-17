@@ -55,9 +55,9 @@ namespace Radar
         public bool DrawMapInCull = true;
 
         /// <summary>
-        /// Gets a value indicating whether to draw the tiles in culling window or not.
+        /// Gets a value indicating whether to draw the POI in culling window or not.
         /// </summary>
-        public bool DrawTileInCull = true;
+        public bool DrawPOIInCull = true;
 
         /// <summary>
         /// Gets a value indicating whether user wants to draw walkable map or not.
@@ -85,24 +85,24 @@ namespace Radar
         public bool ShowPlayersNames = false;
 
         /// <summary>
-        /// Gets a value indicating wether user wants to show all Tgt names or not.
+        /// Gets a value indicating what is the maximum frequency a POI should have
         /// </summary>
-        public bool ShowAllTgtNames = false;
+        public int POIFrequencyFilter = 0;
 
         /// <summary>
         /// Gets a value indicating wether user want to show important tgt names or not.
         /// </summary>
-        public bool ShowImportantTgtNames = true;
+        public bool ShowImportantPOI = true;
 
         /// <summary>
-        /// Gets a value indicating what color to use for drawing tile name.
+        /// Gets a value indicating what color to use for drawing the POI.
         /// </summary>
-        public Vector4 TgtNameColor = new(1f, 0.5f, 0.5f, 1f);
+        public Vector4 POIColor = new(1f, 0.5f, 0.5f, 1f);
 
         /// <summary>
-        /// Gets a value indicating wether user want to draw a background when writing tile name.
+        /// Gets a value indicating wether user want to draw a background when drawing the POI.
         /// </summary>
-        public bool TgtNameBackground = false;
+        public bool EnablePOIBackground = true;
 
         /// <summary>
         /// Gets the Tgts and their expected clusters per area/zone/map.

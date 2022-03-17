@@ -38,7 +38,7 @@ namespace Radar
         /// setup the culling window everytime they open the game.
         /// </summary>
         private bool skipOneSettingChange = false;
-
+        private bool isAddNewPOIHeaderOpened = false;
         private ActiveCoroutine onMove;
         private ActiveCoroutine onForegroundChange;
         private ActiveCoroutine onGameClose;
@@ -97,8 +97,8 @@ namespace Radar
 
             if (ImGui.TreeNode("Culling window advance options"))
             {
-                ImGui.Checkbox("Draw map in culling window", ref this.Settings.DrawMapInCull);
-                ImGui.Checkbox("Draw tiles in culling window", ref this.Settings.DrawTileInCull);
+                ImGui.Checkbox("Draw maphack in culling window", ref this.Settings.DrawMapInCull);
+                ImGui.Checkbox("Draw POIs in culling window", ref this.Settings.DrawPOIInCull);
                 ImGui.TreePop();
             }
 
@@ -130,34 +130,14 @@ namespace Radar
 
             ImGui.Separator();
             ImGui.NewLine();
-            if (ImGui.RadioButton("Show all tile names", this.Settings.ShowAllTgtNames))
+            ImGui.Checkbox("Show points of interest (POI)", ref this.Settings.ShowImportantPOI);
+            ImGui.ColorEdit4("POI text color", ref this.Settings.POIColor);
+            ImGui.Checkbox("Add black background to POI text", ref this.Settings.EnablePOIBackground);
+            this.isAddNewPOIHeaderOpened = ImGui.CollapsingHeader("Add or Modify POI");
+            if (this.isAddNewPOIHeaderOpened)
             {
-                this.Settings.ShowAllTgtNames = true;
-                this.Settings.ShowImportantTgtNames = false;
-            }
-
-            ImGui.SameLine();
-            if (ImGui.RadioButton("Show important tile names", this.Settings.ShowImportantTgtNames))
-            {
-                this.Settings.ShowAllTgtNames = false;
-                this.Settings.ShowImportantTgtNames = true;
-            }
-
-            ImGui.SameLine();
-            if (ImGui.RadioButton("Don't show tile name",
-                !this.Settings.ShowAllTgtNames && !this.Settings.ShowImportantTgtNames))
-            {
-                this.Settings.ShowAllTgtNames = false;
-                this.Settings.ShowImportantTgtNames = false;
-            }
-
-            ImGui.ColorEdit4("Tile text color", ref this.Settings.TgtNameColor);
-            ImGui.Checkbox("Put black box around tile text, makes easier to read.",
-                ref this.Settings.TgtNameBackground);
-            if (ImGui.CollapsingHeader("Important Tile Setting"))
-            {
-                this.AddNewTileBox();
-                this.DisplayAllImportantTile();
+                this.AddNewPOIWidget();
+                this.ShowPOIWidget();
             }
 
             ImGui.Separator();
@@ -387,13 +367,13 @@ namespace Radar
         private void DrawTgtFiles(Vector2 mapCenter)
         {
             var col = ImGuiHelper.Color(
-                (uint)(this.Settings.TgtNameColor.X * 255),
-                (uint)(this.Settings.TgtNameColor.Y * 255),
-                (uint)(this.Settings.TgtNameColor.Z * 255),
-                (uint)(this.Settings.TgtNameColor.W * 255));
+                (uint)(this.Settings.POIColor.X * 255),
+                (uint)(this.Settings.POIColor.Y * 255),
+                (uint)(this.Settings.POIColor.Z * 255),
+                (uint)(this.Settings.POIColor.W * 255));
 
             ImDrawListPtr fgDraw;
-            if (this.Settings.DrawTileInCull)
+            if (this.Settings.DrawPOIInCull)
             {
                 fgDraw = ImGui.GetWindowDrawList();
             }
@@ -437,21 +417,25 @@ namespace Radar
                     text);
             }
 
-            if (this.Settings.ShowAllTgtNames)
+            if (this.isAddNewPOIHeaderOpened)
             {
                 var counter = 0;
                 foreach (var tgtKV in currentAreaInstance.TgtTilesLocations)
                 {
-                    var tgtKImGuiSize = ImGui.CalcTextSize(counter.ToString()) / 2;
-                    for (var i = 0; i < tgtKV.Value.Count; i++)
+                    if (!(this.Settings.POIFrequencyFilter > 0 &&
+                        tgtKV.Value.Count > this.Settings.POIFrequencyFilter))
                     {
-                        drawString(counter.ToString(), tgtKV.Value[i], tgtKImGuiSize, false);
+                        var tgtKImGuiSize = ImGui.CalcTextSize(counter.ToString()) / 2;
+                        for (var i = 0; i < tgtKV.Value.Count; i++)
+                        {
+                            drawString(counter.ToString(), tgtKV.Value[i], tgtKImGuiSize, false);
+                        }
                     }
 
                     counter++;
                 }
             }
-            else if (this.Settings.ShowImportantTgtNames &&
+            else if (this.Settings.ShowImportantPOI &&
                 this.Settings.ImportantTgts.ContainsKey(this.currentAreaName))
             {
                 foreach (var tile in this.Settings.ImportantTgts[this.currentAreaName])
@@ -462,7 +446,7 @@ namespace Radar
                         var strSize = ImGui.CalcTextSize(tile.Value) / 2;
                         for (var i = 0; i < locations.Count; i++)
                         {
-                            drawString(tile.Value, locations[i], strSize, this.Settings.TgtNameBackground);
+                            drawString(tile.Value, locations[i], strSize, this.Settings.EnablePOIBackground);
                         }
                     }
                 }
@@ -900,29 +884,25 @@ namespace Radar
             return path.Replace(this.delveChestStarting, null, StringComparison.Ordinal);
         }
 
-        private void AddNewTileBox()
+        private void AddNewPOIWidget()
         {
             var tgttilesInArea = Core.States.InGameStateObject.CurrentAreaInstance.TgtTilesLocations;
-            ImGui.Text("Leave display name empty if you want to use tile name as display name.");
             ImGui.InputText("Area Name", ref this.currentAreaName, 200, ImGuiInputTextFlags.ReadOnly);
-            if (ImGui.InputInt("Tile Index###tgtSelectorCounter", ref this.tmpTgtSelectionCounter) &&
+            ImGui.InputInt("Filter on Max POI frenquency", ref this.Settings.POIFrequencyFilter);
+            if (ImGui.InputInt("Select POI via Index###tgtSelectorCounter", ref this.tmpTgtSelectionCounter) &&
                 this.tmpTgtSelectionCounter < tgttilesInArea.Keys.Count)
             {
                 this.tmpTileName = tgttilesInArea.Keys.ElementAt(this.tmpTgtSelectionCounter);
             }
 
-            ImGuiHelper.IEnumerableComboBox("Tile Name", tgttilesInArea.Keys, ref this.tmpTileName);
-            ImGui.InputText("Display Name", ref this.tmpDisplayName, 200);
-            if (ImGui.Button("Add Tile Name"))
+            ImGuiHelper.IEnumerableComboBox("POI Path", tgttilesInArea.Keys, ref this.tmpTileName);
+            ImGui.InputText("POI Display Name", ref this.tmpDisplayName, 200);
+            if (ImGui.Button("Add POI"))
             {
                 if (!string.IsNullOrEmpty(this.currentAreaName) &&
-                    !string.IsNullOrEmpty(this.tmpTileName))
+                    !string.IsNullOrEmpty(this.tmpTileName) &&
+                    !string.IsNullOrEmpty(this.tmpDisplayName))
                 {
-                    if (string.IsNullOrEmpty(this.tmpDisplayName))
-                    {
-                        this.tmpDisplayName = this.tmpTileName;
-                    }
-
                     if (!this.Settings.ImportantTgts.ContainsKey(this.currentAreaName))
                     {
                         this.Settings.ImportantTgts[this.currentAreaName] = new();
@@ -937,9 +917,9 @@ namespace Radar
             }
         }
 
-        private void DisplayAllImportantTile()
+        private void ShowPOIWidget()
         {
-            if (ImGui.TreeNode($"Important Tiles in Area: {this.currentAreaName}##import_time_in_area"))
+            if (ImGui.TreeNode($"Important POIs in Area: {this.currentAreaName}##import_time_in_area"))
             {
                 if (this.Settings.ImportantTgts.ContainsKey(this.currentAreaName))
                 {
@@ -951,7 +931,13 @@ namespace Radar
                         }
 
                         ImGui.SameLine();
-                        ImGui.Text($"Tile Path: {tgt.Key}, Display: {tgt.Value}");
+                        ImGui.Text($"POI Path: {tgt.Key}, Display: {tgt.Value}");
+                        ImGuiHelper.ToolTip("Click me to Modify.");
+                        if (ImGui.IsItemClicked())
+                        {
+                            this.tmpTileName = tgt.Key;
+                            this.tmpDisplayName = tgt.Value;
+                        }
                     }
                 }
 
