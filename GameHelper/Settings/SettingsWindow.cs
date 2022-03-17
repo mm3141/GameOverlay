@@ -67,6 +67,15 @@ namespace GameHelper.Settings
                     ImGui.EndMenu();
                 }
 
+                if (ImGui.MenuItem("Donate (捐)"))
+                {
+                    System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo()
+                    {
+                        FileName = "https://www.paypal.com/paypalme/Ghelper",
+                        UseShellExecute = true
+                    });
+                }
+
                 ImGui.EndMenuBar();
             }
         }
