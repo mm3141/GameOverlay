@@ -151,7 +151,7 @@ namespace GameHelper.Ui
                                     }
                                 }
 
-                                if (ImGui.IsKeyPressed(ImGui.GetKeyIndex(ImGuiKey.UpArrow)))
+                                if (ImGui.IsKeyPressed(ImGuiKey.UpArrow))
                                 {
                                     if (current.CurrentChildIndex > 0)
                                     {
@@ -165,7 +165,7 @@ namespace GameHelper.Ui
                                     isCurrentModified = true;
                                     Elements[i] = current;
                                 }
-                                else if (ImGui.IsKeyPressed(ImGui.GetKeyIndex(ImGuiKey.DownArrow)))
+                                else if (ImGui.IsKeyPressed(ImGuiKey.DownArrow))
                                 {
                                     if (current.CurrentChildIndex < current.Children.Count - 1)
                                     {
@@ -179,7 +179,7 @@ namespace GameHelper.Ui
                                     isCurrentModified = true;
                                     Elements[i] = current;
                                 }
-                                else if (ImGui.IsKeyPressed(ImGui.GetKeyIndex(ImGuiKey.Enter)))
+                                else if (ImGui.IsKeyPressed(ImGuiKey.Enter))
                                 {
                                     isEnterPressed = true;
                                 }
