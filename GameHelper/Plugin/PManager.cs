@@ -202,7 +202,14 @@ namespace GameHelper.Plugin
                 {
                     if (container.Metadata.Enable)
                     {
-                        container.Plugin.DrawUI();
+                        try
+                        {
+                            container.Plugin.DrawUI();
+                        }
+                        catch (Exception e)
+                        {
+                            throw new Exception($"Plugin {container.Name} failed on DrawUI.", e);
+                        }
                     }
                 }
             }
