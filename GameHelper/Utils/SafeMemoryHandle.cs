@@ -91,7 +91,7 @@ namespace GameHelper.Utils
         {
             var typeSize = Marshal.SizeOf<T>();
             var length = nativeContainer.Last.ToInt64() - nativeContainer.First.ToInt64();
-            if (length == 0 || length % typeSize != 0)
+            if (length <= 0 || length % typeSize != 0)
             {
                 return Array.Empty<T>();
             }
@@ -148,16 +148,10 @@ namespace GameHelper.Utils
         internal string ReadStdWString(StdWString nativecontainer)
         {
             const int MaxAllowed = 1000;
-            if (nativecontainer.Length < 0 ||
+            if (nativecontainer.Length <= 0 ||
                 nativecontainer.Length > MaxAllowed ||
-                nativecontainer.Capacity < 0 ||
+                nativecontainer.Capacity <= 0 ||
                 nativecontainer.Capacity > MaxAllowed)
-            {
-                Console.WriteLine($"ERROR: Reading std::wstring. Details: {nativecontainer}");
-                return string.Empty;
-            }
-
-            if (nativecontainer.Length == 0 || nativecontainer.Capacity == 0)
             {
                 return string.Empty;
             }
