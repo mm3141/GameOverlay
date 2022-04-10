@@ -34,8 +34,6 @@ namespace HealthBars.Controller
         /// <param name="marks"></param>
         /// <param name="border"></param>
         /// <param name="borderColor"></param>
-        /// <param name="inner"></param>
-        /// <param name="fill"></param>
         public void DrawSprite(
             string spriteName,
             Vector2 drawCoordinates,
@@ -44,9 +42,7 @@ namespace HealthBars.Controller
             float virtualHeightFill,
             bool marks,
             bool border = false,
-            uint borderColor = 0,
-            bool inner = false,
-            bool fill = false)
+            uint borderColor = 0)
         {
             var sprite = this.spriteAtlas.GetSprite(spriteName);
             var offsetX = 0f;
@@ -83,17 +79,7 @@ namespace HealthBars.Controller
 
             if (border)
             {
-                var b1 = pos;
-                var b2 = pos + (inner ? bounds : vBounds);
-
-                if (fill)
-                {
-                    draw.AddRectFilled(b1, b2, borderColor);
-                }
-                else
-                {
-                    draw.AddRect(b1, b2, borderColor);
-                }
+                draw.AddRect(pos, pos + vBounds, borderColor, 0f, ImDrawFlags.RoundCornersNone, 4f);
             }
         }
     }
