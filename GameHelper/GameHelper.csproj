@@ -38,7 +38,7 @@
   </Target>
 
   <Target Name="RemoveDirectories" AfterTargets="Build">
-    <RemoveDir Directories="$(OutDir)runtimes\win-x86;$(OutDir)runtimes\osx-x64;$(OutDir)runtimes\linux-x64;" />
+    <RemoveDir Directories="$(OutDir)runtimes\win-x86;$(OutDir)runtimes\osx-x64;$(OutDir)runtimes\osx-universal;$(OutDir)runtimes\linux-x64;" />
   </Target>
 
 </Project>
