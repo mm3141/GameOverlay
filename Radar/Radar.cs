@@ -658,9 +658,9 @@ namespace Radar
                         {
                             break;
                         }
-
                         var monsterIcon = this.RarityToIconMapping(omp.Rarity);
                         iconSizeMultiplierVector *= monsterIcon.IconScale;
+
                         fgDraw.AddImage(
                             monsterIcon.TexturePtr,
                             mapCenter + fpos - iconSizeMultiplierVector,

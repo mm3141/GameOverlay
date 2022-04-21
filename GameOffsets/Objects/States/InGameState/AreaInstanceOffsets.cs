@@ -14,12 +14,12 @@ namespace GameOffsets.Objects.States.InGameState
         [FieldOffset(0x650)] public StdVector Environments; // EnvironmentStruct
         [FieldOffset(0x680)] public IntPtr ServerDataPtr;
 
-        [FieldOffset(0x688)] public IntPtr LocalPlayerPtr;
+        [FieldOffset(0x678)] public IntPtr LocalPlayerPtr; //3.17.4
 
-        [FieldOffset(0x738)] public StdMap AwakeEntities;
+        [FieldOffset(0x728)] public StdMap AwakeEntities;
         // [FieldOffset(0x648)] public StdMap SleepingEntities; // always after awake entities.
 
-        [FieldOffset(0x8D0)] public TerrainStruct TerrainMetadata;
+        [FieldOffset(0x8C0)] public TerrainStruct TerrainMetadata;//3.17.4
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
