@@ -12,7 +12,7 @@ namespace GameOffsets.Objects.States.InGameState
 
         // Env which are activated. Keys can be found in Environments.dat file.
         [FieldOffset(0x650)] public StdVector Environments; // EnvironmentStruct
-        [FieldOffset(0x680)] public IntPtr ServerDataPtr;
+        [FieldOffset(0x670)] public IntPtr ServerDataPtr;//3.17.4
 
         [FieldOffset(0x678)] public IntPtr LocalPlayerPtr; //3.17.4
 
