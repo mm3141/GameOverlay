@@ -226,10 +226,10 @@ namespace Radar
 
             if (largeMap.IsVisible)
             {
-                var largeMapRealCenter = largeMap.Center + largeMap.Shift +largeMap.DefaultShift;
+                var largeMapRealCenter = largeMap.Center + largeMap.Shift + largeMap.DefaultShift;
                 var largeMapModifiedZoom = this.Settings.LargeMapScaleMultiplier * largeMap.Zoom; 
                 Helper.DiagonalLength = this.largeMapDiagonalLength;
-                Helper.Scale =  largeMapModifiedZoom;
+                Helper.Scale = largeMapModifiedZoom;
                 ImGui.SetNextWindowPos(this.Settings.CullWindowPos);
                 ImGui.SetNextWindowSize(this.Settings.CullWindowSize);
                 ImGui.SetNextWindowBgAlpha(0f);
