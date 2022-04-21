@@ -25,7 +25,7 @@ namespace HealthBars
         /// <summary>
         ///     Cull range color.
         /// </summary>
-        public Vector4 CullRangeColor = new Vector4(200, 200, 200, 200) / 255f;
+        public Vector4 CullRangeColor = new(1, 0, 1, 1);
 
         /// <summary>
         ///     Player bar render scale.

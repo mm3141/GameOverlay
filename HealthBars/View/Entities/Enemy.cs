@@ -48,7 +48,7 @@ namespace HealthBars.View.Entities
             var inCullingRange = InCullingRange(eP, eP.HpPercent);
             var cullingColor = ImGuiHelper.Color(eP.Settings.CullRangeColor * 255f);
             spriteController.DrawSprite("EnemyHP", hpPos, scale, eP.HpPercent, -1, eP.Settings.ShowEnemyGradationMarks,
-                inCullingRange, cullingColor, true, true);
+                inCullingRange, cullingColor);
         }
 
         private static float RarityBarScale(EntityParams entityParams)
