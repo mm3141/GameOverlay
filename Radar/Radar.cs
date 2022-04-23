@@ -227,7 +227,7 @@ namespace Radar
             if (largeMap.IsVisible)
             {
                 var largeMapRealCenter = largeMap.Center + largeMap.Shift + largeMap.DefaultShift;
-                var largeMapModifiedZoom = this.Settings.LargeMapScaleMultiplier * largeMap.Zoom; 
+                var largeMapModifiedZoom = this.Settings.LargeMapScaleMultiplier * largeMap.Zoom;
                 Helper.DiagonalLength = this.largeMapDiagonalLength;
                 Helper.Scale = largeMapModifiedZoom;
                 ImGui.SetNextWindowPos(this.Settings.CullWindowPos);
@@ -658,9 +658,9 @@ namespace Radar
                         {
                             break;
                         }
+
                         var monsterIcon = this.RarityToIconMapping(omp.Rarity);
                         iconSizeMultiplierVector *= monsterIcon.IconScale;
-
                         fgDraw.AddImage(
                             monsterIcon.TexturePtr,
                             mapCenter + fpos - iconSizeMultiplierVector,

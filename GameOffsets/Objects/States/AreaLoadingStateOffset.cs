@@ -8,7 +8,7 @@ namespace GameOffsets.Objects.States
     {
         [FieldOffset(0xC8)] public int IsLoading;
 
-        [FieldOffset(0x35C)] public uint TotalLoadingScreenTimeMs;
+        [FieldOffset(0x354)] public uint TotalLoadingScreenTimeMs;
 
         //[FieldOffset(0x1CC)] public float TotalLoadingScreenTimeSec;
         //[FieldOffset(0x1D0)] public IntPtr UnknownPtr1;
