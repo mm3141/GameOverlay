@@ -15,7 +15,7 @@ namespace GameOffsets.Objects.States
         //[FieldOffset(0x1D8)] public IntPtr UnknownPtr2;
         //[FieldOffset(0x1E0)] public IntPtr UnknownPtr3;
         //[FieldOffset(0x1D8)] public IntPtr UnknownPtr4;
-        [FieldOffset(0x390)] public StdWString CurrentAreaName; // TODO: use isloading offset diff
+        [FieldOffset(0x388)] public StdWString CurrentAreaName; // TODO: use isloading offset diff
         //[FieldOffset(0x218)] public IntPtr LoadScreenImagePtr;
     }
 }

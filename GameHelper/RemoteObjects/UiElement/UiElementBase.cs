@@ -184,11 +184,12 @@ namespace GameHelper.RemoteObjects.UiElement
             ImGui.Text($"Id {this.Id}");
             ImGui.Text($"Position  {this.Postion}");
             ImGui.Text($"Size  {this.Size}");
+            ImGui.Text($"Unscaled Size {this.unScaledSize}");
             ImGui.Text($"IsVisible  {this.IsVisible}");
             ImGui.Text($"Total Childrens  {this.TotalChildrens}");
             ImGui.Text($"Parent  {this.Parent}");
             ImGui.Text($"Position Modifier {this.positionModifier}");
-            ImGui.Text($"Scale Indenx {this.scaleIndex}");
+            ImGui.Text($"Scale Index {this.scaleIndex}");
             ImGui.Text($"Local Scale Multiplier {this.localScaleMultiplier}");
             ImGui.Text($"Flags: {this.flags:X}");
         }
