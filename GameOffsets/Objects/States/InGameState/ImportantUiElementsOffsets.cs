@@ -9,7 +9,7 @@ namespace GameOffsets.Objects.States.InGameState
     [StructLayout(LayoutKind.Explicit, Pack = 1)]
     public struct ImportantUiElementsOffsets
     {
-        [FieldOffset(0x688)] public IntPtr MapParentPtr; //3.17.4
+        [FieldOffset(0x688)] public IntPtr MapParentPtr;
     }
 
     [StructLayout(LayoutKind.Explicit, Pack = 1)]

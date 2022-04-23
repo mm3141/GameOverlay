@@ -8,7 +8,7 @@ namespace GameOffsets.Objects.Components
     {
         [FieldOffset(0x000)] public ComponentHeader Header;
         [FieldOffset(0x158)] public IntPtr ChestsDataPtr;
-        [FieldOffset(0x178)] public bool IsOpened;
+        [FieldOffset(0x160)] public bool IsOpened;
     }
 
     [StructLayout(LayoutKind.Explicit, Pack = 1)]
