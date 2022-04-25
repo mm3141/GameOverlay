@@ -7,7 +7,7 @@ namespace GameOffsets.Objects.Components
     public struct ChestOffsets
     {
         [FieldOffset(0x000)] public ComponentHeader Header;
-        [FieldOffset(0x140)] public IntPtr ChestsDataPtr;
+        [FieldOffset(0x158)] public IntPtr ChestsDataPtr;
         [FieldOffset(0x160)] public bool IsOpened;
     }
 
