@@ -312,9 +312,12 @@ namespace Radar
             var settingsData = JsonConvert.SerializeObject(this.Settings, Formatting.Indented);
             File.WriteAllText(this.SettingPathname, settingsData);
 
-            var tgtfiles = JsonConvert.SerializeObject(
-                this.Settings.ImportantTgts, Formatting.Indented);
-            File.WriteAllText(this.ImportantTgtPathName, tgtfiles);
+            if (this.Settings.ImportantTgts.Count > 0)
+            {
+                var tgtfiles = JsonConvert.SerializeObject(
+                    this.Settings.ImportantTgts, Formatting.Indented);
+                File.WriteAllText(this.ImportantTgtPathName, tgtfiles);
+            }
         }
 
         private void DrawLargeMap(Vector2 mapCenter)
