@@ -261,6 +261,7 @@ namespace GameHelper.Settings
                 if (NativeMethods.IsKeyPressedAndNotTimeout((int)Core.GHSettings.MainMenuHotKey))
                 {
                     isSettingsWindowVisible = !isSettingsWindowVisible;
+                    ImGui.GetIO().WantCaptureMouse = true;
                     if (!isSettingsWindowVisible)
                     {
                         CoroutineHandler.RaiseEvent(GameHelperEvents.TimeToSaveAllSettings);
