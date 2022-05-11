@@ -17,6 +17,7 @@
     /// </summary>
     public class Rule
     {
+        private static bool expand = false;
         private ConditionType newConditionType = ConditionType.AILMENT;
         private readonly Stopwatch cooldownStopwatch = Stopwatch.StartNew();
 
@@ -230,7 +231,7 @@
 
         private void DrawExistingConditions()
         {
-            if (ImGui.TreeNode("Existing Conditions (all of them have to be true)"))
+            if (ImGui.TreeNodeEx("Existing Conditions (all of them have to be true)", ImGuiTreeNodeFlags.DefaultOpen))
             {
                 ImGui.PushItemWidth(ImGui.GetContentRegionAvail().X / 6);
                 for (var i = 0; i < this.conditions.Count; i++)
@@ -241,7 +242,15 @@
                         ImGui.Separator();
                     }
 
-                    if (ImGui.Button("Delete"))
+                    ImGui.PushStyleColor(ImGuiCol.Button, 0);
+                    if (ImGui.ArrowButton("###ExpandHideButton", (expand) ? ImGuiDir.Down : ImGuiDir.Right))
+                    {
+                        expand = !expand;
+                    }
+
+                    ImGui.PopStyleColor();
+                    ImGui.SameLine();
+                    if (expand && ImGui.Button("Delete"))
                     {
                         this.RemoveAt(i);
                         ImGui.PopID();
@@ -249,8 +258,8 @@
                     }
 
                     ImGui.SameLine();
-                    ImGui.BeginDisabled(i==0);
-                    if (ImGui.ArrowButton("up", ImGuiDir.Up))
+                    ImGui.BeginDisabled(i == 0);
+                    if (expand && ImGui.ArrowButton("up", ImGuiDir.Up))
                     {
                         this.Swap(i, i - 1);
                         ImGui.PopID();
@@ -260,7 +269,7 @@
                     ImGui.EndDisabled();
                     ImGui.SameLine();
                     ImGui.BeginDisabled(i == this.conditions.Count - 1);
-                    if (ImGui.ArrowButton("down", ImGuiDir.Down))
+                    if (expand && ImGui.ArrowButton("down", ImGuiDir.Down))
                     {
                         this.Swap(i, i + 1);
                         ImGui.PopID();
@@ -269,8 +278,10 @@
 
                     ImGui.EndDisabled();
                     ImGui.SameLine();
-                    this.conditions[i].Display();
-                    if (this.conditions[i] is not DynamicCondition)
+                    ImGui.BeginGroup();
+                    this.conditions[i].Display(expand);
+                    ImGui.EndGroup();
+                    if (!expand || this.conditions[i] is not DynamicCondition)
                     {
                         ImGui.SameLine();
                         var evaluationResult = this.conditions[i].Evaluate();

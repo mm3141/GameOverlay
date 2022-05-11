@@ -64,9 +64,9 @@ namespace AutoHotKeyTrigger.ProfileManager.Conditions
         }
 
         /// <inheritdoc />
-        public void Display()
+        public void Display(bool expand)
         {
-            this.ToImGui();
+            this.ToImGui(expand);
         }
 
         /// <inheritdoc />
@@ -98,15 +98,34 @@ namespace AutoHotKeyTrigger.ProfileManager.Conditions
             return false;
         }
 
-        private void ToImGui()
+        private void ToImGui(bool expand = true)
         {
             ImGui.Text("Player animation is");
             ImGui.SameLine();
-            ImGuiHelper.EnumComboBox("##AnimationOperator", ref this.@operator, SupportedOperatorTypes);
-            ImGui.SameLine();
-            ImGuiHelper.EnumComboBox("for ##AnimationRHS", ref this.animation);
-            ImGui.SameLine();
-            ImGui.InputInt("ms##AnimationDuration", ref this.durationMs);
+            if (expand)
+            {
+                ImGuiHelper.EnumComboBox("##AnimationOperator", ref this.@operator, SupportedOperatorTypes);
+                ImGui.SameLine();
+                ImGuiHelper.EnumComboBox("for ##AnimationRHS", ref this.animation);
+                ImGui.SameLine();
+                ImGui.InputInt("ms##AnimationDuration", ref this.durationMs);
+            }
+            else
+            {
+                if (this.@operator != OperatorType.EQUAL_TO)
+                {
+                    ImGui.Text("not");
+                    ImGui.SameLine();
+                }
+
+                ImGui.TextColored(new System.Numerics.Vector4(255, 255, 0, 255), $"{this.animation}");
+                ImGui.SameLine();
+                ImGui.Text("for");
+                ImGui.SameLine();
+                ImGui.TextColored(new System.Numerics.Vector4(255, 255, 0, 255), $"{this.durationMs}");
+                ImGui.SameLine();
+                ImGui.Text("(ms)");
+            }
         }
     }
 }

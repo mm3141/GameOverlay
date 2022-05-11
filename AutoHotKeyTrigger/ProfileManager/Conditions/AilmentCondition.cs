@@ -52,9 +52,9 @@ namespace AutoHotKeyTrigger.ProfileManager.Conditions
         }
 
         /// <inheritdoc />
-        public void Display()
+        public void Display(bool expand)
         {
-            this.ToImGui();
+            this.ToImGui(expand);
         }
 
         /// <inheritdoc />
@@ -75,14 +75,21 @@ namespace AutoHotKeyTrigger.ProfileManager.Conditions
             return false;
         }
 
-        private void ToImGui()
+        private void ToImGui(bool expand = true)
         {
             ImGui.Text("Player has");
             ImGui.SameLine();
-            ImGuiHelper.IEnumerableComboBox(
-                "ailment.##AilmentCondition",
-                JsonDataHelper.StatusEffectGroups.Keys,
-                ref this.statusEffectGroupKey);
+            if (expand)
+            {
+                ImGuiHelper.IEnumerableComboBox(
+                    "ailment.##AilmentCondition",
+                    JsonDataHelper.StatusEffectGroups.Keys,
+                    ref this.statusEffectGroupKey);
+            }
+            else
+            {
+                ImGui.TextColored(new System.Numerics.Vector4(255, 255, 0, 255), $"{this.statusEffectGroupKey}");
+            }
         }
     }
 }

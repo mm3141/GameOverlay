@@ -60,9 +60,9 @@ namespace AutoHotKeyTrigger.ProfileManager.Conditions
         }
 
         /// <inheritdoc />
-        public void Display()
+        public void Display(bool expand)
         {
-            this.ToImGui();
+            this.ToImGui(expand);
         }
 
         /// <inheritdoc />
@@ -82,15 +82,34 @@ namespace AutoHotKeyTrigger.ProfileManager.Conditions
             return false;
         }
 
-        private void ToImGui()
+        private void ToImGui(bool expand = true)
         {
             ImGui.Text("Player");
             ImGui.SameLine();
-            ImGuiHelper.EnumComboBox("is##VitalSelector", ref this.vitalType);
-            ImGui.SameLine();
-            ImGuiHelper.EnumComboBox("##VitalOperator", ref this.@operator, SupportedOperatorTypes);
-            ImGui.SameLine();
-            ImGui.InputInt("##VitalThreshold", ref this.threshold);
+            if (expand)
+            {
+                ImGuiHelper.EnumComboBox("is##VitalSelector", ref this.vitalType);
+                ImGui.SameLine();
+                ImGuiHelper.EnumComboBox("##VitalOperator", ref this.@operator, SupportedOperatorTypes);
+                ImGui.SameLine();
+                ImGui.InputInt("##VitalThreshold", ref this.threshold);
+            }
+            else
+            {
+                ImGui.TextColored(new System.Numerics.Vector4(255, 255, 0, 255),$"{this.vitalType}");
+                ImGui.SameLine();
+                if (this.@operator == OperatorType.BIGGER_THAN)
+                {
+                    ImGui.Text("is more than");
+                }
+                else
+                {
+                    ImGui.Text("is less than");
+                }
+
+                ImGui.SameLine();
+                ImGui.TextColored(new System.Numerics.Vector4(255, 255, 0, 255), $"{this.threshold}");
+            }
         }
 
         private int GetVitalValue(Life component)
