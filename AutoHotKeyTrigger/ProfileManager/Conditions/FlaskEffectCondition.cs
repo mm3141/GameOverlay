@@ -52,9 +52,9 @@ namespace AutoHotKeyTrigger.ProfileManager.Conditions
         }
 
         /// <inheritdoc />
-        public void Display()
+        public void Display(bool expand)
         {
-            this.ToImGui();
+            this.ToImGui(expand);
         }
 
         /// <inheritdoc />
@@ -106,11 +106,23 @@ namespace AutoHotKeyTrigger.ProfileManager.Conditions
             return false;
         }
 
-        private void ToImGui()
+        private void ToImGui(bool expand = true)
         {
-            ImGui.Text("Player does not have effect of flask");
-            ImGui.SameLine();
-            ImGui.DragInt("##FlaskEffectFlaskSlot", ref this.flaskSlot, 0.05f, 1, 5);
+            if (expand)
+            {
+                ImGui.Text("Player does not have effect of flask");
+                ImGui.SameLine();
+                ImGui.DragInt("##FlaskEffectFlaskSlot", ref this.flaskSlot, 0.05f, 1, 5);
+            }
+            else
+            {
+                ImGui.Text("Flask");
+                ImGui.SameLine();
+                ImGui.TextColored(new System.Numerics.Vector4(255, 255, 0, 255), $"{this.flaskSlot}");
+                ImGui.SameLine();
+                ImGui.Text("is not activated.");
+            }
+
         }
     }
 }

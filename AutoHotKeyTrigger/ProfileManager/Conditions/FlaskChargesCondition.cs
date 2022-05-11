@@ -60,9 +60,9 @@ namespace AutoHotKeyTrigger.ProfileManager.Conditions
         }
 
         /// <inheritdoc />
-        public void Display()
+        public void Display(bool expand)
         {
-            this.ToImGui();
+            this.ToImGui(expand);
         }
 
         /// <inheritdoc />
@@ -87,15 +87,36 @@ namespace AutoHotKeyTrigger.ProfileManager.Conditions
             return false;
         }
 
-        private void ToImGui()
+        private void ToImGui(bool expand = true)
         {
             ImGui.Text("Flask");
             ImGui.SameLine();
-            ImGui.DragInt("has##FlaskChargesFlaskSlot", ref this.flaskSlot, 0.05f, 1, 5);
-            ImGui.SameLine();
-            ImGuiHelper.EnumComboBox("##FlaskChargesOperator", ref this.@operator, SupportedOperatorTypes);
-            ImGui.SameLine();
-            ImGui.DragInt("charges##FlaskChargesFlaskCharge", ref this.charges, 0.1f, 2, 80);
+            if (expand)
+            {
+                ImGui.DragInt("has##FlaskChargesFlaskSlot", ref this.flaskSlot, 0.05f, 1, 5);
+                ImGui.SameLine();
+                ImGuiHelper.EnumComboBox("##FlaskChargesOperator", ref this.@operator, SupportedOperatorTypes);
+                ImGui.SameLine();
+                ImGui.DragInt("charges##FlaskChargesFlaskCharge", ref this.charges, 0.1f, 2, 80);
+            }
+            else
+            {
+                ImGui.TextColored(new System.Numerics.Vector4(255, 255, 0, 255), $"{this.flaskSlot}");
+                ImGui.SameLine();
+                if (this.@operator == OperatorType.BIGGER_THAN)
+                {
+                    ImGui.Text("has more than");
+                }
+                else
+                {
+                    ImGui.Text("has less than");
+                }
+
+                ImGui.SameLine();
+                ImGui.TextColored(new System.Numerics.Vector4(255, 255, 0, 255), $"{this.charges}");
+                ImGui.SameLine();
+                ImGui.Text("charges");
+            }
         }
     }
 }

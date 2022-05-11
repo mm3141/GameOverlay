@@ -112,7 +112,7 @@ namespace AutoHotKeyTrigger
             {
                 ImGui.PushItemWidth(ImGui.GetContentRegionAvail().X / 6);
                 ImGui.Checkbox("Enable AutoQuit", ref this.Settings.EnableAutoQuit);
-                this.Settings.AutoQuitCondition.Display();
+                this.Settings.AutoQuitCondition.Display(true);
                 ImGui.TextWrapped($"Current AutoQuit Condition Evaluates to {this.Settings.AutoQuitCondition.Evaluate()}");
                 ImGui.Separator();
                 ImGui.Text("Hotkey to manually quit game connection: ");

@@ -12,7 +12,6 @@
     using GameOffsets.Objects.Components;
     using ImGuiNET;
     using Newtonsoft.Json;
-    using Newtonsoft.Json.Converters;
 
     /// <summary>
     ///     For triggering a flask on player Status Effect duration/charges.
@@ -73,9 +72,9 @@
         }
 
         /// <inheritdoc />
-        public void Display()
+        public void Display(bool expand)
         {
-            this.ToImGui();
+            this.ToImGui(expand);
         }
 
         /// <inheritdoc />
@@ -110,8 +109,52 @@
             };
         }
 
-        private void ToImGui()
+        private void ToImGui(bool expand = true)
         {
+            if (!expand)
+            {
+                if (this.@operator != OperatorType.CONTAINS && this.@operator != OperatorType.NOT_CONTAINS)
+                {
+                    ImGui.Text("Player has");
+                    ImGui.SameLine();
+                    ImGui.TextColored(new System.Numerics.Vector4(255, 255, 0, 255), $"{this.buffId}");
+                    ImGui.SameLine();
+                    if (this.@operator == OperatorType.BIGGER_THAN)
+                    {
+                        ImGui.Text("(de)buff with more than");
+                    }
+                    else
+                    {
+                        ImGui.Text("(de)buff with less than");
+                    }
+
+                    ImGui.SameLine();
+                    ImGui.TextColored(new System.Numerics.Vector4(255, 255, 0, 255), $"{this.threshold}");
+                    ImGui.SameLine();
+                    ImGui.Text($"{this.checkType}");
+                }
+                else
+                {
+                    ImGui.Text("Player");
+                    ImGui.SameLine();
+                    if (this.@operator == OperatorType.NOT_CONTAINS)
+                    {
+                        ImGui.Text("does not have");
+                    }
+                    else
+                    {
+                        ImGui.Text("has");
+                    }
+
+                    ImGui.SameLine();
+                    ImGui.TextColored(new System.Numerics.Vector4(255, 255, 0, 255), $"{this.buffId}");
+                    ImGui.SameLine();
+                    ImGui.Text("(de)buff");
+                }
+
+                return;
+            }
+
             ImGui.PushID("StatusEffectDuration");
             if (this.@operator != OperatorType.CONTAINS && this.@operator != OperatorType.NOT_CONTAINS)
             {

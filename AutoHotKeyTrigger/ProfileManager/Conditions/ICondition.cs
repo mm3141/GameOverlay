@@ -18,6 +18,7 @@ namespace AutoHotKeyTrigger.ProfileManager.Conditions
         /// <summary>
         ///     Displays the condition to the user via ImGui.
         /// </summary>
-        public void Display();
+        /// <param name="expand">whether to expand the condition or not</param>
+        public void Display(bool expand);
     }
 }
