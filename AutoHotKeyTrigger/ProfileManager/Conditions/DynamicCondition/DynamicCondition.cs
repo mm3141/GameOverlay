@@ -7,6 +7,7 @@ namespace AutoHotKeyTrigger.ProfileManager.Conditions.DynamicCondition
     using System;
     using System.Linq.Dynamic.Core;
     using System.Numerics;
+    using AutoHotKeyTrigger.ProfileManager.Component;
     using GameHelper;
     using ImGuiNET;
     using Newtonsoft.Json;
@@ -76,6 +77,11 @@ namespace AutoHotKeyTrigger.ProfileManager.Conditions.DynamicCondition
         public void Display(bool expand)
         {
             this.ToImGui(expand);
+        }
+
+        /// <inheritdoc/>
+        public void Add(IComponent component)
+        {
         }
 
         /// <inheritdoc />

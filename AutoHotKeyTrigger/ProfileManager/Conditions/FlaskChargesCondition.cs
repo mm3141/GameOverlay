@@ -5,13 +5,13 @@
 namespace AutoHotKeyTrigger.ProfileManager.Conditions
 {
     using System;
-    using System.Linq;
     using GameHelper;
     using GameHelper.RemoteObjects.Components;
     using GameHelper.Utils;
     using ImGuiNET;
     using Newtonsoft.Json;
     using Enums;
+    using AutoHotKeyTrigger.ProfileManager.Component;
 
     /// <summary>
     ///     For triggering an action on number of flask charges the flask got.
@@ -24,6 +24,7 @@ namespace AutoHotKeyTrigger.ProfileManager.Conditions
         [JsonProperty] private OperatorType @operator;
         [JsonProperty] private int flaskSlot;
         [JsonProperty] private int charges;
+        [JsonProperty] private IComponent component;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="FlaskChargesCondition" /> class.
@@ -36,6 +37,7 @@ namespace AutoHotKeyTrigger.ProfileManager.Conditions
             this.@operator = @operator;
             this.flaskSlot = flaskSlot;
             this.charges = charges;
+            this.component = null;
         }
 
         /// <summary>
@@ -63,28 +65,31 @@ namespace AutoHotKeyTrigger.ProfileManager.Conditions
         public void Display(bool expand)
         {
             this.ToImGui(expand);
+            this.component?.Display(expand);
+        }
+
+        /// <inheritdoc/>
+        public void Add(IComponent component)
+        {
+            this.component = component;
         }
 
         /// <inheritdoc />
         public bool Evaluate()
         {
+            var isConditionValid = false;
             var flask = Core.States.InGameStateObject.CurrentAreaInstance.ServerDataObject.FlaskInventory[0, this.flaskSlot - 1];
-            if (flask.Address == IntPtr.Zero)
+            if (flask.Address != IntPtr.Zero && flask.TryGetComponent<Charges>(out var chargesComponent))
             {
-                return false;
+                isConditionValid = this.@operator switch
+                {
+                    OperatorType.BIGGER_THAN => chargesComponent.Current > this.charges,
+                    OperatorType.LESS_THAN => chargesComponent.Current < this.charges,
+                    _ => throw new Exception($"FlaskChargesCondition doesn't support {this.@operator}.")
+                };
             }
 
-            if (flask.TryGetComponent<Charges>(out var chargesComponent))
-            {
-                return this.@operator switch
-                       {
-                           OperatorType.BIGGER_THAN => chargesComponent.Current > this.charges,
-                           OperatorType.LESS_THAN => chargesComponent.Current < this.charges,
-                           _ => throw new Exception($"FlaskChargesCondition doesn't support {this.@operator}.")
-                       };
-            }
-
-            return false;
+            return this.component == null ? isConditionValid : this.component.execute(isConditionValid);
         }
 
         private void ToImGui(bool expand = true)

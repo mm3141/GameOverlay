@@ -7,6 +7,7 @@ namespace AutoHotKeyTrigger.ProfileManager.Conditions
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using AutoHotKeyTrigger.ProfileManager.Component;
     using GameHelper;
     using GameHelper.RemoteObjects.Components;
     using ImGuiNET;
@@ -21,6 +22,7 @@ namespace AutoHotKeyTrigger.ProfileManager.Conditions
         private static readonly FlaskEffectCondition ConfigurationInstance = new(1);
 
         [JsonProperty] private int flaskSlot;
+        [JsonProperty] private IComponent component;
         private IntPtr flaskAddressCache = IntPtr.Zero;
         private List<string> flaskBuffsCache = new();
 
@@ -31,6 +33,7 @@ namespace AutoHotKeyTrigger.ProfileManager.Conditions
         public FlaskEffectCondition(int flaskSlot)
         {
             this.flaskSlot = flaskSlot;
+            this.component = null;
         }
 
         /// <summary>
@@ -55,6 +58,13 @@ namespace AutoHotKeyTrigger.ProfileManager.Conditions
         public void Display(bool expand)
         {
             this.ToImGui(expand);
+            this.component?.Display(expand);
+        }
+
+        /// <inheritdoc/>
+        public void Add(IComponent component)
+        {
+            this.component = component;
         }
 
         /// <inheritdoc />
@@ -63,7 +73,7 @@ namespace AutoHotKeyTrigger.ProfileManager.Conditions
             var flask = Core.States.InGameStateObject.CurrentAreaInstance.ServerDataObject.FlaskInventory[0, this.flaskSlot - 1];
             if (flask.Address == IntPtr.Zero)
             {
-                return false;
+                return this.component != null && this.component.execute(false);
             }
 
             if (flask.Address != this.flaskAddressCache)
@@ -99,11 +109,11 @@ namespace AutoHotKeyTrigger.ProfileManager.Conditions
             {
                 if (!this.flaskBuffsCache.Any(buffName => buffComponent.StatusEffects.ContainsKey(buffName)))
                 {
-                    return true;
+                    return this.component == null || this.component.execute(true);
                 }
             }
 
-            return false;
+            return this.component != null && this.component.execute(false);
         }
 
         private void ToImGui(bool expand = true)
@@ -120,7 +130,7 @@ namespace AutoHotKeyTrigger.ProfileManager.Conditions
                 ImGui.SameLine();
                 ImGui.TextColored(new System.Numerics.Vector4(255, 255, 0, 255), $"{this.flaskSlot}");
                 ImGui.SameLine();
-                ImGui.Text("is not activated.");
+                ImGui.Text("is not activated");
             }
 
         }
