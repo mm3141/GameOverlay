@@ -35,8 +35,7 @@ namespace AutoHotKeyTrigger.ProfileManager.Component
             {
                 ImGui.Text("Condition WAITS for");
                 ImGui.SameLine();
-                ImGui.DragFloat("(seconds)##WAITCOMPONENT", ref this.duration);
-                
+                ImGui.DragFloat("(seconds)##WAITCOMPONENT", ref this.duration, 0.05f, 0.0f, 5f);
             }
             else
             {
