@@ -5,6 +5,7 @@
 namespace AutoHotKeyTrigger.ProfileManager.Conditions
 {
     using System.Linq;
+    using AutoHotKeyTrigger.ProfileManager.Component;
     using GameHelper;
     using GameHelper.RemoteObjects.Components;
     using GameHelper.Utils;
@@ -19,6 +20,7 @@ namespace AutoHotKeyTrigger.ProfileManager.Conditions
         private static readonly AilmentCondition ConfigurationInstance = new("");
 
         [JsonProperty] private string statusEffectGroupKey;
+        [JsonProperty] private IComponent component;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="AilmentCondition" /> class.
@@ -30,6 +32,7 @@ namespace AutoHotKeyTrigger.ProfileManager.Conditions
         public AilmentCondition(string statusEffectGroupKey)
         {
             this.statusEffectGroupKey = statusEffectGroupKey;
+            this.component = null;
         }
 
         /// <summary>
@@ -51,15 +54,23 @@ namespace AutoHotKeyTrigger.ProfileManager.Conditions
             return null;
         }
 
+        /// <inheritdoc/>
+        public void Add(IComponent component)
+        {
+            this.component = component;
+        }
+
         /// <inheritdoc />
         public void Display(bool expand)
         {
             this.ToImGui(expand);
+            this.component?.Display(expand);
         }
 
         /// <inheritdoc />
         public bool Evaluate()
         {
+            var isConditionValid = false;
             var player = Core.States.InGameStateObject.CurrentAreaInstance.Player;
             if (JsonDataHelper.StatusEffectGroups.TryGetValue(this.statusEffectGroupKey, out var statusEffects))
             {
@@ -67,12 +78,12 @@ namespace AutoHotKeyTrigger.ProfileManager.Conditions
                 {
                     if (statusEffects.Any(statusEffect => buffComponent.StatusEffects.ContainsKey(statusEffect)))
                     {
-                        return true;
+                        isConditionValid = true;
                     }
                 }
             }
 
-            return false;
+            return this.component == null ? isConditionValid : this.component.execute(isConditionValid);
         }
 
         private void ToImGui(bool expand = true)

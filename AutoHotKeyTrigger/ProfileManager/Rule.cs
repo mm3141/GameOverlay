@@ -11,6 +11,7 @@
     using Newtonsoft.Json;
     using Enums;
     using GameHelper.RemoteEnums;
+    using AutoHotKeyTrigger.ProfileManager.Component;
 
     /// <summary>
     ///     Abstraction for the rule condition list
@@ -84,7 +85,7 @@
             rules[4] = new($"QuickSilverFlask4");
             rules[4].Enabled = false;
             rules[4].Key = ConsoleKey.D4;
-            rules[4].conditions.Add(new AnimationCondition(OperatorType.EQUAL_TO, Animation.Run, 1000));
+            rules[4].conditions.Add(new AnimationCondition(OperatorType.EQUAL_TO, Animation.Run, new Wait(1)));
             rules[4].conditions.Add(new FlaskChargesCondition(OperatorType.BIGGER_THAN, 4, 29));
             rules[4].conditions.Add(new FlaskEffectCondition(4));
 
@@ -255,6 +256,12 @@
                         this.RemoveAt(i);
                         ImGui.PopID();
                         break;
+                    }
+
+                    ImGui.SameLine();
+                    if (expand && ImGui.Button("Add"))
+                    {
+                        this.conditions[i].Add(new Wait(0));
                     }
 
                     ImGui.SameLine();

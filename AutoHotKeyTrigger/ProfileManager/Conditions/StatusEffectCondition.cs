@@ -5,6 +5,7 @@
 ﻿namespace AutoHotKeyTrigger.ProfileManager.Conditions
 {
     using System;
+    using AutoHotKeyTrigger.ProfileManager.Component;
     using Enums;
     using GameHelper;
     using GameHelper.RemoteObjects.Components;
@@ -33,6 +34,7 @@
         [JsonProperty] private StatusEffectCheckType checkType;
         [JsonProperty] private OperatorType @operator;
         [JsonProperty] private float threshold;
+        [JsonProperty] private IComponent component;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="StatusEffectCondition" /> class.
@@ -47,6 +49,7 @@
             this.buffId = buffId;
             this.threshold = threshold;
             this.checkType = checkType;
+            this.component = null;
         }
 
         /// <summary>
@@ -75,16 +78,24 @@
         public void Display(bool expand)
         {
             this.ToImGui(expand);
+            this.component?.Display(expand);
+        }
+
+        /// <inheritdoc/>
+        public void Add(IComponent component)
+        {
+            this.component = component;
         }
 
         /// <inheritdoc />
         public bool Evaluate()
         {
+            var isConditionValid = false;
             var player = Core.States.InGameStateObject.CurrentAreaInstance.Player;
             if (player.TryGetComponent<Buffs>(out var buffComponent))
             {
                 var exists = buffComponent.StatusEffects.TryGetValue(this.buffId, out var buff);
-                return this.@operator switch
+                isConditionValid = this.@operator switch
                 {
                     OperatorType.BIGGER_THAN => (exists ? this.GetValue(buff) : 0f) > this.threshold,
                     OperatorType.LESS_THAN => (exists ? this.GetValue(buff) : 0f) < this.threshold,
@@ -94,7 +105,7 @@
                 };
             }
 
-            return false;
+            return this.component == null ? isConditionValid : this.component.execute(isConditionValid);
         }
 
         private float GetValue(StatusEffectStruct buffDetails)

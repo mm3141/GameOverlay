@@ -5,14 +5,14 @@
 namespace AutoHotKeyTrigger.ProfileManager.Conditions
 {
     using System;
-    using System.Diagnostics;
     using GameHelper;
     using GameHelper.RemoteEnums;
     using GameHelper.RemoteObjects.Components;
     using GameHelper.Utils;
     using ImGuiNET;
     using Newtonsoft.Json;
-    using Enums;
+    using AutoHotKeyTrigger.ProfileManager.Enums;
+    using AutoHotKeyTrigger.ProfileManager.Component;
 
     /// <summary>
     ///     For triggering an action on player animation changes.
@@ -20,26 +20,23 @@ namespace AutoHotKeyTrigger.ProfileManager.Conditions
     public class AnimationCondition : ICondition
     {
         private static readonly OperatorType[] SupportedOperatorTypes = { OperatorType.EQUAL_TO, OperatorType.NOT_EQUAL_TO };
-        private static readonly AnimationCondition ConfigurationInstance = new(OperatorType.EQUAL_TO, Animation.Idle, 0);
-
-        private readonly Stopwatch sw;
+        private static readonly AnimationCondition ConfigurationInstance = new(OperatorType.EQUAL_TO, Animation.Idle, null);
 
         [JsonProperty] private OperatorType @operator;
         [JsonProperty] private Animation animation;
-        [JsonProperty] private int durationMs;
+        [JsonProperty] private IComponent component;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="AnimationCondition" /> class.
         /// </summary>
         /// <param name="operator"><see cref="OperatorType" /> to use in this condition.</param>
         /// <param name="animation">player animation to use for this condition.</param>
-        /// <param name="duration">duration (ms) for which the animation is active.</param>
-        public AnimationCondition(OperatorType @operator, Animation animation, int duration)
+        /// <param name="component">component associated with this condition.</param>
+        public AnimationCondition(OperatorType @operator, Animation animation, IComponent component)
         {
             this.@operator = @operator;
             this.animation = animation;
-            this.durationMs = duration;
-            this.sw = Stopwatch.StartNew();
+            this.component = component;
         }
 
         /// <summary>
@@ -54,48 +51,41 @@ namespace AutoHotKeyTrigger.ProfileManager.Conditions
             ImGui.SameLine();
             if (ImGui.Button("Add##Animation"))
             {
-                return new AnimationCondition(
-                    ConfigurationInstance.@operator,
-                    ConfigurationInstance.animation,
-                    ConfigurationInstance.durationMs);
+                return new AnimationCondition(ConfigurationInstance.@operator, ConfigurationInstance.animation, null);
             }
 
             return null;
+        }
+
+        /// <inheritdoc/>
+        public void Add(IComponent component)
+        {
+            this.component = component;
         }
 
         /// <inheritdoc />
         public void Display(bool expand)
         {
             this.ToImGui(expand);
+            this.component?.Display(expand);
         }
 
         /// <inheritdoc />
         public bool Evaluate()
         {
+            var isConditionValid = false;
             var player = Core.States.InGameStateObject.CurrentAreaInstance.Player;
             if (player.TryGetComponent<Actor>(out var actorComponent))
             {
-                var isConditionValid = this.@operator switch
+                isConditionValid = this.@operator switch
                 {
                     OperatorType.EQUAL_TO => actorComponent.Animation == this.animation,
                     OperatorType.NOT_EQUAL_TO => actorComponent.Animation != this.animation,
                     _ => throw new Exception($"AnimationCondition doesn't support {this.@operator}.")
                 };
-
-                if (isConditionValid)
-                {
-                    if (this.sw.ElapsedMilliseconds >= this.durationMs)
-                    {
-                        return true;
-                    }
-                }
-                else
-                {
-                    this.sw.Restart();
-                }
             }
 
-            return false;
+            return this.component == null ? isConditionValid : this.component.execute(isConditionValid);
         }
 
         private void ToImGui(bool expand = true)
@@ -106,9 +96,7 @@ namespace AutoHotKeyTrigger.ProfileManager.Conditions
             {
                 ImGuiHelper.EnumComboBox("##AnimationOperator", ref this.@operator, SupportedOperatorTypes);
                 ImGui.SameLine();
-                ImGuiHelper.EnumComboBox("for ##AnimationRHS", ref this.animation);
-                ImGui.SameLine();
-                ImGui.InputInt("ms##AnimationDuration", ref this.durationMs);
+                ImGuiHelper.EnumComboBox("##AnimationRHS", ref this.animation);
             }
             else
             {
@@ -119,12 +107,6 @@ namespace AutoHotKeyTrigger.ProfileManager.Conditions
                 }
 
                 ImGui.TextColored(new System.Numerics.Vector4(255, 255, 0, 255), $"{this.animation}");
-                ImGui.SameLine();
-                ImGui.Text("for");
-                ImGui.SameLine();
-                ImGui.TextColored(new System.Numerics.Vector4(255, 255, 0, 255), $"{this.durationMs}");
-                ImGui.SameLine();
-                ImGui.Text("(ms)");
             }
         }
     }
