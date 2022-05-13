@@ -153,6 +153,9 @@ namespace GameHelper.RemoteEnums
         ReviveLeft,
         ReviveRight,
         Fling,
+        ChargeEndLeft,
+        ChargeEndRight,
+        ChargeEnd180
 #pragma warning restore CS1591, SA1602
     }
 }
