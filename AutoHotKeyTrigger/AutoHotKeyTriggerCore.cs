@@ -70,6 +70,11 @@ namespace AutoHotKeyTrigger
             ImGui.Checkbox("Should Run In Hideout", ref this.Settings.ShouldRunInHideout);
             ImGuiHelper.IEnumerableComboBox("Profile", this.Settings.Profiles.Keys, ref this.Settings.CurrentProfile);
             ImGui.NewLine();
+            if (ImGui.Button("Add/Reset and Activate League Start Default Profile"))
+            {
+                this.CreateDefaultProfile();
+            }
+
             if (ImGui.CollapsingHeader("Add New Profile"))
             {
                 ImGui.InputText("Name", ref this.newProfileName, 50);
@@ -329,7 +334,9 @@ namespace AutoHotKeyTrigger
                 profile.Rules.Add(rule);
             }
 
-            this.Settings.Profiles.TryAdd("LeagueStartNewPlayerProfile", profile);
+            this.Settings.Profiles["LeagueStartDefaultProfile"] = profile;
+            this.Settings.CurrentProfile = "LeagueStartDefaultProfile";
+
         }
 
         private void AutoQuitWarningUi()
