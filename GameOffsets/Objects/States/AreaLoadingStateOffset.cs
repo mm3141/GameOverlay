@@ -9,6 +9,6 @@ namespace GameOffsets.Objects.States
         [FieldOffset(0xC8)] public int IsLoading;
 
         [FieldOffset(0x368)] public uint TotalLoadingScreenTimeMs;
-        [FieldOffset(0x39C)] public StdWString CurrentAreaName; // use isloading/totalLoadingScreenTimeMs offset diff
+        [FieldOffset(0x398)] public StdWString CurrentAreaName; // use isloading/totalLoadingScreenTimeMs offset diff
     }
 }
