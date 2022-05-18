@@ -25,7 +25,7 @@ namespace AutoHotKeyTrigger.ProfileManager.Component
         public Wait(float duation)
         {
             this.duration = duation;
-            this.sw = Stopwatch.StartNew();
+            this.sw = new();
         }
 
         /// <inheritdoc/>
@@ -53,6 +53,11 @@ namespace AutoHotKeyTrigger.ProfileManager.Component
         {
             if (isConditionValid)
             {
+                if (!this.sw.IsRunning)
+                {
+                    this.sw.Start();
+                }
+
                 if (this.sw.ElapsedMilliseconds >= (this.duration * 1000f))
                 {
                     return true;
@@ -60,7 +65,7 @@ namespace AutoHotKeyTrigger.ProfileManager.Component
             }
             else
             {
-                this.sw.Restart();
+                this.sw.Reset();
             }
 
             return false;
