@@ -27,7 +27,8 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             "Metadata/Monsters/AtlasExiles/AtlasExile",
             "Metadata/Monsters/Daemon/MaligaroBladeVortexDaemon",
             "Metadata/Monsters/Daemon/DoNothingDaemon",
-            "Metadata/Monsters/Daemon/ShakariQuicksandDaemon"
+            "Metadata/Monsters/Daemon/ShakariQuicksandDaemon",
+            "Metadata/Monsters/AtlasInvaders/CleansingMonsters/CleansingPhantasmPossessionDemon"
         };
 
         private static string deliriumHiddenMonsterStarting =
