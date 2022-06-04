@@ -1,4 +1,4 @@
-﻿{
+{
   "Bleeding Or Corruption": [
     "bleeding",
     "puncture",
@@ -7,9 +7,28 @@
     "corrupted_blood",
     "corrupted_blood_rain"
   ],
+  "Bleeding": [
+    "bleeding",
+    "puncture",
+    "puncture_moving",
+    "physical_damage_and_bleed"
+  ],
+  "Corruption": [
+    "corrupted_blood",
+    "corrupted_blood_rain"
+  ],
   "Frozen Or Chilled": [
     "frozen",
     "cold_damage_and_freeze",
+    "chilled",
+    "ground_ice_chill",
+    "chilling_bond_in_beam"
+  ],
+  "Frozen": [
+    "frozen",
+    "cold_damage_and_freeze"
+  ],
+  "Chilled": [
     "chilled",
     "ground_ice_chill",
     "chilling_bond_in_beam"
