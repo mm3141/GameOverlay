@@ -22,7 +22,8 @@
     "cold_damage_and_freeze",
     "chilled",
     "ground_ice_chill",
-    "chilling_bond_in_beam"
+    "chilling_bond_in_beam",
+    "yugul_pool_chilled"
   ],
   "Frozen": [
     "frozen",
@@ -31,7 +32,8 @@
   "Chilled": [
     "chilled",
     "ground_ice_chill",
-    "chilling_bond_in_beam"
+    "chilling_bond_in_beam",
+    "yugul_pool_chilled"
   ],
   "Poisoned": [
     "poison",
