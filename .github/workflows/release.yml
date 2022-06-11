@@ -8,6 +8,8 @@ on:
 jobs:
   build:
     runs-on: ${{ matrix.os }}
+    env:
+      GH_RELEASE_VERSION: ${{ needs.upversion.outputs.new_version }}
     needs: [upversion]
     strategy:
       matrix:
@@ -26,13 +28,22 @@ jobs:
       - name: Build
         run: |
           dotnet build --configuration Release --no-restore
-          echo ${{ needs.upversion.outputs.new_version }} > GameHelper/bin/Release/net5.0/VERSION.txt
+          echo ${{ env.GH_RELEASE_VERSION }} > GameHelper/bin/Release/net5.0/VERSION.txt
 
-      - name: Upload the Build Artifact
-        uses: actions/upload-artifact@v2
+      - name: Create Zip For Release
+        uses: papeloto/action-zip@v1
         with:
-          name: GameHelper-${{ matrix.os }}-${{ needs.upversion.outputs.new_version }}
-          path: GameHelper/bin/Release/net5.0
+          files: GameHelper/bin/Release/net5.0/
+          dest: release.zip
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ env.GH_RELEASE_VERSION }}
+          name: GameHelper-standard-${{ env.GH_RELEASE_VERSION }}
+          files: release.zip
+          draft: false
+          prerelease: false
 
   upversion:
     runs-on: [ubuntu-latest]
