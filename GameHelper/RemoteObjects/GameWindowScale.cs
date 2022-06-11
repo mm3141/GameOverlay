@@ -69,9 +69,9 @@ namespace GameHelper.RemoteObjects
         internal override void ToImGui()
         {
             base.ToImGui();
-            ImGui.Text($"Index 1: width, height {this.GetScaleValue(1, 1)} ratio");
-            ImGui.Text($"Index 2: width, height {this.GetScaleValue(2, 1)} ratio");
-            ImGui.Text($"Index 3: width, height {this.GetScaleValue(3, 1)} ratio");
+            ImGui.Text($"Index 1 (0x{UiElementBaseFuncs.SCALE_INDEX_1:X}): width, height {this.GetScaleValue(1, 1)} ratio");
+            ImGui.Text($"Index 2 (0x{UiElementBaseFuncs.SCALE_INDEX_2:X}): width, height {this.GetScaleValue(2, 1)} ratio");
+            ImGui.Text($"Index 3 (0x{UiElementBaseFuncs.SCALE_INDEX_3:X}): width, height {this.GetScaleValue(3, 1)} ratio");
         }
 
         /// <inheritdoc />
