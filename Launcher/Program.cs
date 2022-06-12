@@ -6,6 +6,7 @@ namespace Launcher
 {
     using System;
     using System.Diagnostics;
+    using System.Threading;
 
     public static class Program
     {
@@ -20,7 +21,21 @@ namespace Launcher
 
             try
             {
-                AutoUpdate.UpgradeGameHelper(gameHelperDir);
+                Console.WriteLine("Are you waiting for a new GameHelper release? (yes/no)");
+                var isWaiting = Console.ReadLine().ToLowerInvariant().StartsWith("y");
+                do
+                {
+                    if (AutoUpdate.UpgradeGameHelper(gameHelperDir))
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        Console.WriteLine("Didn't find any new version, sleeping for 5 mins....");
+                        Thread.Sleep(5 * 60 * 1000);
+                    }
+                }
+                while (isWaiting);
             }
             catch (Exception ex)
             {
