@@ -11,6 +11,23 @@ namespace Launcher
     {
         private static void Main()
         {
+            if (!GameHelperFinder.TryFindGameHelperExe(out var gameHelperDir, out var gameHelperLoc))
+            {
+                Console.WriteLine($"GameHelper.exe is also not found in {gameHelperDir}");
+                Console.ReadKey();
+                return;
+            }
+
+            try
+            {
+                AutoUpdate.UpgradeGameHelper(gameHelperDir);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Failed to upgrade GameHelper due to: {ex}");
+                Console.ReadKey();
+            }
+
             try
             {
                 Console.WriteLine("Preparing GameHelper...");
@@ -24,7 +41,7 @@ namespace Launcher
                     Console.ReadLine();
                 }
 
-                var gameHelperPath = GameHelperTransformer.TransformGameHelperExecutable(newName);
+                var gameHelperPath = GameHelperTransformer.TransformGameHelperExecutable(gameHelperDir, gameHelperLoc, newName);
                 Console.WriteLine($"Starting GameHelper at '{gameHelperPath}'...");
                 Process.Start(gameHelperPath);
             }

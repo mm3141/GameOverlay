@@ -4,9 +4,7 @@
 
 namespace Launcher
 {
-    using System;
     using System.IO;
-    using System.Reflection;
     using AsmResolver.PE;
     using AsmResolver.PE.File;
     using AsmResolver.PE.File.Headers;
@@ -18,47 +16,17 @@ namespace Launcher
     /// </summary>
     public static class GameHelperTransformer
     {
-        private const string GameHelperFileName = "GameHelper.exe";
-
         /// <summary>
         ///     Transforms the GameHelper tool name and metadata info.
         /// </summary>
         /// <param name="newName">string to replace the name and metadata info with.</param>
         /// <returns></returns>
-        public static string TransformGameHelperExecutable(string newName)
+        public static string TransformGameHelperExecutable(string gameHelperDir, string gameHelperLoc, string newName)
         {
-            var dir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            if (!TryFindGameHelperExe(dir, out var gameHelperPath))
-            {
-                Console.WriteLine($"GameHelper.exe not found in {dir} directory.");
-                Console.Write("Provide GameHelper.exe path:");
-                var path = Console.ReadLine().Trim();
-                if (File.GetAttributes(path).HasFlag(FileAttributes.Directory))
-                {
-                    dir = path;
-                }
-                else
-                {
-                    dir = Path.GetDirectoryName(path);
-                }
-
-                if (!TryFindGameHelperExe(dir, out gameHelperPath))
-                {
-                    throw new Exception($"GameHelper.exe is also not found in {dir}");
-                }
-            }
-
-            var newPath = Path.Join(dir, $"{newName}.exe");
+            var newPath = Path.Join(gameHelperDir, $"{newName}.exe");
             TemporaryFileManager.AddFile(newPath);
-            TransformExecutable(gameHelperPath, newPath, newName);
+            TransformExecutable(gameHelperLoc, newPath, newName);
             return newPath;
-        }
-
-        private static bool TryFindGameHelperExe(string directory, out string gameHelperPath)
-        {
-            gameHelperPath = Path.Join(directory, GameHelperFileName);
-            var fileInfo = new FileInfo(gameHelperPath);
-            return fileInfo.Exists;
         }
 
         private static void TransformExecutable(string inputPath, string outputPath, string infoName)
