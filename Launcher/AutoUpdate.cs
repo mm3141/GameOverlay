@@ -3,8 +3,8 @@
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
     using System;
+    using System.Diagnostics;
     using System.IO;
-    using System.IO.Compression;
     using System.Net;
 
     public static class AutoUpdate
@@ -12,6 +12,7 @@
         private static string upgrade_url = "https://api.github.com/repos/zaafar/GameOverlay/releases/latest";
         private static string version_file_name = "VERSION.txt";
         private static string release_file_name = "release.zip";
+        private static string self_exe_name = AppDomain.CurrentDomain.FriendlyName;
 
         private static JObject get_latest_version_info()
         {
@@ -73,19 +74,9 @@
             {
                 Console.WriteLine($"Your version is {currentVersion}. Latest version is {latestVersion}, downloading now...");
                 using var client = new WebClient();
-                try
-                {
-                    client.DownloadFile(downloadUrl, release_file_name);
-                    ZipFile.ExtractToDirectory(release_file_name, gameHelperDir, true);
-                    return true;
-                }
-                finally
-                {
-                    if (File.Exists(release_file_name))
-                    {
-                        File.Delete(release_file_name);
-                    }
-                }
+                client.DownloadFile(downloadUrl, release_file_name);
+                Process.Start("powershell.exe", $"Start-sleep -Seconds 3; Expand-Archive -Force {release_file_name} .; Remove-Item -Force {release_file_name}; ./{self_exe_name}.exe -Force");
+                return true;
 
             }
 
