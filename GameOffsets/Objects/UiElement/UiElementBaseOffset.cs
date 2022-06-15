@@ -38,9 +38,9 @@ namespace GameOffsets.Objects.UiElement
         private const int SHOULD_MODIFY_BINARY_POS = 0x0A;
         private const int IS_VISIBLE_BINARY_POS = 0x0B;
 
-        public const int SCALE_INDEX_1 = 0x000;
-        public const int SCALE_INDEX_3 = 0x002;
-        public const int SCALE_INDEX_2 = 0x006;
+        public const int SCALE_INDEX_1 = 0x002;
+        public const int SCALE_INDEX_3 = 0x004;
+        public const int SCALE_INDEX_2 = 0x000;
 
         public static Func<uint, bool> IsVisibleChecker = param =>
         {
