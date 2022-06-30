@@ -11,15 +11,15 @@ namespace GameOffsets.Objects.States.InGameState
         [FieldOffset(0x104)] public uint CurrentAreaHash;
 
         // Env which are activated. Keys can be found in Environments.dat file.
-        [FieldOffset(0x6C0)] public StdVector Environments; // EnvironmentStruct
-        [FieldOffset(0x6F0)] public IntPtr ServerDataPtr;
+        [FieldOffset(0x740)] public StdVector Environments; // EnvironmentStruct
+        [FieldOffset(0x770)] public IntPtr ServerDataPtr;
 
-        [FieldOffset(0x6F8)] public IntPtr LocalPlayerPtr;
+        [FieldOffset(0x778)] public IntPtr LocalPlayerPtr;
 
-        [FieldOffset(0x7A8)] public StdMap AwakeEntities;
+        [FieldOffset(0x828)] public StdMap AwakeEntities;
         // [FieldOffset(0x648)] public StdMap SleepingEntities; // always after awake entities.
 
-        [FieldOffset(0x940)] public TerrainStruct TerrainMetadata;
+        [FieldOffset(0x9C0)] public TerrainStruct TerrainMetadata;
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
