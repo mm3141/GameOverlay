@@ -175,6 +175,11 @@ namespace Radar
                     string.Empty);
 
                 this.Settings.DrawIconsSettingToImGui(
+                    "Expedition Icons",
+                    this.Settings.ExpeditionIcons,
+                    string.Empty);
+
+                this.Settings.DrawIconsSettingToImGui(
                     "Delve Icons",
                     this.Settings.DelveIcons,
                     "Selecting first icon from the icons image window will display " +
@@ -536,6 +541,16 @@ namespace Radar
                         break;
                     case EntityTypes.ChestWithLabels:
                         chestIcon = this.Settings.BaseIcons["Chests With Label"];
+                        iconSizeMultiplierVector *= chestIcon.IconScale;
+                        fgDraw.AddImage(
+                            chestIcon.TexturePtr,
+                            mapCenter + fpos - iconSizeMultiplierVector,
+                            mapCenter + fpos + iconSizeMultiplierVector,
+                            chestIcon.UV0,
+                            chestIcon.UV1);
+                        break;
+                    case EntityTypes.ExpeditionChest:
+                        chestIcon = this.Settings.ExpeditionIcons["Generic Expedition Chests"];
                         iconSizeMultiplierVector *= chestIcon.IconScale;
                         fgDraw.AddImage(
                             chestIcon.TexturePtr,

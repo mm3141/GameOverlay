@@ -299,7 +299,11 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
                 {
                     if (this.TryGetComponent<MinimapIcon>(out var _))
                     {
-                        if (this.Path.StartsWith("Metadata/Chests/LeagueHeist"))
+                        if (this.Path.StartsWith("Metadata/Chests/LeaguesExpedition"))
+                        {
+                            this.EntityType = EntityTypes.ExpeditionChest;
+                        }
+                        else if (this.Path.StartsWith("Metadata/Chests/LeagueHeist"))
                         {
                             this.EntityType = EntityTypes.HeistChest;
                         }
