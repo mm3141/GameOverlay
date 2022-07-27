@@ -11,6 +11,7 @@ namespace AutoHotKeyTrigger.ProfileManager.Conditions.DynamicCondition
     using GameHelper.RemoteObjects.Components;
     using GameHelper.RemoteObjects.States;
     using Interface;
+    using ClickableTransparentOverlay;
 
     /// <summary>
     ///     The structure that can be queried using DynamicCondition
@@ -87,5 +88,10 @@ namespace AutoHotKeyTrigger.ProfileManager.Conditions.DynamicCondition
         ///     Number of friendly nearby monsters
         /// </summary>
         public int FriendlyMonsterCount => this.nearbyMonsterInfo.Value.FriendlyMonsterCount;
+        
+        /// <summary>
+        ///     Capture the key press event
+        /// </summary>
+        public bool IsKeyPressedForAction(int vk) => NativeMethods.IsKeyPressed(vk);        
     }
 }
