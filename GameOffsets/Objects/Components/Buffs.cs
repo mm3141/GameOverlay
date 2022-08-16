@@ -25,6 +25,7 @@
         //[FieldOffset(0x0030)] public long Unknown1;
         //[FieldOffset(0x0038)] public int unknown2;
         [FieldOffset(0x003E)] public ushort Charges; // 2 bytes long but 1 is enough
+        [FieldOffset(0x0042)] public byte Effectiveness;
 
         public override string ToString()
         {
@@ -32,6 +33,7 @@
             var timeLeft = float.IsInfinity(this.TimeLeft) ? "Inf" : this.TimeLeft.ToString();
             return $"BuffDefinationPtr: {this.BuffDefinationPtr.ToInt64():X}, MaxTime: {maxTime}, " +
                    $"TimeLeft: {timeLeft}, Charges: {this.Charges}, " +
+                   $"Effectiveness: {this.Effectiveness}, " +
                    $"Source Entity Id: {this.SourceEntityId}";
         }
     }
