@@ -34,10 +34,10 @@ namespace AutoHotKeyTrigger.ProfileManager.Conditions.DynamicCondition
             {
                 if (this.source.TryGetValue(id, out var value))
                 {
-                    return new StatusEffect(true, value.TimeLeft, value.TotalTime, value.Charges);
+                    return new StatusEffect(true, value.TimeLeft, value.TotalTime, value.Charges, value.Effectiveness);
                 }
 
-                return new StatusEffect(false, 0, 0, 0);
+                return new StatusEffect(false, 0, 0, 0, 0);
             }
         }
 

@@ -13,7 +13,8 @@ namespace AutoHotKeyTrigger.ProfileManager.Conditions.DynamicCondition
     /// <param name="TimeLeft">Time left in seconds</param>
     /// <param name="TotalTime">Total time the effect will last</param>
     /// <param name="Charges">Amount of stacks of the effect</param>
-    public record StatusEffect(bool Exists, double TimeLeft, double TotalTime, int Charges) : IStatusEffect
+    /// <param name="Effectiveness">Effectiveness of effects like elusive.</param>
+    public record StatusEffect(bool Exists, double TimeLeft, double TotalTime, int Charges, int Effectiveness) : IStatusEffect
     {
         /// <summary>
         ///     Time left in percent from total time
