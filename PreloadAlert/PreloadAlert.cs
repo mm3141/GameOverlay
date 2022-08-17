@@ -4,6 +4,7 @@
 
 namespace PreloadAlert
 {
+    using System;
     using System.Collections.Generic;
     using System.IO;
     using System.Numerics;
@@ -22,10 +23,10 @@ namespace PreloadAlert
     public sealed class PreloadAlert : PCore<PreloadSettings>
     {
         private const ImGuiColorEditFlags ColorEditFlags = ImGuiColorEditFlags.NoInputs | ImGuiColorEditFlags.NoLabel;
-
         private readonly Dictionary<PreloadInfo, byte> preloadFound = new();
         private Vector4 color = new(1f);
         private string displayName = string.Empty;
+        private bool logToDisk = false;
         private Dictionary<string, PreloadInfo> importantPreloads = new();
         private bool isPreloadAlertHovered;
         private ActiveCoroutine onPreloadUpdated;
@@ -193,18 +194,14 @@ namespace PreloadAlert
             {
                 ImGui.InputText("Path", ref this.path, 200);
                 ImGui.InputText("Display Name", ref this.displayName, 50);
-                ImGui.ColorEdit4("Color", ref this.color, ColorEditFlags);
-                ImGui.SameLine();
+                ImGui.ColorEdit4("Color", ref this.color);
+                ImGui.Checkbox("Log to file when preload found in area/zone.", ref this.logToDisk);
                 if (ImGui.Button("Add & Save"))
                 {
-                    this.importantPreloads[this.path] = new PreloadInfo
-                    {
-                        Color = this.color,
-                        DisplayName = this.displayName
-                    };
-
+                    this.importantPreloads[this.path] = new(this.displayName, this.color, this.logToDisk);
                     this.path = string.Empty;
                     this.displayName = string.Empty;
+                    this.logToDisk = false;
                     this.SaveAllPreloadsToDisk();
                 }
             }
@@ -212,7 +209,7 @@ namespace PreloadAlert
 
         private void DisplayAllImportantPreloads()
         {
-            if (ImGui.CollapsingHeader("All Important Preloads (click preload path to edit)"))
+            if (ImGui.CollapsingHeader("All Important Preloads (click preload path to edit) (click checkbox to log preload on disk when found)"))
             {
                 if (this.importantPreloads.Count == 0)
                 {
@@ -220,11 +217,24 @@ namespace PreloadAlert
                         "file in the preload alert plugin folder?");
                 }
 
+                var tmpShouldLog = false;
                 foreach (var (key, preloadInfo) in this.importantPreloads)
                 {
+                    tmpShouldLog = preloadInfo.LogToDisk;
                     if (ImGui.SmallButton($"Delete##{key}"))
                     {
                         this.importantPreloads.Remove(key);
+                        this.SaveAllPreloadsToDisk();
+                    }
+
+                    ImGui.SameLine();
+                    ImGui.Spacing();
+                    ImGui.SameLine();
+                    ImGui.Spacing();
+                    ImGui.SameLine();
+                    if(ImGui.Checkbox($"##logToDisk{key}", ref tmpShouldLog))
+                    {
+                        this.importantPreloads[key] = new(preloadInfo.DisplayName, preloadInfo.Color, tmpShouldLog);
                         this.SaveAllPreloadsToDisk();
                     }
 
@@ -238,6 +248,7 @@ namespace PreloadAlert
                         this.path = key;
                         this.color = preloadInfo.Color;
                         this.displayName = preloadInfo.DisplayName;
+                        this.logToDisk = preloadInfo.LogToDisk;
                     }
                 }
             }
@@ -245,16 +256,29 @@ namespace PreloadAlert
 
         private IEnumerator<Wait> OnPreloadsUpdated()
         {
+            var logFilePathname = Path.Join(this.DllDirectory, "preloads_found.log");
+            List<string> writeToFile = new();
             while (true)
             {
                 yield return new Wait(HybridEvents.PreloadsUpdated);
                 this.preloadFound.Clear();
+                var areaInfo = $"{Core.States.AreaLoading.CurrentAreaName}, {Core.States.InGameStateObject.CurrentAreaInstance.AreaHash}";
                 foreach (var (key, preloadInfo) in this.importantPreloads)
                 {
                     if (Core.CurrentAreaLoadedFiles.PathNames.TryGetValue(key, out _))
                     {
                         this.preloadFound[preloadInfo] = 1;
+                        if (preloadInfo.LogToDisk)
+                        {
+                            writeToFile.Add($"{DateTime.Now}, {areaInfo}, {preloadInfo.DisplayName}");
+                        }
                     }
+                }
+
+                if (writeToFile.Count > 0)
+                {
+                    File.AppendAllLines(logFilePathname, writeToFile);
+                    writeToFile.Clear();
                 }
             }
         }
@@ -269,6 +293,14 @@ namespace PreloadAlert
         {
             public string DisplayName;
             public Vector4 Color;
+            public bool LogToDisk;
+
+            public PreloadInfo(string name, Vector4 color, bool log)
+            {
+                this.DisplayName = name;
+                this.Color = color;
+                this.LogToDisk = log;
+            }
         }
     }
 }
