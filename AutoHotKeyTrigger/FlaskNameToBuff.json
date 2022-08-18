@@ -212,7 +212,7 @@
   "Великий флакон жизни": [
     "flask_effect_life"
   ],
-  "Освященный флакон жизни": [
+  "Освящённый флакон жизни": [
     "flask_effect_life"
   ],
   "Благодатный флакон жизни": [
@@ -262,7 +262,7 @@
     "flask_effect_mana_not_removed_when_full",
     "flask_instant_mana_recovery_at_end_of_effect"
   ],
-  "Освященный флакон маны": [
+  "Освящённый флакон маны": [
     "flask_effect_mana",
     "flask_effect_mana_not_removed_when_full",
     "flask_instant_mana_recovery_at_end_of_effect"
