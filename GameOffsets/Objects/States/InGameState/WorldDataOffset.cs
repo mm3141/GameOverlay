@@ -1,4 +1,4 @@
-﻿// <copyright file="WorldDataOffset.cs" company="None">
+// <copyright file="WorldDataOffset.cs" company="None">
 // Copyright (c) None. All rights reserved.
 // </copyright>
 
@@ -18,7 +18,7 @@ namespace GameOffsets.Objects.States.InGameState
     [StructLayout(LayoutKind.Explicit, Pack = 1)]
     public struct WorldAreaDetailsStruct
     {
-        [FieldOffset(0x80)] public IntPtr WorldAreaDetailsRowPtr; // WorldArea.dat Offsets
+        [FieldOffset(0x88)] public IntPtr WorldAreaDetailsRowPtr; // WorldArea.dat Offsets
     }
 
     [StructLayout(LayoutKind.Explicit, Pack = 1)]

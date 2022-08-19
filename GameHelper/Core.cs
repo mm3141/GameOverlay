@@ -65,12 +65,12 @@ namespace GameHelper
         /// <summary>
         ///     Gets the values associated with the terrain rotation selector.
         /// </summary>
-        internal static TerrainHeightHelper RotationSelector { get; } = new(IntPtr.Zero, 8);
+        internal static TerrainHeightHelper RotationSelector { get; } = new(IntPtr.Zero, 9);
 
         /// <summary>
         ///     Gets the values associated with the terrain rotator helper.
         /// </summary>
-        internal static TerrainHeightHelper RotatorHelper { get; } = new(IntPtr.Zero, 24);
+        internal static TerrainHeightHelper RotatorHelper { get; } = new(IntPtr.Zero, 24); // if length ever changes, update terrain  height algo.
 
         /// <summary>
         ///     Gets the GameHelper settings.

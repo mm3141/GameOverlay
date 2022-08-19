@@ -87,6 +87,8 @@ namespace GameHelper.RemoteEnums
         LabyrinthCraftingInput,
         SentinelDroneInventory1,
         SentinelStorage1,
+        LakeTabletInventory1,
+        MemoryLineMaps
 #pragma warning restore CS1591, SA1602
     }
 }
