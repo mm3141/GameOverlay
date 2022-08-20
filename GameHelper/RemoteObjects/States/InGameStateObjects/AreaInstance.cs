@@ -450,6 +450,9 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
                         var finalRotatedY = 0;
                         if (rotationSelected >= rotatorMetrixHelper.Length)
                         {
+#if DEBUG
+                            Console.WriteLine($"rotationSelected: {rotationSelected} > rotatorMetrixHelper.Length: {rotatorMetrixHelper.Length}");
+#endif
                             finalRotatedX = gridXremaining;
                             finalRotatedY = gridYremaining;
                         }

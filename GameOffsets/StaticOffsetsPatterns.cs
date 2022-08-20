@@ -112,7 +112,20 @@
             new(
                 "Terrain Rotation Selector", // array length = smaller
                 "48 8d ?? ^ ?? ?? ?? ?? 41 ?? ?? ?? ?? ?? 48 8d ?? ?? ?? 45 ?? ?? 0f ?? ?? ?? 48 ?? ?? ?? ?? 88 ?? ?? ??"
-            )
+            ),
+
+            // <HowToFindIt>
+            // Find what accesses LargeMapUiElement -> UiElementBaseOffset -> RelativePosition.
+            // There should be just 1 or 2 instructions that access it
+            // Open that instruction in ghidra (let's call this function FOO).
+            // Find out who calls function FOO.
+            // One of the calling functions would be adding a DAT_XYZ into the return/output/result of function FOO.
+            // Make a pattern of that area.
+            // </HowToFindIt>
+            new(
+                "GameCullSize",
+                "2b ?? ^ ?? ?? ?? ?? d1 ?? 48 89 ?? ?? ?? 48"
+                )
         };
     }
 }

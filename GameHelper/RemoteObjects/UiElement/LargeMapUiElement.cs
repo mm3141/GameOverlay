@@ -22,10 +22,11 @@ namespace GameHelper.RemoteObjects.UiElement
             : base(address) { }
 
         /// <inheritdoc />
-        public override Vector2 Postion => Vector2.Zero;
+        public override Vector2 Postion => new(Core.GameCull.Value);
 
         /// <inheritdoc />
-        public override Vector2 Size => new Vector2(Core.Process.WindowArea.Width, Core.Process.WindowArea.Height);
+        public override Vector2 Size => new(Core.Process.WindowArea.Width - (Core.GameCull.Value * 2), Core.Process.WindowArea.Height);
+
 
         /// <summary>
         ///     Gets the center of the map.
