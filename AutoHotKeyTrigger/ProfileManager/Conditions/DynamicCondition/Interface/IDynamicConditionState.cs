@@ -48,5 +48,10 @@ namespace AutoHotKeyTrigger.ProfileManager.Conditions.DynamicCondition.Interface
         /// <param name="rarity">The rarity selector for monster search</param>
         /// <returns></returns>
         int MonsterCount(MonsterRarity rarity);
+        
+        /// <summary>
+        ///     Detect a keypress event
+        /// </summary>
+        bool IsKeyPressedForAction(int vk);        
     }
 }

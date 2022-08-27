@@ -27,7 +27,9 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             "Metadata/Monsters/AtlasExiles/AtlasExile",
             "Metadata/Monsters/Daemon/MaligaroBladeVortexDaemon",
             "Metadata/Monsters/Daemon/DoNothingDaemon",
-            "Metadata/Monsters/Daemon/ShakariQuicksandDaemon"
+            "Metadata/Monsters/Daemon/ShakariQuicksandDaemon",
+            "Metadata/Monsters/AtlasInvaders/CleansingMonsters/CleansingPhantasmPossessionDemon",
+            "Metadata/Monsters/Daemon/Archnemesis"
         };
 
         private static string deliriumHiddenMonsterStarting =
@@ -297,7 +299,11 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
                 {
                     if (this.TryGetComponent<MinimapIcon>(out var _))
                     {
-                        if (this.Path.StartsWith("Metadata/Chests/LeagueHeist"))
+                        if (this.Path.StartsWith("Metadata/Chests/LeaguesExpedition"))
+                        {
+                            this.EntityType = EntityTypes.ExpeditionChest;
+                        }
+                        else if (this.Path.StartsWith("Metadata/Chests/LeagueHeist"))
                         {
                             this.EntityType = EntityTypes.HeistChest;
                         }

@@ -7,6 +7,7 @@ namespace AutoHotKeyTrigger.ProfileManager.Conditions.DynamicCondition
     using System;
     using System.Linq.Dynamic.Core;
     using System.Numerics;
+    using AutoHotKeyTrigger.ProfileManager.Component;
     using GameHelper;
     using ImGuiNET;
     using Newtonsoft.Json;
@@ -73,9 +74,14 @@ namespace AutoHotKeyTrigger.ProfileManager.Conditions.DynamicCondition
         }
 
         /// <inheritdoc />
-        public void Display()
+        public void Display(bool expand)
         {
-            this.ToImGui();
+            this.ToImGui(expand);
+        }
+
+        /// <inheritdoc/>
+        public void Add(IComponent component)
+        {
         }
 
         /// <inheritdoc />
@@ -102,8 +108,18 @@ namespace AutoHotKeyTrigger.ProfileManager.Conditions.DynamicCondition
             }
         }
 
-        private void ToImGui()
+        private void ToImGui(bool expand = true)
         {
+            if (!expand)
+            {
+                ImGui.Text($"Expression:");
+                ImGui.SameLine();
+                ImGui.TextColored(new Vector4(255, 255, 0, 255), $"{this.conditionSource.Replace("\n", " ").Trim()}");
+                ImGui.SameLine();
+                ImGui.Text($"(Errors {this.exceptionCounter})");
+                return;
+            }
+
             ImGui.TextWrapped("Type the expression in the following box to make custom condition.");
             if (ImGui.InputTextMultiline(
                 "##dynamicConditionCode",

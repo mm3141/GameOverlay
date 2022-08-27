@@ -63,14 +63,19 @@ namespace GameHelper
         internal static GameWindowScale GameScale { get; } = new(IntPtr.Zero);
 
         /// <summary>
+        ///     Gets the size of the cull (black bar) area in the game window.
+        /// </summary>
+        internal static GameWindowCull GameCull { get; } = new(IntPtr.Zero);
+
+        /// <summary>
         ///     Gets the values associated with the terrain rotation selector.
         /// </summary>
-        internal static TerrainHeightHelper RotationSelector { get; } = new(IntPtr.Zero, 8);
+        internal static TerrainHeightHelper RotationSelector { get; } = new(IntPtr.Zero, 9);
 
         /// <summary>
         ///     Gets the values associated with the terrain rotator helper.
         /// </summary>
-        internal static TerrainHeightHelper RotatorHelper { get; } = new(IntPtr.Zero, 24);
+        internal static TerrainHeightHelper RotatorHelper { get; } = new(IntPtr.Zero, 24); // if length ever changes, update terrain  height algo.
 
         /// <summary>
         ///     Gets the GameHelper settings.
@@ -110,6 +115,7 @@ namespace GameHelper
             CoroutineHandler.Start(UpdateStatesData(), priority: int.MaxValue - 3);
             CoroutineHandler.Start(UpdateFilesData(), priority: int.MaxValue - 2);
             CoroutineHandler.Start(UpdateAreaChangeData(), priority: int.MaxValue - 1);
+            CoroutineHandler.Start(UpdateCullData(), priority: int.MaxValue);
             CoroutineHandler.Start(UpdateScaleData(), priority: int.MaxValue);
             CoroutineHandler.Start(UpdateRotationSelectorData(), priority: int.MaxValue);
             CoroutineHandler.Start(UpdateRotatorHelperData(), priority: int.MaxValue);
@@ -149,6 +155,20 @@ namespace GameHelper
             {
                 yield return new Wait(Process.OnStaticAddressFound);
                 GameScale.Address = Process.StaticAddresses["GameWindowScaleValues"];
+            }
+        }
+
+        /// <summary>
+        ///     Co-routine to update the address where the
+        ///     Game Cull Value is loaded in the game memory.
+        /// </summary>
+        /// <returns>co-routine IWait.</returns>
+        private static IEnumerator<Wait> UpdateCullData()
+        {
+            while (true)
+            {
+                yield return new Wait(Process.OnStaticAddressFound);
+                GameCull.Address = Process.StaticAddresses["GameCullSize"];
             }
         }
 
@@ -230,6 +250,7 @@ namespace GameHelper
                 States.Address = IntPtr.Zero;
                 CurrentAreaLoadedFiles.Address = IntPtr.Zero;
                 AreaChangeCounter.Address = IntPtr.Zero;
+                GameCull.Address = IntPtr.Zero;
                 GameScale.Address = IntPtr.Zero;
                 RotationSelector.Address = IntPtr.Zero;
                 RotatorHelper.Address = IntPtr.Zero;

@@ -85,6 +85,10 @@ namespace GameHelper.RemoteEnums
         ExpeditionStorage1,
         HellscapeModificationInventory1,
         LabyrinthCraftingInput,
+        SentinelDroneInventory1,
+        SentinelStorage1,
+        LakeTabletInventory1,
+        MemoryLineMaps
 #pragma warning restore CS1591, SA1602
     }
 }

@@ -133,6 +133,12 @@ namespace Radar
         public Dictionary<string, IconPicker> DeliriumIcons = new();
 
         /// <summary>
+        /// Icons to display on the map. Delirium includes the special spawners and bombs that
+        /// delirium brings and they can't be convered by base icons.
+        /// </summary>
+        public Dictionary<string, IconPicker> ExpeditionIcons = new();
+
+        /// <summary>
         /// Icons to display on the map. Heist includes the special heist chests that can't
         /// be distinguished by base chests.
         /// </summary>
@@ -195,6 +201,7 @@ namespace Radar
             this.AddDefaultDeliriumIcons(basicIconPathName);
             this.AddDefaultHeistIcons(basicIconPathName);
             this.AddDefaultDelveIcons(basicIconPathName);
+            this.AddDefaultExpeditionIcons(basicIconPathName);
         }
 
         private void AddDefaultBaseGameIcons(string iconPathName)
@@ -230,6 +237,11 @@ namespace Radar
         {
             this.DeliriumIcons.TryAdd("Delirium Bomb", new IconPicker(iconPathName, IconsPngCols, IconsPngRows, 5, 0, 30));
             this.DeliriumIcons.TryAdd("Delirium Spawner", new IconPicker(iconPathName, IconsPngCols, IconsPngRows, 6, 0, 30));
+        }
+
+        private void AddDefaultExpeditionIcons(string iconPathName)
+        {
+            this.ExpeditionIcons.TryAdd("Generic Expedition Chests", new IconPicker(iconPathName, IconsPngCols, IconsPngRows, 5, 41, 30));
         }
 
         private void AddDefaultHeistIcons(string iconPathName)

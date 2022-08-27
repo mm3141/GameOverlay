@@ -1,5 +1,5 @@
 {
-  "Small Life Flask": [
+ "Small Life Flask": [
     "flask_effect_life"
   ],
   "Medium Life Flask": [
@@ -187,5 +187,204 @@
   ],
   "Steel Flask": [
     "flask_utility_adaptation"
+  ],
+
+  "Малый флакон жизни": [
+    "flask_effect_life"
+  ],
+  "Средний флакон жизни": [
+    "flask_effect_life"
+  ],
+
+  "Большой флакон жизни": [
+    "flask_effect_life"
+  ],
+
+  "Вместительный флакон жизни": [
+    "flask_effect_life"
+  ],  
+  "Огромный флакон жизни": [
+    "flask_effect_life"
+  ],  
+  "Гигантский флакон жизни": [
+    "flask_effect_life"
+  ],
+  "Великий флакон жизни": [
+    "flask_effect_life"
+  ],
+  "Освящённый флакон жизни": [
+    "flask_effect_life"
+  ],
+  "Благодатный флакон жизни": [
+    "flask_effect_life"
+  ],
+  "Святой флакон жизни": [
+    "flask_effect_life"
+  ],
+  "Божественный флакон жизни": [
+    "flask_effect_life"
+  ],
+  "Вечный флакон жизни": [
+    "flask_effect_life"
+  ],
+  "Малый флакон маны": [
+    "flask_effect_mana",
+    "flask_effect_mana_not_removed_when_full",
+    "flask_instant_mana_recovery_at_end_of_effect"
+  ],  
+  "Средний флакон маны": [
+    "flask_effect_mana",
+    "flask_effect_mana_not_removed_when_full",
+    "flask_instant_mana_recovery_at_end_of_effect"
+  ],
+  "Большой флакон маны": [
+    "flask_effect_mana",
+    "flask_effect_mana_not_removed_when_full",
+    "flask_instant_mana_recovery_at_end_of_effect"
+  ],
+  "Вместительный флакон маны": [
+    "flask_effect_mana",
+    "flask_effect_mana_not_removed_when_full",
+    "flask_instant_mana_recovery_at_end_of_effect"
+  ],
+  "Огромный флакон маны": [
+    "flask_effect_mana",
+    "flask_effect_mana_not_removed_when_full",
+    "flask_instant_mana_recovery_at_end_of_effect"
+  ],
+  "Гигантский флакон маны": [
+    "flask_effect_mana",
+    "flask_effect_mana_not_removed_when_full",
+    "flask_instant_mana_recovery_at_end_of_effect"
+  ],  
+  "Великий флакон маны": [
+    "flask_effect_mana",
+    "flask_effect_mana_not_removed_when_full",
+    "flask_instant_mana_recovery_at_end_of_effect"
+  ],
+  "Освящённый флакон маны": [
+    "flask_effect_mana",
+    "flask_effect_mana_not_removed_when_full",
+    "flask_instant_mana_recovery_at_end_of_effect"
+  ],
+  "Благодатный флакон маны": [
+    "flask_effect_mana",
+    "flask_effect_mana_not_removed_when_full",
+    "flask_instant_mana_recovery_at_end_of_effect"
+  ],
+  "Святой флакон маны": [
+    "flask_effect_mana",
+    "flask_effect_mana_not_removed_when_full",
+    "flask_instant_mana_recovery_at_end_of_effect"
+  ],
+  "Божественный флакон маны": [
+    "flask_effect_mana",
+    "flask_effect_mana_not_removed_when_full",
+    "flask_instant_mana_recovery_at_end_of_effect"
+  ],
+  "Вечный флакон маны": [
+    "flask_effect_mana",
+    "flask_effect_mana_not_removed_when_full",
+    "flask_instant_mana_recovery_at_end_of_effect"
+  ],
+  "Малый флакон равновесия": [
+    "flask_effect_life",
+    "flask_effect_mana",
+    "flask_effect_mana_not_removed_when_full",
+    "flask_instant_mana_recovery_at_end_of_effect"
+  ],
+  "Средний флакон равновесия": [
+    "flask_effect_life",
+    "flask_effect_mana",
+    "flask_effect_mana_not_removed_when_full",
+    "flask_instant_mana_recovery_at_end_of_effect"
+  ],
+  
+  "Большой флакон равновесия": [
+    "flask_effect_life",
+    "flask_effect_mana",
+    "flask_effect_mana_not_removed_when_full",
+    "flask_instant_mana_recovery_at_end_of_effect"
+  ],
+  
+  "Великий флакон равновесия": [
+    "flask_effect_life",
+    "flask_effect_mana",
+    "flask_effect_mana_not_removed_when_full",
+    "flask_instant_mana_recovery_at_end_of_effect"
+  ],
+  
+  "Освященный флакон равновесия": [
+    "flask_effect_life",
+    "flask_effect_mana",
+    "flask_effect_mana_not_removed_when_full",
+    "flask_instant_mana_recovery_at_end_of_effect"
+  ],
+  
+  "Благодатный флакон равновесия": [
+    "flask_effect_life",
+    "flask_effect_mana",
+    "flask_effect_mana_not_removed_when_full",
+    "flask_instant_mana_recovery_at_end_of_effect"
+  ],
+  
+  
+  "Алмазный флакон": [
+    "flask_utility_critical_strike_chance"
+  ],
+
+  "Рубиновый флакон": [
+    "flask_utility_resist_fire"
+  ],
+  "Сапфировый флакон": [
+    "flask_utility_resist_cold"
+  ],
+  "Топазовый флакон": [
+    "flask_utility_resist_lightning"
+  ],
+  "Гранитный флакон": [
+    "flask_utility_ironskin"
+  ],
+  "Ртутный флакон": [
+    "flask_utility_sprint"
+  ],
+  "Аметистовый флакон": [
+    "flask_utility_resist_chaos"
+  ],
+  "Кварцевый флакон": [
+    "flask_utility_phase"
+  ],
+  "Нефритовый флакон": [
+    "flask_utility_evasion"
+  ],
+  "Базальтовый флакон": [
+    "flask_utility_stone"
+  ],
+  "Аквамариновый флакон": [
+    "flask_utility_aquamarine"
+  ],
+  "Стибнитовый флакон": [
+    "flask_utility_smoke"
+  ],
+  "Серный флакон": [
+    "flask_utility_consecrate"
+  ],
+  "Серебряный флакон": [
+    "flask_utility_haste"
+  ],
+  "Висмутовый флакон": [
+    "flask_utility_prismatic"
+  ],
+  "Золотой флакон": [
+    "flask_utility_rarity"
+  ],  
+  "Корундовый флакон": [
+    "flask_utility_stun_protection"
+  ],
+  "Железный флакон": [
+    "flask_utility_ward"
+  ],
+  "Стальной флакон": [
+    "flask_utility_adaptation"
   ]
-}
+  }

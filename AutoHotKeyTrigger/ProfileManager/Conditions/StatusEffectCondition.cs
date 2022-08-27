@@ -5,6 +5,7 @@
 ﻿namespace AutoHotKeyTrigger.ProfileManager.Conditions
 {
     using System;
+    using AutoHotKeyTrigger.ProfileManager.Component;
     using Enums;
     using GameHelper;
     using GameHelper.RemoteObjects.Components;
@@ -12,7 +13,6 @@
     using GameOffsets.Objects.Components;
     using ImGuiNET;
     using Newtonsoft.Json;
-    using Newtonsoft.Json.Converters;
 
     /// <summary>
     ///     For triggering a flask on player Status Effect duration/charges.
@@ -34,6 +34,7 @@
         [JsonProperty] private StatusEffectCheckType checkType;
         [JsonProperty] private OperatorType @operator;
         [JsonProperty] private float threshold;
+        [JsonProperty] private IComponent component;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="StatusEffectCondition" /> class.
@@ -48,6 +49,7 @@
             this.buffId = buffId;
             this.threshold = threshold;
             this.checkType = checkType;
+            this.component = null;
         }
 
         /// <summary>
@@ -73,19 +75,27 @@
         }
 
         /// <inheritdoc />
-        public void Display()
+        public void Display(bool expand)
         {
-            this.ToImGui();
+            this.ToImGui(expand);
+            this.component?.Display(expand);
+        }
+
+        /// <inheritdoc/>
+        public void Add(IComponent component)
+        {
+            this.component = component;
         }
 
         /// <inheritdoc />
         public bool Evaluate()
         {
+            var isConditionValid = false;
             var player = Core.States.InGameStateObject.CurrentAreaInstance.Player;
             if (player.TryGetComponent<Buffs>(out var buffComponent))
             {
                 var exists = buffComponent.StatusEffects.TryGetValue(this.buffId, out var buff);
-                return this.@operator switch
+                isConditionValid = this.@operator switch
                 {
                     OperatorType.BIGGER_THAN => (exists ? this.GetValue(buff) : 0f) > this.threshold,
                     OperatorType.LESS_THAN => (exists ? this.GetValue(buff) : 0f) < this.threshold,
@@ -95,7 +105,7 @@
                 };
             }
 
-            return false;
+            return this.component == null ? isConditionValid : this.component.execute(isConditionValid);
         }
 
         private float GetValue(StatusEffectStruct buffDetails)
@@ -110,8 +120,52 @@
             };
         }
 
-        private void ToImGui()
+        private void ToImGui(bool expand = true)
         {
+            if (!expand)
+            {
+                if (this.@operator != OperatorType.CONTAINS && this.@operator != OperatorType.NOT_CONTAINS)
+                {
+                    ImGui.Text("Player has");
+                    ImGui.SameLine();
+                    ImGui.TextColored(new System.Numerics.Vector4(255, 255, 0, 255), $"{this.buffId}");
+                    ImGui.SameLine();
+                    if (this.@operator == OperatorType.BIGGER_THAN)
+                    {
+                        ImGui.Text("(de)buff with more than");
+                    }
+                    else
+                    {
+                        ImGui.Text("(de)buff with less than");
+                    }
+
+                    ImGui.SameLine();
+                    ImGui.TextColored(new System.Numerics.Vector4(255, 255, 0, 255), $"{this.threshold}");
+                    ImGui.SameLine();
+                    ImGui.Text($"{this.checkType}");
+                }
+                else
+                {
+                    ImGui.Text("Player");
+                    ImGui.SameLine();
+                    if (this.@operator == OperatorType.NOT_CONTAINS)
+                    {
+                        ImGui.Text("does not have");
+                    }
+                    else
+                    {
+                        ImGui.Text("has");
+                    }
+
+                    ImGui.SameLine();
+                    ImGui.TextColored(new System.Numerics.Vector4(255, 255, 0, 255), $"{this.buffId}");
+                    ImGui.SameLine();
+                    ImGui.Text("(de)buff");
+                }
+
+                return;
+            }
+
             ImGui.PushID("StatusEffectDuration");
             if (this.@operator != OperatorType.CONTAINS && this.@operator != OperatorType.NOT_CONTAINS)
             {

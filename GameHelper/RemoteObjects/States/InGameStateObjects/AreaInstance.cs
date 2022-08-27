@@ -53,9 +53,9 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             this.AwakeEntities = new();
             this.EntityCaches = new()
             {
-                new("Breach", 1096, 1100, this.AwakeEntities),
-                new("LeagueAffliction", 1106, 1106, this.AwakeEntities),
-                new("Hellscape", 1236, 1247, this.AwakeEntities)
+                new("Breach", 1104, 1108, this.AwakeEntities),
+                new("LeagueAffliction", 1114, 1114, this.AwakeEntities),
+                new("Hellscape", 1244, 1255, this.AwakeEntities)
             };
 
             this.NetworkBubbleEntityCount = 0;
@@ -415,7 +415,14 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
                     addr =>
                     {
                         var subTileData = reader.ReadMemory<SubTileStruct>(addr);
-                        return reader.ReadStdVector<sbyte>(subTileData.SubTileHeight);
+                        var subTileHeightData = reader.ReadStdVector<sbyte>(subTileData.SubTileHeight);
+#if DEBUG
+                        if (subTileHeightData.Length > TileStructure.TileToGridConversion * TileStructure.TileToGridConversion)
+                        {
+                            Console.WriteLine($"found new length {subTileHeightData.Length}");
+                        }
+#endif
+                        return subTileHeightData;
                     },
                     (addr, data) => data);
             });
@@ -433,31 +440,45 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
                     var mytiledata = tileData[tileDataIndex];
                     var mytileHeight = tileHeightCache[mytiledata.SubTileDetailsPtr];
                     var exactHeight = 0;
-                    if (mytileHeight.Length > 0)
+                    if (mytileHeight.Length > 0) // SubTileHeightPtr == SubTileDetailsPtr[1]
                     {
                         var gridXremaining = x % TileStructure.TileToGridConversion;
                         var gridYremaining = y % TileStructure.TileToGridConversion;
-                        var tmp = TileStructure.TileToGridConversion - 1;
-                        var rotatorMetrix = new int[4]
-                        {
-                            tmp - gridXremaining,
-                            gridXremaining,
-                            tmp - gridYremaining,
-                            gridYremaining
-                        };
 
                         var rotationSelected = rotationHelper[mytiledata.RotationSelector] * 3;
-                        int rotatedX0 = rotatorMetrixHelper[rotationSelected];
-                        int rotatedX1 = rotatorMetrixHelper[rotationSelected + 1];
-                        int rotatedY0 = rotatorMetrixHelper[rotationSelected + 2];
-                        var rotatedY1 = 0;
-                        if (rotatedX0 == 0)
+                        var finalRotatedX = 0;
+                        var finalRotatedY = 0;
+                        if (rotationSelected >= rotatorMetrixHelper.Length)
                         {
-                            rotatedY1 = 2;
+#if DEBUG
+                            Console.WriteLine($"rotationSelected: {rotationSelected} > rotatorMetrixHelper.Length: {rotatorMetrixHelper.Length}");
+#endif
+                            finalRotatedX = gridXremaining;
+                            finalRotatedY = gridYremaining;
+                        }
+                        else
+                        {
+                            var tmp = TileStructure.TileToGridConversion - 1;
+                            var rotatorMetrix = new int[4] {
+                                tmp - gridXremaining,
+                                gridXremaining,
+                                tmp - gridYremaining,
+                                gridYremaining
+                            };
+
+                            int rotatedX0 = rotatorMetrixHelper[rotationSelected];
+                            int rotatedX1 = rotatorMetrixHelper[rotationSelected + 1];
+                            int rotatedY0 = rotatorMetrixHelper[rotationSelected + 2];
+                            var rotatedY1 = 0;
+                            if (rotatedX0 == 0)
+                            {
+                                rotatedY1 = 2;
+                            }
+
+                            finalRotatedX = rotatorMetrix[rotatedX0 * 2 + rotatedX1];
+                            finalRotatedY = rotatorMetrix[rotatedY0 + rotatedY1];
                         }
 
-                        var finalRotatedX = rotatorMetrix[rotatedX0 * 2 + rotatedX1];
-                        var finalRotatedY = rotatorMetrix[rotatedY0 + rotatedY1];
                         var mytileHeightIndex = finalRotatedY * TileStructure.TileToGridConversion + finalRotatedX;
                         exactHeight = mytileHeight[mytileHeightIndex];
                     }

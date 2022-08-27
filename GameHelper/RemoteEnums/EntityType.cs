@@ -61,6 +61,11 @@ namespace GameHelper.RemoteEnums
         HeistChest,
 
         /// <summary>
+        ///      Contains the Chest component and found in Expedition area.
+        /// </summary>
+        ExpeditionChest,
+
+        /// <summary>
         ///     Contains the Chest component and is a strongbox.
         /// </summary>
         ImportantStrongboxChest,

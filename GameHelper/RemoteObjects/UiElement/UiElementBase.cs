@@ -90,6 +90,7 @@ namespace GameHelper.RemoteObjects.UiElement
                 var pos = this.GetUnScaledPosition();
                 pos.X *= widthScale;
                 pos.Y *= heightScale;
+                pos.X += Core.GameCull.Value;
                 return pos;
             }
 

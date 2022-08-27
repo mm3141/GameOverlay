@@ -6,11 +6,49 @@ namespace Launcher
 {
     using System;
     using System.Diagnostics;
+    using System.Threading;
 
     public static class Program
     {
-        private static void Main()
+        private static int Main(string[] args)
         {
+            if (!GameHelperFinder.TryFindGameHelperExe(out var gameHelperDir, out var gameHelperLoc))
+            {
+                Console.WriteLine($"GameHelper.exe is also not found in {gameHelperDir}");
+                Console.ReadKey();
+                return 1;
+            }
+
+            try
+            {
+                var isWaiting = false;
+                if (args.Length == 0)
+                {
+                    Console.WriteLine("Are you waiting for a new GameHelper release? (yes/no)");
+                    isWaiting = Console.ReadLine().ToLowerInvariant().StartsWith("y");
+                }
+
+                do
+                {
+                    if (AutoUpdate.UpgradeGameHelper(gameHelperDir))
+                    {
+                        // Returning because Launcher should auto-restart on exit.
+                        return 0;
+                    }
+                    else if (isWaiting)
+                    {
+                        Console.WriteLine("Didn't find any new version, sleeping for 5 mins....");
+                        Thread.Sleep(5 * 60 * 1000);
+                    }
+                }
+                while (isWaiting);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Failed to upgrade GameHelper due to: {ex}");
+                Console.ReadKey();
+            }
+
             try
             {
                 Console.WriteLine("Preparing GameHelper...");
@@ -24,7 +62,7 @@ namespace Launcher
                     Console.ReadLine();
                 }
 
-                var gameHelperPath = GameHelperTransformer.TransformGameHelperExecutable(newName);
+                var gameHelperPath = GameHelperTransformer.TransformGameHelperExecutable(gameHelperDir, gameHelperLoc, newName);
                 Console.WriteLine($"Starting GameHelper at '{gameHelperPath}'...");
                 Process.Start(gameHelperPath);
             }
@@ -33,6 +71,8 @@ namespace Launcher
                 Console.WriteLine($"Failed to launch GameHelper due to: {ex}");
                 Console.ReadKey();
             }
+
+            return 0;
         }
     }
 }

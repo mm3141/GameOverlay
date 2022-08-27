@@ -33,5 +33,11 @@ namespace AutoHotKeyTrigger.ProfileManager.Conditions.DynamicCondition.Interface
         ///     Total time the effect will last
         /// </summary>
         double TotalTime { get; init; }
+
+        /// <summary>
+        ///     Effectiveness of the status effect like elusive
+        ///     Value might change from effect to effect and might not be between 0 - 100.
+        /// </summary>
+        int Effectiveness { get; init; }
     }
 }
