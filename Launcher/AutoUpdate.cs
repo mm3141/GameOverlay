@@ -9,7 +9,7 @@
 
     public static class AutoUpdate
     {
-        private static string upgrade_url = "https://api.github.com/repos/zaafar/GameOverlay/releases/latest";
+        private static string upgrade_url = "https://api.github.com/repos/BanditTech/GameOverlay/releases/latest";
         private static string version_file_name = "VERSION.txt";
         private static string release_file_name = "release.zip";
         private static string self_exe_name = AppDomain.CurrentDomain.FriendlyName;
