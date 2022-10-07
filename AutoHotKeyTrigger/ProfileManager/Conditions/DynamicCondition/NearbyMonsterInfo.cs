@@ -23,7 +23,7 @@
         {
             foreach (var entity in state.CurrentAreaInstance.AwakeEntities.Values)
             {
-                if (!entity.IsNearbyAndTargetable)
+                if (!entity.IsNearby)
                 {
                     continue;
                 }
