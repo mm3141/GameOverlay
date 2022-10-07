@@ -62,6 +62,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             this.Path = string.Empty;
             this.Id = 0;
             this.IsValid = false;
+            this.IsTargetable = false;
             this.EntityType = EntityTypes.Unidentified;
         }
 
@@ -76,15 +77,21 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
         public uint Id { get; private set; }
 
         /// <summary>
-        ///     Gets a value indicating whether the entity is nearby the player or not.
+        ///     Gets a value indicating whether the entity is nearby and targetable by the player or not.
         /// </summary>
-        public bool IsNearby => this.IsValid && this.isnearby;
+        public bool IsNearbyAndTargetable => this.IsValid && this.isnearby && this.IsTargetable;
 
         /// <summary>
         ///     Gets or Sets a value indicating whether the entity
         ///     exists in the game or not.
         /// </summary>
         public bool IsValid { get; set; }
+
+        /// <summary>
+        ///     Gets or Sets a value indicating whether the entity
+        ///     is targetable or not.
+        /// </summary>
+        public bool IsTargetable { get; set; }
 
         /// <summary>
         ///     Gets a value indicating the type of entity this is.
@@ -256,6 +263,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             var reader = Core.Process.Handle;
             var entityData = reader.ReadMemory<EntityOffsets>(this.Address);
             this.IsValid = EntityHelper.IsValidEntity(entityData.IsValid);
+            this.IsTargetable = this.TryGetComponent<Targetable>(out var _);
             if (!this.IsValid)
             {
                 // Invalid entity data is normally corrupted. let's not parse it.
@@ -295,7 +303,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
                 {
                     this.EntityType = EntityTypes.Useless;
                 }
-                else if(this.EntityType == EntityTypes.Unidentified) // so it only happen once.
+                else if (this.EntityType == EntityTypes.Unidentified) // so it only happen once.
                 {
                     if (this.TryGetComponent<MinimapIcon>(out var _))
                     {
