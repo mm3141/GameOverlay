@@ -18,7 +18,7 @@ namespace GameHelper.RemoteObjects.Components
         /// </summary>
         /// <param name="address">address of the <see cref="Targetable" /> component.</param>
         public Targetable(IntPtr address)
-            : base(address, false) { }
+            : base(address, true) { }
 
         /// <summary>
         ///     Gets a value indicating whether the entity is targetable or not.

@@ -172,6 +172,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             ImGui.Text($"Path: {this.Path}");
             ImGui.Text($"Id: {this.Id}");
             ImGui.Text($"Is Valid: {this.IsValid}");
+            ImGui.Text($"Is Targetable: {this.IsTargetable}");
             ImGui.Text($"Entity Type: {this.EntityType}");
             if (ImGui.TreeNode("Components"))
             {
