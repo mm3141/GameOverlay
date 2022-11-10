@@ -88,8 +88,7 @@ namespace GameHelper.RemoteObjects
         {
             var reader = Core.Process.Handle;
             var data = reader.ReadMemoryArray<float>(this.Address, this.Values.Length);
-            for (var i = 0; i < data.Length; i++)
-            {
+            for (var i = 0; i < data.Length; i++) {
                 this.Values[i] = data[i];
             }
         }

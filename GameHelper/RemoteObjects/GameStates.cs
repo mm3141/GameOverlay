@@ -27,9 +27,7 @@ namespace GameHelper.RemoteObjects
         ///     Initializes a new instance of the <see cref="GameStates" /> class.
         /// </summary>
         /// <param name="address">address of the remote memory object.</param>
-        internal GameStates(IntPtr address)
-            : base(address)
-        {
+        internal GameStates(IntPtr address) : base(address) {
             CoroutineHandler.Start(this.OnPerFrame(), priority: int.MaxValue);
         }
 

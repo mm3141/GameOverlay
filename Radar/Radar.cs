@@ -349,7 +349,7 @@ namespace Radar
                 this.walkableMapDimension.X,
                 this.walkableMapDimension.Y);
 
-            var p1 = Helper.DeltaInWorldToMapDelta(
+                var p1 = Helper.DeltaInWorldToMapDelta(
                 new Vector2(rectf.Left, rectf.Top), -pRender.TerrainHeight);
             var p2 = Helper.DeltaInWorldToMapDelta(
                 new Vector2(rectf.Right, rectf.Top), -pRender.TerrainHeight);

@@ -176,7 +176,6 @@ namespace GameHelper
                         this.Information = this.processesInfo[this.clientSelected];
                         if (this.Open())
                         {
-                            this.processesInfo.Clear();
                             break;
                         }
                     }
@@ -282,11 +281,18 @@ namespace GameHelper
 
                 var procSize = this.Information.MainModule.ModuleMemorySize;
                 var patternsInfo = PatternFinder.Find(this.Handle, baseAddress, procSize);
-                foreach (var patternInfo in patternsInfo)
+                foreach (var pi in patternsInfo)
                 {
-                    var offsetDataValue = this.Handle.ReadMemory<int>(baseAddress + patternInfo.Value);
-                    var address = baseAddress + patternInfo.Value + offsetDataValue + 0x04;
-                    this.StaticAddresses[patternInfo.Key] = address;
+                    //if (pi.Key == "GameWindowScaleValues") {
+                    //    var start = baseAddress + pi.Value + 1 + 12;//12 befor line i need(with addres i need)
+                    //    var skip = this.Handle.ReadMemory<int>(start + 4); // 4 byte opcodes befor address i need
+                    //    var res = start + skip + 8; //8 coz instruction here 4(opcode)+4(address)
+                    //    this.StaticAddresses[pi.Key] = res;
+                    //    continue;
+                    //}
+                    var offsetDataValue = this.Handle.ReadMemory<int>(baseAddress + pi.Value);
+                    var address = baseAddress + pi.Value + offsetDataValue + 0x04;
+                    this.StaticAddresses[pi.Key] = address;
                 }
 
                 CoroutineHandler.RaiseEvent(this.OnStaticAddressFound);
@@ -304,8 +310,7 @@ namespace GameHelper
                 return false;
             }
 
-            Core.CoroutinesRegistrar.Add(CoroutineHandler.Start(
-                this.Monitor(), "[GameProcess] Monitoring Game Process"));
+            Core.CoroutinesRegistrar.Add(CoroutineHandler.Start(this.Monitor(), "[GameProcess] Monitoring Game Process"));
             CoroutineHandler.RaiseEvent(GameHelperEvents.OnOpened);
             return true;
         }

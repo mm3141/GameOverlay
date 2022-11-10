@@ -159,8 +159,7 @@ namespace AutoHotKeyTrigger
 
             DynamicCondition.UpdateState();
             if (this.ShouldExecuteAutoQuit || NativeMethods.IsKeyPressedAndNotTimeout(
-                (int)this.Settings.AutoQuitKey))
-            {
+                (int)this.Settings.AutoQuitKey)){
                 MiscHelper.KillTCPConnectionForProcess(Core.Process.Pid);
             }
 
