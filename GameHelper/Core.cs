@@ -22,6 +22,10 @@ namespace GameHelper {
     /// </summary>
     public static class Core {
         #region LOG
+        /// <summary>
+        /// w8ting for 60 frame per second
+        /// </summary>
+        public static int w8 = 1000 / 60;
         public static FixedSizedLog log { get; } = new FixedSizedLog(10);
         public static void ClearLog() {
             log.Clear();

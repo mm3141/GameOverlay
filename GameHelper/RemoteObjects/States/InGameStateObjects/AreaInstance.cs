@@ -15,6 +15,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects {
     using CoroutineEvents;
     using GameHelper.Cache;
     using GameHelper.RemoteEnums;
+    using GameHelper.Utils.Stas.GA;
     using GameOffsets.Natives;
     using GameOffsets.Objects.States.InGameState;
     using ImGuiNET;
@@ -245,10 +246,10 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects {
                 }
             }
         }
-        Stopwatch sw_e = new Stopwatch();
-        ConcurrentDictionary<Entity, double> eres = new();
+        SW sw = new SW("UpdEntList");
         private void UpdateEntities(StdMap ePtr, ConcurrentDictionary<EntityNodeKey, Entity> data, bool addToCache) {
-            var reader = Core.Process.Handle;
+            sw.Restart();
+             var reader = Core.Process.Handle;
             var areaDetails = Core.States.InGameStateObject.CurrentWorldInstance.AreaDetails;
             if (Core.GHSettings.DisableEntityProcessingInTownOrHideout && (areaDetails.IsHideout || areaDetails.IsTown)) {
                 this.NetworkBubbleEntityCount = 0;
@@ -272,7 +273,6 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects {
                 }
                kv.Value.IsValid = false;
             }
-            eres.Clear();
             var e_added = 0;
             this.NetworkBubbleEntityCount = entities.Count;
             Parallel.For(0, entities.Count, index => {
@@ -281,10 +281,8 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects {
                     entity.Address = value.EntityPtr;
                 }
                 else {
-                    sw_e.Restart();
                     entity = new Entity(value.EntityPtr);
                     e_added += 1;
-                    eres.TryAdd(entity, sw_e.Elapsed.TotalMilliseconds);
                     if (!string.IsNullOrEmpty(entity.Path)) {
                         data[key] = entity;
                         if (addToCache) {
@@ -297,10 +295,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects {
                 }
                 entity?.UpdateNearby(this.Player);
             });
-            var sorted = eres.OrderByDescending(e => e.Value).ToDictionary(x => x.Key, x => x.Value); ;
-            var etotal = eres.Values.Sum();
-            Core.AddToLog("frame=[" + (frame += 1) + "]");
-            Core.AddToLog("added=[" + e_added + "] e_count =[" + data.Count + "] elaps=[" + etotal + "]ms", MessType.Warning);
+            sw.Print();
         }
 
         private Dictionary<string, List<Vector2>> GetTgtFileData() {
