@@ -43,9 +43,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
         ///     Initializes a new instance of the <see cref="Entity" /> class.
         /// </summary>
         /// <param name="address">address of the Entity.</param>
-        internal Entity(IntPtr address)
-            : this()
-        {
+        internal Entity(IntPtr address) : this()  {
             this.Address = address;
         }
 
@@ -53,8 +51,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
         ///     Initializes a new instance of the <see cref="Entity" /> class.
         ///     NOTE: Without providing an address, only invalid and empty entity is created.
         /// </summary>
-        internal Entity()
-            : base(IntPtr.Zero, true)
+        internal Entity()  : base(IntPtr.Zero, true)
         {
             this.componentAddresses = new();
             this.componentCache = new();

@@ -9,6 +9,7 @@ namespace GameHelper {
     using System.Reflection;
     using Coroutine;
     using CoroutineEvents;
+    using GameHelper.Ui;
     using ImGuiNET;
     using RemoteObjects;
     using Settings;
@@ -20,6 +21,17 @@ namespace GameHelper {
     ///     GameHelper settings.
     /// </summary>
     public static class Core {
+        #region LOG
+        public static FixedSizedLog log { get; } = new FixedSizedLog(10);
+        public static void ClearLog() {
+            log.Clear();
+        }
+        public static DrawLog draw_log = new DrawLog();
+
+        public static void AddToLog(string str, MessType _mt = MessType.Ok) {
+            log.Add(str, _mt);
+        }
+        #endregion
         /// <summary>
         ///     Gets the GameHelper version.
         /// </summary>

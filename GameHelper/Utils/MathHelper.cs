@@ -4,13 +4,35 @@
 
 namespace GameHelper.Utils
 {
+    using System;
     using System.Numerics;
-
+    using V2 = System.Numerics.Vector2;
     /// <summary>
     ///     Utility functions to help with some math.
     /// </summary>
     public static class MathHelper
     {
+        public static V2 Increase(this V2 vector, float dx = 0f, float dy = 0f) {
+            return new V2(vector.X + dx, vector.Y + dy);
+        }
+        /// <summary>
+        /// Converts the color into a packed integer.
+        /// </summary>
+        /// <returns>A packed integer containing all four color components.</returns>
+        public static uint ToImgui(this System.Drawing.Color c) {
+            int value = c.R;
+            value |= c.G << 8;
+            value |= c.B << 16;
+            value |= c.A << 24;
+
+            return (uint)value;
+        }
+        public static string ToRoundStr(this double f, int round = 3) {
+            return (Math.Round(f, round)).ToString();
+        }
+        public static string ToRoundStr(this float f, int round = 3) {
+            return (Math.Round(f, round)).ToString();
+        }
         /// <summary>
         ///     Linearly interpolates between two points.
         ///     Interpolates between the points a and b by the interpolant t.

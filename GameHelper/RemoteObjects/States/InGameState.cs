@@ -70,6 +70,7 @@ namespace GameHelper.RemoteObjects.States
         {
             var reader = Core.Process.Handle;
             var data = reader.ReadMemory<InGameStateOffset>(this.Address);
+
             this.CurrentWorldInstance.Address = data.WorldData;
             this.CurrentAreaInstance.Address = data.AreaInstanceData;
             this.UiRoot.Address = data.UiRootPtr;

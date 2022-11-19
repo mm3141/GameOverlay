@@ -6,6 +6,7 @@ namespace Radar
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.IO;
     using System.Linq;
     using System.Numerics;
@@ -671,8 +672,7 @@ namespace Radar
                     case EntityTypes.Stage1FIT:
                     case EntityTypes.Monster:
                         entity.Value.TryGetComponent<ObjectMagicProperties>(out var omp);
-                        if (entity.Value.EntityType == EntityTypes.Stage0FIT &&
-                            omp.Rarity != Rarity.Unique)
+                        if (entity.Value.EntityType == EntityTypes.Stage0FIT && omp.Rarity != Rarity.Unique)
                         {
                             break;
                         }
@@ -827,7 +827,7 @@ namespace Radar
             this.walkableMapDimension = Vector2.Zero;
             Core.Overlay.RemoveImage("walkable_map");
         }
-
+        Stopwatch sw = new Stopwatch();
         private void GenerateMapTexture()
         {
             if (Core.States.GameCurrentState != GameStateTypes.InGameState &&
@@ -846,6 +846,7 @@ namespace Radar
             }
 
             var mapEdgeDetector = new MapEdgeDetector(mapWalkableData, bytesPerRow);
+            sw.Restart();
             using Image<Rgba32> image = new(bytesPerRow * 2, mapEdgeDetector.TotalRows);
             Parallel.For(0, gridHeightData.Length, y =>
             {
@@ -855,7 +856,6 @@ namespace Radar
                     {
                         continue;
                     }
-
                     var height = (int)(gridHeightData[y][x] / 21.91f);
                     var imageX = x - height;
                     var imageY = y - height;
@@ -866,6 +866,7 @@ namespace Radar
                     }
                 }
             });
+            var elapsed = sw.Elapsed.TotalMilliseconds;
 #if DEBUG
             image.Save(this.DllDirectory +
                        @$"/current_map_{Core.States.InGameStateObject.CurrentAreaInstance.AreaHash}.jpeg");
