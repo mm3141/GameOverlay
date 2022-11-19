@@ -9,6 +9,7 @@ namespace GameHelper {
     using System.Reflection;
     using Coroutine;
     using CoroutineEvents;
+    using GameHelper.RemoteObjects.States.InGameStateObjects;
     using GameHelper.Ui;
     using ImGuiNET;
     using RemoteObjects;
@@ -21,6 +22,7 @@ namespace GameHelper {
     ///     GameHelper settings.
     /// </summary>
     public static class Core {
+        public static Entity me => States.InGameStateObject.CurrentAreaInstance.Player;
         #region LOG
         /// <summary>
         /// w8ting for 60 frame per second

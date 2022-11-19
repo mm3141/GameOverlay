@@ -22,47 +22,123 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects {
     using Utils;
 
     /// <summary>
-    ///     Points to the InGameState -> AreaInstanceData Object.
+    ///     core.states.ingame_state=> curr_area_instance like mapper
     /// </summary>
     public class AreaInstance : RemoteObjectBase {
-        private string entityIdFilter;
-        private string entityPathFilter;
-        private bool filterByPath;
+        int frame = 0;
+        SW sw = new SW("UpdEntList");
+        protected override void UpdateData(bool hasAddressChanged) {
 
-        private StdVector environmentPtr;
-        private readonly List<int> environments;
+            var reader = Core.Process.Handle;
+            var data = reader.ReadMemory<AreaInstanceOffsets>(this.Address);
+
+            if (hasAddressChanged) {
+                this.Cleanup(true);
+                this.TerrainMetadata = data.TerrainMetadata;
+                this.MonsterLevel = data.MonsterLevel;
+                this.AreaHash = $"{data.CurrentAreaHash:X}";
+                this.GridWalkableData = reader.ReadStdVector<byte>(
+                    this.TerrainMetadata.GridWalkableData);
+                this.GridHeightData = this.GetTerrainHeight();
+                this.TgtTilesLocations = this.GetTgtFileData();
+                sw.Restart(true);
+
+            }
+
+            this.UpdateEnvironmentAndCaches(data.Environments);
+            this.ServerDataObject.Address = data.ServerDataPtr;
+            this.Player.Address = data.LocalPlayerPtr;
+            this.UpdateEntities(data.AwakeEntities, this.AwakeEntities, true);
+        }
+        private void UpdateEntities(StdMap ePtr, ConcurrentDictionary<EntityNodeKey, Entity> data, bool addToCache) {
+           
+            var reader = Core.Process.Handle;
+            var areaDetails = Core.States.InGameStateObject.CurrentWorldInstance.AreaDetails;
+            if (Core.GHSettings.DisableEntityProcessingInTownOrHideout && (areaDetails.IsHideout || areaDetails.IsTown)) {
+                this.NetworkBubbleEntityCount = 0;
+                return;
+            }
+            sw.Restart();
+            var entities = reader.ReadStdMapAsList<EntityNodeKey, EntityNodeValue>(ePtr, EntityFilter.IgnoreVisualsAndDecorations);
+            sw.Print("ReadStdMapAsList");
+            sw.Restart();
+            foreach (var kv in data) {
+                if (!kv.Value.IsValid) {
+                    if (kv.Value.EntityType == EntityTypes.FriendlyMonster ||
+                        (kv.Value.CanExplode &&
+                        this.Player.DistanceFrom(kv.Value) < AreaInstanceConstants.NETWORK_BUBBLE_RADIUS)) {
+                        // This logic isn't perfect in case something happens to the entity before
+                        // we can cache the location of that entity. In that case we will just
+                        // delete that entity anyway. This activity is fine as long as it doesn't
+                        // crash the GameHelper. This logic is to detect if entity exploded due to
+                        // explodi-chest or just left the network bubble since entity leaving network
+                        // bubble is same as entity exploded.
+                        data.TryRemove(kv.Key, out _);
+                    }
+                }
+                kv.Value.IsValid = false;
+            }
+            var e_added = 0;
+            this.NetworkBubbleEntityCount = entities.Count;
+            Parallel.For(0, entities.Count, index => {
+                var (key, value) = entities[index];
+                if (data.TryGetValue(key, out var entity)) {
+                    entity.Address = value.EntityPtr;
+                }
+                else {
+                    entity = new Entity(value.EntityPtr);
+                    e_added += 1;
+                    if (!string.IsNullOrEmpty(entity.Path)) {
+                        data[key] = entity;
+                        if (addToCache) {
+                            this.AddToCacheParallel(key, entity.Path);
+                        }
+                    }
+                    else {
+                        entity = null;
+                    }
+                }
+                entity?.UpdateNearby(this.Player);
+            });
+            sw.Print("e_added=[" + e_added + "] new/old=[" + entities.Count + "/" + data.Count + "]");
+        }
+        string entityIdFilter;
+        string entityPathFilter;
+        bool filterByPath;
+
+        StdVector environmentPtr;
+        readonly List<int> environments;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="AreaInstance" /> class.
         /// </summary>
         /// <param name="address">address of the remote memory object.</param>
-        internal AreaInstance(IntPtr address)
-            : base(address) {
-            this.entityIdFilter = string.Empty;
-            this.entityPathFilter = string.Empty;
-            this.filterByPath = false;
+        internal AreaInstance(IntPtr address) : base(address) {
+            entityIdFilter = string.Empty;
+            entityPathFilter = string.Empty;
+            filterByPath = false;
 
-            this.environmentPtr = default;
-            this.environments = new();
+            environmentPtr = default;
+            environments = new();
 
-            this.MonsterLevel = 0;
-            this.AreaHash = string.Empty;
+            MonsterLevel = 0;
+            AreaHash = string.Empty;
 
-            this.ServerDataObject = new(IntPtr.Zero);
-            this.Player = new();
-            this.AwakeEntities = new();
-            this.EntityCaches = new()
+            ServerDataObject = new(IntPtr.Zero);
+            Player = new();
+            AwakeEntities = new();
+            EntityCaches = new()
             {
                 new("Breach", 1104, 1108, this.AwakeEntities),
                 new("LeagueAffliction", 1114, 1114, this.AwakeEntities),
                 new("Hellscape", 1244, 1255, this.AwakeEntities)
             };
 
-            this.NetworkBubbleEntityCount = 0;
-            this.TerrainMetadata = default;
-            this.GridHeightData = Array.Empty<float[]>();
-            this.GridWalkableData = Array.Empty<byte>();
-            this.TgtTilesLocations = new();
+            NetworkBubbleEntityCount = 0;
+            TerrainMetadata = default;
+            GridHeightData = Array.Empty<float[]>();
+            GridWalkableData = Array.Empty<byte>();
+            TgtTilesLocations = new();
 
             Core.CoroutinesRegistrar.Add(CoroutineHandler.Start(
                 this.OnPerFrame(), "[AreaInstance] Update Area Data", int.MaxValue - 3));
@@ -204,28 +280,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects {
             this.Cleanup(false);
         }
 
-        int frame = 0;
-        protected override void UpdateData(bool hasAddressChanged) {
-           
-            var reader = Core.Process.Handle;
-            var data = reader.ReadMemory<AreaInstanceOffsets>(this.Address);
-
-            if (hasAddressChanged) {
-                this.Cleanup(true);
-                this.TerrainMetadata = data.TerrainMetadata;
-                this.MonsterLevel = data.MonsterLevel;
-                this.AreaHash = $"{data.CurrentAreaHash:X}";
-                this.GridWalkableData = reader.ReadStdVector<byte>(
-                    this.TerrainMetadata.GridWalkableData);
-                this.GridHeightData = this.GetTerrainHeight();
-                this.TgtTilesLocations = this.GetTgtFileData();
-            }
-
-            this.UpdateEnvironmentAndCaches(data.Environments);
-            this.ServerDataObject.Address = data.ServerDataPtr;
-            this.Player.Address = data.LocalPlayerPtr;
-            this.UpdateEntities(data.AwakeEntities, this.AwakeEntities, true);
-        }
+       
 
         private void UpdateEnvironmentAndCaches(StdVector environments) {
             this.environments.Clear();
@@ -246,57 +301,8 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects {
                 }
             }
         }
-        SW sw = new SW("UpdEntList");
-        private void UpdateEntities(StdMap ePtr, ConcurrentDictionary<EntityNodeKey, Entity> data, bool addToCache) {
-            sw.Restart();
-             var reader = Core.Process.Handle;
-            var areaDetails = Core.States.InGameStateObject.CurrentWorldInstance.AreaDetails;
-            if (Core.GHSettings.DisableEntityProcessingInTownOrHideout && (areaDetails.IsHideout || areaDetails.IsTown)) {
-                this.NetworkBubbleEntityCount = 0;
-                return;
-            }
 
-            var entities = reader.ReadStdMapAsList<EntityNodeKey, EntityNodeValue>( ePtr, EntityFilter.IgnoreVisualsAndDecorations);
-            foreach (var kv in data) {
-                if (!kv.Value.IsValid) {
-                    if (kv.Value.EntityType == EntityTypes.FriendlyMonster ||
-                        (kv.Value.CanExplode &&
-                        this.Player.DistanceFrom(kv.Value) < AreaInstanceConstants.NETWORK_BUBBLE_RADIUS)) {
-                        // This logic isn't perfect in case something happens to the entity before
-                        // we can cache the location of that entity. In that case we will just
-                        // delete that entity anyway. This activity is fine as long as it doesn't
-                        // crash the GameHelper. This logic is to detect if entity exploded due to
-                        // explodi-chest or just left the network bubble since entity leaving network
-                        // bubble is same as entity exploded.
-                        data.TryRemove(kv.Key, out _);
-                    }
-                }
-               kv.Value.IsValid = false;
-            }
-            var e_added = 0;
-            this.NetworkBubbleEntityCount = entities.Count;
-            Parallel.For(0, entities.Count, index => {
-                var (key, value) = entities[index];
-                if (data.TryGetValue(key, out var entity)) {
-                    entity.Address = value.EntityPtr;
-                }
-                else {
-                    entity = new Entity(value.EntityPtr);
-                    e_added += 1;
-                    if (!string.IsNullOrEmpty(entity.Path)) {
-                        data[key] = entity;
-                        if (addToCache) {
-                            this.AddToCacheParallel(key, entity.Path);
-                        }
-                    }
-                    else {
-                        entity = null;
-                    }
-                }
-                entity?.UpdateNearby(this.Player);
-            });
-            sw.Print();
-        }
+       
 
         private Dictionary<string, List<Vector2>> GetTgtFileData() {
             var reader = Core.Process.Handle;

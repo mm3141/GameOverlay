@@ -20,6 +20,9 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
     /// </summary>
     public class Entity : RemoteObjectBase
     {
+        public override string ToString() {
+            return this.EntityType +" d="+this.DistanceFrom(Core.me);
+        }
         private static List<string> diesAfterTimeIgnore = new()
         {
             "Metadata/Monsters/AtlasExiles/CrusaderInfluenceMonsters/CrusaderArcaneRune",
