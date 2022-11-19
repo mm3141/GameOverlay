@@ -141,7 +141,7 @@ namespace GameHelper.RemoteObjects
             return reader.ReadMemoryArray<LoadedFilesRootObject>(this.Address, totalFiles);
         }
 
-        private void ScanForFilesParallel(SafeMemoryHandle reader, LoadedFilesRootObject filesRootObj)
+        private void ScanForFilesParallel(Memory reader, LoadedFilesRootObject filesRootObj)
         {
             var filesPtr = reader.ReadStdBucket<FilesPointerStructure>(filesRootObj.LoadedFiles);
             Parallel.ForEach(filesPtr, fileNode =>
@@ -150,7 +150,7 @@ namespace GameHelper.RemoteObjects
             });
         }
 
-        private void AddFileIfLoadedInCurrentArea(SafeMemoryHandle reader, IntPtr address)
+        private void AddFileIfLoadedInCurrentArea(Memory reader, IntPtr address)
         {
             var information = reader.ReadMemory<FileInfoValueStruct>(address);
             if (information.AreaChangeCount > FileInfoValueStruct.IGNORE_FIRST_X_AREAS &&

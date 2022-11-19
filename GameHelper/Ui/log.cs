@@ -13,7 +13,9 @@ namespace GameHelper {
         public int count;
         public MessType mtype;
     }
-    public enum MessType { Ok = 0, Error = 1, Warning = 2, OnTop }
+    public enum MessType { Ok = 0, Error = 1, Warning = 2, OnTop,
+        Critical
+    }
 
     public class FixedSizedLog : ConcurrentQueue<Mess> {
         private readonly object locker = new object();

@@ -51,7 +51,6 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects {
             this.UpdateEntities(data.AwakeEntities, this.AwakeEntities, true);
         }
         private void UpdateEntities(StdMap ePtr, ConcurrentDictionary<EntityNodeKey, Entity> data, bool addToCache) {
-           
             var reader = Core.Process.Handle;
             var areaDetails = Core.States.InGameStateObject.CurrentWorldInstance.AreaDetails;
             if (Core.GHSettings.DisableEntityProcessingInTownOrHideout && (areaDetails.IsHideout || areaDetails.IsTown)) {

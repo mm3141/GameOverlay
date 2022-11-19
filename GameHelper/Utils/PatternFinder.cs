@@ -48,7 +48,7 @@ namespace GameHelper.Utils
         /// <param name="processSize">Total Size of the process main module.</param>
         /// <returns> Static offsets name and location in the processs.</returns>
         internal static Dictionary<string, int> Find(
-            SafeMemoryHandle handle,
+            Memory handle,
             IntPtr baseAddress,
             int processSize
         )

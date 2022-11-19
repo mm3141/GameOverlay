@@ -115,7 +115,7 @@ namespace GameHelper
         /// <summary>
         ///     Gets the game handle.
         /// </summary>
-        internal SafeMemoryHandle Handle { get; private set; }
+        internal Memory Handle { get; private set; }
 
         /// <summary>
         ///     Closes the handle for the game and releases all the resources.
@@ -304,7 +304,7 @@ namespace GameHelper
         /// </summary>
         private bool Open()
         {
-            this.Handle = new SafeMemoryHandle(this.Information.Id);
+            this.Handle = new Memory(this.Information.Id);
             if (this.Handle.IsInvalid)
             {
                 return false;

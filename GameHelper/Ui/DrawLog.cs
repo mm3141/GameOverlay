@@ -1,4 +1,5 @@
 ﻿using GameHelper.Utils;
+using GameHelper.Utils.Stas.GA;
 using ImGuiNET;
 using System;
 using System.Collections.Generic;
@@ -19,6 +20,8 @@ namespace GameHelper.Ui {
                     ac = Color.FromArgb(100, Color.Orange).ToImgui();
                 if (l.mtype == MessType.Error)
                     ac = Color.FromArgb(100, Color.Red).ToImgui();
+                if (l.mtype == MessType.Critical)
+                    ac = Color.FromArgb(100, Color.Purple).ToImgui();
                 var text = l.info + "\n";
                 if (l.count != 0)
                     text = l.info + " (" + l.count + ")\n";
@@ -33,8 +36,10 @@ namespace GameHelper.Ui {
             }
             if (ImGui.Button("Clear")) {
                 Core.log.Clear();
+                foreach(var s in SW.registred)
+                    s.Value.Restart(true);
             }
-            ImGuiHelper.ToolTip("cleare log");
+            ImGuiHelper.ToolTip("cleare log, reset max frame_time for debugger");
             ImGui.End();
         }
     }

@@ -30,6 +30,10 @@ namespace GameHelper.Utils {
             /// max frame time this session
             /// </summary>
             double max_ft = 0;
+            /// <summary>
+            /// base restart+ extra goodies
+            /// </summary>
+            /// <param name="full">set true for cleare Max frame session</param>
             public void Restart(bool full = false) {
                 base.Restart();
                 elapsed.Clear();
@@ -42,7 +46,7 @@ namespace GameHelper.Utils {
             }
             int error_count = 0;
             public void Print(string add = null) {
-                var plus = string.IsNullOrEmpty(add) ? "" : "=>" + add + " ";
+                var plus = string.IsNullOrEmpty(add) ? "" : "..." + add + " ";
                 var elaps = Elapsed.TotalMilliseconds;
 
                 lock (elapsed) {
