@@ -29,22 +29,22 @@
                 }
 
                 if (entity.EntityType is not (
-                    EntityTypes.FriendlyMonster or
-                    EntityTypes.Monster or
-                    EntityTypes.Stage1FIT or
-                    EntityTypes.Stage1EChestFIT or
-                    EntityTypes.Stage1RewardFIT))
+                    eTypes.FriendlyMonster or
+                    eTypes.Monster or
+                    eTypes.Stage1FIT or
+                    eTypes.Stage1EChestFIT or
+                    eTypes.Stage1RewardFIT))
                 {
                     continue;
                 }
 
-                if (entity.EntityType == EntityTypes.FriendlyMonster)
+                if (entity.EntityType == eTypes.FriendlyMonster)
                 {
                     this.FriendlyMonsterCount++;
                 }
                 else
                 {
-                    entity.TryGetComponent<ObjectMagicProperties>(out var omp);
+                    entity.GetComp<ObjectMagicProperties>(out var omp);
 
                     switch (omp.Rarity)
                     {

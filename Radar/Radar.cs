@@ -339,7 +339,7 @@ namespace Radar
             }
 
             var player = Core.States.InGameStateObject.CurrentAreaInstance.Player;
-            if (!player.TryGetComponent<Render>(out var pRender))
+            if (!player.GetComp<Render>(out var pRender))
             {
                 return;
             }
@@ -392,7 +392,7 @@ namespace Radar
             }
 
             var currentAreaInstance = Core.States.InGameStateObject.CurrentAreaInstance;
-            if (!currentAreaInstance.Player.TryGetComponent<Render>(out var playerRender))
+            if (!currentAreaInstance.Player.GetComp<Render>(out var playerRender))
             {
                 return;
             }
@@ -466,32 +466,32 @@ namespace Radar
         {
             var fgDraw = ImGui.GetWindowDrawList();
             var currentAreaInstance = Core.States.InGameStateObject.CurrentAreaInstance;
-            if (!currentAreaInstance.Player.TryGetComponent<Render>(out var playerRender))
+            if (!currentAreaInstance.Player.GetComp<Render>(out var playerRender))
             {
                 return;
             }
 
             var pPos = new Vector2(playerRender.GridPosition.X, playerRender.GridPosition.Y);
-            foreach (var entity in currentAreaInstance.AwakeEntities)
+            foreach (var e in currentAreaInstance.AwakeEntities)
             {
-                if (this.Settings.HideOutsideNetworkBubble && !entity.Value.IsValid)
+                if (this.Settings.HideOutsideNetworkBubble && !e.Value.IsValid)
                 {
                     continue;
                 }
 
-                if (entity.Value.EntityType == EntityTypes.Useless)
+                if (e.Value.EntityType == eTypes.Useless)
                 {
                     continue;
                 }
 
-                entity.Value.TryGetComponent<Render>(out var entityRender);
+                e.Value.GetComp<Render>(out var entityRender);
                 var ePos = new Vector2(entityRender.GridPosition.X, entityRender.GridPosition.Y);
                 var fpos = Helper.DeltaInWorldToMapDelta(ePos - pPos, entityRender.TerrainHeight - playerRender.TerrainHeight);
                 var iconSizeMultiplierVector = Vector2.One * iconSizeMultiplier;
-                switch (entity.Value.EntityType)
+                switch (e.Value.EntityType)
                 {
-                    case EntityTypes.OtherPlayer:
-                        entity.Value.TryGetComponent<Player>(out var playerComp);
+                    case eTypes.OtherPlayer:
+                        e.Value.GetComp<Player>(out var playerComp);
                         if (this.Settings.ShowPlayersNames)
                         {
                             var pNameSizeH = ImGui.CalcTextSize(playerComp.Name) / 2;
@@ -515,8 +515,8 @@ namespace Radar
                         }
 
                         break;
-                    case EntityTypes.Blockage:
-                        entity.Value.TryGetComponent<TriggerableBlockage>(out var blockComp);
+                    case eTypes.Blockage:
+                        e.Value.GetComp<TriggerableBlockage>(out var blockComp);
                         if (blockComp.IsBlocked)
                         {
                             var blockageIcon = this.Settings.DelveIcons["Blockage OR DelveWall"];
@@ -530,7 +530,7 @@ namespace Radar
                         }
 
                         break;
-                    case EntityTypes.Chest:
+                    case eTypes.Chest:
                         var chestIcon = this.Settings.BaseIcons["Chests Without Label"];
                         iconSizeMultiplierVector *= chestIcon.IconScale;
                         fgDraw.AddImage(
@@ -540,7 +540,7 @@ namespace Radar
                             chestIcon.UV0,
                             chestIcon.UV1);
                         break;
-                    case EntityTypes.ChestWithLabels:
+                    case eTypes.ChestWithLabels:
                         chestIcon = this.Settings.BaseIcons["Chests With Label"];
                         iconSizeMultiplierVector *= chestIcon.IconScale;
                         fgDraw.AddImage(
@@ -550,7 +550,7 @@ namespace Radar
                             chestIcon.UV0,
                             chestIcon.UV1);
                         break;
-                    case EntityTypes.ExpeditionChest:
+                    case eTypes.ExpeditionChest:
                         chestIcon = this.Settings.ExpeditionIcons["Generic Expedition Chests"];
                         iconSizeMultiplierVector *= chestIcon.IconScale;
                         fgDraw.AddImage(
@@ -560,8 +560,8 @@ namespace Radar
                             chestIcon.UV0,
                             chestIcon.UV1);
                         break;
-                    case EntityTypes.DelveChest:
-                        if (this.delveChestCache.TryGetValue(entity.Key.id, out var iconFinder))
+                    case eTypes.DelveChest:
+                        if (this.delveChestCache.TryGetValue(e.Key.id, out var iconFinder))
                         {
                             if (this.Settings.DelveIcons.TryGetValue(iconFinder, out var delveChestIcon))
                             {
@@ -587,13 +587,13 @@ namespace Radar
                         }
                         else
                         {
-                            this.delveChestCache[entity.Key.id] =
-                                this.DelveChestPathToIcon(entity.Value.Path);
+                            this.delveChestCache[e.Key.id] =
+                                this.DelveChestPathToIcon(e.Value.Path);
                         }
 
                         break;
-                    case EntityTypes.HeistChest:
-                        if (this.heistChestCache.TryGetValue(entity.Key.id, out iconFinder))
+                    case eTypes.HeistChest:
+                        if (this.heistChestCache.TryGetValue(e.Key.id, out iconFinder))
                         {
                             if (this.Settings.HeistIcons.TryGetValue(iconFinder, out var heistChestIcon))
                             {
@@ -606,15 +606,15 @@ namespace Radar
                                     heistChestIcon.UV1);
                             }
                         }
-                        else if (entity.Value.Path.StartsWith(
+                        else if (e.Value.Path.StartsWith(
                             this.heistAllChestStarting, StringComparison.Ordinal))
                         {
-                            this.heistChestCache[entity.Key.id] =
-                                this.HeistChestPathToIcon(entity.Value.Path);
+                            this.heistChestCache[e.Key.id] =
+                                this.HeistChestPathToIcon(e.Value.Path);
                         }
 
                         break;
-                    case EntityTypes.ImportantStrongboxChest:
+                    case eTypes.ImportantStrongboxChest:
                         chestIcon = this.Settings.BaseIcons["Important Strongboxes"];
                         iconSizeMultiplierVector *= chestIcon.IconScale;
                         fgDraw.AddImage(
@@ -624,7 +624,7 @@ namespace Radar
                             chestIcon.UV0,
                             chestIcon.UV1);
                         break;
-                    case EntityTypes.StrongboxChest:
+                    case eTypes.StrongboxChest:
                         chestIcon = this.Settings.BaseIcons["Strongbox"];
                         iconSizeMultiplierVector *= chestIcon.IconScale;
                         fgDraw.AddImage(
@@ -634,7 +634,7 @@ namespace Radar
                             chestIcon.UV0,
                             chestIcon.UV1);
                         break;
-                    case EntityTypes.BreachChest:
+                    case eTypes.BreachChest:
                         chestIcon = this.Settings.BreachIcons["Breach Chest"];
                         iconSizeMultiplierVector *= chestIcon.IconScale;
                         fgDraw.AddImage(
@@ -644,8 +644,8 @@ namespace Radar
                             chestIcon.UV0,
                             chestIcon.UV1);
                         break;
-                    case EntityTypes.Shrine:
-                        entity.Value.TryGetComponent<Shrine>(out var shrineComp);
+                    case eTypes.Shrine:
+                        e.Value.GetComp<Shrine>(out var shrineComp);
                         if (!shrineComp.IsUsed)
                         {
                             var shrineIcon = this.Settings.BaseIcons["Shrine"];
@@ -658,7 +658,7 @@ namespace Radar
                                 shrineIcon.UV1);
                         }
                         break;
-                    case EntityTypes.FriendlyMonster:
+                    case eTypes.FriendlyMonster:
                         var friendlyIcon = this.Settings.BaseIcons["Friendly"];
                         iconSizeMultiplierVector *= friendlyIcon.IconScale;
                         fgDraw.AddImage(
@@ -668,11 +668,11 @@ namespace Radar
                             friendlyIcon.UV0,
                             friendlyIcon.UV1);
                         break;
-                    case EntityTypes.Stage0FIT:
-                    case EntityTypes.Stage1FIT:
-                    case EntityTypes.Monster:
-                        entity.Value.TryGetComponent<ObjectMagicProperties>(out var omp);
-                        if (entity.Value.EntityType == EntityTypes.Stage0FIT && omp.Rarity != Rarity.Unique)
+                    case eTypes.Stage0FIT:
+                    case eTypes.Stage1FIT:
+                    case eTypes.Monster:
+                        e.Value.GetComp<ObjectMagicProperties>(out var omp);
+                        if (e.Value.EntityType == eTypes.Stage0FIT && omp.Rarity != Rarity.Unique)
                         {
                             break;
                         }
@@ -686,20 +686,20 @@ namespace Radar
                             monsterIcon.UV0,
                             monsterIcon.UV1);
                         break;
-                    case EntityTypes.Stage0RewardFIT:
-                    case EntityTypes.Stage1RewardFIT:
-                    case EntityTypes.Stage0EChestFIT:
-                    case EntityTypes.Stage1EChestFIT:
+                    case eTypes.Stage0RewardFIT:
+                    case eTypes.Stage1RewardFIT:
+                    case eTypes.Stage0EChestFIT:
+                    case eTypes.Stage1EChestFIT:
                         var monsterChestIcon = this.Settings.LegionIcons["Legion Reward Monster/Chest"];
-                        if (entity.Value.EntityType == EntityTypes.Stage0EChestFIT ||
-                            entity.Value.EntityType == EntityTypes.Stage1EChestFIT)
+                        if (e.Value.EntityType == eTypes.Stage0EChestFIT ||
+                            e.Value.EntityType == eTypes.Stage1EChestFIT)
                         {
                             monsterChestIcon = this.Settings.LegionIcons["Legion Epic Chest"];
                         }
 
                         if (monsterChestIcon.UV0 == Vector2.Zero)
                         {
-                            var fitName = entity.Value.Path.Split('/').LastOrDefault();
+                            var fitName = e.Value.Path.Split('/').LastOrDefault();
                             var s = ImGui.CalcTextSize(fitName) / 2;
                             fgDraw.AddRectFilled(mapCenter + fpos - s, mapCenter + fpos + s,
                                 ImGuiHelper.Color(0, 0, 0, 255));
@@ -718,7 +718,7 @@ namespace Radar
                         }
 
                         break;
-                    case EntityTypes.DeliriumBomb:
+                    case eTypes.DeliriumBomb:
                         var dHiddenMIcon = this.Settings.DeliriumIcons["Delirium Bomb"];
                         iconSizeMultiplierVector *= dHiddenMIcon.IconScale;
                         fgDraw.AddImage(
@@ -728,7 +728,7 @@ namespace Radar
                             dHiddenMIcon.UV0,
                             dHiddenMIcon.UV1);
                         break;
-                    case EntityTypes.DeliriumSpawner:
+                    case eTypes.DeliriumSpawner:
                         dHiddenMIcon = this.Settings.DeliriumIcons["Delirium Spawner"];
                         iconSizeMultiplierVector *= dHiddenMIcon.IconScale;
                         fgDraw.AddImage(

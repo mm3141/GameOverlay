@@ -92,7 +92,7 @@
         {
             var isConditionValid = false;
             var player = Core.States.InGameStateObject.CurrentAreaInstance.Player;
-            if (player.TryGetComponent<Buffs>(out var buffComponent))
+            if (player.GetComp<Buffs>(out var buffComponent))
             {
                 var exists = buffComponent.StatusEffects.TryGetValue(this.buffId, out var buff);
                 isConditionValid = this.@operator switch

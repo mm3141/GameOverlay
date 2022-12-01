@@ -15,7 +15,7 @@ namespace GameHelper.RemoteObjects
     using Utils;
 
     /// <summary>
-    ///     Reads and stores the global states of the game.
+    ///    [0] Reads and stores the global states of the game.
     /// </summary>
     public class GameStates : RemoteObjectBase
     {

@@ -74,7 +74,7 @@ namespace AutoHotKeyTrigger.ProfileManager.Conditions
             var player = Core.States.InGameStateObject.CurrentAreaInstance.Player;
             if (JsonDataHelper.StatusEffectGroups.TryGetValue(this.statusEffectGroupKey, out var statusEffects))
             {
-                if (player.TryGetComponent<Buffs>(out var buffComponent))
+                if (player.GetComp<Buffs>(out var buffComponent))
                 {
                     if (statusEffects.Any(statusEffect => buffComponent.StatusEffects.ContainsKey(statusEffect)))
                     {

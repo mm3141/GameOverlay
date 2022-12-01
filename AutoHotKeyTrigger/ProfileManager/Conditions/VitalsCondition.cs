@@ -80,7 +80,7 @@ namespace AutoHotKeyTrigger.ProfileManager.Conditions
         {
             var isConditionValid = false;
             var player = Core.States.InGameStateObject.CurrentAreaInstance.Player;
-            if (player.TryGetComponent<Life>(out var lifeComponent))
+            if (player.GetComp<Life>(out var lifeComponent))
             {
                 isConditionValid = this.@operator switch
                 {

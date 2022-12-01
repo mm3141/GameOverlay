@@ -32,7 +32,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
             // this.Id will always be 0x00 because Items don't have
             // Id associated with them.
             this.IsValid = true;
-            this.EntityType = EntityTypes.InventoryItem;
+            this.EntityType = eTypes.InventoryItem;
             this.UpdateComponentData(itemData, hasAddressChanged);
         }
     }

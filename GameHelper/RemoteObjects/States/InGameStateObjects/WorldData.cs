@@ -15,7 +15,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
     using ImGuiNET;
 
     /// <summary>
-    ///     Points to InGameState -> WorldData object.
+    ///     [3].
     /// </summary>
     public class WorldData : RemoteObjectBase
     {

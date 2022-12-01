@@ -13,7 +13,7 @@ namespace GameHelper.RemoteObjects.States
     using UiElement;
 
     /// <summary>
-    ///     Reads InGameState Game Object.
+    ///    [2].
     /// </summary>
     public class InGameState : RemoteObjectBase
     {

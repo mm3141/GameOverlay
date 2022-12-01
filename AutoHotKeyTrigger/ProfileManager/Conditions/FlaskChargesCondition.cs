@@ -79,7 +79,7 @@ namespace AutoHotKeyTrigger.ProfileManager.Conditions
         {
             var isConditionValid = false;
             var flask = Core.States.InGameStateObject.CurrentAreaInstance.ServerDataObject.FlaskInventory[0, this.flaskSlot - 1];
-            if (flask.Address != IntPtr.Zero && flask.TryGetComponent<Charges>(out var chargesComponent))
+            if (flask.Address != IntPtr.Zero && flask.GetComp<Charges>(out var chargesComponent))
             {
                 isConditionValid = this.@operator switch
                 {

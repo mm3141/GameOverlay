@@ -9,20 +9,20 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects {
     using System.Diagnostics;
     using System.Linq;
     using System.Numerics;
+    using System.Reflection;
     using System.Threading.Tasks;
     using Components;
     using Coroutine;
     using CoroutineEvents;
     using GameHelper.Cache;
     using GameHelper.RemoteEnums;
-    using GameHelper.Utils.Stas.GA;
     using GameOffsets.Natives;
     using GameOffsets.Objects.States.InGameState;
     using ImGuiNET;
     using Utils;
 
     /// <summary>
-    ///     core.states.ingame_state=> curr_area_instance like mapper
+    ///     [3] core.states.ingame_state=> curr_area_instance like mapper
     /// </summary>
     public class AreaInstance : RemoteObjectBase {
         int frame = 0;
@@ -63,7 +63,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects {
             sw.Restart();
             foreach (var kv in data) {
                 if (!kv.Value.IsValid) {
-                    if (kv.Value.EntityType == EntityTypes.FriendlyMonster ||
+                    if (kv.Value.EntityType == eTypes.FriendlyMonster ||
                         (kv.Value.CanExplode &&
                         this.Player.DistanceFrom(kv.Value) < AreaInstanceConstants.NETWORK_BUBBLE_RADIUS)) {
                         // This logic isn't perfect in case something happens to the entity before
@@ -209,7 +209,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects {
             get {
                 var player = this.Player;
 
-                if (player.TryGetComponent(out Render render)) {
+                if (player.GetComp(out Render render)) {
                     var wp = render.WorldPosition;
                     var p0 = Core.States.InGameStateObject.CurrentWorldInstance.WorldToScreen(wp);
                     wp.Z += render.ModelBounds.Z;
@@ -259,7 +259,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects {
                 ImGui.TreePop();
             }
 
-            if (this.Player.TryGetComponent<Render>(out var pPos)) {
+            if (this.Player.GetComp<Render>(out var pPos)) {
                 var y = (int)pPos.GridPosition.Y;
                 var x = (int)pPos.GridPosition.X;
                 if (y < this.GridHeightData.Length) {
@@ -358,18 +358,24 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects {
 
             return ret;
         }
-
+     
         private float[][] GetTerrainHeight() {
             var rotationHelper = Core.RotationSelector.Values;
             var rotatorMetrixHelper = Core.RotatorHelper.Values;
             var reader = Core.Process.Handle;
             var tileData = reader.ReadStdVector<TileStructure>(this.TerrainMetadata.TileDetailsPtr);
             var tileHeightCache = new ConcurrentDictionary<IntPtr, sbyte[]>();
-            Parallel.For(0, tileData.Length, index => {
-                var val = tileData[index];
-                tileHeightCache.AddOrUpdate(
-                    val.SubTileDetailsPtr,
+            var bad_ptr = 0;
+            //for (int i = 0; i < tileData.Length; i++) {
+              
+            //}
+            Parallel.For(0, tileData.Length, i => {
+                var val = tileData[i];
+                tileHeightCache.AddOrUpdate(val.SubTileDetailsPtr,
                     addr => {
+                        if (addr == IntPtr.Zero) {
+                            bad_ptr += 1;
+                        }
                         var subTileData = reader.ReadMemory<SubTileStruct>(addr);
                         var subTileHeightData = reader.ReadStdVector<sbyte>(subTileData.SubTileHeight);
 #if DEBUG
@@ -378,8 +384,8 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects {
                         }
 #endif
                         return subTileHeightData;
-                    },
-                    (addr, data) => data);
+
+                    }, (addr, data) => data);
             });
 
             var gridSizeX = (int)this.TerrainMetadata.TotalTiles.X * TileStructure.TileToGridConversion;
@@ -510,7 +516,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects {
                     }
 
                     if (entity.Value.IsValid &&
-                        entity.Value.TryGetComponent<Render>(out var eRender)) {
+                        entity.Value.GetComp<Render>(out var eRender)) {
                         ImGuiHelper.DrawText(
                             eRender.WorldPosition,
                             $"ID: {entity.Key.id}");

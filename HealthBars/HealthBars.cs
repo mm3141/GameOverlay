@@ -175,16 +175,16 @@ namespace HealthBars
                 }
 
                 if (gameEntity.EntityType is not (
-                    EntityTypes.FriendlyMonster or
-                    EntityTypes.Monster or
-                    EntityTypes.Stage1FIT or
-                    EntityTypes.Stage1RewardFIT or
-                    EntityTypes.Stage1EChestFIT))
+                    eTypes.FriendlyMonster or
+                    eTypes.Monster or
+                    eTypes.Stage1FIT or
+                    eTypes.Stage1RewardFIT or
+                    eTypes.Stage1EChestFIT))
                 {
                     continue;
                 }
 
-                gameEntity.TryGetComponent<Render>(out var render);
+                gameEntity.GetComp<Render>(out var render);
                 var curPos = render.WorldPosition;
                 curPos.Z -= render.ModelBounds.Z;
                 var location = Core.States.InGameStateObject.CurrentWorldInstance.WorldToScreen(curPos);

@@ -12,7 +12,7 @@ namespace GameHelper.RemoteObjects.States
     using ImGuiNET;
 
     /// <summary>
-    ///     Reads AreaLoadingState Game Object.
+    ///     [1] Reads AreaLoadingState Game Object.
     /// </summary>
     public sealed class AreaLoadingState : RemoteObjectBase
     {
