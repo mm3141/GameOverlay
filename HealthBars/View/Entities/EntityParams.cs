@@ -60,10 +60,10 @@ namespace HealthBars.View.Entities
         {
             this.Settings = settings;
             this.Pos = pos;
-            this.HasMagicProperties = entity.TryGetComponent<ObjectMagicProperties>(out var magicProperties);
+            this.HasMagicProperties = entity.GetComp<ObjectMagicProperties>(out var magicProperties);
             this.Rarity = this.HasMagicProperties ? magicProperties.Rarity : Rarity.Normal;
 
-            entity.TryGetComponent<Life>(out var entityLife);
+            entity.GetComp<Life>(out var entityLife);
 
             this.HpReserved = entityLife.Health.ReservedPercent / 100f;
             this.HpPercent = entityLife.Health.CurrentInPercent() * ((100 - this.HpReserved) / 100);

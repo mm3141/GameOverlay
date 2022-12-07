@@ -33,7 +33,7 @@ namespace AutoHotKeyTrigger.ProfileManager.Conditions.DynamicCondition
             }
 
             var active = false;
-            if (flaskItem.TryGetComponent<Base>(out var @base))
+            if (flaskItem.GetComp<Base>(out var @base))
             {
                 if (!JsonDataHelper.FlaskNameToBuffGroups.TryGetValue(@base.ItemBaseName, out var buffNames))
                 {
@@ -41,13 +41,13 @@ namespace AutoHotKeyTrigger.ProfileManager.Conditions.DynamicCondition
                         $"{@base.ItemBaseName}. Please let the developer know.");
                 }
 
-                if (state.CurrentAreaInstance.Player.TryGetComponent<Buffs>(out var playerBuffs))
+                if (state.CurrentAreaInstance.Player.GetComp<Buffs>(out var playerBuffs))
                 {
                     active = buffNames.Any(playerBuffs.StatusEffects.ContainsKey);
                 }
             }
 
-            var charges = flaskItem.TryGetComponent<Charges>(out var chargesComponent) ? chargesComponent.Current : 0;
+            var charges = flaskItem.GetComp<Charges>(out var chargesComponent) ? chargesComponent.Current : 0;
             return new FlaskInfo(active, charges);
         }
     }

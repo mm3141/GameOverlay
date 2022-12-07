@@ -159,15 +159,14 @@ namespace AutoHotKeyTrigger
 
             DynamicCondition.UpdateState();
             if (this.ShouldExecuteAutoQuit || NativeMethods.IsKeyPressedAndNotTimeout(
-                (int)this.Settings.AutoQuitKey))
-            {
+                (int)this.Settings.AutoQuitKey)){
                 MiscHelper.KillTCPConnectionForProcess(Core.Process.Pid);
             }
 
             if (NativeMethods.IsKeyPressedAndNotTimeout(
                 (int)this.Settings.DumpStatusEffectOnMe))
             {
-                if (Core.States.InGameStateObject.CurrentAreaInstance.Player.TryGetComponent<Buffs>(out var buff))
+                if (Core.States.InGameStateObject.CurrentAreaInstance.Player.GetComp<Buffs>(out var buff))
                 {
                     var data = string.Empty;
                     foreach (var statusEffect in buff.StatusEffects)
@@ -285,7 +284,7 @@ namespace AutoHotKeyTrigger
                 return false;
             }
 
-            if (Core.States.InGameStateObject.CurrentAreaInstance.Player.TryGetComponent<Life>(out var lifeComp))
+            if (Core.States.InGameStateObject.CurrentAreaInstance.Player.GetComp<Life>(out var lifeComp))
             {
                 if (lifeComp.Health.Current <= 0)
                 {
@@ -299,7 +298,7 @@ namespace AutoHotKeyTrigger
                 return false;
             }
 
-            if (Core.States.InGameStateObject.CurrentAreaInstance.Player.TryGetComponent<Buffs>(out var buffComp))
+            if (Core.States.InGameStateObject.CurrentAreaInstance.Player.GetComp<Buffs>(out var buffComp))
             {
                 if (buffComp.StatusEffects.ContainsKey("grace_period"))
                 {
@@ -313,7 +312,7 @@ namespace AutoHotKeyTrigger
                 return false;
             }
 
-            if (!Core.States.InGameStateObject.CurrentAreaInstance.Player.TryGetComponent<Actor>(out var _))
+            if (!Core.States.InGameStateObject.CurrentAreaInstance.Player.GetComp<Actor>(out var _))
             {
                 this.debugMessage = "Can not find player Actor component.";
                 return false;

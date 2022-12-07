@@ -48,9 +48,7 @@ namespace GameHelper.RemoteObjects.States.InGameStateObjects
         /// <summary>
         ///     Gets the inventories associated with the player.
         /// </summary>
-        internal Dictionary<InventoryName, IntPtr> PlayerInventories { get; }
-
-            = new();
+        internal Dictionary<InventoryName, IntPtr> PlayerInventories { get; }   = new();
 
         /// <inheritdoc />
         internal override void ToImGui()

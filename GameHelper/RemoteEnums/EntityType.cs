@@ -7,7 +7,7 @@ namespace GameHelper.RemoteEnums
     /// <summary>
     ///     Enum for entity Categorization system.
     /// </summary>
-    public enum EntityTypes
+    public enum eTypes
     {
         /// <summary>
         ///     Unknown entity type i.e. entity isn't categorized yet.

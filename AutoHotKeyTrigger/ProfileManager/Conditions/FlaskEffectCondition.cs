@@ -78,7 +78,7 @@ namespace AutoHotKeyTrigger.ProfileManager.Conditions
 
             if (flask.Address != this.flaskAddressCache)
             {
-                if (flask.TryGetComponent<Base>(out var baseComponent))
+                if (flask.GetComp<Base>(out var baseComponent))
                 {
                     if (JsonDataHelper.FlaskNameToBuffGroups.TryGetValue(
                         baseComponent.ItemBaseName,
@@ -105,7 +105,7 @@ namespace AutoHotKeyTrigger.ProfileManager.Conditions
             }
 
             var player = Core.States.InGameStateObject.CurrentAreaInstance.Player;
-            if (player.TryGetComponent<Buffs>(out var buffComponent))
+            if (player.GetComp<Buffs>(out var buffComponent))
             {
                 if (!this.flaskBuffsCache.Any(buffName => buffComponent.StatusEffects.ContainsKey(buffName)))
                 {

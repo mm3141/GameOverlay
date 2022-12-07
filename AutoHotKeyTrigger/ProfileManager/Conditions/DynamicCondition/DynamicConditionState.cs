@@ -29,7 +29,7 @@ namespace AutoHotKeyTrigger.ProfileManager.Conditions.DynamicCondition
             if (state != null)
             {
                 var player = state.CurrentAreaInstance.Player;
-                if (player.TryGetComponent<Buffs>(out var playerBuffs))
+                if (player.GetComp<Buffs>(out var playerBuffs))
                 {
                     this.Ailments = JsonDataHelper.StatusEffectGroups
                                                   .Where(x => x.Value.Any(playerBuffs.StatusEffects.ContainsKey))
@@ -37,12 +37,12 @@ namespace AutoHotKeyTrigger.ProfileManager.Conditions.DynamicCondition
                     this.Buffs = new BuffDictionary(playerBuffs.StatusEffects);
                 }
 
-                if (player.TryGetComponent<Actor>(out var actorComponent))
+                if (player.GetComp<Actor>(out var actorComponent))
                 {
                     this.Animation = actorComponent.Animation;
                 }
 
-                if (player.TryGetComponent<Life>(out var lifeComponent))
+                if (player.GetComp<Life>(out var lifeComponent))
                 {
                     this.Vitals = new VitalsInfo(lifeComponent);
                 }

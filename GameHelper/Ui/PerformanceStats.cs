@@ -38,6 +38,8 @@ namespace GameHelper.Ui
             while (true)
             {
                 yield return new Wait(GameHelperEvents.OnRender);
+                Core.draw_log.Draw();
+
                 if (Core.GHSettings.ShowPerfStats)
                 {
                     if (Core.GHSettings.HidePerfStatsWhenBg && !Core.Process.Foreground)

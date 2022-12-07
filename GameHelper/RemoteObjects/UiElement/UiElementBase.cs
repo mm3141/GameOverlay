@@ -2,8 +2,7 @@
 // Copyright (c) None. All rights reserved.
 // </copyright>
 
-namespace GameHelper.RemoteObjects.UiElement
-{
+namespace GameHelper.RemoteObjects.UiElement {
     using System;
     using System.Numerics;
     using GameOffsets.Objects.UiElement;
@@ -14,8 +13,43 @@ namespace GameHelper.RemoteObjects.UiElement
     /// <summary>
     ///     Points to the Ui Element of the game and reads its data.
     /// </summary>
-    public class UiElementBase : RemoteObjectBase
-    {
+    public class UiElementBase : RemoteObjectBase {
+        protected override void UpdateData(bool hasAddressChanged) {
+            var reader = Core.Process.Handle;
+            var data = reader.ReadMemory<UiElementBaseOffset>(this.Address);
+            if (data.Self != IntPtr.Zero && data.Self != this.Address) {
+                throw new Exception($"This (address: {this.Address.ToInt64():X})" +
+                                    $"is not a Ui Element. Self Address = {data.Self.ToInt64():X}");
+            }
+
+            if (data.ParentPtr != IntPtr.Zero) {
+                if (hasAddressChanged) {
+                    this.Parent = new UiElementBase(data.ParentPtr);
+                }
+                else {
+                    this.Parent.Address = data.ParentPtr;
+                }
+            }
+
+            this.childrenAddresses = reader.ReadStdVector<IntPtr>(data.ChildrensPtr);
+            if (hasAddressChanged) {
+                this.id = reader.ReadStdWString(data.Id);
+            }
+
+            this.positionModifier.X = data.PositionModifier.X;
+            this.positionModifier.Y = data.PositionModifier.Y;
+
+            this.scaleIndex = data.ScaleIndex;
+            this.localScaleMultiplier = data.LocalScaleMultiplier;
+            this.flags = data.Flags;
+
+            this.relativePosition.X = data.RelativePosition.X;
+            this.relativePosition.Y = data.RelativePosition.Y;
+
+            this.unScaledSize.X = data.UnscaledSize.X;
+            this.unScaledSize.Y = data.UnscaledSize.Y;
+        }
+
         /// <summary>
         ///     Gets the children addresses of this Ui Element.
         /// </summary>
@@ -63,12 +97,9 @@ namespace GameHelper.RemoteObjects.UiElement
         /// <summary>
         ///     Gets the Id of the Ui Element.
         /// </summary>
-        public string Id
-        {
-            get
-            {
-                if (this.Parent != null)
-                {
+        public string Id {
+            get {
+                if (this.Parent != null) {
                     return string.Join('.', this.Parent.Id, this.id);
                 }
 
@@ -81,10 +112,8 @@ namespace GameHelper.RemoteObjects.UiElement
         /// <summary>
         ///     Gets the position of the Ui Element w.r.t the game UI.
         /// </summary>
-        public virtual Vector2 Postion
-        {
-            get
-            {
+        public virtual Vector2 Postion {
+            get {
                 var (widthScale, heightScale) = Core.GameScale.GetScaleValue(
                     this.scaleIndex, this.localScaleMultiplier);
                 var pos = this.GetUnScaledPosition();
@@ -100,10 +129,8 @@ namespace GameHelper.RemoteObjects.UiElement
         /// <summary>
         ///     Gets the size of the Ui Element w.r.t the game UI.
         /// </summary>
-        public virtual Vector2 Size
-        {
-            get
-            {
+        public virtual Vector2 Size {
+            get {
                 var (widthScale, heightScale) = Core.GameScale.GetScaleValue(
                     this.scaleIndex, this.localScaleMultiplier);
                 var size = this.unScaledSize;
@@ -118,12 +145,9 @@ namespace GameHelper.RemoteObjects.UiElement
         /// <summary>
         ///     Gets a value indicating whether the Ui Element is visible or not.
         /// </summary>
-        public bool IsVisible
-        {
-            get
-            {
-                if (this.Parent == null)
-                {
+        public bool IsVisible {
+            get {
+                if (this.Parent == null) {
                     return UiElementBaseFuncs.IsVisibleChecker(this.flags);
                 }
 
@@ -151,12 +175,9 @@ namespace GameHelper.RemoteObjects.UiElement
         /// <param name="i">index of the child Ui Element.</param>
         /// <returns>the child Ui Element.</returns>
         [SkipImGuiReflection]
-        public UiElementBase this[int i]
-        {
-            get
-            {
-                if (this.childrenAddresses.Length <= i)
-                {
+        public UiElementBase this[int i] {
+            get {
+                if (this.childrenAddresses.Length <= i) {
                     return null;
                 }
 
@@ -167,18 +188,15 @@ namespace GameHelper.RemoteObjects.UiElement
         /// <summary>
         ///     Converts the <see cref="UiElementBase" /> class data to ImGui.
         /// </summary>
-        internal override void ToImGui()
-        {
+        internal override void ToImGui() {
             ImGui.Checkbox("Show", ref this.show);
             ImGui.SameLine();
-            if (ImGui.Button("Explore"))
-            {
+            if (ImGui.Button("Explore")) {
                 GameUiExplorer.AddUiElement(this);
             }
 
             base.ToImGui();
-            if (this.show)
-            {
+            if (this.show) {
                 ImGuiHelper.DrawRect(this.Postion, this.Size, 255, 255, 0);
             }
 
@@ -196,8 +214,7 @@ namespace GameHelper.RemoteObjects.UiElement
         }
 
         /// <inheritdoc />
-        protected override void CleanUpData()
-        {
+        protected override void CleanUpData() {
             this.Parent = null;
             this.childrenAddresses = Array.Empty<IntPtr>();
             this.flags = 0x00;
@@ -207,48 +224,8 @@ namespace GameHelper.RemoteObjects.UiElement
             this.scaleIndex = 0x00;
         }
 
-        /// <inheritdoc />
-        protected override void UpdateData(bool hasAddressChanged)
-        {
-            var reader = Core.Process.Handle;
-            var data = reader.ReadMemory<UiElementBaseOffset>(this.Address);
-            if (data.Self != IntPtr.Zero && data.Self != this.Address)
-            {
-                throw new Exception($"This (address: {this.Address.ToInt64():X})" +
-                                    $"is not a Ui Element. Self Address = {data.Self.ToInt64():X}");
-            }
 
-            if (data.ParentPtr != IntPtr.Zero)
-            {
-                if (hasAddressChanged)
-                {
-                    this.Parent = new UiElementBase(data.ParentPtr);
-                }
-                else
-                {
-                    this.Parent.Address = data.ParentPtr;
-                }
-            }
 
-            this.childrenAddresses = reader.ReadStdVector<IntPtr>(data.ChildrensPtr);
-            if (hasAddressChanged)
-            {
-                this.id = reader.ReadStdWString(data.Id);
-            }
-
-            this.positionModifier.X = data.PositionModifier.X;
-            this.positionModifier.Y = data.PositionModifier.Y;
-
-            this.scaleIndex = data.ScaleIndex;
-            this.localScaleMultiplier = data.LocalScaleMultiplier;
-            this.flags = data.Flags;
-
-            this.relativePosition.X = data.RelativePosition.X;
-            this.relativePosition.Y = data.RelativePosition.Y;
-
-            this.unScaledSize.X = data.UnscaledSize.X;
-            this.unScaledSize.Y = data.UnscaledSize.Y;
-        }
 
         /// <summary>
         ///     This function was basically parsed/read/decompiled from the game.
@@ -256,22 +233,18 @@ namespace GameHelper.RemoteObjects.UiElement
         ///     Although, this function haven't changed since last 3-4 years.
         /// </summary>
         /// <returns>Returns position without applying current element scaling values.</returns>
-        private Vector2 GetUnScaledPosition()
-        {
-            if (this.Parent == null)
-            {
+        private Vector2 GetUnScaledPosition() {
+            if (this.Parent == null) {
                 return this.relativePosition;
             }
 
             var parentPos = this.Parent.GetUnScaledPosition();
-            if (UiElementBaseFuncs.ShouldModifyPos(this.flags))
-            {
+            if (UiElementBaseFuncs.ShouldModifyPos(this.flags)) {
                 parentPos += this.Parent.positionModifier;
             }
 
             if (this.Parent.scaleIndex == this.scaleIndex &&
-                this.Parent.localScaleMultiplier == this.localScaleMultiplier)
-            {
+                this.Parent.localScaleMultiplier == this.localScaleMultiplier) {
                 return parentPos + this.relativePosition;
             }
 

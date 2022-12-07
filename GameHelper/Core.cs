@@ -2,14 +2,15 @@
 // Copyright (c) None. All rights reserved.
 // </copyright>
 
-namespace GameHelper
-{
+namespace GameHelper {
     using System;
     using System.Collections.Generic;
     using System.IO;
     using System.Reflection;
     using Coroutine;
     using CoroutineEvents;
+    using GameHelper.RemoteObjects.States.InGameStateObjects;
+    using GameHelper.Ui;
     using ImGuiNET;
     using RemoteObjects;
     using Settings;
@@ -20,8 +21,23 @@ namespace GameHelper
     ///     and updates the RemoteObjects. It also manages the
     ///     GameHelper settings.
     /// </summary>
-    public static class Core
-    {
+    public static class Core {
+        public static Entity me => States.InGameStateObject.CurrentAreaInstance.Player;
+        #region LOG
+        /// <summary>
+        /// w8ting for 60 frame per second
+        /// </summary>
+        public static int w8 = 1000 / 60;
+        public static FixedSizedLog log { get; } = new FixedSizedLog(10);
+        public static void ClearLog() {
+            log.Clear();
+        }
+        public static DrawLog draw_log = new DrawLog();
+
+        public static void AddToLog(string str, MessType _mt = MessType.Ok) {
+            log.Add(str, _mt);
+        }
+        #endregion
         /// <summary>
         ///     Gets the GameHelper version.
         /// </summary>
@@ -85,14 +101,11 @@ namespace GameHelper
         /// <summary>
         ///     Initializes the <see cref="Core" /> class.
         /// </summary>
-        public static void Initialize()
-        {
-            try
-            {
+        public static void Initialize() {
+            try {
                 version = File.ReadAllText("VERSION.txt");
             }
-            catch (Exception)
-            {
+            catch (Exception) {
                 version = "Dev";
             }
         }
@@ -101,16 +114,14 @@ namespace GameHelper
         ///     Get GameHelper version.
         /// </summary>
         /// <returns>GameHelper version.</returns>
-        public static string GetVersion()
-        {
+        public static string GetVersion() {
             return version.Trim();
         }
 
         /// <summary>
         ///     Initializes the <see cref="Core" /> class coroutines.
         /// </summary>
-        internal static void InitializeCororutines()
-        {
+        internal static void InitializeCororutines() {
             CoroutineHandler.Start(GameClosedActions());
             CoroutineHandler.Start(UpdateStatesData(), priority: int.MaxValue - 3);
             CoroutineHandler.Start(UpdateFilesData(), priority: int.MaxValue - 2);
@@ -124,21 +135,17 @@ namespace GameHelper
         /// <summary>
         ///     Cleans up all the resources taken by the application core.
         /// </summary>
-        internal static void Dispose()
-        {
+        internal static void Dispose() {
             Process.Close(false);
         }
 
         /// <summary>
         ///     Converts the RemoteObjects to ImGui Widgets.
         /// </summary>
-        internal static void RemoteObjectsToImGuiCollapsingHeader()
-        {
+        internal static void RemoteObjectsToImGuiCollapsingHeader() {
             const BindingFlags propertyFlags = BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static;
-            foreach (var property in RemoteObjectBase.GetToImGuiMethods(typeof(Core), propertyFlags, null))
-            {
-                if (ImGui.CollapsingHeader(property.Name))
-                {
+            foreach (var property in RemoteObjectBase.GetToImGuiMethods(typeof(Core), propertyFlags, null)) {
+                if (ImGui.CollapsingHeader(property.Name)) {
                     property.ToImGui.Invoke(property.Value, null);
                 }
             }
@@ -149,10 +156,8 @@ namespace GameHelper
         ///     Game Window Values are loaded in the game memory.
         /// </summary>
         /// <returns>co-routine IWait.</returns>
-        private static IEnumerator<Wait> UpdateScaleData()
-        {
-            while (true)
-            {
+        private static IEnumerator<Wait> UpdateScaleData() {
+            while (true) {
                 yield return new Wait(Process.OnStaticAddressFound);
                 GameScale.Address = Process.StaticAddresses["GameWindowScaleValues"];
             }
@@ -163,10 +168,8 @@ namespace GameHelper
         ///     Game Cull Value is loaded in the game memory.
         /// </summary>
         /// <returns>co-routine IWait.</returns>
-        private static IEnumerator<Wait> UpdateCullData()
-        {
-            while (true)
-            {
+        private static IEnumerator<Wait> UpdateCullData() {
+            while (true) {
                 yield return new Wait(Process.OnStaticAddressFound);
                 GameCull.Address = Process.StaticAddresses["GameCullSize"];
             }
@@ -176,10 +179,8 @@ namespace GameHelper
         ///     Co-routine to update the address where AreaChange object is loaded in the game memory.
         /// </summary>
         /// <returns>co-routine IWait.</returns>
-        private static IEnumerator<Wait> UpdateAreaChangeData()
-        {
-            while (true)
-            {
+        private static IEnumerator<Wait> UpdateAreaChangeData() {
+            while (true) {
                 yield return new Wait(Process.OnStaticAddressFound);
                 AreaChangeCounter.Address = Process.StaticAddresses["AreaChangeCounter"];
             }
@@ -189,10 +190,8 @@ namespace GameHelper
         ///     Co-routine to update the address where the Files are loaded in the game memory.
         /// </summary>
         /// <returns>co-routine IWait.</returns>
-        private static IEnumerator<Wait> UpdateFilesData()
-        {
-            while (true)
-            {
+        private static IEnumerator<Wait> UpdateFilesData() {
+            while (true) {
                 yield return new Wait(Process.OnStaticAddressFound);
                 CurrentAreaLoadedFiles.Address = Process.StaticAddresses["File Root"];
             }
@@ -202,10 +201,8 @@ namespace GameHelper
         ///     Co-routine to update the address where the Game States are loaded in the game memory.
         /// </summary>
         /// <returns>co-routine IWait.</returns>
-        private static IEnumerator<Wait> UpdateStatesData()
-        {
-            while (true)
-            {
+        private static IEnumerator<Wait> UpdateStatesData() {
+            while (true) {
                 yield return new Wait(Process.OnStaticAddressFound);
                 States.Address = Process.StaticAddresses["Game States"];
             }
@@ -215,10 +212,8 @@ namespace GameHelper
         ///     Co-routine to update the address where the Rotation Selector values are loaded in the game memory.
         /// </summary>
         /// <returns>co-routine IWait.</returns>
-        private static IEnumerator<Wait> UpdateRotationSelectorData()
-        {
-            while (true)
-            {
+        private static IEnumerator<Wait> UpdateRotationSelectorData() {
+            while (true) {
                 yield return new Wait(Process.OnStaticAddressFound);
                 RotationSelector.Address = Process.StaticAddresses["Terrain Rotation Selector"];
             }
@@ -228,10 +223,8 @@ namespace GameHelper
         ///     Co-routine to update the address where the rotator helper values are loaded in the game memory.
         /// </summary>
         /// <returns>co-routine IWait.</returns>
-        private static IEnumerator<Wait> UpdateRotatorHelperData()
-        {
-            while (true)
-            {
+        private static IEnumerator<Wait> UpdateRotatorHelperData() {
+            while (true) {
                 yield return new Wait(Process.OnStaticAddressFound);
                 RotatorHelper.Address = Process.StaticAddresses["Terrain Rotator Helper"];
             }
@@ -242,10 +235,8 @@ namespace GameHelper
         ///     once the game closes.
         /// </summary>
         /// <returns>co-routine IWait.</returns>
-        private static IEnumerator<Wait> GameClosedActions()
-        {
-            while (true)
-            {
+        private static IEnumerator<Wait> GameClosedActions() {
+            while (true) {
                 yield return new Wait(GameHelperEvents.OnClose);
                 States.Address = IntPtr.Zero;
                 CurrentAreaLoadedFiles.Address = IntPtr.Zero;
@@ -255,8 +246,7 @@ namespace GameHelper
                 RotationSelector.Address = IntPtr.Zero;
                 RotatorHelper.Address = IntPtr.Zero;
 
-                if (GHSettings.CloseWhenGameExit)
-                {
+                if (GHSettings.CloseWhenGameExit) {
                     Overlay?.Close();
                 }
             }

@@ -323,7 +323,7 @@ namespace GameHelper.Settings
             var iGS = Core.States.InGameStateObject;
             if (ImGui.IsItemHovered() &&
                 Core.States.GameCurrentState == GameStateTypes.InGameState &&
-                iGS.CurrentAreaInstance.Player.TryGetComponent<Render>(out var r))
+                iGS.CurrentAreaInstance.Player.GetComp<Render>(out var r))
             {
                 foreach (var angle in Enumerable.Range(0, 360))
                 {
